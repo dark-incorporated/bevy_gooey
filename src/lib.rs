@@ -365,7 +365,10 @@ pub use motion::{
 pub use nav::{
     Dialog, FocusScopes, focus_opened_dialogs, gamepad_adjust, gamepad_select, navigate_by_input,
 };
-pub use notification::{NotificationCenter, NotificationRow, update_notification_centers};
+pub use notification::{
+    NotificationAction, NotificationActionButton, NotificationCenter, NotificationRow,
+    update_notification_centers,
+};
 pub use number::{
     MIXED_HINT, MixedValue, NumberInput, NumberRange, NumberRefused, NumberStep, NumberValue,
     VecChange, VecMixed, VecPart, VecValue, update_numbers, update_vecs,
@@ -441,7 +444,7 @@ pub use text::{
 pub use text_area::TextAreaFill;
 pub use toast::{
     Toast, ToastAction, ToastAnchor, ToastBundle, ToastButton, ToastInset, ToastKind, ToastLog,
-    ToastLogEntry, ToastSettings, ToastStack, update_toasts,
+    ToastLogEntry, ToastLogRecord, ToastSettings, ToastStack, update_toasts,
 };
 pub use toolbar::{
     GroupOption, Overflowed, ToggleGroupCount, ToggleGroupValue, Toolbar, fit_bars,
@@ -465,8 +468,8 @@ pub use widgets::{
     scroll_viewport, section, select, separator, side_tab_page, side_tabs, side_tabs_icons, sized,
     sized_panel, skin_preset, slider, slot_grid, spacer, spinner, split, status_bar, status_item,
     status_item_quiet, status_mark, status_progress, submenu, surface, tab_page, table, tabs,
-    text_area, text_area_fill, text_input, text_size, toast, toast_alert, toggle, toggle_group,
-    toolbar, toolbar_separator, tree, vec_field, viewport,
+    text_area, text_area_fill, text_input, text_size, toast, toast_alert, toast_note, toggle,
+    toggle_group, toolbar, toolbar_separator, tree, vec_field, viewport,
 };
 
 use bevy::app::PluginGroupBuilder;
@@ -694,6 +697,7 @@ impl Plugin for GooeyStylePlugin {
             .register_type::<ToastKind>()
             .register_type::<ToastLog>()
             .register_type::<ToastLogEntry>()
+            .register_type::<ToastLogRecord>()
             .register_type::<PaletteHistory>()
             .register_type::<UiFeedbackKind>()
             .add_observer(feedback::feedback_on_activate)
@@ -703,6 +707,8 @@ impl Plugin for GooeyStylePlugin {
             .add_observer(toolbar::more_on_activate)
             .add_observer(toast::toast_on_activate)
             .add_observer(toast::toast_button_removed)
+            .add_observer(notification::notification_on_activate)
+            .add_observer(notification::notification_button_removed)
             .add_observer(text::text_on_edit)
             .add_observer(text_area::rail_on_press)
             .add_observer(text_area::rail_on_acquire)

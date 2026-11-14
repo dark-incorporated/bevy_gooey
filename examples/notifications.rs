@@ -70,6 +70,7 @@ fn main() {
     ))
     .insert_resource(skin)
     .add_observer(hear)
+    .add_observer(hear_row)
     .add_systems(Startup, setup)
     .add_systems(Update, (follow_background, capture, apply_steps))
     // Staged keys are written before `PreUpdate`, as a real keyboard's are.
@@ -124,9 +125,25 @@ fn setup(mut commands: Commands) {
                 heading("Inventory"),
                 (
                     button("Delete item"),
-                    observe(|_: On<Activate>, mut commands: Commands| {
-                        commands.spawn(toast("Item deleted").action("Undo", "undo"));
-                    }),
+                    observe(
+                        |_: On<Activate>,
+                         mut commands: Commands,
+                         mut log: ResMut<ToastLog>,
+                         time: Res<Time<Real>>| {
+                            // The toast and the journal's row are one entry: the row carries the
+                            // same Undo, and the toast is spawned as that entry, not as a second.
+                            let id = log.push(ToastLogEntry {
+                                seconds: time.elapsed_secs(),
+                                kind: ToastKind::Info,
+                                text: "Item deleted".into(),
+                            });
+                            if let Some(entry) = log.get_mut(id) {
+                                entry.add_action("Undo", "undo");
+                            }
+                            commands
+                                .spawn(toast("Item deleted").action("Undo", "undo").logged_as(id));
+                        },
+                    ),
                 ),
                 (
                     button("Save game"),
@@ -172,6 +189,14 @@ fn setup(mut commands: Commands) {
 fn hear(action: On<ToastAction>, mut heard: Query<&mut Text, With<Heard>>) {
     for mut text in &mut heard {
         text.0 = format!("Heard: {}", action.id);
+    }
+}
+
+/// What the game does with a button on a journal row: it hears one `NotificationAction`, which names
+/// the entry the row is for, and writes it down. A press on the row's words sends nothing.
+fn hear_row(action: On<NotificationAction>, mut heard: Query<&mut Text, With<Heard>>) {
+    for mut text in &mut heard {
+        text.0 = format!("Heard: {} (entry {})", action.id, action.entry);
     }
 }
 

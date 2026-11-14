@@ -66,6 +66,7 @@ mod meter_motion;
 mod motion;
 mod motion_trace;
 mod nav;
+mod notification_actions;
 mod number;
 mod options;
 mod palette;

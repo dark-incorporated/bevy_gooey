@@ -1701,8 +1701,8 @@ pub enum Role {
     /// A toast's body: a raised row of a mark and a message, framed in [`GooeySkin::outline`], that
     /// fades in and out.
     ToastBody,
-    /// A toast's mark down its left edge: [`GooeySkin::accent`], or [`GooeySkin::danger`] for an
-    /// alert, twice as wide.
+    /// A toast's mark down its left edge: [`GooeySkin::accent`], [`GooeySkin::text_muted`] for a
+    /// note, or [`GooeySkin::danger`] for an alert, twice as wide.
     ToastMark,
     /// A toast's message: body text that fades with its toast.
     ToastText,
@@ -2265,6 +2265,8 @@ struct State {
     alpha: f32,
     /// A toast of the alert kind.
     alert: bool,
+    /// A toast of the note kind.
+    note: bool,
     /// How much of a toast's room is open, from 0 to 1; whole for everything that is not one.
     grow: f32,
     /// How tall a toast's body stands in full, in logical px.
@@ -2372,6 +2374,7 @@ impl Default for State {
             scrim: false,
             alpha: 1.0,
             alert: false,
+            note: false,
             grow: 1.0,
             body_px: 0.0,
             at_start: false,
@@ -2748,6 +2751,7 @@ pub fn apply_skin(
                         scrim: role == Some(&Role::Scrim),
                         alpha: toast.map_or(1.0, Toast::alpha),
                         alert: toast.is_some_and(|t| t.kind() == ToastKind::Alert),
+                        note: toast.is_some_and(|t| t.kind() == ToastKind::Note),
                         grow: toast.map_or(1.0, Toast::grow),
                         body_px: toast.map_or(0.0, Toast::body_px),
                         at_start: choice.is_some_and(|(value, _)| value.0 == 0),
@@ -3370,6 +3374,8 @@ fn restyle(
         Role::ToastMark => Some(faded(
             if owner.alert {
                 skin.danger
+            } else if owner.note {
+                skin.text_muted
             } else {
                 skin.accent
             },

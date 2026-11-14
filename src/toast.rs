@@ -216,6 +216,9 @@ pub enum ToastKind {
     Info,
     /// A refusal or a failure: the mark is [`crate::GooeySkin::danger`].
     Alert,
+    /// A quiet receipt ("Saved", "Moved the bed"), not news and not a failure: the mark is
+    /// [`crate::GooeySkin::text_muted`], and the log's row has no "! ".
+    Note,
 }
 
 /// A line of news at the edge of the screen, from [`crate::toast`] or [`crate::toast_alert`]. It
@@ -258,6 +261,11 @@ pub struct Toast {
     actions: Vec<(String, String)>,
     /// A button was pressed: it fades out now.
     dismissed: bool,
+    /// Whether the log gets a line of its own for it ([`ToastBundle::unlogged`] and
+    /// [`ToastBundle::logged_as`] turn that off).
+    logs: bool,
+    /// The [`ToastLog`] entry it is the toast of, once it has one.
+    entry: Option<u64>,
     /// Seconds since it was spawned, on real time.
     age: f32,
     /// The longest it may stand fully shown: infinite until the stack is over `max_visible`.
@@ -281,6 +289,8 @@ impl Toast {
             sticky: false,
             actions: Vec::new(),
             dismissed: false,
+            logs: true,
+            entry: None,
             age: 0.0,
             hold_cap: f32::INFINITY,
             alpha: 0.0,
@@ -292,6 +302,13 @@ impl Toast {
     /// What it tells the player.
     pub fn kind(&self) -> ToastKind {
         self.kind
+    }
+
+    /// The id of the [`ToastLog`] entry this toast is the toast of: its own, made when it was
+    /// spawned, or the one [`ToastBundle::logged_as`] named. `None` for an [`ToastBundle::unlogged`]
+    /// toast, and until the toast has been spawned a frame.
+    pub fn entry(&self) -> Option<u64> {
+        self.entry
     }
 
     /// The message, without its count.
@@ -407,6 +424,40 @@ impl ToastBundle {
         self
     }
 
+    /// A toast whose line the caller logs itself: spawning it adds nothing to the [`ToastLog`], so a
+    /// refusal that is a toast **and** a journal line the caller already pushed is listed once.
+    ///
+    /// ```
+    /// # use bevy::prelude::*;
+    /// # use bevy_gooey::*;
+    /// fn refused(mut commands: Commands, mut log: ResMut<ToastLog>) {
+    ///     log.push(ToastLogEntry { seconds: 0.0, kind: ToastKind::Alert, text: "Cannot move".into() });
+    ///     commands.spawn(toast_alert("Cannot move").unlogged());
+    /// }
+    /// ```
+    pub fn unlogged(mut self) -> Self {
+        self.toast.logs = false;
+        self
+    }
+
+    /// A toast that is the toast of the [`ToastLog`] entry `id` (what [`ToastLog::push`] returned):
+    /// spawning it adds no line, and [`Toast::entry`] names that one, so the toast and the journal's
+    /// row are the same row. An `id` the log does not hold adds nothing either.
+    ///
+    /// ```
+    /// # use bevy::prelude::*;
+    /// # use bevy_gooey::*;
+    /// fn refused(mut commands: Commands, mut log: ResMut<ToastLog>) {
+    ///     let id = log.push(ToastLogEntry { seconds: 0.0, kind: ToastKind::Alert, text: "Cannot move".into() });
+    ///     commands.spawn(toast_alert("Cannot move").logged_as(id));
+    /// }
+    /// ```
+    pub fn logged_as(mut self, id: u64) -> Self {
+        self.toast.logs = false;
+        self.toast.entry = Some(id);
+        self
+    }
+
     /// Makes the toast stand until the player dismisses it, with a Dismiss button: an error must not
     /// vanish before it is read. It does not count against [`ToastSettings::max_visible`], so a
     /// newer toast never pushes it out.
@@ -450,7 +501,7 @@ pub struct ToastButton {
     id: Option<String>,
 }
 
-/// One line of the [`ToastLog`]: a toast that was spawned.
+/// One line of the [`ToastLog`]: what a toast said, and when.
 #[derive(Clone, Debug, PartialEq, Reflect)]
 #[reflect(Debug, Clone, PartialEq)]
 pub struct ToastLogEntry {
@@ -462,9 +513,85 @@ pub struct ToastLogEntry {
     pub text: String,
 }
 
-/// The last [`ToastLog::CAPACITY`] toasts that were spawned, oldest first, whether or not they were
-/// merged into another: a toast the player missed can be found here ([`crate::notification_center`]).
-/// It is plain data, so a game may read it, save it or clear it.
+/// A [`ToastLogEntry`] as the [`ToastLog`] keeps it: the line, with an id that is its own for good, a
+/// count of how many times it happened, and the buttons its row in a [`crate::notification_center`]
+/// shows. It derefs to the line, so `record.text`, `record.kind` and `record.seconds` read and write as
+/// they did. Its id is assigned by [`ToastLog::push`]; the rest is changed through
+/// [`ToastLog::get_mut`].
+#[derive(Clone, Debug, PartialEq, Reflect)]
+#[reflect(Debug, Clone, PartialEq)]
+pub struct ToastLogRecord {
+    id: u64,
+    count: u32,
+    actions: Vec<(String, String)>,
+    line: ToastLogEntry,
+}
+
+impl ToastLogRecord {
+    /// The id [`ToastLog::push`] gave it: never another entry's, never reused.
+    pub fn id(&self) -> u64 {
+        self.id
+    }
+
+    /// How many times it happened, itself included: 1 until [`ToastLogRecord::set_count`]. A row
+    /// with a count over 1 reads `text  (x3)`.
+    pub fn count(&self) -> u32 {
+        self.count
+    }
+
+    /// Sets the count. 0 is ignored: an entry that is in the log happened.
+    pub fn set_count(&mut self, count: u32) {
+        if count > 0 {
+            self.count = count;
+        }
+    }
+
+    /// The buttons of its row: a label and the id a [`crate::NotificationAction`] carries, in order.
+    pub fn actions(&self) -> &[(String, String)] {
+        &self.actions
+    }
+
+    /// Adds a button to its row. An empty label or id is ignored (a button with no words, or one
+    /// that says nothing), and so is one the row already has.
+    pub fn add_action(&mut self, label: impl Into<String>, id: impl Into<String>) {
+        let (label, id) = (label.into(), id.into());
+        if label.is_empty()
+            || id.is_empty()
+            || self
+                .actions
+                .iter()
+                .any(|a| a == &(label.clone(), id.clone()))
+        {
+            return;
+        }
+        self.actions.push((label, id));
+    }
+
+    /// Takes every button off its row.
+    pub fn clear_actions(&mut self) {
+        self.actions.clear();
+    }
+}
+
+impl std::ops::Deref for ToastLogRecord {
+    type Target = ToastLogEntry;
+
+    fn deref(&self) -> &ToastLogEntry {
+        &self.line
+    }
+}
+
+impl std::ops::DerefMut for ToastLogRecord {
+    fn deref_mut(&mut self) -> &mut ToastLogEntry {
+        &mut self.line
+    }
+}
+
+/// The last [`ToastLog::CAPACITY`] lines, oldest first, kept as [`ToastLogRecord`]s: every toast that
+/// was spawned (whether or not it was merged into another; a toast the player missed can be found
+/// here, in a [`crate::notification_center`]) and every line a game pushes itself. It is plain data, so
+/// a game may read it, save it, change an entry in place ([`ToastLog::get_mut`]), remove one or clear
+/// it. An entry's id is its identity: it survives the log being capped and is never given twice.
 ///
 /// ```
 /// # use bevy::prelude::*;
@@ -472,11 +599,20 @@ pub struct ToastLogEntry {
 /// fn count(log: Res<ToastLog>) -> usize {
 ///     log.entries().filter(|e| e.kind == ToastKind::Alert).count()
 /// }
+///
+/// fn moved(mut log: ResMut<ToastLog>) {
+///     let id = log.push(ToastLogEntry { seconds: 3.0, kind: ToastKind::Note, text: "Moved the bed".into() });
+///     if let Some(entry) = log.get_mut(id) {
+///         entry.add_action("Undo", "undo");
+///     }
+/// }
 /// ```
 #[derive(Resource, Clone, Debug, Default, PartialEq, Reflect)]
 #[reflect(Resource, Default, Debug, Clone, PartialEq)]
 pub struct ToastLog {
-    entries: VecDeque<ToastLogEntry>,
+    entries: VecDeque<ToastLogRecord>,
+    /// The id the last entry was given: ids only go up, whatever is removed or cleared.
+    last_id: u64,
 }
 
 impl ToastLog {
@@ -484,7 +620,7 @@ impl ToastLog {
     pub const CAPACITY: usize = 200;
 
     /// Every entry, oldest first.
-    pub fn entries(&self) -> impl DoubleEndedIterator<Item = &ToastLogEntry> {
+    pub fn entries(&self) -> impl DoubleEndedIterator<Item = &ToastLogRecord> {
         self.entries.iter()
     }
 
@@ -498,17 +634,45 @@ impl ToastLog {
         self.entries.is_empty()
     }
 
-    /// Forgets every entry.
+    /// Forgets every entry. Ids already given are not given again.
     pub fn clear(&mut self) {
         self.entries.clear();
     }
 
-    /// Adds an entry, forgetting the oldest past [`ToastLog::CAPACITY`].
-    pub fn push(&mut self, entry: ToastLogEntry) {
+    /// Adds an entry, forgetting the oldest past [`ToastLog::CAPACITY`], and returns its id. A time
+    /// that is not a number is 0.
+    pub fn push(&mut self, mut entry: ToastLogEntry) -> u64 {
+        if !entry.seconds.is_finite() {
+            entry.seconds = 0.0;
+        }
         if self.entries.len() >= Self::CAPACITY {
             self.entries.pop_front();
         }
-        self.entries.push_back(entry);
+        self.last_id = self.last_id.saturating_add(1);
+        self.entries.push_back(ToastLogRecord {
+            id: self.last_id,
+            count: 1,
+            actions: Vec::new(),
+            line: entry,
+        });
+        self.last_id
+    }
+
+    /// The entry with this id, if the log still holds it.
+    pub fn get(&self, id: u64) -> Option<&ToastLogRecord> {
+        self.entries.iter().find(|entry| entry.id == id)
+    }
+
+    /// The entry with this id, to change in place (a repeat bumps its count): its row in a
+    /// [`crate::notification_center`] is rebuilt, and the other rows are not.
+    pub fn get_mut(&mut self, id: u64) -> Option<&mut ToastLogRecord> {
+        self.entries.iter_mut().find(|entry| entry.id == id)
+    }
+
+    /// Takes the entry with this id out of the log, and returns it.
+    pub fn remove(&mut self, id: u64) -> Option<ToastLogRecord> {
+        let at = self.entries.iter().position(|entry| entry.id == id)?;
+        self.entries.remove(at)
     }
 }
 
@@ -523,12 +687,17 @@ fn queue_join(mut world: DeferredWorld, HookContext { entity, .. }: HookContext)
         let seconds = world
             .get_resource::<Time<Real>>()
             .map_or(0.0, |time| time.elapsed_secs());
-        if let Some(mut log) = world.get_resource_mut::<ToastLog>() {
-            log.push(ToastLogEntry {
-                seconds,
-                kind: toast.kind,
-                text: toast.text.clone(),
+        if toast.logs {
+            let id = world.get_resource_mut::<ToastLog>().map(|mut log| {
+                log.push(ToastLogEntry {
+                    seconds,
+                    kind: toast.kind,
+                    text: toast.text.clone(),
+                })
             });
+            if let Some(mut own) = world.get_mut::<Toast>(entity) {
+                own.entry = id;
+            }
         }
         let existing = world
             .query_filtered::<Entity, With<ToastStack>>()

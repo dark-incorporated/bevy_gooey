@@ -4112,6 +4112,20 @@ pub fn toast_alert(text: impl Into<String>) -> ToastBundle {
     ToastBundle::new(ToastKind::Alert, text.into())
 }
 
+/// A [`toast`] for a quiet receipt ("Saved", "Moved the bed"): neither news nor a failure, so its mark
+/// is [`crate::GooeySkin::text_muted`] and its row in the [`notification_center`] has no "! ".
+///
+/// ```
+/// # use bevy::prelude::*;
+/// # use bevy_gooey::*;
+/// fn saved(mut commands: Commands) {
+///     commands.spawn(toast_note("Saved"));
+/// }
+/// ```
+pub fn toast_note(text: impl Into<String>) -> ToastBundle {
+    ToastBundle::new(ToastKind::Note, text.into())
+}
+
 /// A tool's bar: a full-width row of [`icon_button`]s, [`toggle_group`]s, [`toolbar_separator`]s and
 /// any other widget, on the menu bar's surface with one quiet line under it. When the items do not
 /// fit the bar's width the **last** ones hide and a "More" button appears whose menu lists them;
@@ -4950,7 +4964,11 @@ pub fn section(title: impl Into<String>, open: bool, children: impl Bundle) -> i
 /// ```
 ///
 /// It reads the [`ToastLog`](crate::ToastLog), which keeps the last 200 toasts; clear it to
-/// empty the center.
+/// empty the center. A row carries the id of its entry ([`NotificationRow::entry`](crate::NotificationRow::entry)),
+/// reads `words  (x3)` for an entry with a count, and has a button for each of the entry's actions
+/// ([`ToastLogRecord::add_action`](crate::ToastLogRecord::add_action)): pressing one sends a global
+/// [`NotificationAction`](crate::NotificationAction), pressing the row's words sends nothing. A row
+/// whose entry did not change is the same entity after the log does.
 pub fn notification_center() -> impl Bundle {
     (
         Node {

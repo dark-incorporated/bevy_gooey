@@ -45,7 +45,25 @@ fn heard(action: On<ToastAction>) {
 - **`.sticky()`** (on `toast` or `toast_alert`) stands until the player dismisses it, with a **Dismiss** button that sends no `ToastAction`. It is not counted against `max_visible`, so a newer toast never pushes it out.
 - **A toast's buttons keep their size.** A long message wraps (the body stops at 24 text sizes) but a button never gives up its padded label to it: each is a full button wide, half a gap of margin each side (so two stand a gap apart and the last is inside the frame), and centred on the toast's height beside a message of several lines. A toast without a button is laid out as before.
 - **Repeats merge.** A toast identical (kind, words, buttons) to one that arrived less than `ToastSettings::merge_seconds` (2; 0 turns it off) ago folds into it: it reads "Game saved x3" (ASCII `x`: the host supplies the font), stands again from the start of its hold, and **the entity you spawned is despawned** (the one standing is the one that stays; `Toast::count()` says how many).
-- **`ToastLog`** is a resource that keeps the last 200 toasts spawned (`ToastLog::CAPACITY`), merged or not, as `ToastLogEntry { seconds, kind, text }` (seconds on `Time<Real>`). It is plain data: read it, save it, `clear()` it.
+- **`ToastLog`** is a resource that keeps the last 200 lines (`ToastLog::CAPACITY`) as `ToastLogRecord`s: every toast spawned, merged or not, and every line you `push(ToastLogEntry { seconds, kind, text })` yourself (seconds on `Time<Real>`). It is plain data: read it, save it, `clear()` it. **Each entry has an `id()`** that `push` returns: it only goes up, survives the log being capped and is never given twice. `get(id)`, `get_mut(id)` and `remove(id)` find, change and take an entry; a record derefs to its `ToastLogEntry` (`record.text`) and carries a `count()` (`set_count(3)`: the row reads `text  (x3)`, in place) and its `actions()` (`add_action("Undo", "undo")`). A time that is not a number is 0, a count of 0, an empty label or id and a repeated action are ignored.
+- **`ToastKind::Note`** (`toast_note(text)`) is a third kind for a quiet receipt: a muted mark, and no `! ` in its row.
+- **A toast that is also a journal line.** A toast logs itself, so a refusal you push to the log yourself would be listed twice: spawn the toast `.unlogged()` (it adds nothing to the log), or `.logged_as(id)` with the id `push` returned (it adds nothing and `Toast::entry()` names that entry: the toast and the journal's row are one row).
 - **`notification_center()`** is a scrolling list of the log, newest first, a row for each entry as `m:ss  words` (an alert's words start with `! `: the mark is not only a colour) or "No notifications yet". A row is a button, so the keys and the pad scroll it like any list; put it in a panel or a dialog of your own. `examples/notifications.rs` shows all of it.
+- **A row can carry buttons and says which entry it is.** `NotificationRow::entry()` is the id of the entry the row draws. Each of an entry's `actions()` is a button at the row's end (a tab stop, a button's look); pressing it sends **one global `NotificationAction { entry, id }`**, and a press on the row's words sends nothing, so a click on a line of history never undoes it. A row whose entry did not change is **the same entity** after the log changes (focus and hover stay); one whose entry changed (a count, an action) is rebuilt, one whose entry is gone is despawned. A centre hidden with `Shown(false)` has no tab stops.
+
+```rust,ignore
+fn moved(mut log: ResMut<ToastLog>) {
+    let id = log.push(ToastLogEntry { seconds: 3.0, kind: ToastKind::Note, text: "Moved the bed".into() });
+    if let Some(entry) = log.get_mut(id) {
+        entry.add_action("Undo", "undo");
+    }
+}
+
+fn on_row_action(action: On<NotificationAction>) {
+    if action.id == "undo" {
+        // undo the change that entry `action.entry` records
+    }
+}
+```
 
 Research: [`docs/research/toast-actions.md`](../research/toast-actions.md).
