@@ -9,6 +9,7 @@ use bevy::ui::auto_directional_navigation::AutoDirectionalNavigation;
 use bevy::ui::{ComputedNode, ScrollPosition, UiGlobalTransform};
 use bevy::ui_widgets::Scrollbar;
 
+use crate::box_model::{ScrollGutter, ScrollRail, ScrollRailOf, ScrollRailParts};
 use crate::model::{page_target, scroll_to_reveal, snap_to_row};
 use crate::motion::MotionSettings;
 use crate::nav::show_focus;
@@ -158,6 +159,7 @@ pub fn scroll_to_focus(
     >,
     settings: Res<MotionSettings>,
     time: Option<Res<Time<Real>>>,
+    roles: Query<&Role>,
 ) {
     if !visible.0 || !(focus.is_changed() || visible.is_changed()) {
         return;
@@ -185,9 +187,14 @@ pub fn scroll_to_focus(
     let base = glide.goal().unwrap_or(laid_out);
     // The rows' column holds their gap and the rows; a list's context is counted in rows, gap
     // included.
-    let column = view_children
-        .first()
-        .and_then(|&column| columns.get(column).ok());
+    // A viewport that is its own region (`scroll_viewport`) holds the rows itself.
+    let column = if roles.get(list) == Ok(&Role::ScrollViewport) {
+        columns.get(list).ok()
+    } else {
+        view_children
+            .first()
+            .and_then(|&column| columns.get(column).ok())
+    };
     let gap = column.map_or(0.0, |(column, _)| match column.row_gap {
         Val::Px(gap) => gap,
         _ => 0.0,
@@ -422,4 +429,88 @@ pub(crate) fn keeps_nav_keys(
                 )
             })
         })
+}
+
+/// Keeps a rail beside each viewport that carries [`ScrollRail`]: spawns one as a sibling (a child of
+/// the viewport's parent, so the viewport's `Children` stay the host's), re-parents it with the
+/// viewport, and takes it down when the marker or the viewport is gone. Runs in
+/// [`crate::GooeySystems::Style`].
+#[allow(clippy::type_complexity)]
+pub fn manage_scroll_rails(
+    mut commands: Commands,
+    new: Query<(Entity, &ChildOf), (With<ScrollRail>, Without<ScrollRailParts>)>,
+    kept: Query<(Entity, &ScrollRailParts, Has<ScrollRail>, Option<&ChildOf>)>,
+    rails: Query<(Entity, &ScrollRailOf, Option<&ChildOf>)>,
+    views: Query<(), With<ScrollRail>>,
+) {
+    for (view, parent) in &new {
+        let rail = commands
+            .spawn(crate::widgets::list_rail(view))
+            .insert((ScrollRailOf(view), ChildOf(parent.parent())))
+            .id();
+        commands.entity(view).insert(ScrollRailParts(rail));
+    }
+    for (view, parts, has_marker, parent) in &kept {
+        if !has_marker {
+            commands.entity(parts.0).try_despawn();
+            commands.entity(view).remove::<ScrollRailParts>();
+        } else if let Some(parent) = parent
+            && rails
+                .get(parts.0)
+                .is_ok_and(|(_, _, at)| at.map(ChildOf::parent) != Some(parent.parent()))
+        {
+            commands.entity(parts.0).insert(ChildOf(parent.parent()));
+        }
+    }
+    for (rail, of, _) in &rails {
+        if !views.contains(of.0) {
+            commands.entity(rail).try_despawn();
+        }
+    }
+}
+
+/// Places each [`ScrollRail`] rail over its viewport's right edge, top aligned and as tall as it, from
+/// the viewport's layout of the last frame (an absolute node is placed from its parent's padding edge,
+/// as the edge-fade overlays are). Writes a rail only when its place changed. Runs in
+/// [`crate::GooeySystems::Style`].
+pub fn place_scroll_rails(
+    mut rails: Query<(&ScrollRailOf, &mut Node)>,
+    views: Query<(&ComputedNode, &UiGlobalTransform, &ChildOf), With<ScrollRail>>,
+    boxes: Query<(&ComputedNode, &UiGlobalTransform), Without<ScrollRailOf>>,
+) {
+    for (of, mut node) in &mut rails {
+        let Ok((view, transform, parent)) = views.get(of.0) else {
+            continue;
+        };
+        let Ok((parent_node, parent_transform)) = boxes.get(parent.parent()) else {
+            continue;
+        };
+        let Val::Px(width) = node.width else {
+            continue;
+        };
+        let scale = view.inverse_scale_factor();
+        let view_corner = transform.translation - view.size() * 0.5;
+        let parent_corner = parent_transform.translation - parent_node.size() * 0.5;
+        let at = (view_corner - parent_corner - parent_node.border.min_inset) * scale;
+        let (left, top, height) = (
+            at.x + view.size().x * scale - width,
+            at.y,
+            view.size().y * scale,
+        );
+        let differs = |val: Val, want: f32| !matches!(val, Val::Px(px) if (px - want).abs() < 0.01);
+        if node.position_type != PositionType::Absolute
+            || differs(node.left, left)
+            || differs(node.top, top)
+            || differs(node.height, height)
+            || node.right != Val::Auto
+            || node.bottom != Val::Auto
+        {
+            node.position_type = PositionType::Absolute;
+            node.left = Val::Px(left);
+            node.top = Val::Px(top);
+            node.height = Val::Px(height);
+            node.right = Val::Auto;
+            node.bottom = Val::Auto;
+        }
+    }
 }

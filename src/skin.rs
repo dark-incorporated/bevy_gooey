@@ -2122,6 +2122,9 @@ pub enum Role {
     ScrollRegion,
     /// A [`crate::scroll_region`]'s viewport: scrolls vertically, keeps a lane for the rail; not drawn.
     ScrollView,
+    /// A [`crate::scroll_viewport`]: a scrolling column that IS its own region: fills the room its parent
+    /// leaves, scrolls vertically, keeps a lane for the rail; its children are the host's; not drawn.
+    ScrollViewport,
     /// A [`crate::cell`]: a fixed-width box, in body text sizes, that cuts what does not fit; not
     /// drawn, so a label column lines up down a list of rows.
     Cell,
@@ -3059,6 +3062,7 @@ fn takes_a_row_layout(role: &Role) -> bool {
             | Role::SectionBody
             | Role::Screen
             | Role::Backdrop
+            | Role::ScrollViewport
     )
 }
 
@@ -3079,6 +3083,7 @@ fn takes_a_gap(role: &Role) -> bool {
             | Role::SectionBody
             | Role::Screen
             | Role::Backdrop
+            | Role::ScrollViewport
     )
 }
 
@@ -3557,6 +3562,7 @@ fn restyle(
         | Role::ListRows
         | Role::ScrollRegion
         | Role::ScrollView
+        | Role::ScrollViewport
         | Role::Table
         | Role::TableHeader
         | Role::TableSortUp
@@ -4875,8 +4881,18 @@ fn restyle(
                 next.flex_shrink = 1.0;
                 next.min_height = Val::ZERO;
             }
-            Role::ScrollView => {
-                next.display = Display::Block;
+            Role::ScrollView | Role::ScrollViewport => {
+                // A region's viewport holds one column of items (Block); a viewport that is its own
+                // region is that column: it grows, may be nothing tall, and its children are the host's.
+                if *role == Role::ScrollViewport {
+                    next.display = Display::Flex;
+                    next.flex_direction = FlexDirection::Column;
+                    next.flex_grow = 1.0;
+                    next.flex_shrink = 1.0;
+                    next.min_height = Val::ZERO;
+                } else {
+                    next.display = Display::Block;
+                }
                 next.overflow = Overflow::scroll_y();
                 let lane = match state.scroll_gutter.flatten() {
                     Some(space) => space.resolve(skin).unwrap_or(RAIL_LINES * line + skin.gap),

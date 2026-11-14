@@ -89,6 +89,7 @@ fn spec(role: Role) -> Spec {
         | Role::ListRows
         | Role::ScrollRegion
         | Role::ScrollView
+        | Role::ScrollViewport
         | Role::TableView
         | Role::TableRows
         | Role::TableHeader

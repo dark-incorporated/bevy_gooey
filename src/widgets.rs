@@ -2751,6 +2751,54 @@ where
     )
 }
 
+/// A scrolling column that **is its own region**: one bundle that IS the scrolling viewport entity, for a
+/// host that inserts its markers and spawns its children on the entity the builder returns and reads
+/// `ScrollPosition` and `ComputedNode` on that same entity (what [`scroll_region`] cannot be, as it
+/// returns a region whose first child is the viewport). It fills the room its parent leaves and may be
+/// nothing tall, scrolls vertically, keeps `gutter` clear on its right for the rail
+/// ([`ScrollGutter`](crate::ScrollGutter): `None` the list's own lane, `Some(Space::Px(..))` the
+/// host's), stands its children `gap` skin gaps apart (a [`LayoutGap`](crate::LayoutGap) beside it
+/// changes that) and behaves as a [`scroll_region`] does: the wheel, a drag on the rail, glide and edge
+/// fade, keyboard focus followed into view, PageUp, PageDown, Home and End (a widget inside that
+/// handles those keys itself, a text area, a table, a slider..., keeps them).
+///
+/// **The rail is a sibling, not a child.** The viewport's own `Children` are only the host's: gooey's
+/// rail is spawned by `manage_scroll_rails` as a child of the viewport's **parent**, after it, once the
+/// viewport has one, and carries [`ScrollRailOf`](crate::ScrollRailOf) naming it; the edge-fade
+/// overlays are siblings too. `place_scroll_rails` puts the rail over the viewport's right edge each
+/// frame and it shows only while the content does not fit. Take [`ScrollRail`](crate::ScrollRail) off
+/// the viewport to have none. So the viewport's parent must be a node the host controls (a column with a
+/// bounded height); a `Query<&Children>` of the *parent* sees the rail beside the viewport.
+///
+/// Its children are flex items of a column: a row that must keep its height carries `flex_shrink: 0`.
+/// A pane whose rows the host rebuilds every frame replaces them directly here; the offset is the
+/// viewport's own `ScrollPosition` and survives.
+///
+/// ```
+/// # use bevy::prelude::*;
+/// # use bevy_gooey::*;
+/// # fn ui(mut commands: Commands) {
+/// #[derive(Component)]
+/// struct TagList;
+/// let list = commands.spawn((scroll_viewport(0.5, Some(Space::Px(12.0))), TagList)).id();
+/// commands.spawn((button("one"), ChildOf(list)));
+/// commands.spawn((column(0.0), children![heading("Tags")])).add_child(list);
+/// # }
+/// ```
+pub fn scroll_viewport(gap: f32, gutter: Option<crate::Space>) -> impl Bundle {
+    (
+        Node {
+            flex_direction: FlexDirection::Column,
+            ..default()
+        },
+        Role::ScrollViewport,
+        crate::LayoutGap(gap),
+        crate::ScrollGutter(gutter),
+        ScrollArea,
+        crate::ScrollRail,
+    )
+}
+
 /// A list's rail: the scrollbar down the viewport's right edge. The thumb has no `Node`: Bevy
 /// lays it out itself, after layout, from the viewport. The rail is hidden until `update_lists`
 /// finds the rows do not fit.

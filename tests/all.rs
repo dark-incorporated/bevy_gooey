@@ -52,6 +52,7 @@ mod layout_last;
 mod layout_more;
 mod layout_motion;
 mod layout_tail;
+mod layout_view;
 mod leaf;
 mod led;
 mod lines;

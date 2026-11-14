@@ -838,3 +838,22 @@ pub fn follow_display(
 #[reflect(Component, Debug, Default, PartialEq, Clone)]
 #[require(crate::ScrollGlide, crate::ScrollEdgeFade)]
 pub struct ScrollGutter(pub Option<Space>);
+
+/// On a scrolling viewport (see [`scroll_viewport`](crate::scroll_viewport)): gooey keeps a rail for it,
+/// **a sibling** it spawns itself (a child of the viewport's parent, after it), so the viewport's own
+/// `Children` are only the host's. Taken off, the rail goes; put on, `manage_scroll_rails` spawns one
+/// the next frame, once the viewport has a parent. The rail is placed over the viewport's right edge
+/// each frame from its layout (`place_scroll_rails`) and shows only while the content does not fit
+/// (`update_lists`). A viewport without it has no rail of gooey's (a [`scroll_region`](crate::scroll_region)
+/// and a [`list`](crate::list) bring their own and do not carry it).
+#[derive(Component, Clone, Copy, Debug, Default, PartialEq, Eq, Reflect)]
+#[reflect(Component, Debug, Default, PartialEq, Clone)]
+pub struct ScrollRail;
+
+/// On the rail [`ScrollRail`] caused: the viewport it scrolls.
+#[derive(Component, Clone, Copy, Debug, PartialEq, Eq)]
+pub struct ScrollRailOf(pub Entity);
+
+/// On a viewport that has its rail: the rail's entity (bookkeeping of `manage_scroll_rails`).
+#[derive(Component, Clone, Copy, Debug, PartialEq, Eq)]
+pub struct ScrollRailParts(pub Entity);

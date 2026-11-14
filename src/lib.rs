@@ -241,8 +241,8 @@ pub use binding::{
 };
 pub use box_model::{
     BorderPx, Extent, GapPx, HostGeometry, Ink, InkFollow, InkOverride, Radius, ScrollGutter,
-    Shape, Shown, ShownFollow, Sides, Sizing, Space, Spacing, StartsClosed, TextFlow,
-    follow_display,
+    ScrollRail, ScrollRailOf, ScrollRailParts, Shape, Shown, ShownFollow, Sides, Sizing, Space,
+    Spacing, StartsClosed, TextFlow, follow_display,
 };
 pub use button_variant::{
     ButtonPhase, ButtonVariant, Loading, LoadingHold, LoadingSpinner, note_host_disable,
@@ -317,7 +317,10 @@ pub use layout_motion::{
     update_layout_motion,
 };
 pub use led::{Led, LedState, LedWord, update_leds};
-pub use list::{ListView, page_lists, scroll_region_ends, scroll_to_focus, update_lists};
+pub use list::{
+    ListView, manage_scroll_rails, page_lists, place_scroll_rails, scroll_region_ends,
+    scroll_to_focus, update_lists,
+};
 #[cfg(feature = "markdown")]
 pub use markdown_view::{
     MarkdownBase, MarkdownBuilt, MarkdownBuiltFrom, MarkdownHeading, MarkdownImageRefused,
@@ -459,8 +462,8 @@ pub use widgets::{
     meter, motion_row, notification_center, number_field, overlay, pad_style, panel, placed,
     placed_at, plain_button, popover, popover_modal, primary_button, progress, prompt, prompts,
     prompts_at, quiet_list_row, radial, radio_item, row, row_with, screen, scrim, scroll_region,
-    section, select, separator, side_tab_page, side_tabs, side_tabs_icons, sized, sized_panel,
-    skin_preset, slider, slot_grid, spacer, spinner, split, status_bar, status_item,
+    scroll_viewport, section, select, separator, side_tab_page, side_tabs, side_tabs_icons, sized,
+    sized_panel, skin_preset, slider, slot_grid, spacer, spinner, split, status_bar, status_item,
     status_item_quiet, status_mark, status_progress, submenu, surface, tab_page, table, tabs,
     text_area, text_area_fill, text_input, text_size, toast, toast_alert, toggle, toggle_group,
     toolbar, toolbar_separator, tree, vec_field, viewport,
@@ -546,6 +549,7 @@ impl Plugin for GooeyStylePlugin {
             .register_type::<InkFollow>()
             .register_type::<GapPx>()
             .register_type::<ScrollGutter>()
+            .register_type::<ScrollRail>()
             .register_type::<ShownFollow>()
             .register_type::<StartsClosed>()
             .register_type::<InkOverride>()
@@ -792,7 +796,13 @@ impl Plugin for GooeyStylePlugin {
                     )
                         .chain(),
                     (update_meters, update_sliders).chain(),
-                    (update_lists, access::update_accessibility).chain(),
+                    (
+                        manage_scroll_rails,
+                        place_scroll_rails,
+                        update_lists,
+                        access::update_accessibility,
+                    )
+                        .chain(),
                 )
                     .chain()
                     .in_set(GooeySystems::Style),

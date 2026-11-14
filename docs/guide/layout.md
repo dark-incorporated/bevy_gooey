@@ -300,6 +300,13 @@ open (a hook closes it at insertion). `ShownFollow` follows the host's `display`
 write it before the Style set, a frame later if they write after. A `scroll_region` follows keyboard
 focus, answers PageUp, PageDown, Home and End, and keeps its offset when the host replaces its rows.
 
+## A viewport that is its own region
+
+`scroll_viewport(gap, gutter)` is the scrolling entity itself: insert your markers on it, spawn your rows as
+its children, read `ScrollPosition` on it. The rail is not one of its children: gooey spawns it as a sibling
+(a child of the viewport's parent), places it over the viewport's right edge and shows it only while the content
+does not fit. Give the viewport a bounded parent; a row that must keep its height carries `flex_shrink: 0`.
+
 ## The parts of a list and a strip
 
 Five more widgets for what a tool's panels are made of between those primitives, each with the look
