@@ -105,7 +105,7 @@ fn a_nan_or_inverted_hold_bound_is_a_value_not_a_panic() {
         0.35,
         "one bound is still a bound"
     );
-    assert!(slider_text(0.5, f32::NAN, f32::NAN).len() > 0);
+    assert!(!slider_text(0.5, f32::NAN, f32::NAN).is_empty());
 }
 
 #[test]
