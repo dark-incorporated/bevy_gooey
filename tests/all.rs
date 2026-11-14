@@ -13,6 +13,7 @@ mod button_variant;
 mod cancel;
 mod card;
 mod choice;
+mod clamp_total;
 mod code_decor;
 mod code_editor;
 mod code_navigation;

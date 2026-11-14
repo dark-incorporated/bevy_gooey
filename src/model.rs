@@ -1468,7 +1468,10 @@ pub fn split_clamp(fraction: f32, extent: f32, min_first: f32, min_second: f32) 
         return fraction;
     }
     let (first, second) = split_mins(extent, min_first, min_second);
-    fraction.clamp(first / extent, 1.0 - second / extent)
+    // The two bounds are equal up to float noise when the minimums fill the extent, and one can
+    // land an ulp past the other: ordered, so `f32::clamp` (which panics on min > max) is never asked.
+    let (lo, hi) = (first / extent, 1.0 - second / extent);
+    fraction.max(lo.min(hi)).min(hi.max(lo))
 }
 
 /// Where a [`crate::split`]'s fraction lands when a divider that started at `start` is moved
@@ -2096,9 +2099,11 @@ pub fn step_value(value: f32, steps: f32, step: f32, min: f32, max: f32) -> f32 
     hold(((value + steps * step) * scale).round() / scale, min, max)
 }
 
-/// `value` held to `min..=max`, whichever order the two came in, and never a panic on a NaN.
+/// `value` held to `min..=max`, whichever order the two came in, and never a panic on a NaN: a NaN
+/// bound is ignored (`f32::min` and `max` pass the other), and with no bound at all the value stays.
 pub(crate) fn hold(value: f32, min: f32, max: f32) -> f32 {
-    value.clamp(min.min(max), max.max(min))
+    let (lo, hi) = (min.min(max), max.max(min));
+    if lo <= hi { value.clamp(lo, hi) } else { value }
 }
 
 /// Why a [`crate::color_field`] would not take what the player typed; it reads as words
@@ -2994,7 +2999,8 @@ pub fn pin_to_edge(
     min: (f32, f32),
     max: (f32, f32),
 ) -> (f32, f32) {
-    if min.0 > max.0 || min.1 > max.1 || !point.0.is_finite() || !point.1.is_finite() {
+    // `!(a <= b)`, not `a > b`: a NaN edge is an empty rectangle too, and `clamp` would panic on it.
+    if !(min.0 <= max.0 && min.1 <= max.1) || !point.0.is_finite() || !point.1.is_finite() {
         return centre;
     }
     if point.0 >= min.0 && point.0 <= max.0 && point.1 >= min.1 && point.1 <= max.1 {
