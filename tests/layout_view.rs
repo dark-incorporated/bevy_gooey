@@ -541,3 +541,181 @@ fn focus_follow_stands_on_a_rows_top_in_a_viewport_that_holds_its_rows() {
         scroll_y(&app, view)
     );
 }
+
+// ---- review: a rail that is gone is respawned; siblings; rebuilds; nesting ---------------------
+
+fn rails_of(app: &mut App, view: Entity) -> Vec<Entity> {
+    app.world_mut()
+        .query::<(Entity, &ScrollRailOf)>()
+        .iter(app.world())
+        .filter(|(_, of)| of.0 == view)
+        .map(|(e, _)| e)
+        .collect()
+}
+
+/// The viewport moves to a new parent and the old parent (which held the rail) is despawned in the
+/// same flush: the viewport gets a fresh rail under its new parent.
+#[test]
+fn a_viewport_moved_out_of_a_parent_that_is_despawned_gets_a_fresh_rail() {
+    let (mut app, host, view) = viewport_app(40, None);
+    let old = rail_of(&mut app, view).expect("a rail");
+    let other = app
+        .world_mut()
+        .spawn(sized(Sizing {
+            width: Some(Extent::Px(300.0)),
+            height: Some(Extent::Px(200.0)),
+            ..default()
+        }))
+        .id();
+    app.world_mut().spawn(screen()).add_child(other);
+    app.world_mut().entity_mut(other).add_child(view);
+    app.world_mut().entity_mut(host).despawn();
+    settle(&mut app);
+    assert!(
+        app.world().get_entity(old).is_err(),
+        "the old rail went with its parent"
+    );
+    let rails = rails_of(&mut app, view);
+    assert_eq!(rails.len(), 1, "one fresh rail: {rails:?}");
+    assert_eq!(
+        app.world().get::<ChildOf>(rails[0]).map(|c| c.parent()),
+        Some(other)
+    );
+    assert_eq!(
+        app.world().get::<Node>(rails[0]).expect("a node").display,
+        Display::Flex,
+        "and it shows"
+    );
+}
+
+/// Anything that despawns the rail: a new one appears.
+#[test]
+fn a_rail_despawned_under_a_live_viewport_is_respawned() {
+    let (mut app, host, view) = viewport_app(40, None);
+    let old = rail_of(&mut app, view).expect("a rail");
+    app.world_mut().entity_mut(old).despawn();
+    settle(&mut app);
+    let rails = rails_of(&mut app, view);
+    assert_eq!(rails.len(), 1);
+    assert_ne!(rails[0], old);
+    assert_eq!(
+        app.world().get::<ChildOf>(rails[0]).map(|c| c.parent()),
+        Some(host)
+    );
+}
+
+/// Two viewports under one parent each have their own rail, and one going leaves the other's alone.
+#[test]
+fn two_viewports_under_one_parent_each_have_their_own_rail() {
+    let mut app = headless();
+    let mut views = Vec::new();
+    let host = app
+        .world_mut()
+        .spawn(sized(Sizing {
+            width: Some(Extent::Px(400.0)),
+            height: Some(Extent::Px(400.0)),
+            ..default()
+        }))
+        .id();
+    for _ in 0..2 {
+        let v = app.world_mut().spawn(scroll_viewport(0.0, None)).id();
+        for i in 0..30 {
+            app.world_mut().spawn((button(format!("R{i}")), ChildOf(v)));
+        }
+        app.world_mut().entity_mut(host).add_child(v);
+        views.push(v);
+    }
+    app.world_mut().spawn(screen()).add_child(host);
+    settle(&mut app);
+    let rails: Vec<Entity> = views
+        .iter()
+        .map(|v| rails_of(&mut app, *v))
+        .map(|r| {
+            assert_eq!(r.len(), 1);
+            r[0]
+        })
+        .collect();
+    assert_ne!(rails[0], rails[1]);
+    for (v, r) in views.iter().zip(&rails) {
+        let (vr, rr) = (rect(&app, *v), rect(&app, *r));
+        assert!(
+            (rr.max.x - vr.max.x).abs() < 1.5 && (rr.min.y - vr.min.y).abs() < 1.5,
+            "each rail on its own viewport: {rr:?} on {vr:?}"
+        );
+    }
+    assert!(
+        (rect(&app, rails[0]).min.y - rect(&app, rails[1]).min.y).abs() > 20.0,
+        "and they are apart"
+    );
+    app.world_mut().entity_mut(views[0]).despawn();
+    settle(&mut app);
+    assert!(app.world().get_entity(rails[0]).is_err());
+    assert!(
+        app.world().get_entity(rails[1]).is_ok(),
+        "the other's rail stays"
+    );
+    assert_eq!(rails_of(&mut app, views[1]), vec![rails[1]]);
+}
+
+/// The host's rebuild: it empties the parent's children and spawns a fresh viewport: a fresh rail,
+/// and none of the old ones left over.
+#[test]
+fn a_host_that_rebuilds_the_parent_gets_a_fresh_rail_and_leaks_none() {
+    let (mut app, host, view) = viewport_app(40, None);
+    let old = rail_of(&mut app, view).expect("a rail");
+    app.world_mut()
+        .entity_mut(host)
+        .despawn_related::<Children>();
+    let fresh = app.world_mut().spawn(scroll_viewport(0.0, None)).id();
+    for i in 0..40 {
+        app.world_mut()
+            .spawn((button(format!("N{i}")), ChildOf(fresh)));
+    }
+    app.world_mut().entity_mut(host).add_child(fresh);
+    settle(&mut app);
+    assert!(app.world().get_entity(old).is_err() && app.world().get_entity(view).is_err());
+    let all: Vec<_> = app
+        .world_mut()
+        .query::<&ScrollRailOf>()
+        .iter(app.world())
+        .map(|o| o.0)
+        .collect();
+    assert_eq!(all, vec![fresh], "exactly one rail, the fresh viewport's");
+}
+
+/// A focused widget NESTED in a row (a grandchild of the viewport) is followed into view too.
+#[test]
+fn focus_follow_reaches_a_widget_nested_in_a_row() {
+    let mut app = headless();
+    let view = app.world_mut().spawn(scroll_viewport(0.5, None)).id();
+    for i in 0..30 {
+        let row = app.world_mut().spawn((column(0.0), ChildOf(view))).id();
+        app.world_mut()
+            .spawn((button(format!("Nested {i}")), ChildOf(row)));
+    }
+    let host = app
+        .world_mut()
+        .spawn(sized(Sizing {
+            width: Some(Extent::Px(400.0)),
+            height: Some(Extent::Px(300.0)),
+            ..default()
+        }))
+        .add_child(view)
+        .id();
+    app.world_mut().spawn(screen()).add_child(host);
+    settle(&mut app);
+    for _ in 0..12 {
+        bevy_gooey::testing::press(&mut app, KeyCode::Tab);
+    }
+    let focused = bevy_gooey::testing::focused(&app).expect("a focus");
+    assert!(
+        scroll_y(&app, view) > 20.0,
+        "scrolled: {}",
+        scroll_y(&app, view)
+    );
+    let (v, r) = (rect(&app, view), rect(&app, focused));
+    assert!(
+        r.min.y >= v.min.y - 0.5 && r.max.y <= v.max.y + 0.5,
+        "the nested button is in view: {r:?} in {v:?}"
+    );
+}

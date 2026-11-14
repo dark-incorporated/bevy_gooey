@@ -2770,6 +2770,14 @@ where
 /// the viewport to have none. So the viewport's parent must be a node the host controls (a column with a
 /// bounded height); a `Query<&Children>` of the *parent* sees the rail beside the viewport.
 ///
+/// **Moving from a hand-built scroll list:** the gap is `gap` **skin gaps** (use
+/// [`GapPx`](crate::GapPx) for a logical px gap); the default gutter is the rail's width and a skin gap
+/// (`RAIL_LINES * line + gap`: pass `Some(Space::Px(..))` for the old lane); the rail is gooey's
+/// `ListRail` look, not a thumb of your own (colour it with an [`InkOverride`](crate::InkOverride) or
+/// [`InkFollow`](crate::InkFollow) on the rail entity, found by `ScrollRailOf`); and the rail is appended
+/// after the viewport, so a host sibling spawned **later** in the same parent draws above it. If the rail
+/// is ever despawned, or its parent is, with the viewport alive, a fresh one is spawned the next frame.
+///
 /// Its children are flex items of a column: a row that must keep its height carries `flex_shrink: 0`.
 /// A pane whose rows the host rebuilds every frame replaces them directly here; the offset is the
 /// viewport's own `ScrollPosition` and survives.

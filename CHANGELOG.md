@@ -9,7 +9,10 @@
   `scroll_viewport(gap, gutter)` (`Role::ScrollViewport`, `ScrollRail`, `ScrollRailOf`): a scrolling column that IS its
   own region, for a host that puts its markers and children on the entity and reads `ScrollPosition` on it; gooey's
   rail is a sibling it spawns and places itself (`manage_scroll_rails`, `place_scroll_rails`), so the viewport's
-  children stay the host's; focus follow, PageUp/PageDown/Home/End as `scroll_region`. One new `Role`
+  children stay the host's (a rail despawned under a live viewport is respawned); focus follow,
+  PageUp/PageDown/Home/End as `scroll_region`. Notes for a host moving from a hand-built scroll list: the gap is skin
+  gaps (`GapPx` for px), the default gutter is the rail's width and a gap (`Space::Px` for another), the rail is
+  gooey's `ListRail`, and it is appended after the viewport so a later sibling draws above it. One new `Role`
   (`ScrollViewport`), listed under Breaking.
 
 - G-89 (#100, `docs/research/layout-end.md`, `docs/guide/layout.md`, `tests/layout_end.rs`), what was left of

@@ -432,38 +432,47 @@ pub(crate) fn keeps_nav_keys(
 }
 
 /// Keeps a rail beside each viewport that carries [`ScrollRail`]: spawns one as a sibling (a child of
-/// the viewport's parent, so the viewport's `Children` stay the host's), re-parents it with the
-/// viewport, and takes it down when the marker or the viewport is gone. Runs in
-/// [`crate::GooeySystems::Style`].
+/// the viewport's parent, so the viewport's `Children` stay the host's), **spawns a fresh one if the
+/// rail it had is gone** (the host despawned the old parent, or anything despawned the rail), re-parents
+/// it with the viewport, and takes it down when the marker or the viewport is gone (and any rail that is
+/// not the viewport's current one). Runs in [`crate::GooeySystems::Style`].
 #[allow(clippy::type_complexity)]
 pub fn manage_scroll_rails(
     mut commands: Commands,
-    new: Query<(Entity, &ChildOf), (With<ScrollRail>, Without<ScrollRailParts>)>,
-    kept: Query<(Entity, &ScrollRailParts, Has<ScrollRail>, Option<&ChildOf>)>,
+    views: Query<(Entity, &ChildOf, Option<&ScrollRailParts>), With<ScrollRail>>,
+    unmarked: Query<(Entity, &ScrollRailParts), Without<ScrollRail>>,
     rails: Query<(Entity, &ScrollRailOf, Option<&ChildOf>)>,
-    views: Query<(), With<ScrollRail>>,
+    owners: Query<Option<&ScrollRailParts>, With<ScrollRail>>,
 ) {
-    for (view, parent) in &new {
-        let rail = commands
-            .spawn(crate::widgets::list_rail(view))
-            .insert((ScrollRailOf(view), ChildOf(parent.parent())))
-            .id();
-        commands.entity(view).insert(ScrollRailParts(rail));
-    }
-    for (view, parts, has_marker, parent) in &kept {
-        if !has_marker {
-            commands.entity(parts.0).try_despawn();
-            commands.entity(view).remove::<ScrollRailParts>();
-        } else if let Some(parent) = parent
-            && rails
-                .get(parts.0)
-                .is_ok_and(|(_, _, at)| at.map(ChildOf::parent) != Some(parent.parent()))
-        {
-            commands.entity(parts.0).insert(ChildOf(parent.parent()));
+    for (view, parent, parts) in &views {
+        let rail = parts.and_then(|parts| rails.get(parts.0).ok());
+        match rail {
+            Some((rail, _, at)) => {
+                if at.map(ChildOf::parent) != Some(parent.parent()) {
+                    commands.entity(rail).insert(ChildOf(parent.parent()));
+                }
+            }
+            None => {
+                // No rail yet, or the one it had is gone: a fresh one.
+                let rail = commands
+                    .spawn(crate::widgets::list_rail(view))
+                    .insert((ScrollRailOf(view), ChildOf(parent.parent())))
+                    .id();
+                commands.entity(view).insert(ScrollRailParts(rail));
+            }
         }
     }
+    for (view, parts) in &unmarked {
+        commands.entity(parts.0).try_despawn();
+        commands.entity(view).remove::<ScrollRailParts>();
+    }
     for (rail, of, _) in &rails {
-        if !views.contains(of.0) {
+        // A rail whose viewport is gone, lost its marker, or has another rail now.
+        let current = owners
+            .get(of.0)
+            .ok()
+            .map(|parts| parts.is_some_and(|parts| parts.0 == rail));
+        if current != Some(true) && !matches!(owners.get(of.0), Ok(None)) {
             commands.entity(rail).try_despawn();
         }
     }
