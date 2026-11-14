@@ -9,7 +9,7 @@ use bevy::ui::auto_directional_navigation::AutoDirectionalNavigation;
 use bevy::ui::{ComputedNode, ScrollPosition, UiGlobalTransform};
 use bevy::ui_widgets::Scrollbar;
 
-use crate::box_model::{ScrollGutter, ScrollRail, ScrollRailOf, ScrollRailParts};
+use crate::box_model::{ScrollRail, ScrollRailOf, ScrollRailParts};
 use crate::model::{page_target, scroll_to_reveal, snap_to_row};
 use crate::motion::MotionSettings;
 use crate::nav::show_focus;
