@@ -5,10 +5,17 @@
 use bevy::prelude::*;
 use bevy::render::RenderPlugin;
 use bevy::render::settings::WgpuSettings;
+use bevy::time::TimeUpdateStrategy;
 use bevy::ui::{BoxShadow, ShadowStyle};
 use bevy::window::WindowResolution;
 use bevy::winit::WinitPlugin;
 use bevy_gooey::*;
+use std::time::Duration;
+
+/// The seconds every `update` advances the clock by. A toast ages on `Time<Real>`, so without a pinned step
+/// how far it has faded in is how fast the host ran (on a slow runner it had already finished fading in, and
+/// "still fading in" failed). Pinned, the toast is at a known age.
+const FRAME: f32 = 1.0 / 60.0;
 
 fn app(skin: GooeySkin) -> App {
     let mut app = App::new();
@@ -34,7 +41,10 @@ fn app(skin: GooeySkin) -> App {
             .disable::<WinitPlugin>(),
         GooeyPlugins,
     ))
-    .insert_resource(skin);
+    .insert_resource(skin)
+    .insert_resource(TimeUpdateStrategy::ManualDuration(Duration::from_secs_f32(
+        FRAME,
+    )));
     app.world_mut().spawn(Camera2d);
     app
 }
@@ -125,7 +135,10 @@ fn each_surface_casts_its_heights_stack_from_the_skin() {
         .get::<Toast>(toast_row)
         .expect("the toast row is the toast")
         .alpha();
-    assert!(toast_alpha < 1.0, "still fading in: {toast_alpha}");
+    assert!(
+        toast_alpha > 0.0 && toast_alpha < 1.0,
+        "still fading in, at a known age of a few {FRAME} s frames: {toast_alpha}"
+    );
     let cast = shadow(&app, toast_row);
     assert_eq!(cast.0.len(), overlay.0.len());
     for (cast, wanted) in cast.0.iter().zip(&overlay.0) {
