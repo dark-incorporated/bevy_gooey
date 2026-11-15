@@ -16,7 +16,8 @@
 //! `<Tab>` with the pointer to the group that holds the tab `<Tab>` (`place` is `into`, `strip`,
 //! `left`, `right`, `top`, `bottom`) and lets go, `hold:` the same without letting go (so a still
 //! shows the landing), `moveedge:<Tab>.<left|right|top|bottom>` to the dock's own edge,
-//! `drag:<dx>,<dy>` the first divider, `focus:<Tab>` a click on a tab, and `chord:<right|left|up|down>`
+//! `drag:<dx>,<dy>` the leftmost divider (the smallest x of the dividers' centres, the topmost of
+//! equals: the Scene divider in the starting layout, wherever the query returns it), `focus:<Tab>` a click on a tab, and `chord:<right|left|up|down>`
 //! Ctrl+Shift and that arrow, as real keyboard and pointer input.
 
 use bevy::camera::NormalizedRenderTarget;
@@ -522,10 +523,17 @@ fn stage(
         }
         Step::Drag(by) => {
             if phase == 0 {
-                let Some(at) = seen.dividers.iter().next() else {
+                // By place, not by query order (which is the archetype's, not the layout's): the
+                // leftmost divider, the topmost of equals.
+                let Some(at) = seen
+                    .dividers
+                    .iter()
+                    .map(|divider| divider.translation)
+                    .min_by(|a, b| a.x.total_cmp(&b.x).then(a.y.total_cmp(&b.y)))
+                else {
                     return;
                 };
-                *grabbed = (at.translation / scale, at.translation / scale + *by * ui);
+                *grabbed = (at / scale, at / scale + *by * ui);
             }
             carry(grabbed.0, grabbed.1, true, &mut pointer);
         }
