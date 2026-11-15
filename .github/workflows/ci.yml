@@ -17,6 +17,11 @@ jobs:
   build:
     name: build (standalone) + test
     runs-on: [self-hosted, big]
+    # big's runner is shared with every sibling repo and its RAM is what runs short: the same limits as
+    # the local gate, so one job does not take every core's worth of compilers and test processes.
+    env:
+      CARGO_BUILD_JOBS: 3
+      NEXTEST_TEST_THREADS: 2
     steps:
       - uses: actions/checkout@v4
 
@@ -41,10 +46,11 @@ jobs:
       - name: Test (readme)
         run: cargo nextest run --all-features -E 'binary(all) & test(readme::)'
 
-      # The examples need a window at run time, not build time, so building them is the check that
-      # fits in CI.
-      - name: Build examples
-        run: cargo build --examples
+      # The examples need a window at run time, not build time, so type-checking them is the check that
+      # fits in CI. `cargo build --examples` LINKED all 37 in parallel and the linker was OOM-killed
+      # (`ld terminated with signal 9`) in 11 of the last 12 runs; `cargo check` links nothing.
+      - name: Check examples
+        run: cargo check --examples --all-features
 
       - name: Clippy
         run: cargo clippy --all-targets --all-features -- -D warnings
