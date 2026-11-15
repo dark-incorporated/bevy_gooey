@@ -2,33 +2,21 @@
 
 > ⚠️ **Vibe Coded.** Written by AI agents working from a human's direction, covered by tests rather than a line-by-line human review. Read the code before you rely on it for something you care about.
 
-Game interfaces made easy for Bevy 0.20: a skin, ready-made game widgets and keyboard and gamepad
-navigation, on Bevy's own headless widgets.
+Game and tool interfaces for Bevy 0.20: a skin, ready-made widgets and keyboard and gamepad navigation, built on Bevy's own headless widgets (the behaviour with no look of its own).
 
 [![crates.io](https://img.shields.io/crates/v/bevy_gooey.svg)](https://crates.io/crates/bevy_gooey)
 [![docs.rs](https://docs.rs/bevy_gooey/badge.svg)](https://docs.rs/bevy_gooey)
-[![CI](https://github.com/bevy-coven/bevy_gooey/actions/workflows/ci.yml/badge.svg)](https://github.com/bevy-coven/bevy_gooey/actions/workflows/ci.yml)
+[![CI](https://github.com/dark-incorporated/bevy_gooey/actions/workflows/ci.yml/badge.svg)](https://github.com/dark-incorporated/bevy_gooey/actions/workflows/ci.yml)
 [![Bevy](https://img.shields.io/badge/bevy-0.20-blue.svg)](https://bevyengine.org)
 [![licence](https://img.shields.io/badge/licence-MIT%20OR%20Apache--2.0-blue.svg)](#who-and-licence)
 
-![A menu panel with a tab strip and a Load game list with a Save as field under it: the focus ring walks down the save slots from Autosave to Mill, 03:02, Page Down moves it to Chapel, 00:12, the health meter drains, and a "Game saved" toast appears at the bottom right; the legend "Enter Select, Esc Back" stands in the bottom-left corner throughout](https://raw.githubusercontent.com/bevy-coven/bevy_gooey/main/docs/media/gallery.gif)
+![A menu panel with a tab strip and a Load game list with a Save as field under it: the focus ring walks down the save slots from Autosave to Mill, 03:02, Page Down moves it to Chapel, 00:12, the health meter drains, and a "Game saved" toast appears at the bottom right; the legend "Enter Select, Esc Back" stands in the bottom-left corner throughout](https://raw.githubusercontent.com/dark-incorporated/bevy_gooey/main/docs/media/gallery.gif)
 
-*`examples/gallery`: two panels, a meter draining, settings in tabs (a slider and a switch on the first), a list
-that scrolls to follow focus with a field to name a save under it, toasts, and the Select and Back legend in the corner.*
-
-![The same gallery at rest: the left panel with Play, Options and Quit, the meter, the Audio, Display
-and Controls tabs with Audio lit over the Volume slider and the Subtitles switch; the right a Load game
-list four and a half rows tall with a rail and its thumb, the ring on Chapel, 00:12, and a Save as field
-under it showing "Name this save"; the legend "Enter Select, Esc Back" at the bottom left and one toast
-at the bottom right](https://raw.githubusercontent.com/bevy-coven/bevy_gooey/main/docs/media/gallery.png)
-
-*The still: the dark skin, 1280 × 720.*
+*`examples/gallery`: two panels, a meter draining, settings in tabs, a list that scrolls to follow focus with a field to name a save under it, a toast, and the Select and Back legend in the corner.*
 
 **Status:** usable · Bevy 0.20 · MSRV 1.97.1
 
-**Why:** Bevy gives you layout and picking but no skin, no focus ring a pad player can follow and no
-ready-made options row, so every game rebuilds the same menu — `bevy_gooey` makes one crate's worth of
-it shared, checked against the WCAG 2.2 contrast and target-size rules, and editable as data.
+**Why:** Bevy gives you layout and picking but no skin, no focus ring a pad player can follow and no ready-made options row, so every game rebuilds the same menu. `bevy_gooey` shares one crate's worth of it, checks it against WCAG 2.2 (the Web Content Accessibility Guidelines' contrast and target-size rules) and keeps the look as data you can edit.
 
 ## Quick start
 
@@ -68,15 +56,14 @@ fn setup(mut commands: Commands) {
 }
 ```
 
-Every widget composes inside `children![]`, and a button acts through an `Activate` observer. From git,
-for changes not released yet:
+Every widget composes inside `children![]`, and a button acts through an `Activate` observer. The last release is older than `main`: the code editor, the Markdown view and the layout parts (`scroll_region`, `scroll_viewport`, `Shown`, `Sizing` and the rest of [the layout page](https://github.com/dark-incorporated/bevy_gooey/blob/main/docs/guide/layout.md)) are only on `main`, so for them depend on git:
 
 ```toml
 [dependencies]
-bevy_gooey = { git = "https://github.com/bevy-coven/bevy_gooey" }
+bevy_gooey = { git = "https://github.com/dark-incorporated/bevy_gooey" }
 ```
 
-Features: `serde` (save and load a `GooeySkin` and `UiScaleSettings` as data), `reflect` (`inspector(..)`, below), `markdown` (`markdown_view(..)`, below: one dependency, `pulldown-cmark`), `testing` (`bevy_gooey::testing`: find a widget by its label, click it and type in a headless test).
+Features, all off by default: `serde` (save and load a `GooeySkin` and `UiScaleSettings` as data), `reflect` (`inspector(..)`), `markdown` (`markdown_view(..)`, one dependency, `pulldown-cmark`) and `testing` (`bevy_gooey::testing`: find a widget by its label, click it and type in a headless test).
 
 ## Try it
 
@@ -84,183 +71,61 @@ Features: `serde` (save and load a `GooeySkin` and `UiScaleSettings` as data), `
 cargo run --example gallery
 ```
 
-Every widget on a screen, what the pictures above show: arrows or the D-pad move focus, Enter, Space and
-South activate, Shift+T doubles the text, Options swaps the skin, Quit opens a dialog, Right on a focused
-tab or Ctrl+PageDown turns the settings page (Display holds the choices, Controls two rebinding rows: Enter
-on Jump, then a key), the Save as field takes a name (click it or Tab to it, type, Enter saves and Down
-leaves it, and the save-slot list scrolls with the wheel, a drag on its thumb or PageUp and PageDown.
-`cargo run --example options` is the player's options on a screen of their own: Left and Right on Text size
-grow everything to 200%, and Controller renames the pad's buttons.
+Every widget on one screen, what the picture above shows. Arrows or the D-pad move focus, and Enter, Space or South activate. Shift+T turns the text up 1.5 times, Options swaps the skin, and Quit opens a dialog that holds focus. Right on a focused tab or Ctrl+PageDown turns the settings page. The Controls page has two rebinding rows (Enter on Jump, then a key). The Save as field takes a name: click it or Tab to it, type, Enter saves and Up leaves it. The save-slot list scrolls with the wheel, a drag on its thumb, or PageUp and PageDown. `cargo run --example options` is the player's options on a screen of their own, and [`examples/`](https://github.com/dark-incorporated/bevy_gooey/tree/main/examples) has one example per widget family.
+
+![The same gallery at rest: the left panel with Play, Options and Quit, the meter, the Audio, Display and Controls tabs with Audio lit over the Volume slider and the Subtitles switch; the right a Load game list four and a half rows tall with a rail and its thumb, the ring on Chapel, 00:12, and a Save as field under it showing "Name this save"; the legend "Enter Select, Esc Back" at the bottom left and one toast at the bottom right](https://raw.githubusercontent.com/dark-incorporated/bevy_gooey/main/docs/media/gallery.png)
+
+*The still: the dark skin, 1280 × 720.*
 
 ## What you can do
 
-- **Skin the whole interface from one value** — `GooeySkin` is plain data with four presets (dark,
-  parchment, a high-contrast one held to 7:1 and a compact `Tool` one), a `problems()` check against the
-  WCAG 2.2 contrast and target-size rules, `density: Density::Compact` for a desktop tool's rows (half
-  the padding, a 24 px least target), design tokens (`spacing`, `radii`, `type_scale` and a `surfaces`
-  ladder of five fills whose every step `problems()` holds to at least ΔL\* 2, drawn by `surface(n)`; your own named colours go in `tones`, drawn by `Role::Tone` and checked pair by pair with `tone_problems`; `hover`, `pressed`, `held`, `card` and friends are the states your own controls draw by `Role::Pressed` and the like),
-  and a `SkinScope(skin)` on any node restyles just that subtree (a preview of a theme, an editor's own
-  chrome next to a game's skin):
-  `GooeySkin::from_seed(PaletteSeed { background, text, accent })` derives a whole checked skin from three colours, `GooeySkin::desk()` is a desktop tool's neutral look built that way, and `elevation` holds its shadows as CSS-style data:
-  [skins and checks](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/skins.md).
-- **Lay a tool's panel out without a `Node` literal** — `row(1.0)`, `column(1.0)`, `cell(7.0)`, `image_box(plot, size)` and `overlay()` build a bench's slot rows, its label columns and its plot with the hover readout stacked on it, their gaps and widths taken from the skin so an interface size or a theme moves all of it ([layout](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/layout.md)).
-- **Say how a row lays out, without patching its node** — `row_with(1.0, RowLayout { align: Some(AlignItems::Center), wrap: Some(FlexWrap::Wrap), shrink: Some(0.0), ..default() })` (or `RowLayout` as a component beside `row(1.0)`, which works inside a `Children::spawn(SpawnWith(..))` where a patched `Node` cannot), `column_with(gap, layout)` and `button_row(0.5)`, a row of buttons that stays on one centred line and wraps a gap below when the room runs out, and `fill_column(0.5)`, a column that takes the room its row leaves and can narrow to zero so the text in it wraps inside it, and `fill_region()`, the height-axis twin that holds a tree or a list and can shrink to nothing, and `sized_panel(CardWidth::Px(520.0))`, a dialog's card or a form with a width of its own in px or text sizes, never wider than its host, `placed_at(30.0, 40.0)` and `cover()`, a node at a pixel place of its host or filling it that takes no room in the flow, `status_mark()` for a job row's own `StatusKind` dot and `plain_button("Cancel")`, a button's look that stays off the `Activate` bus, and `aspect_image(splash, 480.0, 16.0 / 9.0)`, a picture that is 480 px wide until its host is narrower and keeps its ratio ([layout](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/layout.md))
-- **Choose a row of a list without moving it** — `list_row()` (and `quiet_list_row()`, off the `Activate` bus) is a full-width row with its left rail always reserved: Bevy's `Selected` lights the rail in the accent and raises the fill, and no word moves ([layout](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/layout.md))
-- **A scrolling column you put your own markers and children on** — `scroll_viewport(0.5, Some(Space::Px(12.0)))` is one bundle that IS the scrolling entity (read `ScrollPosition` on it, spawn your rows as its children), with gooey's rail as a sibling it places itself, keyboard focus followed into view and PageUp, PageDown, Home and End that leave a text field or table inside its own keys ([layout](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/layout.md))
-- **Let a host keep its own `display`, fill with an auto split, scroll a region** — `ShownFollow` keeps writing `Node::display` yours and hides the node from focus when it is `None`; `Sizing { width: Some(Extent::Auto) }` with `TextFlow { grow: Some(1.0) }` is a split that fills what its sibling leaves; `Extent::LinesCeil(2.0)` is two lines rounded up to a device pixel; `scroll_region(0.5, Some(Space::Px(12.0)), children![..])` is a scrolling column that fills its parent with a rail lane you choose ([layout](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/layout.md))
-- **Build a frame from parts that fit** — `scrim()` is a full-size layer that blocks the pointer (a modal layer; `cover()` lets it through), `GapPx(8.0)` is a gap in logical px, `Extent::Vh(100.0)` a window-sized root, `Extent::Lines(2.0)` a height that follows the text size, a `Panel`, `Surface` or `Card` takes a `RowLayout` and a `LayoutGap` like a row does, and `InkFollow` leaves a node's colours to a system of your own ([layout](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/layout.md))
-- **Paint a node's colours yourself, by state** — `InkFollow` on a node makes the skin write neither its fill nor its edge (and still every other field: size, border width, radius, padding, text colour), so a colour system of your own can follow held, selected, hovered and failing; take it off and the skin paints it again ([layout](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/layout.md))
-- **Colour one node yourself** — `(button("rust"), InkOverride { fill: Some(my_fill), edge: Some(my_edge), ..default() })` keeps gooey's layout and states and draws this node in your colours (a field left `None` keeps the role's, a skin change does not overwrite it, the focus ring still wins) ([layout](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/layout.md))
-- **A button that holds your own children** — `button_box()` is a focusable, hover- and press-painted `Button` with a button's frame that takes any children (a picture, two texts, a badge) and puts `Role::ButtonText` on none of them ([layout](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/layout.md))
-- **Give a text its own flex** — `label_with("Reviewer", TextFlow { shrink: Some(0.0), ..default() })` keeps its words' width beside a `fill_text` that gives way, and `TextFlow { grow: Some(1.0), min_width: Some(Extent::Px(0.0)), .. }` is a title that grows and may narrow to nothing ([layout](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/layout.md))
-- **Size and shape any node from the skin** — `(placed_at(30.0, 40.0), Sizing { width: Some(Extent::Px(120.0)), height: Some(Extent::Px(60.0)), ..default() }, Shape { border: Sides::all(1.0), ink: Some(Ink::Accent), radius: Some(Radius::Step(1)), fill: Some(1) })` is a chip with a size, a border in the skin's line weight, rounded corners and a raised fill; `sized(Sizing { .. })` is a plain box of a width and a height, and a field left `None` leaves the node alone ([layout](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/layout.md))
-- **Push a row apart, gap a page, hide it** — `row(1.0)` with `children![button("Back"), spacer(), button("Next")]` puts one at each end and two spacers centre what is between them; `fill_region_with(1.0)` is a growing region with a group gap, and `Shown(false)` on it hides it through the skin (no room, no drawing, no tab stops, no focus trap), `Shown(true)` gives back what it had, with no `Node` patched ([layout](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/layout.md))
-- **Give any node room in the skin's own steps** — `(label("Section"), Spacing { margin: Sides { bottom: Some(Space::Step(2)), ..default() }, padding: Sides::x(Space::Step(1)) })` puts a margin and a padding on a text, a row, a panel or a placed node from `GooeySkin::spacing`, so a theme moves all of it, and a side left `None` leaves the node alone ([layout](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/layout.md))
-- **Build a tool's lists and strips from parts that know their size** — `glyph_button("v", "Fold")` is a caret whose hit area is the skin's target however small the mark, `edge_tab("Meshes")` is a tab of a strip you select with Bevy's `Selected` whose bottom edge lights and moves nothing, `band()` is a full-width header row that is a button and shades like a list row, and `fill_text(name)` beside `count_text("145")` is a name that wraps in its own column next to a tally that never does; a label over a 3D view pane is a `WorldAnchor` with `.camera(stage)` ([layout](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/layout.md), `cargo run --example kit`).
-- **Read a page of Markdown, rendered, with its pictures** — `markdown_view(source, MarkdownBase::new("guide", |path| Some(assets.load(path.to_owned()))))` (feature `markdown`) draws CommonMark with tables, strikethrough and task lists in the skin's type scale in a viewport that scrolls: headings with stable ids (`MarkdownOutline`, `scroll_to_heading(view, "palette")`), links that are focusable nodes sending `MarkdownLink { dest, kind }` (the view opens nothing), pictures through `image_box` from your resolver, and a box naming its alt text and path for one that is missing, fails to load or climbs out of the base with `..` (`MarkdownImageRefused`); the page is built when its source changes, never per frame, and `markdown::images(source)`, `links` and `outline` list what the view draws from the same parse ([markdown](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/markdown.md)).
-- **Build an options screen from a few rows and tabs** — a `toggle`, a `choice` and a `slider` root on
-  Bevy's own `Checkbox`, `Button` and `Slider`, so the entity you spawn carries its value, takes `observe`
-  and says each change once in `ValueChange`, `ControlSize::Small`, `Regular` or `Large` makes a control 24, 28 or 36 px tall under a compact skin ([controls](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/controls.md)), `binding("Jump", Binding::Key(KeyCode::Space))` rebinds a
-  key, a mouse button, a pad button or a chord ("Ctrl+Shift+K") on the player's next press, `text_input("Name", "")` is a field the
-  player types in (a caret, a selection, paste and IME on Bevy's own `TextInput`, and focus it never
-  traps; `text_area("Notes", "", 5)` is the same five lines high, Ctrl+Enter ends the edit, and `text_area_fill("Guide", "", 5)` grows to the room its parent gives it with a rail of its own, so a 64 KiB file reads and scrolls), `code_editor("Script", text)` is a file editor that fills its room: a gutter, a caret on a spring, selection by word and line, undo, a clipboard, IME, Tab indentation, a view that glides and 20,000 lines for the price of 20 ([code editor](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/code-editor.md)), `combobox("Country", options)` is a field with a list under it that narrows as the player types ([combobox](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/combobox.md)), `number_field("Health", 100.0, 0.5, 0.0..=250.0)` is a number the player scrubs with a drag, types or steps with the keys and the D-pad (`vec_field` for a position), `color_field("Tint", color)` is a swatch and a hex field (`#ff8800`) that open a picker, `FieldProblem::error("A name is needed")` on a row says what is wrong under it, `icon(source)` is your art sized and tinted by the skin, `progress(0.4)` and `spinner()` are honest waiting, `radial(["Pistol", "Rifle", ..], 0)` is a weapon wheel a stick, the pointer or the D-pad points at and South chooses (`RadialItem::new("Pistol").icon(source)` draws a picture on the ring), `tabs` puts them on pages a click, the arrows or LB and RB turn, and `text_size("Text size")`,
-  `interface_size("Interface size")`, `pad_style("Controller")` and `skin_preset("Theme")` are the
-  player's own text size (up to 200%), interface size, controller and theme (dark, parchment, a
-  high-contrast look that holds 7:1 everywhere and a tool's blue), one line each with nothing to wire:
-  [settings controls](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/controls.md),
-  [player options](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/options.md),
-  [rebinding](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/bindings.md),
-  [shortcuts](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/shortcuts.md),
-  [text input](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/text-input.md), [a filling text area](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/text-area-fill.md), [numbers](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/numbers.md), [colours](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/colors.md), [field problems](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/field-problems.md), [icons](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/icons.md), [progress](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/progress.md),
-  [radial menu](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/radial.md), [tabs](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/tabs.md) (`side_tabs` stands the strip up as a sidebar, its pages anywhere; `side_tabs_icons` is an activity bar of picture tabs, each named by a tooltip and marked by a corner badge; both scroll when there are more tabs than room).
-- **Scroll a list, show a table or a tree, split the screen and dock panels** — `list(4.5, children![..])` cuts the fifth row so the
-  player sees there is more; `table(columns, rows)` is ten thousand sortable rows and `tree(nodes)` ten thousand nodes that open and close, each in a dozen entities (typing a name goes to it, in a list and an open menu too; `Tree::relabel` and `Tree::insert` change one node without reading the rest); `split(SplitAxis::Horizontal, a, b)` is two panes
-  and a divider a drag or the keys move (collapse a pane, with `CollapseSplit` from code too, and it peeks over the content while the pointer rests at its edge); `Dock(DockLayout::group(["reload"]))` on a node of your own is a dock anywhere — a bottom strip, a sidebar — and it grows the body its registered panels are built in, leaving your `Node` and your `DropTarget` alone; `DragPayload(piece)` on a row and `DropTarget::<Piece>::new()` on a panel is drag and drop (one `Dropped<Piece>` a drop, a ghost, a mark that says no before the pointer is let go; Alt+M and the arrows or a pad do it with no pointer); `card_grid([Card::new("Harbour").image(thumb).line("13 pieces")])` is a wrapping grid of picture cards, one tab stop, a chosen card lit; `slot_grid(5, items)` is an inventory of slots (`SlotItems` is the data, the grid is one tab stop the arrows walk, Enter chooses a slot, a drag, Alt+M or a pad moves an item between slots or grids as one `SlotMoved`, `SlotRules` makes an equipment slot say no in red before the player lets go, and a lifted item frames every slot that takes it and dims the ones that do not); `dock(DockLayout)` is tab groups of your registered panels the player rearranges by dragging a tab; a tool's chrome is `toolbar(..)` of `icon_button`s and a `toggle_group` (the last items go behind a More button when the bar is too narrow), `status_bar(left, right)` (the lowest priority hides first) and `select(..)`, a choice that opens a filtering list past eight options, and `section(title, open, children)` folds a group of widgets under a header, its state kept by `SectionId`, and (feature `reflect`) `inspector(InspectTarget::component::<T>(entity))` builds the rows for a reflected component or resource, one widget per field:
-  [lists](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/lists.md), [tables](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/tables.md), [trees](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/trees.md), [split panes](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/splits.md), [docks](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/docks.md), [toolbars](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/toolbars.md), [status bar](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/status-bar.md), [select](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/select.md), [inventory](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/inventory.md), [drag and drop](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/drag-drop.md).
-- **Reach every screen with keys or a pad, and back out of it** — arrows and the D-pad move focus to the
-  nearest widget, an open dialog holds it (`confirm("Leave?", "Progress is lost.", ["Leave", "Stay"])` is a whole one: the safe choice focused, Escape answers it, one `ConfirmChosen`; `hold_button("Hold to delete", 1.2)` confirms only when held, and the player's `HoldSettings` shorten the hold or make it a tap; `primary_button("New game")` is the screen's one main action, filled with the accent and lifted under the pointer),
-  the ring appears the moment a key is pressed, Escape or the pad's B is one `Cancel` event that
-  reaches the dialog or screen you are leaving, `FocusRegion`s split a tool's screen into parts F6 walks between (a `viewport()` keeps the arrow keys for the host), and `prompts()` says so in the corner, in the words of
-  the device the player used last ("Esc Back", then "B Back" the frame they pick up a pad); a screen reader is told every widget's role, name and state from the words on screen, and can press, focus, step and set them (the same events the keyboard sends), nothing to write:
-  [navigation](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/navigation.md),
-  [focus regions](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/focus-regions.md), [prompts](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/prompts.md),
-  [the dialog](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/widgets.md#a-dialog), [hold buttons](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/hold-buttons.md), [accessibility](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/accessibility.md).
-- **Say something, or open a menu, without building a layout** — `commands.spawn(toast("Game saved"))`
-  stacks, times itself to its own length and ages on real time (`.action("Undo", id)` adds a button, `.sticky()` keeps an error until dismissed, repeats merge into "x3", `notification_center()` lists the log, a row with its entry's id, a count and buttons that send `NotificationAction`, and `.unlogged()` / `.logged_as(id)` keep a toast and its journal line one entry), and `popover(anchor, Placement::Below)`
-  opens a panel beside any widget or at the pointer, kept inside the window and closed by Escape or a
-  press elsewhere:
-  [toasts](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/toasts.md),
-  [popovers](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/popovers.md); and
-  `menu_bar(children![menu_title("File", children![menu_item("Open...").with_shortcut(..), separator(), ..])])`
-  is a desktop menu bar for a tool, F10 and the arrows to walk it, with checks, radio runs, submenus and
-  disabled items that say why: [menus](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/menus.md); every dialog and menu eases into place and thins out as it goes rather than vanishing, a tab that layout moves travels to its new place (`MovesSmoothly` on any node), a held card or slot gives under the press (`PressScale`), a changed HUD number swells and settles (`Pop`), panels, buttons, meters, tracks, tabs, text fields, popups and a `card_grid`'s cards can be drawn from nine-slice art the skin tints (`GooeyFrames`), an `led("Agent", LedState::Live)` row glows and says its state in a shape and a word, a section grows open and a split's collapse slides, colours ease on springs, buttons say what they do (`ButtonVariant`) (and with `motion_row`'s Reduced they fade in place and nothing travels), a health meter leaves what it lost behind its fill, and `MotionSettings::off()` turns it all off: [motion](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/motion.md), [presence](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/presence.md);
-  and `ContextMenu(menu)` on any entity, a sprite in the world or a row of a list, opens a `context_menu(..)`
-  at a right-click or below the focus on Shift+F10:
-  [context menus](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/context-menus.md);
-  and `commands.spawn(command_palette())` is one searchable list of every command in a `CommandList`, each
-  with its chord and why it is off, "opn prj" finds "File: Open Project", Enter sends one `RunCommand`:
-  [the command palette](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/command-palette.md).
-- **Keep the interface's share of the screen at every resolution, and let the pointer through a HUD** — the
-  skin's sizes scale with the window, every border and every text size stays a whole number of device pixels, and the empty part
-  of a `screen` is `Pickable::IGNORE`; two quick clicks in one place are one `DoublePress` (a third starts a new pair, a held or dragged press pairs with nothing) and `ClickCount` tells a drag which press of a run it is: [screen size](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/scale.md),
-  [over a game world](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/pointer.md); and `(meter(0.8, 1.0), WorldAnchor::above(enemy, 44.0))` is a health bar that rides a thing in the world (`.pinned()` keeps a beacon on the screen's edge toward it), gone with the thing: [world anchors](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/world-anchor.md). `Cooldown::new(8.0)` on any widget dims it and sweeps it clear clockwise with the seconds left on a chip, sends `CooldownReady` when it ends and puts the seconds in its accessible name: [cooldowns](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/cooldowns.md).
+- **Skin the whole interface from one value.** `GooeySkin` is plain data with four presets (dark, parchment, high contrast held to 7:1, and a compact `Tool` look), a `problems()` check, design tokens and a `SkinScope` that restyles one subtree ([skins](https://github.com/dark-incorporated/bevy_gooey/blob/main/docs/guide/skins.md)).
 
-![The gallery's settings panel: the ring moves from Quit onto the lit Audio tab, Right turns to Display (two choices), Right to Controls (two rebinding rows, Jump and Use) and Right wraps back to Audio, Down enters the page on the Volume slider, and Ctrl+PageDown turns to Display and then Controls with the ring landing on each new page's first widget](https://raw.githubusercontent.com/bevy-coven/bevy_gooey/main/docs/media/tabs.gif)
+  ![The gallery's settings panel, Load game list and legend: the Audio tab turns to Display and the ring goes down to Quality and Theme; Right steps Theme from Dark to Parchment, where the whole screen turns cream and brown, then to High contrast, where it turns black with white frames, amber fills and a cyan ring, and Left twice steps it back to Parchment and Dark; every widget changes in the same frame and nothing moves](https://raw.githubusercontent.com/dark-incorporated/bevy_gooey/main/docs/media/theme.gif)
 
-*The tabs: Right on a focused tab, then Ctrl+PageDown from inside a page (a pad's RB). The panel never moves.*
+  *Theme: `skin_preset("Theme")` steps the whole screen through the presets in one frame, and the player's text size stays.*
+- **Build a settings screen with one line a row.** `toggle`, `choice`, `slider`, `binding` (rebind a key or pad button), `text_input`, `number_field`, `color_field`, `tabs` and the player's own `text_size`, `interface_size`, `pad_style` and `skin_preset` rows ([controls](https://github.com/dark-incorporated/bevy_gooey/blob/main/docs/guide/controls.md), [player options](https://github.com/dark-incorporated/bevy_gooey/blob/main/docs/guide/options.md)).
+- **Show a lot of data and arrange a workbench.** `table` and `tree` hold ten thousand rows in a dozen entities, `list` scrolls with a rail, and `split`, `dock`, `card_grid`, `slot_grid` and drag and drop arrange them ([lists](https://github.com/dark-incorporated/bevy_gooey/blob/main/docs/guide/lists.md), [docks](https://github.com/dark-incorporated/bevy_gooey/blob/main/docs/guide/docks.md), [drag and drop](https://github.com/dark-incorporated/bevy_gooey/blob/main/docs/guide/drag-drop.md)).
+- **Give a tool its chrome.** `menu_bar`, `command_palette`, `context_menu`, `toolbar`, `status_bar`, `inspector` (the rows of a reflected component), `code_editor` and `markdown_view` ([the command palette](https://github.com/dark-incorporated/bevy_gooey/blob/main/docs/guide/command-palette.md), [menus](https://github.com/dark-incorporated/bevy_gooey/blob/main/docs/guide/menus.md), [inspector](https://github.com/dark-incorporated/bevy_gooey/blob/main/docs/guide/inspector.md)).
 
-![The gallery's settings panel after the Controls tab is clicked: the ring goes down to Jump, whose keycap says Space; Enter lights the keycap amber with "Press a key, Esc exits", Q turns it to Q, and Down to Use (A), whose keycap lights with "Press a button, Menu exits" until Escape puts it back](https://raw.githubusercontent.com/bevy-coven/bevy_gooey/main/docs/media/binding.gif)
+  ![The palette example: Ctrl+Shift+P opens a field over a small editor's commands, "opn prj" lights File: Open Project with its chord Ctrl+O at the row's end, Down and Up move the lit row and Enter runs it, and the line behind reads "Last command: File: Open Project"; opened again it lists that command first, "sav" shows File: Save and File: Save As... dimmed with "No project is open" where their chords would be, Down puts the ring on the second and Escape closes the palette](https://raw.githubusercontent.com/dark-incorporated/bevy_gooey/main/docs/media/command-palette.gif)
 
-*Rebinding: `binding("Jump", Binding::Key(KeyCode::Space))` waits for the next press and says it once as a `ValueChange<Binding>`. The panel never moves, and nothing else hears the key.*
+  *The command palette: `CommandList` holds the commands, `command_palette()` is the modal, and a command that is off says why and runs nothing.*
+- **Reach every screen with keys or a pad.** Arrows and the D-pad move focus, an open dialog holds it, Escape or the pad's B is one `Cancel`, `FocusRegion`s let F6 walk a tool's parts, `prompts()` shows the keys in the words of the device last used, and a screen reader is told every widget's role, name and state ([navigation](https://github.com/dark-incorporated/bevy_gooey/blob/main/docs/guide/navigation.md), [accessibility](https://github.com/dark-incorporated/bevy_gooey/blob/main/docs/guide/accessibility.md)).
+- **Say something without building a layout.** `commands.spawn(toast("Game saved"))` stacks, times itself, merges repeats and can carry an `Undo` button, and `notification_center()` lists the journal with a button on a row for each of its actions ([toasts](https://github.com/dark-incorporated/bevy_gooey/blob/main/docs/guide/toasts.md)).
 
-![The shortcut badges example: a Level editor panel with the commands New, Open, Save, Save all, Undo, Redo (dimmed) and Help, the ring on New; holding Alt shows a white chip with the chord at the right of New (Ctrl+N), Open, Save, Save all (Ctrl+Shift+S) and Undo, none on Redo or Help, and letting go hides them; Tab moves the ring to Open, Alt shows the chips again, Shift added hides them (Alt+Shift is not the hold) and letting go of Shift shows them again](https://raw.githubusercontent.com/bevy-coven/bevy_gooey/main/docs/media/shortcut-badges.gif)
+  ![The notifications example: Delete item spawns the toast "Item deleted" with an Undo button and a journal row with an Undo of its own, Save game pressed three times shows one "Game saved x3", Break something shows a sticky red toast, and Enter on the journal row's Undo makes the game hear "undo"](https://raw.githubusercontent.com/dark-incorporated/bevy_gooey/main/docs/media/notifications.gif)
 
-*Shortcuts: `(button("Save"), Shortcut::primary(KeyCode::KeyS))` and holding Alt, or any `Reveal::Key`, for 0.3 s (`ShortcutBadges`, `BadgesShown`) shows the chord on the button, inside its frame so the ring stays whole, and `ShortcutLegend` lists the chords that act on nothing; a `binding` row whose value is a `Binding::Chord` captures a chord, `model::shortcut_conflicts` finds two commands on one, `Shortcut::just_pressed` runs it, `Tooltip::with_shortcut` shows it; `BindingSettings { chord_glyphs: ChordGlyphs::Words, .. }` spells every chord in ASCII (`Cmd+S`) for a face with none of a mac's symbols.*
+  *Toast actions and the notification centre: a toast and its journal row are one entry, and a press on a row's button sends one `NotificationAction`.*
+- **Lay a tool's panels out from the skin's own steps.** `row`, `column`, `scroll_region`, `scroll_viewport`, `Shown`, `Sizing`, `Spacing` and the rest build a panel with no `Node` literal in the caller, so a theme or a text size moves all of it ([layout](https://github.com/dark-incorporated/bevy_gooey/blob/main/docs/guide/layout.md)).
 
-![The gallery's Load game list with the Save as field under it: the field rests as a quiet outline over the muted hint "Name this save", its frame turns blue with a caret while "Aria" is typed, Enter shows the toast "Saved as Aria" at the window's corner, and Up moves the ring onto the save slot Cellar, 01:48 with the field back to its quiet outline and its text kept](https://raw.githubusercontent.com/bevy-coven/bevy_gooey/main/docs/media/text-input.gif)
+  ![The scroll example: a scroll_region of thirty buttons beside a scroll_viewport that starts on a Volume slider, with the line ScrollPosition.y under it; Tab, Page Down, End and Home move the ring down and back up the region and the column follows; in the right panel Page Down and End scroll the column (the line reads about 130, then about 1230), Home goes back to the slider, and End and Home on the slider set it to 10 and 0 while the column stays put](https://raw.githubusercontent.com/dark-incorporated/bevy_gooey/main/docs/media/scroll.gif)
 
-*Text input: `text_input("Save as", "")` takes the keys the moment it has focus, says each edit once as a `ValueChange<String>` and the end of the edit (Enter, or focus leaving) with `is_final`. Up leaves it: a field never traps focus, and the row never moves while the player types.*
+  *Scroll regions: `cargo run --example scroll`. Page and Home keys move focus and the column follows; a slider keeps its own Home and End.*
 
-![The inspector example: a Turret panel built from a reflected component with no panel written for it: an Online switch, a Mode choice, a Rate number field, an Aim vector of X, Y and Z, a Tint colour field and a Barrel section with its Length and Label; the ring goes to Online and Enter turns it off, Right steps Mode from Track to Fire, and Up on Rate steps it from 6.0 to 7.8 while the readout beside it shows each change as the game sees it; a field's doc comment is its tooltip ("Tracks targets.", "Shots a second.")](https://raw.githubusercontent.com/bevy-coven/bevy_gooey/main/docs/media/inspector.gif)
+[`docs/guide/catalogue.md`](https://github.com/dark-incorporated/bevy_gooey/blob/main/docs/guide/catalogue.md) lists every part by the job it does, and [`docs/gallery.md`](https://github.com/dark-incorporated/bevy_gooey/blob/main/docs/gallery.md) holds the rest of the pictures.
 
-*Inspector: `inspector(InspectTarget::component::<Turret>(entity))` makes a `toggle`, `choice`, `number_field`, `vec_field`, `color_field`, `text_input` or `section` for each reflected field (a `#[reflect(@RangeInclusive::<f32>::new(0.0, 20.0))]` is its range, a doc comment its tooltip), writes an edit back through `ReflectMut` and sends one `InspectorChange { path }`; a value the game writes moves the row.*
+## Part of Dark Inc.
 
-![The options example: a panel with the rows Text size, Interface size, Controller and Theme and the legend in the bottom-left corner; the ring on Text size steps 100%, 125%, 150% and 200% and the panel and the legend grow with each step, then back to 100%; Interface size steps to 125% and 150% and back; a pad button turns the legend to "A Select, B Back" and Controller steps to PlayStation, where it reads "Cross Select, Circle Back", then Switch and back to Xbox; Theme steps to Parchment and to High contrast, where the screen turns black with white frames, and back](https://raw.githubusercontent.com/bevy-coven/bevy_gooey/main/docs/media/options.gif)
-
-*Player options: `text_size`, `interface_size`, `pad_style` and `skin_preset` each edit the crate's own settings and follow them, so a loaded save shows on them and the whole screen answers the frame the player steps one.*
-
-![The gallery's settings panel, Load game list and legend: the Audio tab turns to Display and the ring goes down to Quality and Theme; Right steps Theme from Dark to Parchment, where the whole screen turns cream and brown, then to High contrast, where it turns black with white frames, amber fills and a cyan ring, and Left twice steps it back to Parchment and Dark; every widget changes in the same frame and nothing moves](https://raw.githubusercontent.com/bevy-coven/bevy_gooey/main/docs/media/theme.gif)
-
-*Theme: `skin_preset("Theme")` is the high-contrast mode Xbox Accessibility Guideline 102 asks of a game, in one line: every colour at 7:1 or more. A step writes the colours and no size, so the player's text size stays.*
-
-![The scope example: an Options panel with Text size, Theme, Subtitles, Volume and Play beside a smaller cream and brown Preview panel; Theme steps to Parchment and High contrast and Text size to 125% and 150%, the Options panel changing each time while the Preview stays cream, brown and at the default size; the ring goes down to Play and across to the Preview's own Play, where it is blue, and Enter takes the scope off: the Preview turns black with white frames, amber fills and 150% text, with a cyan ring](https://raw.githubusercontent.com/bevy-coven/bevy_gooey/main/docs/media/scope.gif)
-
-*Scoped skin: `SkinScope(GooeySkin::parchment())` on the Preview panel is the only thing that keeps it in its own look; removing it hands the panel back to the player's skin in the same frame.*
-
-![The density example: an Inspector panel with a Compact switch, Theme, Visible, Space, Opacity and two buttons in the dark skin; Enter turns Compact on and the panel gets shorter in the same frame, Down and Right step Theme to Parchment, High contrast (white frames, amber fills) and Tool (blue fills), Up and Enter turn Compact off, where the rows spread out again, and on](https://raw.githubusercontent.com/bevy-coven/bevy_gooey/main/docs/media/density.gif)
-
-*Density: `skin.density = Density::Compact` is one field; every row halves its padding and stands at least 24 px high (WCAG 2.2 SC 2.5.8's floor, still checked), and the colours, the ring and the keys do not change: here the panel goes from 528 px to 456 px at the same 20 px text. `SkinPreset::Tool` is a blue-on-grey look with 14 px text and tighter sizes: the gallery's settings panel is 294 px tall in it against 520 px in dark.*
-
-![The ladder example: a card "Surface ladder" in dark whose four nested cards, Surface 1 to Surface 4, each step lighter than the one it sits in and each labelled with its CIE L* and the step it makes (12.9, 18.3, 23.6, 31.6), the Theme row in the innermost; Right steps Theme to Parchment (cream cards on tan), High contrast (grey steps on black) and Tool (tighter cards in blue-grey), and Left steps it back to Dark](https://raw.githubusercontent.com/bevy-coven/bevy_gooey/main/docs/media/ladder.gif)
-
-*Tokens: `surface(n)` is step `n` of `skin.surfaces`, and `problems()` reports an `ElevationStep` when two neighbours are closer than ΔL\* 2 (the eye's threshold for a flat field); the four presets sit at 5 or more. The cards' padding and corners are `skin.space(3)` and `skin.corner(1)`.*
-
-![The popover example: a menu bar with File, View and Edit over a canvas; Enter opens File's menu under it with the ring on New, Down twice moves it to Save and Escape closes it with the ring back on File; Edit at the window's right edge opens its menu ending at the button's edge; a right-click near the bottom-right corner opens a context menu whose corner is at the pointer, and a click on the empty ground closes it](https://raw.githubusercontent.com/bevy-coven/bevy_gooey/main/docs/media/popover.gif)
-
-*Popovers: `popover_modal(file_button, Placement::Below)` opens a menu under its anchor that holds focus and gives it back; at the window's edge it slides or flips and never leaves the window, and Escape or a press anywhere else closes it with one `PopoverClosed`.*
-
-![The menus example: a bar with File, Edit, View and Help; F10 puts the ring on File, Down opens its menu with Ctrl+N, Ctrl+O and Ctrl+S in a column at the right edge, Down reaches Recent and Right opens its submenu of three levels, Left closes it, Escape closes File, Right then Down opens Edit where the disabled Redo shows "Nothing to redo" in a tooltip beside the menu, and Escape closes it](https://raw.githubusercontent.com/bevy-coven/bevy_gooey/main/docs/media/menus.gif)
-
-*Menus: `menu_bar(children![menu_title("File", children![menu_item("Open...").with_shortcut(..), ..])])`, F10 and the arrows to walk it, Right into a submenu, Escape one level at a time; a disabled item says why.*
-
-![The context example: a right-click on a crate opens its menu at the pointer, with Locked ticked and the chord I beside Inspect; a right-click on the crate in the bottom-right corner opens the whole menu above and to the left of the pointer; Down and Shift+F10 open an inventory row's menu below the row, Right on Move to opens its submenu, and Enter on Chest 2 says at the bottom which row was moved](https://raw.githubusercontent.com/bevy-coven/bevy_gooey/main/docs/media/context-menu.gif)
-
-*Context menus: `ContextMenu(menu)` on a crate, a row or any entity; a right-click opens the menu at the pointer (flipping at the window's edge), Shift+F10 or the Menu key below the focused widget, and `ContextTarget` says which thing a command was for.*
-
-![The palette example: Ctrl+Shift+P opens a field over a small editor's commands, "opn prj" lights File: Open Project with its chord Ctrl+O at the row's end, Down and Up move the lit row and Enter runs it, and the line behind reads "Last command: File: Open Project"; opened again it lists that command first, "sav" shows File: Save and File: Save As... dimmed with "No project is open" where their chords would be, Down puts the ring on the second and Escape closes the palette](https://raw.githubusercontent.com/bevy-coven/bevy_gooey/main/docs/media/command-palette.gif)
-
-*The command palette: `CommandList` holds the commands, `command_palette()` is the modal, "opn prj" is a fuzzy match, Up and Down move the lit row while focus stays in the field, and Enter or a click sends one `RunCommand`; a command that is off shows why and runs nothing.*
-
-![The gallery's Health meter over the Audio tab: a hit takes the amber fill from full to 60% in one frame and the lost 40% stays behind it in red for a beat and then drains to the fill; a second hit does the same from 60% to 20%; a heal eases the fill back up to 60% with no red; a last hit leaves a red band again](https://raw.githubusercontent.com/bevy-coven/bevy_gooey/main/docs/media/meter.gif)
-
-*Motion: a hit drops a `meter()`'s fill to the new value in that frame and leaves the lost length behind it in the skin's danger colour for 0.45 s before it drains, a heal rises up with no trail, a dialog's card rises 12 px and a menu or popover opens 6 px out of its anchor, each on a spring from the skin's motion palette (`GooeySkin::motion`) that carries on from where it is drawn if it is interrupted, all on real time with nothing to write; `MotionSettings::reduced()` is the player's "reduce motion" (nothing travels, fades stay) and `off()` makes every one instant, and `MotionTarget` does the same for your own panel. Recorded with `GOOEY_MOTION=2` and `GOOEY_KEYS=hit,hit,heal,hit` (twice slower, so the trail reads in a GIF); the dialog's rise is in the [motion guide](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/motion.md), the inventory's demo in its [guide](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/inventory.md), the radial menu's in [its own](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/radial.md).*
-
-![The Quit dialog in the dark and the parchment preset: the title "Leave the game?", a line of body, and the choices Leave and Stay in a framed panel over the dimmed screen, the ring on Stay](https://raw.githubusercontent.com/bevy-coven/bevy_gooey/main/docs/media/dialog.png)
-
-*The dialog in both presets, 540 px wide here, the width of its line of body (a dialog is 420 to 720 px at the default size and grows with the text size); its edge is the skin's `outline` colour.*
-
-![A dialog holding a toggle and a slider whose labels are longer than its panel, in the dark and the parchment preset: both labels break between words inside the frame, the switch centred against its two lines](https://raw.githubusercontent.com/bevy-coven/bevy_gooey/main/docs/media/dialog-label.png)
-
-*Its panel is bounded, so a control's label too long for it breaks between words inside the frame; on a screen, where the panel is as wide as its widest child, the same label stays on one line.*
-
-## Part of the Coven
-
-`bevy_gooey` is one of the [Bevy Coven](https://github.com/bevy-coven) crates: the family table there
-says which crate owns what, so two of them never both own the interface. The Cauldron, the Coven's level
-editor, takes it as an optional feature and edits a project's skin as the crate's own `GooeySkin` —
-see [use it in the Cauldron](https://bevy-coven.github.io/crates/bevy_gooey.html#use-it-in-the-cauldron).
+`bevy_gooey` is one of the [Dark Inc.](https://github.com/dark-incorporated) crates: the family table there says which crate owns what, so two of them never both own the interface. The Dark Factory, Dark Inc.'s level editor, builds its own interface on it, and [the book's page for the crate](https://dark-incorporated.github.io/crates/bevy_gooey.html) says how a project's skin reaches it.
 
 ## Bevy compatibility
 
 | `bevy_gooey` | Bevy |
 |---|---|
-| 0.1 – 0.52.1 | 0.20 |
+| 0.1 – 0.52.1 and `main` | 0.20 |
 
 ## Learn more
 
-- [docs.rs](https://docs.rs/bevy_gooey) — the API reference (`cargo doc --open`); [the book page](https://bevy-coven.github.io/crates/bevy_gooey.html) — the same guide with the pictures.
-- [`docs/guide/`](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/README.md) — the detail: navigation, controls, lists, tables, split panes, docks, toasts, skins, screen
-  size, the pointer, feedback, [testing a gooey UI](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/guide/testing.md), every widget in one table, what a host touches and what it only sees, and the boundary with the game.
-- [`examples/`](https://github.com/bevy-coven/bevy_gooey/tree/main/examples) — `gallery`, every widget on one screen.
-- [`docs/media/README.md`](https://github.com/bevy-coven/bevy_gooey/blob/main/docs/media/README.md) — how every picture here is made.
-- [`CHANGELOG.md`](https://github.com/bevy-coven/bevy_gooey/blob/main/CHANGELOG.md) — what each release changed, and what it broke.
+- [docs.rs](https://docs.rs/bevy_gooey): the API reference (`cargo doc --open`); [the book page](https://dark-incorporated.github.io/crates/bevy_gooey.html).
+- [`docs/guide/`](https://github.com/dark-incorporated/bevy_gooey/blob/main/docs/guide/README.md): one page per subject, [upgrading](https://github.com/dark-incorporated/bevy_gooey/blob/main/docs/guide/upgrading.md) (what a host changes when a release breaks), [testing a gooey UI](https://github.com/dark-incorporated/bevy_gooey/blob/main/docs/guide/testing.md), and [what a host touches](https://github.com/dark-incorporated/bevy_gooey/blob/main/docs/guide/host-api.md).
+- [`docs/gallery.md`](https://github.com/dark-incorporated/bevy_gooey/blob/main/docs/gallery.md) and [`docs/media/README.md`](https://github.com/dark-incorporated/bevy_gooey/blob/main/docs/media/README.md): the pictures, and the command that makes each.
+- [`examples/`](https://github.com/dark-incorporated/bevy_gooey/tree/main/examples): `gallery` and one example per widget family.
+- [`docs/research/`](https://github.com/dark-incorporated/bevy_gooey/tree/main/docs/research): the reading lists and measurements behind the design.
+- [`CHANGELOG.md`](https://github.com/dark-incorporated/bevy_gooey/blob/main/CHANGELOG.md): what each release changed, and what it broke.
 
 ## Who and licence
 
-Maintainer [@Ladvien](https://github.com/Ladvien). Questions and bugs go to
-[the issues](https://github.com/bevy-coven/bevy_gooey/issues), and a game asking for a change here uses
-the `consumer` label. Contributions follow the org's
-[`CONTRIBUTING.md`](https://github.com/bevy-coven/.github/blob/main/CONTRIBUTING.md); the crate's own
-rules for changing it are in [`AGENTS.md`](https://github.com/bevy-coven/bevy_gooey/blob/main/AGENTS.md).
+Maintainer [@Ladvien](https://github.com/Ladvien). Questions and bugs go to [the issues](https://github.com/dark-incorporated/bevy_gooey/issues), and a game asking for a change here uses the `consumer` label. Contributions follow the org's [`CONTRIBUTING.md`](https://github.com/dark-incorporated/.github/blob/main/CONTRIBUTING.md); the crate's own rules for changing it are in [`AGENTS.md`](https://github.com/dark-incorporated/bevy_gooey/blob/main/AGENTS.md).
 
 MIT OR Apache-2.0, at your option.
