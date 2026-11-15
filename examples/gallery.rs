@@ -23,13 +23,13 @@
 //!   as at 1280x720).
 //!
 //! Capture mode, for a still and a frame time: `GOOEY_FRAMES=<n>` saves a screenshot at frame `n` to
-//! `GOOEY_FIXED_CLOCK=1` makes every frame 1/30 s (a deterministic recording). **It also pins the frame
-//! time**: a run with it reports `mean_ms 33.333`, which is the clock, not a measurement, and the line
-//! says so. Take the frame time from a run **without** it (`docs/research/perf-gate.md`).
 //! `GOOEY_SHOT` (default `gallery.png`), prints `gooey: frames <n> mean_ms <x> load <l>` (the mean frame
 //! time over frames 20..n, and the host's 1-minute load average: the same interface measured 30.7 ms at
 //! load 25-46 and 22.4 at load 1.4, so the number is only comparable with its load) and exits 10 frames
-//! later. `GOOEY_SHOT_DIR=<dir>` also keeps every
+//! later. `GOOEY_FIXED_CLOCK=1` makes every frame 1/30 s (a deterministic recording). **It also pins the frame
+//! time**: a run with it reports `mean_ms 33.333`, which is the clock, not a measurement, and the line
+//! says so. Take the frame time from a run **without** it (`docs/research/perf-gate.md`).
+//! `GOOEY_SHOT_DIR=<dir>` also keeps every
 //! `GOOEY_SHOT_EVERY`th frame (`GOOEY_SHOT_FROM`, default frame 30) there as `f_%04d.png`, and prints
 //! `gooey: kept <n> frames in <dir>`: those frames are a GIF's, and the still stays one file.
 //! `GOOEY_WIDTHS=1` prints every node that reaches past the window's right edge at the capture frame

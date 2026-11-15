@@ -1,3 +1,11 @@
+//! Sections: the settings screen of a small game, with `section(title, open, children)` folding each group.
+//!
+//! - **Physics** (a Gravity slider and a Sleeping bodies switch) and **Graphics** (a Quality choice and a nested **Shadows** section that starts closed) carry a `SectionId`, so a section stays as the player left it if the screen is rebuilt.
+//! - **Modding** has nothing in it, so it reads "Empty".
+//! - Tab reaches a header; Enter or Space folds or opens its section, and the panel closes up or grows with the chevron turning.
+//!
+//! Capture mode is the gallery's: `GOOEY_FRAMES`, `GOOEY_SHOT`, `GOOEY_SHOT_DIR`, `GOOEY_SHOT_FROM`, `GOOEY_SHOT_EVERY` and `GOOEY_SIZE`. `GOOEY_KEYS` takes `;`-separated steps, one every `GOOEY_KEY_EVERY` frames: `tab`, `up`, `down`, `left`, `right`, `enter` and `space`.
+
 use bevy::input::ButtonState;
 use bevy::input::keyboard::{Key, KeyboardInput};
 use bevy::prelude::*;

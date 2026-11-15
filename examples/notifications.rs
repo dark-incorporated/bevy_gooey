@@ -1,3 +1,13 @@
+//! Toast actions and the journal: an Inventory panel whose three buttons spawn toasts, next to a Notifications panel that is `notification_center()`.
+//!
+//! - **Delete item** pushes one `ToastLog` entry ("Item deleted") with an Undo action and spawns a toast for that same entry (`.logged_as(id)`), so the toast and the journal's row are one entry and each has an **Undo** button.
+//! - **Save game** spawns the toast "Game saved"; pressed again within two seconds it merges into "Game saved x2", "x3", while the journal lists every press.
+//! - **Break something** spawns a sticky alert, "Could not write the save: the disk is full", with a **Show** button and a **Dismiss** button; it stands until dismissed.
+//! - A press on a toast's button is one `ToastAction`, and a press on a button of a journal row is one `NotificationAction` that names the entry; the line under the buttons says which the game heard last ("Heard: undo", "Heard: undo (entry 1)"). A press on a row's words sends nothing.
+//! - Tab walks the buttons, then the journal's rows and their Undo buttons.
+//!
+//! Capture mode is the gallery's: `GOOEY_FRAMES`, `GOOEY_SHOT`, `GOOEY_SHOT_DIR`, `GOOEY_SHOT_FROM`, `GOOEY_SHOT_EVERY`, `GOOEY_SIZE`, `GOOEY_SKIN` and `GOOEY_TEXT_SCALE`. `GOOEY_KEYS` takes `;`-separated steps, one every `GOOEY_KEY_EVERY` frames: `tab`, `up`, `down`, `left`, `right`, `enter`, `space`, and `toast`, which focuses the first button of a toast as Tab would. `docs/media/README.md` has the command that makes `notifications.gif`.
+
 use bevy::input::ButtonState;
 use bevy::input::keyboard::{Key, KeyboardInput};
 use bevy::input_focus::{FocusCause, InputFocus, InputFocusVisible};

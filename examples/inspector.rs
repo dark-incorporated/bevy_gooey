@@ -1,3 +1,10 @@
+//! The reflect inspector: `inspector(InspectTarget::component::<Turret>(entity))` builds the rows of a game component that has nothing about a screen in it. Needs the `reflect` feature: `cargo run --example inspector --features reflect`.
+//!
+//! - `Turret` has a `bool` (a switch), an enum (a choice), an `f32` with `#[reflect(@RangeInclusive::<f32>::new(0.0, 20.0))]` (a number field held to that range), a `Vec3` (a vector field), a `Color` (a colour field) and a nested struct (a section); a field's doc comment is its tooltip.
+//! - An edit is written back through `ReflectMut` and sent as one `InspectorChange { path }`; the panel beside the inspector, "The game sees", reads the component and follows every change.
+//!
+//! Capture mode is the gallery's: `GOOEY_FRAMES`, `GOOEY_SHOT`, `GOOEY_SHOT_DIR`, `GOOEY_SHOT_FROM`, `GOOEY_SHOT_EVERY` and `GOOEY_SIZE`. `GOOEY_KEYS` takes `;`-separated steps, one every `GOOEY_KEY_EVERY` frames: `tab`, `up`, `down`, `left`, `right`, `enter` and `space`.
+
 use bevy::input::ButtonState;
 use bevy::input::keyboard::{Key, KeyboardInput};
 use bevy::prelude::*;

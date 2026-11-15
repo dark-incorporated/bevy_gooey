@@ -1,3 +1,12 @@
+//! A tool's chrome: a toolbar over a Project panel, with a status bar along the foot.
+//!
+//! - The toolbar is `toolbar(..)` of `icon_button`s (Save, New and Undo, then a separator, a four-mode `toggle_group` (Move, Draw, Select, Erase), another separator, and Delete, Add layer and Validate). Focus an icon to see its tooltip, with the chord on a keycap where it has one. The icons are cells of an atlas the example draws itself.
+//! - Make the bars narrower (the `width:<px>` step of `GOOEY_KEYS` sets the width of the column that holds both) and the last toolbar items go behind a **More** button, whose menu lists them, while the status bar drops its lowest-priority items first (`StatusPriority`).
+//! - **Language** is a `select(..)` of twelve options: Enter opens a list with a filter field ("Type to filter"), typing narrows it and Enter chooses.
+//! - The status bar has `status_item`s (a branch, "2 problems" behind a warning mark, encoding, indentation, the caret's line and column) and a `status_progress("Baking", ..)`.
+//!
+//! Capture mode is the gallery's: `GOOEY_FRAMES`, `GOOEY_SHOT`, `GOOEY_SHOT_DIR`, `GOOEY_SHOT_FROM`, `GOOEY_SHOT_EVERY` and `GOOEY_SIZE`. `GOOEY_KEYS` takes `;`-separated steps, one every `GOOEY_KEY_EVERY` frames: `tab`, `up`, `down`, `left`, `right`, `enter`, `escape`, `backspace`, `type:<text>`, `width:<px>` (the bars' width) and `focus:<name>` (`save`, `open`, `undo`, `mode`, `bin`, `plus`, `check`, `language` or `more`).
+
 use bevy::asset::RenderAssetUsages;
 use bevy::input::ButtonState;
 use bevy::input::keyboard::{Key, KeyboardInput};
