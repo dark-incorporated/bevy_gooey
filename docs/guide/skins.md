@@ -20,15 +20,9 @@ Fonts are yours: set `GooeyFonts { body, heading }`. The default draws Bevy's bu
 
 ## Every field
 
-The colours are `background`, `surface`, `surface_raised`, `text`, `text_muted`, `accent`,
-`accent_text`, `danger`, `focus_ring`, `outline`, `scrim` and `surface_edge` (`None` is `surface_raised`); the sizes are `text_size`,
-`heading_size`, `gap`, `padding`, `radius`, `border`, `meter_height`, `min_target` and `density`; `text_scale` is
-the player's option and multiplies text alone. A name ends up in exactly one place: a heading's text
-colour is `text` there and nowhere else, because `apply_skin` styles every widget by its `Role`. The
-design tokens, `spacing`, `radii`, `type_scale` and `surfaces`, are the [next sections](#design-tokens-and-the-surface-ladder).
+The colours are `background`, `surface`, `surface_raised`, `text`, `text_muted`, `accent`, `accent_text`, `danger`, `focus_ring`, `outline`, `scrim` and `surface_edge` (`None` is `surface_raised`); the sizes are `text_size`, `heading_size`, `gap`, `padding`, `radius`, `border`, `meter_height`, `min_target` and `density`; `text_scale` is the player's option and multiplies text alone. A name ends up in exactly one place: a heading's text colour is `text` there and nowhere else, because `apply_skin` styles every widget by its `Role`. The design tokens, `spacing`, `radii`, `type_scale` and `surfaces`, are the [next sections](#design-tokens-and-the-surface-ladder).
 
-`SkinProblem` is the type `problems()` returns; the plugin warns once per problem on a change and never
-refuses a skin, so an editor can show a half-finished one.
+`SkinProblem` is the type `problems()` returns; the plugin warns once per problem on a change and never refuses a skin, so an editor can show a half-finished one.
 
 ## Four looks, and a high-contrast one that is checked
 
@@ -36,7 +30,7 @@ refuses a skin, so an editor can show a half-finished one.
 
 High contrast is the mode Xbox Accessibility Guideline 102 asks a game for: "When enabled, the contrast ratios should equal or exceed 7:1 for all UI elements against their background." Opaque black surfaces, white text and white outlines, an amber accent, a cyan focus ring that no other state uses, and a light red for danger (WCAG advises against red on black, for protanopia). A panel, a tooltip and the legend are framed in white (`surface_edge: Some(white)`; the other presets leave it `None`, which keeps their quiet `surface_raised` frame), so a tooltip over a panel is a card of its own. `GooeySkin::high_contrast_problems()` is `problems()` with every pair held to `ENHANCED_CONTRAST`, 7:1, so a game that writes its own high-contrast skin has the check in one call (it is empty for `high_contrast()` and not for the other two, which meet the 4.5:1 and 3:1 minimums and no more).
 
-![The gallery in high contrast: a black screen with white frames on the settings panel, the Load game list, the field, the tooltip and the legend, an amber Audio tab, meter, slider and switch, and a cyan ring on Options with its tooltip beside it](https://raw.githubusercontent.com/bevy-coven/bevy_gooey/main/docs/media/high-contrast.png)
+![The gallery in high contrast: a black screen with white frames on the settings panel, the Load game list, the field, the tooltip and the legend, an amber Audio tab, meter, slider and switch, and a cyan ring on Options with its tooltip beside it](https://raw.githubusercontent.com/dark-incorporated/bevy_gooey/main/docs/media/high-contrast.png)
 
 *`GooeySkin::high_contrast()`: every text is at least 7:1 on what it is drawn on (15.9:1 on a button), the ring is 13.5:1 on the panel, and a button's fill is 1.3:1 from the panel (the focus ring is the one frame that appears).*
 
@@ -57,7 +51,7 @@ assert_eq!(tool.pad(), GooeySkin::dark().padding / 2.0);
 
 `GooeySkin::tool()` (`SkinPreset::Tool`, the fourth row of the theme row) is the whole look for a tool: a cool neutral grey with a blue accent (not a game's amber), `Density::Compact`, 14 px text (21 px at 1080p, over Xbox Accessibility Guideline 101's PC minimum of 18 px), a 6 px gap, a 2 px border (the ring's weight, WCAG 2.4.13) and a 4 px radius. A theme-row step writes its colours only, so a player who steps onto Tool keeps their own text size and density; start in the whole preset by inserting `GooeySkin::tool()`. The gallery's settings panel is 294 px tall in it and 520 px in dark. `examples/density` flips `density` with a switch.
 
-![The gallery in the Tool look: the settings panel (Play, Options, Quit, a health meter, the Audio, Display and Controls tabs with Audio lit blue, the Volume slider and Subtitles switch) and the top of the Load game list, all in grey and blue at 14 px text](https://raw.githubusercontent.com/bevy-coven/bevy_gooey/main/docs/media/tool.png)
+![The gallery in the Tool look: the settings panel (Play, Options, Quit, a health meter, the Audio, Display and Controls tabs with Audio lit blue, the Volume slider and Subtitles switch) and the top of the Load game list, all in grey and blue at 14 px text](https://raw.githubusercontent.com/dark-incorporated/bevy_gooey/main/docs/media/tool.png)
 
 *`GooeySkin::tool()`: buttons 24 px high, 2 px frames, the same ring and keys as every look.*
 
@@ -105,7 +99,7 @@ app.insert_resource(GooeySkin::desk());
 
 The light Desk's accent is a step deeper than Rune's: Rune's own light blue carries white words at 4.0:1, under this crate's 4.5:1.
 
-![The gooey gallery in Desk and Desk light above Rune's button variants in its neutral kit, dark and light](https://raw.githubusercontent.com/bevy-coven/bevy_gooey/main/docs/media/desk.png)
+![The gooey gallery in Desk and Desk light above Rune's button variants in its neutral kit, dark and light](https://raw.githubusercontent.com/dark-incorporated/bevy_gooey/main/docs/media/desk.png)
 
 ## Elevation: shadows as data
 
@@ -122,15 +116,13 @@ let mut skin = GooeySkin::dark();
 skin.elevation.overlay = vec![ShadowLayer::drop(8.0, 24.0, Color::srgba(0.0, 0.0, 0.0, 0.5))];
 ```
 
-![The gallery with the Quit dialog open in the four presets: dark, parchment, high contrast with no shadows, and tool; the panels cast the raised stack and the dialog the overlay stack](https://raw.githubusercontent.com/bevy-coven/bevy_gooey/main/docs/media/elevation.png)
+![The gallery with the Quit dialog open in the four presets: dark, parchment, high contrast with no shadows, and tool; the panels cast the raised stack and the dialog the overlay stack](https://raw.githubusercontent.com/dark-incorporated/bevy_gooey/main/docs/media/elevation.png)
 
 The blur is CSS's, twice the Gaussian's standard deviation that Bevy's `ShadowStyle::blur_radius` takes (`shadow_sigma`), so `0 8px 24px` reads as it does in a browser. A negative or non-number blur is a `problems()` entry.
 
 ## Design tokens and the surface ladder
 
-A tool's chrome stands on a ladder of surfaces (the window's ground, a panel, a row, a field, a card),
-and a host that hard-codes each fill finds out late that two of them are one colour. The skin carries
-the ladder and checks it, and three scales for the numbers a host's own nodes are built from:
+A tool's chrome stands on a ladder of surfaces (the window's ground, a panel, a row, a field, a card), and a host that hard-codes each fill finds out late that two of them are one colour. The skin carries the ladder and checks it, and three scales for the numbers a host's own nodes are built from:
 
 | field | what it is | read with |
 |---|---|---|
@@ -139,9 +131,7 @@ the ladder and checks it, and three scales for the numbers a host's own nodes ar
 | `radii: [f32; 3]` | corner radii | `skin.corner(step)` |
 | `type_scale: [f32; 5]` | text sizes before `text_scale` | `skin.type_size(step)`, which multiplies by `text_scale` |
 
-A step past the end is the last. Each preset's own `gap`, `padding`, `radius`, `text_size` and
-`heading_size` are entries of its scales (a test holds it), so what a host builds from the tokens and
-what the widgets draw share one rhythm; `GooeySkin::tool()` has tighter scales than the other three.
+A step past the end is the last. Each preset's own `gap`, `padding`, `radius`, `text_size` and `heading_size` are entries of its scales (a test holds it), so what a host builds from the tokens and what the widgets draw share one rhythm; `GooeySkin::tool()` has tighter scales than the other three.
 
 ```rust,ignore
 // Nested cards, each a step above the one it stands in, on the skin's own tokens.
@@ -156,34 +146,17 @@ commands.spawn((
 ));
 ```
 
-`surface(n)` is the same node with a column and nothing else, for a surface that needs no padding of its
-own (a bundle cannot carry two `Node`s, so a padded one names `Role::Surface` and its own `Node`, as
-above). A surface draws its fill and nothing else: no padding, no frame, no corner.
+`surface(n)` is the same node with a column and nothing else, for a surface that needs no padding of its own (a bundle cannot carry two `Node`s, so a padded one names `Role::Surface` and its own `Node`, as above). A surface draws its fill and nothing else: no padding, no frame, no corner.
 
-**The ladder is measured.** `problems()` reports `SkinProblem::ElevationStep { lower, upper, delta_l }`
-for two adjacent surfaces that differ by less than `ELEVATION_STEP`, ΔL\* 2.0 in CIE L\* (`cie_lightness`
-is the maths, in `model`): about the smallest lightness difference the eye can tell apart on a large flat
-field, and a comfortable step is about 4. WCAG's contrast ratio is the wrong instrument down in the
-blacks (its `+0.05` flare term makes two clearly different dark greys and two identical ones both score
-about 1.0), which is why this is its own check. Direction does not matter, so a recessed well below its
-neighbour is a valid step; a single surface is a valid ladder; an empty one, a spacing or corner scale
-with a negative, non-finite or falling step and a type scale with a non-positive one report
-`SkinProblem::BadScale { field }`. The four presets' steps are at least ΔL\* 5 apart; the alpha of a
-surface is ignored. The check is about fills telling apart, not about text: the crate checks `text` against
-`surface` and `surface_raised`, not against every step (parchment's step 0 is the dark window behind its
-cream panels, and a host that puts text on a step checks that pair itself, at 7:1 in a high-contrast skin).
-A theme step (`with_colours_of`) brings the ladder with the colours and keeps the player's scales.
+**The ladder is measured.** `problems()` reports `SkinProblem::ElevationStep { lower, upper, delta_l }` for two adjacent surfaces that differ by less than `ELEVATION_STEP`, ΔL\* 2.0 in CIE L\* (`cie_lightness` is the maths, in `model`): about the smallest lightness difference the eye can tell apart on a large flat field, and a comfortable step is about 4. WCAG's contrast ratio is the wrong instrument down in the blacks (its `+0.05` flare term makes two clearly different dark greys and two identical ones both score about 1.0), which is why this is its own check. Direction does not matter, so a recessed well below its neighbour is a valid step; a single surface is a valid ladder; an empty one, a spacing or corner scale with a negative, non-finite or falling step and a type scale with a non-positive one report `SkinProblem::BadScale { field }`. The four presets' steps are at least ΔL\* 5 apart; the alpha of a surface is ignored. The check is about fills telling apart, not about text: the crate checks `text` against `surface` and `surface_raised`, not against every step (parchment's step 0 is the dark window behind its cream panels, and a host that puts text on a step checks that pair itself, at 7:1 in a high-contrast skin). A theme step (`with_colours_of`) brings the ladder with the colours and keeps the player's scales.
 
-![The ladder example: four nested cards, Surface 1 to Surface 4, each lighter than the one it sits in and labelled with its CIE L*, in dark, then the Theme row steps through Parchment, High contrast and Tool and back](https://raw.githubusercontent.com/bevy-coven/bevy_gooey/main/docs/media/ladder.gif)
+![The ladder example: four nested cards, Surface 1 to Surface 4, each lighter than the one it sits in and labelled with its CIE L*, in dark, then the Theme row steps through Parchment, High contrast and Tool and back](https://raw.githubusercontent.com/dark-incorporated/bevy_gooey/main/docs/media/ladder.gif)
 
 *`examples/ladder`: the steps in dark are L\* 12.9, 18.3, 23.6 and 31.6 over a ground of 6.5; the labels are the ladder read back through `cie_lightness`.*
 
 ## State roles: hover, pressed, held, card
 
-A host that builds its own rows, chips and overlays from the skin needs the interaction states too, so
-the skin owns them. Seven colours are `Option<Color>` fields of `GooeySkin` (`None` in every preset),
-each with an accessor that answers from the nearest field when the skin sets none, so a skin that sets
-none of them still answers every role:
+A host that builds its own rows, chips and overlays from the skin needs the interaction states too, so the skin owns them. Seven colours are `Option<Color>` fields of `GooeySkin` (`None` in every preset), each with an accessor that answers from the nearest field when the skin sets none, so a skin that sets none of them still answers every role:
 
 | field | accessor / `Role` | `None` is | what it is |
 |---|---|---|---|
@@ -195,10 +168,7 @@ none of them still answers every role:
 | `card` | `card()` / `Role::Card` | `solid_surface()` | the card the scrim leaves lit while it holds the rest back |
 | `preview_edge` | `preview_edge()` / `Role::PreviewEdge` | `outline` | the edge of a row's preview box (a border, no fill) |
 
-`held_fade` (0.6, from 0 to 1) is one number for both held colours, so a held ground and a held glyph
-"come off one fade" and compose. A role draws its colour on a node of your own (`(Role::Pressed,
-Node { .. })`) and nothing else; swap the role as the pointer goes down and the node is restyled the next
-frame. Where no role draws it (a gizmo, a sprite), read the accessor.
+`held_fade` (0.6, from 0 to 1) is one number for both held colours, so a held ground and a held glyph "come off one fade" and compose. A role draws its colour on a node of your own (`(Role::Pressed, Node { .. })`) and nothing else; swap the role as the pointer goes down and the node is restyled the next frame. Where no role draws it (a gizmo, a sprite), read the accessor.
 
 ```rust
 use bevy::prelude::*;
@@ -214,16 +184,9 @@ fn gizmo_colour(skin: &GooeySkin, key_held: bool) -> Color {
 }
 ```
 
-**What `problems()` checks.** `text` on `pressed` and on `card` at the text minimum, `unchecked` and
-`preview_edge` on the panel at the 3:1 graphic minimum (7:1 in `high_contrast_problems()`), and
-**pressed against hovered by a lightness step**, `STATE_STEP`, ΔL\* 4: WCAG 1.4.11 asks no contrast of two
-states that do not appear side by side, only that each keeps the contrast of what is drawn on it, so the
-check is whether a reader can tell them apart. A pressed fill at hover's lightness is
-`SkinProblem::Indistinguishable { pair, delta_l, needed }`. A `held_fade` outside 0 to 1 is
-`SkinProblem::BadSize`. Held colours are not contrast-checked: a held colour is stepped back on purpose.
-A theme step (`with_colours_of`) replaces them with the look's own, as it does every colour.
+**What `problems()` checks.** `text` on `pressed` and on `card` at the text minimum, `unchecked` and `preview_edge` on the panel at the 3:1 graphic minimum (7:1 in `high_contrast_problems()`), and **pressed against hovered by a lightness step**, `STATE_STEP`, ΔL\* 4: WCAG 1.4.11 asks no contrast of two states that do not appear side by side, only that each keeps the contrast of what is drawn on it, so the check is whether a reader can tell them apart. A pressed fill at hover's lightness is `SkinProblem::Indistinguishable { pair, delta_l, needed }`. A `held_fade` outside 0 to 1 is `SkinProblem::BadSize`. Held colours are not contrast-checked: a held colour is stepped back on purpose. A theme step (`with_colours_of`) replaces them with the look's own, as it does every colour.
 
-![The states example: a panel "State roles" with five swatches (Hovered, Pressed, Card, Unchecked, a Preview edge) over a world glyph at rest beside the same glyph held, in dark, then the Theme row steps through Parchment, High contrast and Tool](https://raw.githubusercontent.com/bevy-coven/bevy_gooey/main/docs/media/states.gif)
+![The states example: a panel "State roles" with five swatches (Hovered, Pressed, Card, Unchecked, a Preview edge) over a world glyph at rest beside the same glyph held, in dark, then the Theme row steps through Parchment, High contrast and Tool](https://raw.githubusercontent.com/dark-incorporated/bevy_gooey/main/docs/media/states.gif)
 
 *`examples/states`: every swatch is a `Role` on a plain node; the glyphs are read from `text` and `held()`.*
 
@@ -256,43 +219,29 @@ fn setup(mut commands: Commands, mut skin: ResMut<GooeySkin>) {
 
 ## A skin for one subtree
 
-`SkinScope(skin)` on any node styles that node and everything below it from `skin` and not from the
-`GooeySkin` resource, so a preview of a theme, a tool's own chrome or a vendor's window stands next to the
-rest of the interface in another look:
+`SkinScope(skin)` on any node styles that node and everything below it from `skin` and not from the `GooeySkin` resource, so a preview of a theme, a tool's own chrome or a vendor's window stands next to the rest of the interface in another look:
 
 ```rust,ignore
 commands.spawn((panel(), SkinScope(GooeySkin::parchment()), children![button("Play")]));
 ```
 
-- **The nearest scope wins.** A widget takes the scope on itself or on its nearest ancestor; a scope nested
-  in another shadows it, and a widget under none is styled from the resource.
-- **It is the whole skin.** Sizes and `text_scale` are the scope's, so a preview at 200% text, or a compact
-  panel, is a scope too; `GooeyFonts` stays global (a font is an asset the host loads). The player's own
-  text size is the resource's: a scope that should follow it copies `text_scale` itself.
-- **A change touches the subtree and nothing else.** Adding, changing or removing a scope restyles every
-  widget below it in the same frame (removed: from the next scope up, or the resource), and so does moving
-  a widget under or out of one; a changed resource restyles the unscoped and leaves a scoped widget as it
-  is. An idle frame writes nothing, and with no scope anywhere the cost is one empty-query check.
-- **A scope is checked like a skin.** One that fails `problems()` logs a warning per problem when it
-  changes and is applied anyway.
-- **A toast stack and the legend are not below the node that spawned them.** Put a `SkinScope` on them to
-  have them follow a scope; a tooltip box is a child of its widget and follows its widget.
+- **The nearest scope wins.** A widget takes the scope on itself or on its nearest ancestor; a scope nested in another shadows it, and a widget under none is styled from the resource.
+- **It is the whole skin.** Sizes and `text_scale` are the scope's, so a preview at 200% text, or a compact panel, is a scope too; `GooeyFonts` stays global (a font is an asset the host loads). The player's own text size is the resource's: a scope that should follow it copies `text_scale` itself.
+- **A change touches the subtree and nothing else.** Adding, changing or removing a scope restyles every widget below it in the same frame (removed: from the next scope up, or the resource), and so does moving a widget under or out of one; a changed resource restyles the unscoped and leaves a scoped widget as it is. An idle frame writes nothing, and with no scope anywhere the cost is one empty-query check.
+- **A scope is checked like a skin.** One that fails `problems()` logs a warning per problem when it changes and is applied anyway.
+- **A toast stack and the legend are not below the node that spawned them.** Put a `SkinScope` on them to have them follow a scope; a tooltip box is a child of its widget and follows its widget.
 
-`cargo run --release --example scope` shows the options panel in the player's skin next to a preview panel
-in parchment: Theme and Text size change the left one, the right one stays, and Enter on its button takes
-the scope off so it joins the left one.
+`cargo run --release --example scope` shows the options panel in the player's skin next to a preview panel in parchment: Theme and Text size change the left one, the right one stays, and Enter on its button takes the scope off so it joins the left one.
 
 ## Loading one
 
-`GooeySkin` and `UiScaleSettings` derive serde under the `serde` feature, and both are
-`#[serde(default)]`, so a project's file holds only what it changed:
+`GooeySkin` and `UiScaleSettings` derive serde under the `serde` feature, and both are `#[serde(default)]`, so a project's file holds only what it changed:
 
 ```ron
 (accent: Srgba((red: 0.2, green: 0.6, blue: 0.9, alpha: 1.0)), text_scale: 1.25)
 ```
 
-A game sets the resource at start-up (`app.insert_resource(GooeySkin::parchment())`); Grimoire reads a
-project's `family/bevy_gooey.ron` into the same type while the editor runs.
+A game sets the resource at start-up (`app.insert_resource(GooeySkin::parchment())`); Grimoire reads a project's `family/bevy_gooey.ron` into the same type while the editor runs.
 
 ## Art frames: `GooeyFrames`
 
@@ -309,11 +258,11 @@ fn setup(mut frames: ResMut<GooeyFrames>, assets: Res<AssetServer>) {
 
 The skin's colours tint the art: the fill each state would have is the tint, so rest, hover, press, disabled, a `SkinScope` and a fade all multiply the image. Draw the art in light neutrals (near white) and the skin does the colour; art with its own colours is tinted toward the skin's. The art is a layer under the widget's children (`FrameLayer`, found by `Framed(entity)` on the widget) because Bevy draws an image inside a node's padding; layout is the flat look's, the focus ring (a button's border) is drawn over the art, and an outline (a panel's, a tooltip's, a menu's) is dropped, the art has its own edge. Take a field back to `None` and the flat fill returns. A widget that already holds an image of your own is left alone. Corner size is in image pixels and follows `UiScale` (the frame is the same shape at every interface size). `field` frames text fields: Bevy measures the field itself as a leaf, which a child layer would collapse, so the art is a layer of its cell behind it and the field's border (outline and focus ring) stays over the art. `track` frames every slider rail, switch track and hold button's track (the fill, thumb and knob keep the skin's colours over it, a switch that is on is tinted by the accent). The `button` frame also covers a table's header cells, which the skin already draws with a button's fill and press.
 
-![Four framed cards: Harbour, the chosen Keep, Orchard and the dimmed Ruins, each with a bright rim and a groove inside it, the chosen one carrying the accent through its art](https://raw.githubusercontent.com/bevy-coven/bevy_gooey/main/docs/media/card-frames.gif) A `card_grid`'s cells take `card`: a card is the largest flat surface a game screen has, so it is the one that most needs the panel's language. The art is under the card's picture, name and lines and tinted by the card's own state — the surface, the hover mix, the accent while chosen, the dimmed surface when disabled — and the card's `outline` goes while its focus ring and chosen ring stay over the art. `GOOEY_ART=1` on `examples/cards` draws it.
+![Four framed cards: Harbour, the chosen Keep, Orchard and the dimmed Ruins, each with a bright rim and a groove inside it, the chosen one carrying the accent through its art](https://raw.githubusercontent.com/dark-incorporated/bevy_gooey/main/docs/media/card-frames.gif) A `card_grid`'s cells take `card`: a card is the largest flat surface a game screen has, so it is the one that most needs the panel's language. The art is under the card's picture, name and lines and tinted by the card's own state — the surface, the hover mix, the accent while chosen, the dimmed surface when disabled — and the card's `outline` goes while its focus ring and chosen ring stay over the art. `GOOEY_ART=1` on `examples/cards` draws it.
 
-![A framed table header: the Camp panel with the Item and When header cells drawn from the same bevelled paper as the buttons, the focus ring over When's art as Right sorts the two rows](https://raw.githubusercontent.com/bevy-coven/bevy_gooey/main/docs/media/framed-header.gif) The `button` frame also covers a table's header cells, which the skin already draws with a button's fill and press. `segment` frames every tab and toggle group option (the strip's segments): the art is a layer of the option, tinted by the fill its state would have, so a tab is art at rest, art under the hover mix, and art tinted by the accent when it is the lit one.
+![A framed table header: the Camp panel with the Item and When header cells drawn from the same bevelled paper as the buttons, the focus ring over When's art as Right sorts the two rows](https://raw.githubusercontent.com/dark-incorporated/bevy_gooey/main/docs/media/framed-header.gif) The `button` frame also covers a table's header cells, which the skin already draws with a button's fill and press. `segment` frames every tab and toggle group option (the strip's segments): the art is a layer of the option, tinted by the fill its state would have, so a tab is art at rest, art under the hover mix, and art tinted by the accent when it is the lit one.
 
-![Framed tabs: the Camp panel with two tabs drawn from the same bevelled paper art as the buttons and the Name field, the ring moving between them, and the Craft tab lit accent inside its art](https://raw.githubusercontent.com/bevy-coven/bevy_gooey/main/docs/media/segment-frames.gif) `examples/frames.rs` draws its own art in code; research: `docs/research/frames.md`.
+![Framed tabs: the Camp panel with two tabs drawn from the same bevelled paper art as the buttons and the Name field, the ring moving between them, and the Craft tab lit accent inside its art](https://raw.githubusercontent.com/dark-incorporated/bevy_gooey/main/docs/media/segment-frames.gif) `examples/frames.rs` draws its own art in code; research: `docs/research/frames.md`.
 
-![The frames example in the parchment look: a Camp panel and its buttons drawn from a bevelled paper plate with the focus ring over it and each button's tooltip in the same art, then Enter on "Flat look" takes the frames away and the flat fills come back](https://raw.githubusercontent.com/bevy-coven/bevy_gooey/main/docs/media/frames.gif)
+![The frames example in the parchment look: a Camp panel and its buttons drawn from a bevelled paper plate with the focus ring over it and each button's tooltip in the same art, then Enter on "Flat look" takes the frames away and the flat fills come back](https://raw.githubusercontent.com/dark-incorporated/bevy_gooey/main/docs/media/frames.gif)
 

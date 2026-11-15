@@ -18,7 +18,7 @@ Researched 2026-11-07 for issue #73 (G-66), asked by bevy_grimoire's feel series
 
 ## Where this differs from the issue
 
-- **Opening from the anchor and the height spring (#71 and the size motion) are not built.** The issue depends on bevy-coven/bevy_gooey#71 (G-64), still open; the list is a plain `popover` and takes that motion when #71 lands. The list's height lands with the rows.
+- **Opening from the anchor and the height spring (#71 and the size motion) are not built.** The issue depends on dark-incorporated/bevy_gooey#71 (G-64), still open; the list is a plain `popover` and takes that motion when #71 lands. The list's height lands with the rows.
 - **No virtual rows.** Rune's rows are virtual; this list builds one row per option (`list` is "for tens of rows, not thousands"). A combobox of ten thousand options would need the table's row pool; recorded here, not built.
 - **No pad path.** A pad cannot type; the D-pad moves focus off a text field. A pad player uses a `select`.
 - **Case-insensitive** comes from `fuzzy_score`, which lower-cases both sides.

@@ -254,6 +254,7 @@
 
 ### Changed
 
+- Documentation brought to the Dark Inc. standard (no code change). The README is the pitch, a quick start that is the crate-root doctest, one bullet per job and four pictures; the long list of parts moved to `docs/guide/catalogue.md` and the other pictures to `docs/gallery.md`. `docs/guide/upgrading.md` says what a host changes for each **Breaking** entry since 0.52.1. `docs/guide/layout.md` covers `scroll_region`, `scroll_viewport`, `ShownFollow`, `StartsClosed`, `Extent::Auto` and `LinesCeil` and which widgets keep PageUp, PageDown, Home and End inside a region; `docs/guide/host-api.md` lists the layout parts and the journal; `docs/guide/splits.md` says what `split_clamp` does when the minimums fill the extent. `docs/media/notifications.gif` shows the journal row with its own Undo (re-recorded), `docs/media/scroll.gif` and `examples/scroll.rs` are new, four examples (`inspector`, `notifications`, `sections`, `tools`) gained a doc comment and the gallery example's capture paragraph reads straight again. Every guide paragraph is one line, and the repository links name the `dark-incorporated` organisation.
 - **Breaking:** `SideTab` gains the public field `icon: Option<IconSource>` and loses `Eq` (an
   `IconSource` is an image handle or an atlas, which is `PartialEq` only). A tab built with
   `SideTab::new`, `label` or `badge` is unaffected; a struct literal that names every field needs

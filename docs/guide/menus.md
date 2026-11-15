@@ -1,9 +1,6 @@
 # Menus
 
-A menu bar is a row of titles, each opening a card of commands: the first place a new user of a tool
-looks for a command and learns its shortcut. `menu_bar(children![menu_title(..)])` is one bundle; the
-menu cards are spawned with their titles and shown by opening them, so an `observe` on an item stays where
-you wrote it.
+A menu bar is a row of titles, each opening a card of commands: the first place a new user of a tool looks for a command and learns its shortcut. `menu_bar(children![menu_title(..)])` is one bundle; the menu cards are spawned with their titles and shown by opening them, so an `observe` on an item stays where you wrote it.
 
 ```rust
 use bevy::prelude::*;
@@ -32,7 +29,7 @@ fn setup(mut commands: Commands) {
 }
 ```
 
-![The menus example: a bar with File, Edit, View and Help; F10 puts the ring on File, Down opens its menu with the ring on New and the chords Ctrl+N, Ctrl+O and Ctrl+S in a column at the right, Down twice reaches Recent and Right opens its submenu, Left closes it, Right on Save walks to Edit's menu where the disabled Redo shows "Nothing to redo", and Escape closes it](https://raw.githubusercontent.com/bevy-coven/bevy_gooey/main/docs/media/menus.gif)
+![The menus example: a bar with File, Edit, View and Help; F10 puts the ring on File, Down opens its menu with the ring on New and the chords Ctrl+N, Ctrl+O and Ctrl+S in a column at the right, Down twice reaches Recent and Right opens its submenu, Left closes it, Right on Save walks to Edit's menu where the disabled Redo shows "Nothing to redo", and Escape closes it](https://raw.githubusercontent.com/dark-incorporated/bevy_gooey/main/docs/media/menus.gif)
 
 *`examples/menus`: F10, Down, Right into a submenu, Left, Right across the bar to Edit, the reason on a disabled item, Escape.*
 
@@ -49,11 +46,7 @@ fn setup(mut commands: Commands) {
 | `separator()` | a line between two groups; not focusable, and it ends a radio run |
 | `Disabled::new(reason)` | a component on an item: it cannot be chosen (`InteractionDisabled`) and its tooltip says why |
 
-`menu_item`, `check_item` and `radio_item` return a `MenuItem`, a component whose insertion builds the
-row (a mark slot, the label, the chord, a chevron on a submenu), so it chains `.with_shortcut(..)` and sits in
-`(.., observe(..))` like a bundle. It sets the row's `Node`: put layout on a wrapper. The labels and chords
-are the host's strings; this crate draws the chord in the platform's words (`Shortcut::label`) and does
-not listen for it: a game's own `Shortcut::just_pressed` runs the command, as the shortcuts guide shows.
+`menu_item`, `check_item` and `radio_item` return a `MenuItem`, a component whose insertion builds the row (a mark slot, the label, the chord, a chevron on a submenu), so it chains `.with_shortcut(..)` and sits in `(.., observe(..))` like a bundle. It sets the row's `Node`: put layout on a wrapper. The labels and chords are the host's strings; this crate draws the chord in the platform's words (`Shortcut::label`) and does not listen for it: a game's own `Shortcut::just_pressed` runs the command, as the shortcuts guide shows.
 
 ## Keys and pad
 
@@ -66,15 +59,9 @@ not listen for it: a game's own `Shortcut::just_pressed` runs the command, as th
 | Enter, Space, South, a click | opens the menu (a click on an open title closes it) | chooses the item and closes the whole cascade; on a submenu, opens it |
 | Escape, the pad's B | gives focus back to where F10 took it from | closes one level and puts focus on what opened it |
 
-A disabled item can be focused (the player who walks onto it reads why) and never activates by any of
-these. A pointer moving onto another title while a menu is open opens that one instead, and a press
-anywhere outside the menus closes the cascade with one `PopoverClosed` per player action.
+A disabled item can be focused (the player who walks onto it reads why) and never activates by any of these. A pointer moving onto another title while a menu is open opens that one instead, and a press anywhere outside the menus closes the cascade with one `PopoverClosed` per player action.
 
-A menu is a modal `popover` while it is open (a `PopoverPanel`, a `Dialog` and a modal `TabGroup`), so its
-placement, its outside-press close, its `Cancel` and its focus in and back are the
-[popover's](popovers.md); it opens under its title (right of its item, for a submenu) and slides or flips at
-the window's edge. A menu taller than the room the window leaves is capped there and scrolls, the wheel and
-the focus following.
+A menu is a modal `popover` while it is open (a `PopoverPanel`, a `Dialog` and a modal `TabGroup`), so its placement, its outside-press close, its `Cancel` and its focus in and back are the [popover's](popovers.md); it opens under its title (right of its item, for a submenu) and slides or flips at the window's edge. A menu taller than the room the window leaves is capped there and scrolls, the wheel and the focus following.
 
 ## Typing a name
 
@@ -86,5 +73,4 @@ Type-select is not only for menus: a `ListView`'s rows have it, and any other co
 
 - No hover-to-open for submenus and no safe triangle: a submenu opens on Right, Enter, Space or a click.
 - A game's own chord for a command is the game's: the row shows it, `Shortcut::just_pressed` matches it.
-- Bevy's `bevy_ui_widgets::menu` is not used: it closes a menu when focus leaves it, holds one menu open at a
-  time and has no submenus.
+- Bevy's `bevy_ui_widgets::menu` is not used: it closes a menu when focus leaves it, holds one menu open at a time and has no submenus.

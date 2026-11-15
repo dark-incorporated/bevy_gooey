@@ -1,13 +1,8 @@
 # The command palette
 
-`command_palette()` is one modal field over a searchable list of every command a game or tool has, each
-with its chord and, when it cannot run, why. The player types a few letters ("opn prj" finds "File: Open
-Project"), moves with Up and Down, runs with Enter or a click and leaves with Escape. It is the way past a
-menu hierarchy for someone who does not know the chord yet, and it shows them the chord as they go
-(Malacria et al., *ExposeHK*: hotkeys "remov[e] the need to traverse a menu or tab hierarchy" but "few users
-employ any form of shortcut interface").
+`command_palette()` is one modal field over a searchable list of every command a game or tool has, each with its chord and, when it cannot run, why. The player types a few letters ("opn prj" finds "File: Open Project"), moves with Up and Down, runs with Enter or a click and leaves with Escape. It is the way past a menu hierarchy for someone who does not know the chord yet, and it shows them the chord as they go (Malacria et al., *ExposeHK*: hotkeys "remov[e] the need to traverse a menu or tab hierarchy" but "few users employ any form of shortcut interface").
 
-![The palette example: the player opens it, types "opn prj" and "File: Open Project" is the lit first row with Ctrl+O at its end; Down and Up move the lit row, Enter runs it and the line behind reads "Last command: File: Open Project"; opened again it lists that command first, "sav" shows File: Save and File: Save As... dimmed with "No project is open" where their chords would be, Down puts the ring on the second and Escape closes it](https://raw.githubusercontent.com/bevy-coven/bevy_gooey/main/docs/media/command-palette.gif)
+![The palette example: the player opens it, types "opn prj" and "File: Open Project" is the lit first row with Ctrl+O at its end; Down and Up move the lit row, Enter runs it and the line behind reads "Last command: File: Open Project"; opened again it lists that command first, "sav" shows File: Save and File: Save As... dimmed with "No project is open" where their chords would be, Down puts the ring on the second and Escape closes it](https://raw.githubusercontent.com/dark-incorporated/bevy_gooey/main/docs/media/command-palette.gif)
 
 ## Three steps
 
@@ -42,8 +37,7 @@ fn plug(app: &mut App) {
 }
 ```
 
-That is all: the palette takes focus, closes itself on Escape, a click outside or a choice, and gives focus
-back to the widget that had it (it is a [dialog](widgets.md#a-dialog) underneath).
+That is all: the palette takes focus, closes itself on Escape, a click outside or a choice, and gives focus back to the widget that had it (it is a [dialog](widgets.md#a-dialog) underneath).
 
 ## What the player gets
 
@@ -58,40 +52,23 @@ back to the widget that had it (it is a [dialog](widgets.md#a-dialog) underneath
 | Escape | close, focus back where it was; Left, Right, Home, End are the field's caret |
 | D-pad Up and Down, South | on a pad, move the lit row (a held direction repeats) and run it |
 
-A command that is off (`PaletteCommand::disabled(reason)`) is listed, can be lit, shows its reason where its
-chord would be, and runs nothing; switching it on in `CommandList` makes it run in the open palette in the
-same frame. Up to eight rows show at once and scroll under the lit one; "11 of 32" at the bottom says where.
-At 200% text or in a short window fewer rows show (`CommandPalette::visible_rows()`), as many as leave the
-whole card inside the window's safe edge, so a large-text player never has a card cut off.
+A command that is off (`PaletteCommand::disabled(reason)`) is listed, can be lit, shows its reason where its chord would be, and runs nothing; switching it on in `CommandList` makes it run in the open palette in the same frame. Up to eight rows show at once and scroll under the lit one; "11 of 32" at the bottom says where. At 200% text or in a short window fewer rows show (`CommandPalette::visible_rows()`), as many as leave the whole card inside the window's safe edge, so a large-text player never has a card cut off.
 
 ## What matches, and in what order
 
-The text matched is what the row shows: `"Category: Title"`, so "file open" finds "File: Open Project".
-`model::fuzzy_score(query, text)` is the engine-free function: the query is split on whitespace, every term
-must occur in the text as a subsequence in any order, ignoring case, and a term scores best where its
-letters start words or follow each other (`opn` in "**Op**e**n**" beats `opn` in "Reopen"), with a small
-penalty for each letter skipped and for a longer text.
+The text matched is what the row shows: `"Category: Title"`, so "file open" finds "File: Open Project". `model::fuzzy_score(query, text)` is the engine-free function: the query is split on whitespace, every term must occur in the text as a subsequence in any order, ignoring case, and a term scores best where its letters start words or follow each other (`opn` in "**Op**e**n**" beats `opn` in "Reopen"), with a small penalty for each letter skipped and for a longer text.
 
-Order: with an empty query, the commands in `PaletteHistory` first (most recent first) and the rest
-alphabetically; with a query, the commands that match, recent ones first, then the rest best score first.
-`PaletteHistory` holds the last ten ids that ran; it is serde data (feature `serde`) so a game can keep it
-between runs, and clearing it forgets them.
+Order: with an empty query, the commands in `PaletteHistory` first (most recent first) and the rest alphabetically; with a query, the commands that match, recent ones first, then the rest best score first. `PaletteHistory` holds the last ten ids that ran; it is serde data (feature `serde`) so a game can keep it between runs, and clearing it forgets them.
 
 ## Parts a host reads
 
-- `CommandList`, `PaletteCommand` (`id`, `title`, `category`, `shortcut`, `enabled`), `PaletteHistory` and the
-  `RunCommand { id }` event, sent once per choice and never for a disabled command.
-- `CommandPalette` is on the open palette: `results()` (indices into the list, in the order shown),
-  `selected()` and `selected_command(&list)`. To toggle the palette on its chord, close it if one is open
-  (`Query<Entity, With<CommandPalette>>`).
-- `PALETTE_ROWS`, the eight reused rows; `update_palette` (Style, before `apply_skin`) and
-  `palette_by_input` (Navigate) for a host that registers the systems itself.
+- `CommandList`, `PaletteCommand` (`id`, `title`, `category`, `shortcut`, `enabled`), `PaletteHistory` and the `RunCommand { id }` event, sent once per choice and never for a disabled command.
+- `CommandPalette` is on the open palette: `results()` (indices into the list, in the order shown), `selected()` and `selected_command(&list)`. To toggle the palette on its chord, close it if one is open (`Query<Entity, With<CommandPalette>>`).
+- `PALETTE_ROWS`, the eight reused rows; `update_palette` (Style, before `apply_skin`) and `palette_by_input` (Navigate) for a host that registers the systems itself.
 
 ## What it does not do
 
-- **It does not draw the matched letters** in bold, and the mouse wheel does not scroll the eight rows
-  (Up, Down and the page keys do).
+- **It does not draw the matched letters** in bold, and the mouse wheel does not scroll the eight rows (Up, Down and the page keys do).
 - **Its two sentences are English** ("Type a command", "No command matches"), like a menu's "Nothing here".
-- **It does not look in anything but the list**: a game that wants recent files or settings in it lists them as
-  commands.
+- **It does not look in anything but the list**: a game that wants recent files or settings in it lists them as commands.
 - **A long reason or title does not wrap**: keep a reason to a short phrase.
