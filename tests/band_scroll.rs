@@ -84,12 +84,12 @@ struct Measured {
     host_px: f32,
 }
 
-/// A 144.5 px wide, `host_px` tall column holding a scroll viewport of `row`s: the three named texts
+/// A `width_px` wide, `host_px` tall column holding a scroll viewport of `row`s: the three named texts
 /// and, with `extra`, enough more that the rows are taller than the viewport.
 ///
 /// Every way a row is wrong is a sentence: a row shorter than its own wrapped text, and two rows
 /// drawn over each other.
-fn measure(row: Row, ui_scale: f32, extra: usize, host_px: f32) -> Measured {
+fn measure(row: Row, ui_scale: f32, extra: usize, host_px: f32, width_px: f32) -> Measured {
     let mut app = app(ui_scale);
     let world = app.world_mut();
     let viewport = world
@@ -111,7 +111,7 @@ fn measure(row: Row, ui_scale: f32, extra: usize, host_px: f32) -> Measured {
         .collect();
     let host = world
         .spawn(Node {
-            width: Val::Px(144.5),
+            width: Val::Px(width_px),
             height: Val::Px(host_px),
             flex_direction: FlexDirection::Column,
             ..default()
@@ -155,7 +155,7 @@ fn measure(row: Row, ui_scale: f32, extra: usize, host_px: f32) -> Measured {
         defects.insert(
             0,
             format!(
-                "{} at a UI scale of {ui_scale}, {} rows in a {host_px} px viewport:",
+                "{} at a UI scale of {ui_scale}, {} rows in a {width_px} px by {host_px} px viewport:",
                 row.name(),
                 rects.len()
             ),
@@ -172,42 +172,51 @@ fn measure(row: Row, ui_scale: f32, extra: usize, host_px: f32) -> Measured {
 const ROOMY: f32 = 4000.0;
 /// A viewport the three named rows alone fill at either scale.
 const SHORT: f32 = 200.0;
+/// The widths the issue gives: the 190-logical-px panel its body names and the 144.5 its own
+/// reproduction column measured, each the scroll viewport's content.
+const WIDTHS: [f32; 2] = [144.5, 190.0];
 
 #[test]
 fn a_band_is_as_tall_as_its_wrapped_text_when_the_rows_fit() {
     for ui_scale in [1.0, 2.4] {
-        let measured = measure(Row::Band, ui_scale, 0, ROOMY);
-        assert!(
-            measured.rows_px < measured.host_px,
-            "the rows do not fit: {:?}",
-            measured.defects
-        );
-        assert_eq!(measured.defects, Vec::<String>::new());
+        for width_px in WIDTHS {
+            let measured = measure(Row::Band, ui_scale, 0, ROOMY, width_px);
+            assert!(
+                measured.rows_px < measured.host_px,
+                "the rows do not fit: {:?}",
+                measured.defects
+            );
+            assert_eq!(measured.defects, Vec::<String>::new());
+        }
     }
 }
 
 #[test]
 fn a_band_is_as_tall_as_its_wrapped_text_when_the_rows_overflow_the_viewport() {
     for ui_scale in [1.0, 2.4] {
-        let measured = measure(Row::Band, ui_scale, 60, SHORT);
-        assert!(
-            measured.rows_px > measured.host_px,
-            "the rows fit, so nothing is squeezed: {:?}",
-            measured.defects
-        );
-        assert_eq!(measured.defects, Vec::<String>::new());
+        for width_px in WIDTHS {
+            let measured = measure(Row::Band, ui_scale, 60, SHORT, width_px);
+            assert!(
+                measured.rows_px > measured.host_px,
+                "the rows fit, so nothing is squeezed: {:?}",
+                measured.defects
+            );
+            assert_eq!(measured.defects, Vec::<String>::new());
+        }
     }
 }
 
 #[test]
 fn a_list_row_is_as_tall_as_its_wrapped_text_when_the_rows_overflow_the_viewport() {
     for ui_scale in [1.0, 2.4] {
-        let measured = measure(Row::ListRow, ui_scale, 60, SHORT);
-        assert!(
-            measured.rows_px > measured.host_px,
-            "the rows fit, so nothing is squeezed: {:?}",
-            measured.defects
-        );
-        assert_eq!(measured.defects, Vec::<String>::new());
+        for width_px in WIDTHS {
+            let measured = measure(Row::ListRow, ui_scale, 60, SHORT, width_px);
+            assert!(
+                measured.rows_px > measured.host_px,
+                "the rows fit, so nothing is squeezed: {:?}",
+                measured.defects
+            );
+            assert_eq!(measured.defects, Vec::<String>::new());
+        }
     }
 }
