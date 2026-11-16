@@ -149,7 +149,7 @@ A rail is a border on one side (`Sides { right: Some(1.0), ..default() }`); a pi
 
 ## A list row, and the editor's chrome from these parts
 
-`list_row()` is a selectable full-width row of a list: Bevy's `Selected` on it lights a rail on its left in the accent and raises its fill, and nothing moves because the rail's width is always reserved. `quiet_list_row()` looks the same and is not on the `Activate` bus.
+`list_row()` is a selectable full-width row of a list: Bevy's `Selected` on it lights a rail on its left in the accent and raises its fill, and nothing moves because the rail's width is always reserved. `quiet_list_row()` looks the same and is not on the `Activate` bus. **A row is rigid** (`flex_shrink: 0`): it keeps the height its own words need, so a `fill_text` that wraps to two or four lines makes the row taller, and in a `scroll_viewport` whose rows overflow it the row is never pressed back down to its `min_height` (where its text would be drawn over the rows before and after it). The viewport scrolls; the rows keep their size.
 
 ```rust
 use bevy::prelude::*;
@@ -334,7 +334,7 @@ fn kit(mut commands: Commands) {
 |---|---|
 | `glyph_button(glyph, name)` | a `button` for a caret or a cross: no padding, and a hit area of `GooeySkin::target()` on each side (a `ControlSize` taller) **whatever the glyph's size**, the glyph centred. `name` is its tooltip and its screen-reader name |
 | `edge_tab(label)` | a tab for a strip the host selects with Bevy's `Selected`: a tab's inset, and a bottom edge that is always there (1.5 line weights) and lit in the accent only on the selected tab, so selecting moves nothing. The selected tab is the surface, the others a button's raised fill. It takes no focus and no Enter: for a strip with keys and pages use `tabs` |
-| `band()` | a full-width row that is a button, a half gap off what is above it, with a button's fill and states: a grouped list's header. Put `Role::ButtonText` marks, `fill_text` and `count_text` in it |
+| `band()` | a full-width row that is a button, a half gap off what is above it, with a button's fill and states: a grouped list's header. Put `Role::ButtonText` marks, `fill_text` and `count_text` in it. Rigid like a `list_row`: as tall as its wrapped text at whatever width it is finally given, even where its host would squeeze it |
 | `fill_text(text)` | a text that grows, gives way to its neighbours (`min_width` 0) and wraps at a word or a letter, so a long name wraps in its own column and never pushes its row out |
 | `count_text(text)` | a text that never shrinks and never wraps: a tally that keeps a column of its own |
 

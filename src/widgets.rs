@@ -4282,6 +4282,11 @@ pub fn edge_tab(label: impl Into<String>) -> impl Bundle {
 /// Role::ButtonText)`); they follow the band's state. Observe
 /// [`Activate`](crate::Activate) on it to fold or open.
 ///
+/// **It is rigid** (`flex_shrink: 0`): a [`fill_text`] that wraps to two or four lines makes the
+/// band taller, at whatever width it is finally given, and a host that would squeeze it — the rows
+/// of a [`scroll_viewport`](crate::scroll_viewport) overflowing it — never presses it back down to
+/// its `min_height`, where its words would be drawn over the rows before and after it.
+///
 /// ```
 /// # use bevy::prelude::*;
 /// # use bevy_gooey::*;
@@ -4321,6 +4326,10 @@ pub fn band() -> impl Bundle {
 /// words of a row that can be pressed. For a row that brings its own click handling and must stay off the
 /// `Activate` bus use [`quiet_list_row`].
 ///
+/// **It is rigid** (`flex_shrink: 0`) for the band's reason: it is as tall as its wrapped
+/// [`fill_text`] at the width it is finally given, and a viewport whose rows overflow it scrolls
+/// rather than squeezing them.
+///
 /// ```
 /// # use bevy::prelude::*;
 /// # use bevy_gooey::*;
@@ -4350,7 +4359,7 @@ pub fn list_row() -> impl Bundle {
 
 /// A [`list_row`] that is not on the `Activate` bus: the same look, but not Bevy's `Button`, so no
 /// `Activate` is sent, it is no tab stop and it has no pressed state; the host listens for
-/// `PointerClick` itself.
+/// `PointerClick` itself. It is as rigid as a [`list_row`].
 ///
 /// ```
 /// # use bevy::prelude::*;

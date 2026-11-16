@@ -4162,7 +4162,11 @@ fn restyle(
                 next.flex_shrink = 0.0;
             }
             // A band is as wide as the room its host gives it and stands half a gap off what is
-            // above it; what is in it is a row, a half gap apart.
+            // above it; what is in it is a row, a half gap apart. It is rigid: its `min_height` is
+            // explicit, which switches off a flex item's automatic content minimum, so a host that
+            // squeezes it (a `scroll_viewport` whose rows overflow it) would press its wrapped text
+            // out over the rows before and after it. A row of a list never gives way; the viewport
+            // scrolls.
             Role::Band => {
                 next.width = Val::Percent(100.0);
                 next.min_width = Val::ZERO;
@@ -4175,10 +4179,13 @@ fn restyle(
                 next.column_gap = Val::Px(skin.gap * 0.5);
                 next.margin = UiRect::top(Val::Px(skin.gap * 0.5));
                 next.min_height = Val::Px(control);
+                next.flex_shrink = 0.0;
             }
             // A list row is as wide as its host, a button's air inside, a line all round and a rail's
             // width on the left: that width is always there, lit only while selected, so selecting
-            // moves no word. What is in it is a row, a half gap apart.
+            // moves no word. What is in it is a row, a half gap apart. Rigid for the band's reason:
+            // a row of a list keeps the height its own words need (a wrapped `fill_text`), and the
+            // viewport scrolls the rest.
             Role::ListRow => {
                 next.width = Val::Percent(100.0);
                 next.min_width = Val::ZERO;
@@ -4193,6 +4200,7 @@ fn restyle(
                 );
                 next.column_gap = Val::Px(skin.gap * 0.5);
                 next.min_height = Val::Px(control);
+                next.flex_shrink = 0.0;
             }
             // An edge tab's own inset is a tab's. Its bottom edge is always there, a heavier line
             // than a frame, so lighting it (`BorderColor`) changes a colour and no size.

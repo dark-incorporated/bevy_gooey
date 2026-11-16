@@ -268,6 +268,19 @@
 
 ### Fixed
 
+- A `band()` and a `list_row()` keep the height their wrapped text needs; a scroll viewport whose rows
+  overflow it scrolls instead of squeezing them (#105, `tests/band_scroll.rs`). `Role::Band` and
+  `Role::ListRow` set an explicit `min_height` (the skin's target), which switches off a flex item's
+  automatic content minimum, while a `scroll_viewport` is a flex column whose children keep Bevy's
+  default `flex_shrink: 1`. So whenever the rows together were taller than the viewport every row was
+  pressed down to its `min_height`: a two-line `fill_text` (`dimensional_crab`, 192 px) and a four-line
+  one (`kenney_prototype-kit/Models/GLB format`, 432 px) were drawn over the rows before and after
+  them, out of a 265 px band 88 px tall. Both roles are rigid now (`flex_shrink: 0`): at a scale factor
+  of 2 and UI scales 1.0 and 2.4, no row is shorter than its own text and no two rows overlap, whether
+  the rows fit the viewport or overflow it by 63 rows. `quiet_list_row()` is a `Role::ListRow` and
+  follows; no other role's layout changed. Consumer: bevy_grimoire's Pieces panel
+  (`bevy_dark_factory#468`), which no longer patches a `flex_shrink` of its own.
+
 - `split_clamp` (so `split_drag` and every split) no longer panics when its two bounds invert by one ulp
   (G-91, #102): when the panes' minimums sum to the extent, `first / extent` and `1.0 - second / extent` are equal
   up to float noise, and `f32::clamp` panics on `min > max`; the bounds are ordered now. The same audit of every

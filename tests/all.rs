@@ -8,6 +8,7 @@
 mod access;
 mod anchor;
 mod badges;
+mod band_scroll;
 mod binding;
 mod button_variant;
 mod cancel;
