@@ -838,8 +838,16 @@ pub(crate) fn table_bundle(
         .map(|c| (c.title.clone(), c.sortable))
         .collect();
     (
+        // **A table fills the height it is given** (#111): `Role::Table` virtualizes, so it needs a
+        // bounded height to lay rows into. With no stated height the node fell back to its content's
+        // and a tree inside a `fill_region` left the rest of its panel empty -- bevy_dark_factory #524,
+        // the owner's "why doesn't the file explorer fill this div". `min_height: 0` keeps a tall row
+        // from forcing the table past the height its region gave it, since a flex item's automatic
+        // least height is its content's.
         Node {
             flex_direction: FlexDirection::Column,
+            flex_grow: 1.0,
+            min_height: Val::Px(0.0),
             overflow: Overflow::clip_x(),
             ..default()
         },
