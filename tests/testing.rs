@@ -241,6 +241,105 @@ fn enter_activates_the_focused_button_and_space_flips_a_toggle() {
     );
 }
 
+/// Every `ValueChange<bool>` a click on a toggle produced: the widget it names and its value.
+#[derive(Resource, Default)]
+struct Toggles(Vec<(Entity, bool)>);
+
+/// Notes a toggle's `ValueChange<bool>` with the entity it names as its source.
+fn note_toggle(change: On<ValueChange<bool>>, mut seen: ResMut<Toggles>) {
+    seen.0.push((change.source, change.value));
+}
+
+/// The entity a `PointerClick` landed on, and every entity it bubbled to: what the pointer picked
+/// and what heard the click above it.
+#[derive(Resource, Default)]
+struct Picked(Vec<Entity>);
+
+/// Notes the target of each `PointerClick` as it reaches each entity on its way up.
+fn note_pick(click: On<PointerClick>, mut seen: ResMut<Picked>) {
+    seen.0.push(click.entity);
+}
+
+fn app_noting_toggles(scale: f32) -> App {
+    let mut app = app_scaled(scale);
+    // Assumed owner exception (#76): a toggle's knob glides on the real clock, and `click` samples
+    // the drawn `UiTransform` while picking hit-tests the laid-out box; landing the motion makes
+    // the two agree in the frame the click lands.
+    app.insert_resource(MotionSettings::off());
+    app.init_resource::<Toggles>()
+        .init_resource::<Picked>()
+        .add_observer(note_toggle)
+        .add_observer(note_pick);
+    app
+}
+
+/// #112: a click on a toggle's **track** or **knob**, not its label, must flip it.
+///
+/// The track and the knob are nodes inside the `Checkbox` row, so a press on either picks a child
+/// rather than the row. `bevy_ui_widgets`'`checkbox_on_pointer_click` (and `_pointer_down`) query
+/// `Checkbox` on the entity the click names — but `PointerClick` is an `auto_propagate` entity event
+/// up the parent chain, so the row hears the click whichever of its children was picked, and the row
+/// is the `source`. This test drives the real pointer path with `testing::click`, never
+/// `trigger(ValueChange)`, and asserts from both ends: which entity was picked, and which heard it.
+#[test]
+fn a_click_on_a_toggles_track_and_knob_flips_it() {
+    let mut app = app_noting_toggles(1.0);
+    app.world_mut().spawn((
+        screen(),
+        children![(panel(), children![toggle("Music", true)])],
+    ));
+    for _ in 0..4 {
+        app.update();
+    }
+    let music = find_by_label(&mut app, "Music").expect("a toggle");
+
+    // The track and the knob, found by role under the row.
+    let part = |app: &App, role: Role| {
+        let mut stack = vec![music];
+        while let Some(entity) = stack.pop() {
+            if app.world().get::<Role>(entity) == Some(&role) {
+                return entity;
+            }
+            if let Some(children) = app.world().get::<Children>(entity) {
+                stack.extend(children.iter());
+            }
+        }
+        panic!("a {role:?} under the toggle");
+    };
+    let track = part(&app, Role::ToggleTrack);
+    let knob = part(&app, Role::ToggleKnob);
+
+    // The track, which is what #112 says swallows the press.
+    app.world_mut().resource_mut::<Picked>().0.clear();
+    click(&mut app, track);
+    assert_eq!(
+        app.world().resource::<Picked>().0,
+        [track, music],
+        "the click picks the track and then bubbles to the row"
+    );
+    assert_eq!(
+        app.world().resource::<Toggles>().0,
+        [(music, false)],
+        "the row hears the click on its track and flips"
+    );
+    assert!(app.world().get::<Checked>(music).is_none(), "off now");
+
+    // The knob, a third level down.
+    app.world_mut().resource_mut::<Picked>().0.clear();
+    click(&mut app, knob);
+    assert_eq!(
+        app.world().resource::<Picked>().0,
+        [knob, track, music],
+        "the click picks the knob, the track and then the row"
+    );
+    assert_eq!(
+        app.world().resource::<Toggles>().0,
+        [(music, false), (music, true)],
+        "the row hears the click on its knob and flips back"
+    );
+    assert!(app.world().get::<Checked>(music).is_some(), "on again");
+}
+
 #[test]
 fn text_typed_goes_into_the_field_the_label_focused() {
     let mut app = app();
