@@ -12,12 +12,15 @@ hand-roll them today.
 2. Hugo Martin, creative director of *DOOM Eternal*, on its HUD, in VG24/7's interview (quoted at
    https://mspoweruser.com/doom-eternal-ui-explained-big-bold-loud/) and Game Developer's *How Doom Eternal Owns the
    "Contrivances" of Video Games* (shipping game).
-3. W3C, *Cascading Style Sheets Level 2 Revision 1*, §10.1 *Definition of "containing block"* (technical: where an absolute
-   child's percentages and insets are measured); W3C WAI, *Understanding SC 1.4.11 Non-text Contrast* (technical).
+3. W3C WAI, *Understanding SC 1.4.11: Non-text Contrast* (WCAG 2.2) —
+   https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html (technical; already the basis of
+   `docs/research/meter.md` M2). Where an absolute child's percentages are measured is not taken from a spec: Bevy 0.20's
+   `ui_node.rs` documents no containing-block rule, so the notch lane's geometry is pinned by `tests/meter_style.rs`
+   against laid-out rectangles.
 
 ## Craft principle
 
-The guidelines: "use colour as a back-up for another means of communicating the information, such as text or a symbol,
+The guidelines, as reported by a search summary (the page itself was not fetched, so the wording is a close paraphrase): "use colour as a back-up for another means of communicating the information, such as text or a symbol,
 pattern or shape", and "If color reliance is unavoidable, providing players the option to assign their own color choice
 for individual game elements is important." A tone per bar is colour; the bar's position, length and the notches are the
 pattern behind it, so a tone is never the only cue. The tone is data in the skin (`GooeySkin::tones`), so a player's own
@@ -76,5 +79,5 @@ None from a citation; the numbers are design defaults.
 ## Pending index
 
 home-still's distill answered 500 `gpu busy: yielded to inkling-2-mini@big` for the whole pass, so no corpus stem was
-searched: the three sources above were read from the web. The Game Accessibility Guidelines pages and the *DOOM Eternal*
+searched: the sources above were read from the web (the DOOM Eternal quote is verified at its page; the guideline wording is as reported). The Game Accessibility Guidelines pages and the *DOOM Eternal*
 interview are to be indexed.
