@@ -42,9 +42,10 @@ use crate::code_buffer::{
 };
 use crate::code_decor::{CodeCompletions, CompletionTrigger};
 use crate::code_decor::{Highlights, line_runs};
-use crate::code_fold::FoldMap;
+use crate::code_markdown::markdown_highlights;
 use crate::code_overlay::{FoldRequest, Overlay, code_on_move, code_on_out};
 use crate::code_search::CodeFind;
+use crate::code_wrap::RowMap;
 use crate::model::{SpringState, snap_line_width, snap_text_size, spring_settled, spring_step};
 use crate::motion::{MotionSettings, MotionToken};
 use crate::region::FocusRegion;
@@ -89,6 +90,42 @@ const GUTTER_SPARE_COLS: f32 = 2.0;
 
 /// How many columns the caret keeps between itself and the edge of the view when it is revealed.
 const REVEAL_COLUMNS: f32 = 3.0;
+
+/// Put on a [`code_editor`] to wrap its long lines at the edge of the editor instead of scrolling
+/// sideways (#114).
+///
+/// A line breaks after a blank or a hyphen when it can and in the middle of a word longer than
+/// the editor is wide when it cannot; blanks hang over the edge instead of starting a row. The
+/// text is the buffer's own: a wrap is drawn, never written, so copy, undo, search and the
+/// host's `CodeEditorValue` see each line whole. Only a line's first row carries its number.
+/// Up and Down move by drawn row, Home and End go to the row's start and end first and to the
+/// line's on a second press, and a click lands on the row it is on. An editor with no
+/// `CodeSoftWrap` is drawn and scrolls exactly as before.
+///
+/// It is a component and not a field of [`CodeEditorSettings`] so a code pane and a prose pane in
+/// one app need not agree.
+///
+/// ```
+/// # use bevy_gooey::{CodeSoftWrap, code_editor};
+/// # use bevy::prelude::*;
+/// # fn spawn(mut commands: Commands) {
+/// commands.spawn((code_editor("Notes", "a very long line of prose"), CodeSoftWrap));
+/// # }
+/// ```
+#[derive(Component, Clone, Copy, Debug, Default, Reflect)]
+#[reflect(Component, Default, Debug, Clone)]
+pub struct CodeSoftWrap;
+
+/// Put on a [`code_editor`] to draw its text as Markdown: headings, code, emphasis, links, list
+/// and quote marks each in a colour of the skin (#114).
+///
+/// The editor keeps the spans current itself, from [`markdown_highlights`], as the player types
+/// and as the host sets the text, so no frame draws new text in old colours. A host's own
+/// [`Highlights`] on the same editor are ignored while this is there. Without it the editor draws
+/// plain text, or the host's `Highlights`.
+#[derive(Component, Clone, Copy, Debug, Default, Reflect)]
+#[reflect(Component, Default, Debug, Clone)]
+pub struct CodeMarkdown;
 
 /// The settings of every [`code_editor`]: a resource a host inserts to change them. With none in
 /// the world every editor takes the defaults, so the crate adds no resource until a host wants
@@ -356,7 +393,11 @@ pub struct CodeEditor {
     /// The widest line, in columns, for the buffer revision and tab width it was measured at.
     pub(crate) longest: ((u64, usize), usize),
     /// The lines the closed folds hide, and the headers the player closed.
-    pub(crate) fold: FoldMap,
+    pub(crate) fold: RowMap,
+    /// The Markdown spans of a [`CodeMarkdown`] editor, for the revision they name.
+    markdown: Option<std::sync::Arc<Highlights>>,
+    /// The offset in its row the caret keeps across wrapped moves, and where the last left it.
+    row_want: Option<(CodePos, usize)>,
     pub(crate) folded: std::collections::BTreeSet<usize>,
     pub(crate) fold_dirty: bool,
     pub(crate) view: View,
@@ -392,7 +433,9 @@ impl CodeEditor {
             parts: Parts::default(),
             scan: true,
             longest: ((u64::MAX, 0), 0),
-            fold: FoldMap::default(),
+            fold: RowMap::default(),
+            markdown: None,
+            row_want: None,
             folded: std::collections::BTreeSet::new(),
             fold_dirty: false,
             view: View::default(),
@@ -460,6 +503,9 @@ impl CodeEditor {
 
     /// Moves the caret `n` rows up or down; a line a closed fold hides is no row.
     pub(crate) fn move_rows(&mut self, up: bool, n: usize, extend: bool) {
+        if self.fold.wraps() {
+            return self.move_wrapped_rows(up, n, extend);
+        }
         let rows = self.fold.rows(self.buffer.len_lines());
         let row = self.fold.row_of(self.buffer.caret().line);
         let target = if up {
@@ -473,6 +519,84 @@ impl CodeEditor {
                 .move_to(CodeMove::ToLine(self.fold.line_at(row)), extend),
             None if up => self.buffer.move_to(CodeMove::DocStart, extend),
             None => self.buffer.move_to(CodeMove::DocEnd, extend),
+        }
+    }
+
+    /// [`move_rows`](Self::move_rows) in a wrapped editor: the caret keeps its offset in its row
+    /// (`row_want`, good while the caret is where the last such move left it) and a row a line's
+    /// own text is too short to fill puts it at the row's end.
+    fn move_wrapped_rows(&mut self, up: bool, n: usize, extend: bool) {
+        let rows = self.fold.rows(self.buffer.len_lines());
+        let caret = self.buffer.caret();
+        let tab = self.buffer.tab_width();
+        let col = display_col(self.buffer.line(caret.line), caret.col, tab);
+        let row = self.fold.row_at(caret.line, col);
+        let want = match self.row_want {
+            Some((at, want)) if at == caret => want,
+            _ => col - self.fold.row_start(caret.line, col),
+        };
+        let target = if up {
+            row.checked_sub(n)
+        } else {
+            Some(row + n).filter(|&row| row < rows)
+        };
+        match target.and_then(|row| self.fold.window(row)) {
+            Some((line, from, to)) => {
+                let mut at = from + want;
+                if let Some(to) = to {
+                    at = at.min(to.saturating_sub(1).max(from));
+                }
+                self.buffer.move_to(CodeMove::ToColumn(line, at), extend);
+                self.row_want = Some((self.buffer.caret(), want));
+            }
+            None if up => self.buffer.move_to(CodeMove::DocStart, extend),
+            None => self.buffer.move_to(CodeMove::DocEnd, extend),
+        }
+    }
+
+    /// Home: in a wrapped editor the start of the caret's row first, then the line's own Home.
+    pub(crate) fn home(&mut self, extend: bool) {
+        let caret = self.buffer.caret();
+        let col = display_col(
+            self.buffer.line(caret.line),
+            caret.col,
+            self.buffer.tab_width(),
+        );
+        let from = self.fold.row_start(caret.line, col);
+        if from > 0 && col > from {
+            self.buffer
+                .move_to(CodeMove::ToColumn(caret.line, from), extend);
+        } else {
+            self.buffer.move_to(CodeMove::Home, extend);
+        }
+    }
+
+    /// End: in a wrapped editor the end of the caret's row's text first, then the line's end.
+    pub(crate) fn end(&mut self, extend: bool) {
+        let caret = self.buffer.caret();
+        let col = display_col(
+            self.buffer.line(caret.line),
+            caret.col,
+            self.buffer.tab_width(),
+        );
+        if self.fold.is_last_row(caret.line, col) {
+            self.buffer.move_to(CodeMove::LineEnd, extend);
+            return;
+        }
+        let to = self
+            .fold
+            .breaks_of(caret.line)
+            .and_then(|breaks| breaks.iter().copied().find(|&at| at > col))
+            .unwrap_or(usize::MAX);
+        let end = self
+            .fold
+            .row_text_end(&self.buffer, caret.line, col)
+            .min(to.saturating_sub(1));
+        if col >= end {
+            self.buffer.move_to(CodeMove::LineEnd, extend);
+        } else {
+            self.buffer
+                .move_to(CodeMove::ToColumn(caret.line, end), extend);
         }
     }
 
@@ -829,8 +953,8 @@ fn code_on_key(
         KeyCode::PageDown => editor.move_rows(false, page, shift),
         KeyCode::Home if ctrl => editor.buffer.move_to(CodeMove::DocStart, shift),
         KeyCode::End if ctrl => editor.buffer.move_to(CodeMove::DocEnd, shift),
-        KeyCode::Home => editor.buffer.move_to(CodeMove::Home, shift),
-        KeyCode::End => editor.buffer.move_to(CodeMove::LineEnd, shift),
+        KeyCode::Home => editor.home(shift),
+        KeyCode::End => editor.end(shift),
         KeyCode::Backspace => {
             editor.buffer.backspace(ctrl || alt, now);
         }
@@ -1097,6 +1221,8 @@ pub(crate) fn update_code_editors(
         Option<&ComputedUiRenderTargetInfo>,
         Option<&ClickCount>,
         Option<&Highlights>,
+        Has<CodeSoftWrap>,
+        Has<CodeMarkdown>,
     )>,
     mut parts: Query<PartItem>,
     scan: Query<(Entity, &CodePart)>,
@@ -1127,7 +1253,18 @@ pub(crate) fn update_code_editors(
         .map(|ime| ime.read().cloned().collect())
         .unwrap_or_default();
     let mut ime_focus = None;
-    for (root, mut editor_mut, mut value, indentation, target, clicks, highlights) in &mut editors {
+    for (
+        root,
+        mut editor_mut,
+        mut value,
+        indentation,
+        target,
+        clicks,
+        highlights,
+        soft_wrap,
+        markdown,
+    ) in &mut editors
+    {
         let Some(target) = target else {
             continue;
         };
@@ -1225,9 +1362,14 @@ pub(crate) fn update_code_editors(
         editor.area = size;
         let tab = editor.buffer.tab_width();
         let lines = editor.buffer.len_lines();
+        let pad = m.pad_px;
+        // Rows are as wide as the area less the padding on both sides, in whole columns; a
+        // wrapped editor has no horizontal scroll, so a row never needs more.
+        let wrap_cols = (soft_wrap && size.x > 0.0)
+            .then(|| (((size.x - 2.0 * pad) / advance).floor().max(1.0)) as usize);
+        editor.fold.sync(wrap_cols, &editor.buffer);
         let fold = editor.fold.clone();
         let rows = fold.rows(lines);
-        let pad = m.pad_px;
 
         // IME and a paste that was still on its way.
         if focused {
@@ -1313,7 +1455,15 @@ pub(crate) fn update_code_editors(
                 editor.overlay.fold_requests.push(FoldRequest::Toggle(line));
                 special = true;
             }
-            let col = (x / advance + 0.5).floor().max(0.0) as usize;
+            let mut col = (x / advance + 0.5).floor().max(0.0) as usize;
+            if let Some((_, from, to)) = fold.window(row) {
+                // A wrapped row starts at its own column, and a press past its end lands before
+                // the break, never on the row after.
+                col += from;
+                if let Some(to) = to {
+                    col = col.min(to.saturating_sub(1).max(from));
+                }
+            }
             let at = CodePos::new(line, byte_at_display(editor.buffer.line(line), col, tab));
             match gesture {
                 _ if special => {}
@@ -1384,9 +1534,15 @@ pub(crate) fn update_code_editors(
             shown_line.insert_str(caret.col, &editor.preedit.clone());
         }
         let caret_col = display_col(&shown_line, caret.col + editor.preedit.len(), tab);
+        let caret_row = fold.row_at(caret.line, caret_col);
+        let caret_from = if fold.wraps() {
+            fold.row_start(caret.line, caret_col)
+        } else {
+            0
+        };
         let caret_target = Vec2::new(
-            caret_col as f32 * advance,
-            fold.row_of(caret.line) as f32 * m.line_px,
+            (caret_col - caret_from) as f32 * advance,
+            caret_row as f32 * m.line_px,
         );
 
         // The view: how far it may go, where the caret asks it to be, and the glide there.
@@ -1398,7 +1554,11 @@ pub(crate) fn update_code_editors(
             cols
         };
         let max = Vec2::new(
-            (longest as f32 * advance + 2.0 * pad + advance - size.x).max(0.0),
+            if fold.wraps() {
+                0.0
+            } else {
+                (longest as f32 * advance + 2.0 * pad + advance - size.x).max(0.0)
+            },
             (rows as f32 * m.line_px - size.y).max(0.0),
         );
         if editor.reveal {
@@ -1604,16 +1764,36 @@ pub(crate) fn update_code_editors(
             set_px(&mut node.left, pad - frac.x);
         }
 
-        let highlights = highlights.filter(|highlights| highlights.revision() == value.revision);
+        let markdown_spans = if markdown {
+            if editor
+                .markdown
+                .as_ref()
+                .is_none_or(|spans| spans.revision() != value.revision)
+            {
+                editor.markdown = Some(std::sync::Arc::new(markdown_highlights(
+                    &editor.buffer.text(),
+                    value.revision,
+                )));
+            }
+            editor.markdown.clone()
+        } else {
+            editor.markdown = None;
+            None
+        };
+        let highlights = match markdown_spans.as_deref() {
+            Some(spans) => Some(spans),
+            None => highlights.filter(|highlights| highlights.revision() == value.revision),
+        };
         if highlights.is_some() && editor.starts.0 != revision {
             editor.starts = (revision, editor.buffer.line_starts());
         }
         for slot in 0..editor.parts.texts.len() {
             let row = first + slot;
-            let line = if slot < needed && row < rows {
-                fold.line_at(row)
+            // The columns this row shows: the view's own window, or its piece of a wrapped line.
+            let (line, row_from, row_to) = if slot < needed && row < rows {
+                fold.span(row, first_col, cols)
             } else {
-                lines
+                (lines, first_col, first_col + cols)
             };
             let shown_row = line < lines;
             let text_entity = editor.parts.texts[slot];
@@ -1634,9 +1814,9 @@ pub(crate) fn update_code_editors(
                         && (editor.preedit.is_empty() || line != caret.line);
                     let want = RowShown {
                         line: if shown_row { line } else { usize::MAX },
-                        first_col,
+                        first_col: row_from,
                         tab,
-                        cols,
+                        cols: row_to - row_from,
                         revision: if editor.preedit.is_empty() || line != caret.line {
                             revision
                         } else {
@@ -1656,8 +1836,8 @@ pub(crate) fn update_code_editors(
                                 editor.starts.1.get(line).copied().unwrap_or(0),
                                 highlights.spans(),
                                 tab,
-                                first_col,
-                                first_col + cols,
+                                row_from,
+                                row_to,
                             );
                             if !text.0.is_empty() {
                                 text.0.clear();
@@ -1698,14 +1878,9 @@ pub(crate) fn update_code_editors(
                             let string = if !shown_row {
                                 String::new()
                             } else if !editor.preedit.is_empty() && line == caret.line {
-                                expand_slice(&shown_line, first_col, first_col + cols, tab)
+                                expand_slice(&shown_line, row_from, row_to, tab)
                             } else {
-                                expand_slice(
-                                    editor.buffer.line(line),
-                                    first_col,
-                                    first_col + cols,
-                                    tab,
-                                )
+                                expand_slice(editor.buffer.line(line), row_from, row_to, tab)
                             };
                             if text.0 != string {
                                 text.0 = string;
@@ -1733,7 +1908,9 @@ pub(crate) fn update_code_editors(
                         Display::None
                     },
                 );
-                let lit = shown_row && line == caret.line;
+                // A wrapped line's number is on its first row only.
+                let numbered = shown_row && fold.row_of(line) == row;
+                let lit = numbered && line == caret.line;
                 let wanted_role = if lit {
                     Role::CodeNumberLit
                 } else {
@@ -1744,7 +1921,7 @@ pub(crate) fn update_code_editors(
                 }
                 if let (Some(mut text), Some(mut row_state)) = (text, row_state) {
                     let want = RowShown {
-                        line: if shown_row { line } else { usize::MAX },
+                        line: if numbered { line } else { usize::MAX },
                         first_col: 0,
                         tab: 0,
                         cols: digits,
@@ -1753,7 +1930,7 @@ pub(crate) fn update_code_editors(
                         lit,
                     };
                     if *row_state != want {
-                        let string = if shown_row {
+                        let string = if numbered {
                             (line + 1).to_string()
                         } else {
                             String::new()
@@ -1773,10 +1950,22 @@ pub(crate) fn update_code_editors(
                 } else {
                     None
                 };
+                // A wrapped row shows only its own piece of the selected columns.
+                let cols_here = cols_here.and_then(|(from, to)| {
+                    if fold.wraps() {
+                        let (from, to) = (from.max(row_from), to.min(row_to));
+                        (from < to).then_some((from, to))
+                    } else {
+                        Some((from, to))
+                    }
+                });
                 match cols_here {
                     Some((from, to)) if slot < needed => {
                         set_display(&mut node, Display::Flex);
-                        set_px(&mut node.left, pad + from as f32 * advance - shown.x);
+                        set_px(
+                            &mut node.left,
+                            pad + from as f32 * advance - fold.origin_x(row, shown.x, advance),
+                        );
                         set_px(&mut node.width, (to - from) as f32 * advance);
                         set_px(&mut node.top, row as f32 * m.line_px - shown.y);
                     }
@@ -1787,10 +1976,7 @@ pub(crate) fn update_code_editors(
         if let Some(lit_entity) = editor.parts.line_lit
             && let Ok((_, mut node, ..)) = parts.get_mut(lit_entity)
         {
-            set_px(
-                &mut node.top,
-                fold.row_of(caret.line) as f32 * m.line_px - shown.y,
-            );
+            set_px(&mut node.top, caret_row as f32 * m.line_px - shown.y);
         }
         if let Some(caret_entity) = editor.parts.caret
             && let Ok((_, mut node, _, visibility, ..)) = parts.get_mut(caret_entity)
