@@ -4375,7 +4375,7 @@ fn toggle_chip_on_activate(
 ///
 /// **It gives way before its row does.** Its words break at a word (at a letter when one word is
 /// wider than its host), so its least width is its longest word: in a wrapping row
-/// ([`RowLayout`] with `wrap`) a chip first narrows and wraps its own words, and only when it
+/// ([`crate::RowLayout`] with `wrap`) a chip first narrows and wraps its own words, and only when it
 /// cannot narrow further does the row start a new line. It is never wider than its host, so one
 /// long name does not push out of a panel.
 ///
