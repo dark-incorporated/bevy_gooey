@@ -3473,3 +3473,43 @@ a divider under 24 px; (5) `LedSize` for the status-bar's own readouts.
 
 **Cleanup.** Removed my own `/tmp/g103` and worktree `~/g103_base`. Left: `~/g17_base`, `~/g17_parked`, `~/g17s_base`,
 and the parked branch `loop/iter-103` (tests only, adopted by cherry-pick, not deleted).
+
+## Iteration 104 — 2026-11-22 — code editor soft wrap and Markdown ink (#114)
+
+**Audit left `missing: release`.** Released v0.53.0 (semver-checks: 2 breaking, minor; adad67e, tagged, pushed). `cargo publish`
+answered 403 "authentication failed" again: newest on crates.io is still 0.51.8, so 0.51.9 to 0.54.0 wait for an owner token.
+Not retried.
+
+**Built.** #114 (the only open issue, from bevy_dark_factory's markdown pane): `CodeSoftWrap` wraps a `code_editor` at its edge
+at words (the text is never changed; one number per line; Up/Down by row through the new `CodeMove::ToColumn`; Home/End by row
+then line; selection, find, squiggle, hover and completion pieces per row), and `CodeMarkdown` draws the text as Markdown in the
+skin's inks through the new engine-free `markdown_highlights`, kept current per edit. Engine-free `src/code_wrap.rs` (`RowMap`
+over `FoldMap`, so rows are display rows and lines are buffer lines everywhere).
+
+**Assumed decision (owner may override, posted on #114, label `assumed-decision`).** The two switches are per-editor marker
+components, not bools on the global `CodeEditorSettings` resource: a code pane and a prose pane in one app must not have to agree,
+and that resource is deliberately not `init_resource`d (an extra archetype flipped `tests/frames.rs`' tab order).
+
+**Sources** (by stem, `docs/research/code-soft-wrap.md`): WCAG 2.2 SC 1.4.10, Roblox Studio and VS Code word-wrap docs, xi-editor
+Rope science part 5, CommonMark spec. home-still had nothing on wrapping.
+
+**Critique / verdict.** Viewed `docs/media/prose.png` (1280x720) and a 2560x1440 capture: wrapped pane GREAT (five rows under one
+number, heading/bold/code/list/link/fence each in its own ink at readable contrast, last row whole), plain pane unchanged. First
+look had the last line half cut (page too long for the pane) and the bold span reading as plain; trimmed the sample page and fixed
+the bold role before the final capture. A still, not a GIF: nothing moves.
+
+**Checklist.** Tests (additive): code_wrap 12, code_markdown 6 + doctest, code_editor 9 wrap tests (wrap, unwrapped unchanged, click,
+Up/Down, Home/End, numbers, selection bands, two settled-writes-nothing), code_decor 2. Gate green on the merged tree: fmt, clippy
+-D warnings, nextest 1656 passed, 348 doctests, check, wasm32, doc. Perf (gallery, 8 alternating pairs, load ~5): median
+24.55 -> 23.15 ms, none worse. Wrap rebuild: 9.7 ms median (4 to 11) for 20,000 lines of 100 chars, release, whole-map; settled
+editors rebuild nothing. Commits: research b5f9d48, implementation c747181, merge 9a12dbc, release 40df24d (v0.54.0:
+`CodeMove::ToColumn`, enum_variant_added, minor).
+
+**Gaps left.** Indent guides and the minimap are line-based under wrap; no hanging indent; the wrap map rebuilds whole (9.7 ms at
+20,000 lines); the Markdown scanner has no tables, nesting or setext headings. No bevy_grimoire issue named #114.
+
+**Backlog (top 5).** (1) crates.io token, publish 0.51.9..0.54.0; (2) incremental wrap rebuild from `take_line_edits`;
+(3) a windowed variable-height table (prefix sums) for wrapping tables of 10,000 rows; (4) minimap and indent guides under wrap;
+(5) a `problems()` note for a divider under 24 px.
+
+**Cleanup.** Removing my own `/tmp/g104` and worktree `~/g104_base`. Left: `~/g17_base`, `~/g17_parked`, `~/g17s_base`.
