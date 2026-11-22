@@ -3495,8 +3495,7 @@ Rope science part 5, CommonMark spec. home-still had nothing on wrapping.
 
 **Critique / verdict.** Viewed `docs/media/prose.png` (1280x720) and a 2560x1440 capture: wrapped pane GREAT (five rows under one
 number, heading/bold/code/list/link/fence each in its own ink at readable contrast, last row whole), plain pane unchanged. First
-look had the last line half cut (page too long for the pane) and the bold span reading as plain; trimmed the sample page and fixed
-the bold role before the final capture. A still, not a GIF: nothing moves.
+look had the last line half cut (page too long for the pane); trimmed the sample page twice and re-captured. A still, not a GIF: nothing moves.
 
 **Checklist.** Tests (additive): code_wrap 12, code_markdown 6 + doctest, code_editor 9 wrap tests (wrap, unwrapped unchanged, click,
 Up/Down, Home/End, numbers, selection bands, two settled-writes-nothing), code_decor 2. Gate green on the merged tree: fmt, clippy
