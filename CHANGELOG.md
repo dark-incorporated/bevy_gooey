@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.55.0] - 2026-11-22
+
 ### Breaking
 
 - `Role` has two new variants, `Chip` and `ChipText`; a `match` over it needs arms.
