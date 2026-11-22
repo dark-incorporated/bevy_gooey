@@ -66,6 +66,7 @@ mod menu;
 mod menu_exit;
 mod meter;
 mod meter_motion;
+mod meter_style;
 mod motion;
 mod motion_trace;
 mod nav;

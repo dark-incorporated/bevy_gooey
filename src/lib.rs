@@ -335,12 +335,14 @@ pub use menu::{
     Disabled, MenuBar, MenuItem, MenuMarked, MenuOpen, MenuPanel, MenuTitle, fit_menus,
     focus_menu_bar, menu_by_input, scroll_menus_to_focus, switch_menus_on_hover,
 };
-pub use meter::{Meter, update_meters};
+pub use meter::{
+    METER_MAX_SEGMENTS, Meter, MeterSegments, MeterTone, update_meter_notches, update_meters,
+};
 pub use model::{
     COMFORT_TARGET_PX, COOLDOWN_WHOLE_SECONDS_FROM, CSS_BLUR_PER_SIGMA, ChordGlyphs,
     DIALOG_SLIDE_PX, DOCK_EDGE_FRACTION, DOCK_EDGE_SHARE, DOCK_PANE_MIN_PX, DockZone,
     ELEVATION_STEP, ENHANCED_CONTRAST, HOLD_SCALE_MAX, HOLD_UNWIND_RATE, HexError,
-    INTERFACE_SIZE_STEPS, METER_SNAP, METER_TRAIL_HOLD_SECONDS, METER_TRAIL_RATE, MIN_TARGET_PX,
+    INTERFACE_SIZE_STEPS, METER_SNAP, METER_TRAIL_LIFT_L, METER_TRAIL_HOLD_SECONDS, METER_TRAIL_RATE, MIN_TARGET_PX,
     MeterShown, NON_TEXT_CONTRAST, NumberError, PAD_REPEAT_DELAY, PAD_REPEAT_RATE, PAD_STYLES,
     POPOVER_SCALE_FROM, POPOVER_SLIDE_PX, PRIMARY_LIFT_L, PadStyle, RADIAL_DEAD_ZONE,
     RADIAL_STICK_PUSH, SPINNER_PERIOD_SECS, SPLIT_KEY_STEP_PX, SPRING_MAX_SETTLE_SECONDS,
@@ -567,6 +569,8 @@ impl Plugin for GooeyStylePlugin {
             .register_type::<PlacedAt>()
             .register_type::<OverlayStacked>()
             .register_type::<Meter>()
+            .register_type::<MeterTone>()
+            .register_type::<MeterSegments>()
             .register_type::<WorldAnchor>()
             .register_type::<AnchorPinned>()
             .register_type::<OffScreen>()
@@ -806,6 +810,7 @@ impl Plugin for GooeyStylePlugin {
                         elevation::give_elevation,
                         layout::stack_overlays,
                         follow_display,
+                        update_meter_notches,
                         apply_skin,
                         (widgets::wrap_bounded_labels, update_frames).chain(),
                     )
