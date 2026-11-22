@@ -3434,3 +3434,42 @@ label cannot be made quieter; (5) #114 `CodeEditorSettings` has no soft wrap or 
 Left: the parked branch `loop/iter-102` pushed to origin, and the three old worktrees `~/g17_base`,
 `~/g17_parked`, `~/g17s_base`. `/home` free: 263 GB at orient, 254 GB at the end (the release example binaries
 in the shared build cache, not deleted).
+
+## Iteration 103 — 2026-11-22 — SplitThickness, Column::wrap, LedSize (#108 #109 #110)
+
+**What and why.** Three `grimoire-ui` host knobs shipped as one cluster, one gate, one push. #108 `SplitThickness(f32)`
+on a split sets the divider's thickness (default still 24 px; floored at 1; thinner than WCAG 2.5.8's 24 px target
+is the host's choice, `problems()` does not check it). #109 `Column::wrap()`: a wrapping cell breaks inside its
+column and its row grows to the tallest cell; a table with any wrapping column is not windowed (binds every row,
+scroll and cursor reveal from the layout); a table with none is unchanged (pool and fixed height). #110
+`LedSize(step)`: dot, label and word at a `type_scale` step. Assumed decisions are commented on each issue with
+label `assumed-decision`.
+
+**Skipped.** #114 (`CodeEditorSettings` soft wrap and syntax-highlighting flags): bigger than a knob (caret column
+arithmetic over visual rows plus a tokeniser), a separate design; first in the backlog.
+
+**Sources** (by stem, `docs/research/divider-wrap-led-size.md`): WCAG 2.5.8, WCAG 1.4.10, VS Code `workbench.sash.size`,
+MDN `overflow-wrap`, VS Code status-bar readouts. home-still was not queried (Pending index).
+
+**Critique / verdict.** Viewed `docs/media/host_knobs.png` and a 2560x1440 capture: SplitThickness GREAT, Column::wrap
+GREAT, LedSize GREAT. First look found Qty colliding with its edge grip (width 3 -> 4) and Notes too wide for the
+pane (18 -> 15); fixed and re-viewed. A still, not a GIF: nothing moves.
+
+**Checklist.** Failing-first tests: split 3, led 2, table 3 (mutation-checked: forcing `ONE_LINE` fails the wrap tests,
+disabling the layout `max` fails the last-row test). Full gate green on the branch (fmt, clippy -D warnings, nextest,
+doctests, check, wasm32, doc); the merge was `--no-ff` onto an unchanged main, so the merged tree is byte-identical to the
+gated branch (`git diff` empty) and was not re-run. Perf (gallery, 5 alternating pairs, load 9-13): 1280x720 26.8 -> 25.6 ms,
+2560x1440 104.3 -> 99.8 ms, none worse (noise). Commits: research 6755cb4, #108 b88fa92, #110 c26c1b7, #109 207161c, docs
+adb9b67, merge 921055f.
+
+**Release: not done.** v0.52.2 (iteration 102) was never published: crates.io answered 403 "authentication failed", so the
+newest published is 0.51.8 and 0.51.9 to 0.52.2 wait for an owner token. The new API is a minor bump (0.53.0), but the
+previous tag is 1h17m old (6 h rule) and the token is still broken, so no version bump, tag or publish was attempted. The
+next pass: bump to 0.53.0, publish if the token works. No bevy_grimoire issue named #108/#109/#110, so no hand-back comment.
+
+**Backlog (top 5).** (1) #114 soft wrap and syntax-highlighting toggles; (2) crates.io token, publish 0.51.9..0.53.0;
+(3) a windowed variable-height table (prefix sums) so a wrapping table of 10,000 rows works; (4) a `problems()` note for
+a divider under 24 px; (5) `LedSize` for the status-bar's own readouts.
+
+**Cleanup.** Removed my own `/tmp/g103` and worktree `~/g103_base`. Left: `~/g17_base`, `~/g17_parked`, `~/g17s_base`,
+and the parked branch `loop/iter-103` (tests only, adopted by cherry-pick, not deleted).
