@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [0.53.0] - 2026-11-22
+
+### Breaking
+
+- The public systems `update_splits` and `update_tables` take more system parameters (for `SplitThickness` and wrapping columns); a host that calls or schedules them by name is unaffected, one that runs them by hand adds the new parameters.
+
 ### Added
 
 - #108 (`docs/research/divider-wrap-led-size.md`, `tests/split.rs`, `examples/host_knobs.rs`): `SplitThickness(f32)` on a
