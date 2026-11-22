@@ -2,6 +2,17 @@
 
 ## [Unreleased]
 
+### Added
+
+- #108 (`docs/research/divider-wrap-led-size.md`, `tests/split.rs`, `examples/host_knobs.rs`): `SplitThickness(f32)` on a
+  split sets its divider's thickness in logical px (default still `MIN_TARGET_PX`; floored at 1, a non-finite value is
+  ignored, removing it restores 24). Thinner than 24 px is under WCAG 2.5.8; the host chose it and `problems()` does not
+  check it.
+- #109 (`tests/table.rs`): `Column::wrap()` / `Column::wrap` makes a table column break its text at the cell's edge; a
+  row is as tall as its tallest cell (never under a pitch). A table with a wrapping column binds every row (no pool)
+  and scrolls from the laid-out heights; a table with none is unchanged.
+- #110 (`tests/led.rs`): `LedSize(usize)` on an `led` draws its dot, label and word at that `type_scale` step.
+
 ## [0.52.2] - 2026-11-22
 
 ### Fixed
