@@ -1319,7 +1319,10 @@ fn a_split_thickness_is_the_dividers_laid_out_thickness_at_ui_scale_one_and_two_
             // The grip stays centred in a channel narrower than the target.
             let grip = child_of(&app, ui.divider);
             let (g, d) = (rect(&app, grip).center(), rect(&app, ui.divider).center());
-            assert!((g - d).length() < 0.5, "the grip is centred: {g:?} in {d:?}");
+            assert!(
+                (g - d).length() < 0.5,
+                "the grip is centred: {g:?} in {d:?}"
+            );
         }
     }
 }
@@ -1335,17 +1338,29 @@ fn a_thin_divider_keeps_its_thickness_through_hover_press_and_focus_and_still_dr
     let on_divider = at(&app, rect(&app, ui.divider).center());
     point_at(&mut app, on_divider);
     settle(&mut app);
-    assert!((thickness_of(&app, ui.divider, H) - 12.0).abs() < 0.5, "hovered");
+    assert!(
+        (thickness_of(&app, ui.divider, H) - 12.0).abs() < 0.5,
+        "hovered"
+    );
     focus(&mut app, ui.divider);
     settle(&mut app);
-    assert!((thickness_of(&app, ui.divider, H) - 12.0).abs() < 0.5, "focused");
+    assert!(
+        (thickness_of(&app, ui.divider, H) - 12.0).abs() < 0.5,
+        "focused"
+    );
     app.world_mut().entity_mut(ui.divider).insert(Pressed);
     settle(&mut app);
-    assert!((thickness_of(&app, ui.divider, H) - 12.0).abs() < 0.5, "pressed");
+    assert!(
+        (thickness_of(&app, ui.divider, H) - 12.0).abs() < 0.5,
+        "pressed"
+    );
     app.world_mut().entity_mut(ui.divider).remove::<Pressed>();
     settle(&mut app);
     let room = room(&app, &ui, H);
-    assert!((room - (800.0 - 12.0)).abs() < 0.5, "the panes share the split less 12: {room}");
+    assert!(
+        (room - (800.0 - 12.0)).abs() < 0.5,
+        "the panes share the split less 12: {room}"
+    );
     drag(&mut app, ui.divider, Vec2::new(100.0, 0.0));
     let want = 0.5 + 100.0 / room;
     assert!(
@@ -1363,7 +1378,9 @@ fn taking_the_split_thickness_off_gives_the_divider_its_target_back() {
         .entity_mut(ui.split)
         .insert(SplitThickness(12.0));
     settle(&mut app);
-    app.world_mut().entity_mut(ui.split).remove::<SplitThickness>();
+    app.world_mut()
+        .entity_mut(ui.split)
+        .remove::<SplitThickness>();
     settle(&mut app);
     assert!((thickness_of(&app, ui.divider, H) - BAR).abs() < 0.5);
 }

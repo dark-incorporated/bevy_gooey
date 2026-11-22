@@ -18,8 +18,7 @@ use crate::box_model::{Extent, Sizing};
 use crate::clicks::DoublePress;
 use crate::model::{
     MIN_TARGET_PX, PAD_REPEAT_DELAY, PAD_REPEAT_RATE, SPLIT_KEY_STEP_PX, repeat_steps, split_clamp,
-    split_drag,
-    split_mins,
+    split_drag, split_mins,
 };
 use crate::nav::show_focus;
 use crate::size_motion::SplitGlide;
