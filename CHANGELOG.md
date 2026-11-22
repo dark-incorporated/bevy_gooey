@@ -2,6 +2,18 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- An LED's glow is a halo, not a lamp (#91, `docs/research/cluster-led-menu-fold.md`, `tests/led.rs`): the blur is
+  0.6 dots (was 1.6), the spread 0 (was 0.15) and the alpha 0.4 steady, 0.12 to 0.45 pulsing (was 0.7 and 0.25 to
+  0.85), so the halo ends within one dot of the dot at every text scale and the word beside it keeps its contrast
+  (4.5:1, 7:1 in high contrast) in every preset and state.
+- A menu follows the pointer (#92, `tests/menu.rs`): the row under a moving pointer is the row the menu is on, so the
+  arrows go on from it and Enter chooses it; a disabled row is reached too and chooses nothing, and a pointer that
+  leaves the panel leaves the row where it was.
+- The code editor's fold mark is a triangle, `\u{25BC}` open and `\u{25BA}` closed, not the letters `v` and `>`
+  (#107, `tests/code_navigation.rs`); a press on the mark's own box folds, once.
+
 ### Added
 
 - G-92 (#103, `docs/research/notification-actions.md`, `docs/guide/toasts.md`, `tests/notification_actions.rs`,
