@@ -298,6 +298,14 @@ fn point_at(app: &mut App, at: Vec2) {
     }
 }
 
+/// The pointer moving onto `at`: a real move (a zero delta sends no `PointerMove`).
+fn move_to(app: &mut App, at: Vec2) {
+    mouse(app, at, PointerAction::Move { delta: Vec2::X });
+    for _ in 0..3 {
+        app.update();
+    }
+}
+
 fn click_at(app: &mut App, at: Vec2) {
     point_at(app, at);
     for action in [
@@ -313,6 +321,52 @@ fn click_at(app: &mut App, at: Vec2) {
 fn click_on(app: &mut App, entity: Entity) {
     let at = rect(app, entity).center();
     click_at(app, at);
+}
+
+/// #92: the row under the pointer is the row the menu is on, the arrows go on from it and Enter
+/// chooses it; a disabled row is reached the same way and still chooses nothing; a pointer that
+/// leaves the panel leaves the row.
+#[test]
+fn the_row_under_the_pointer_is_the_row_the_menu_is_on() {
+    let mut app = app();
+    spawn_bar(&mut app);
+    let file = title(&mut app, "File");
+    click_on(&mut app, file);
+    let (open, autosave) = (item(&mut app, "Open…"), item(&mut app, "Autosave"));
+    let first = focus(&app);
+    let at = rect(&app, open).center();
+    move_to(&mut app, at);
+    assert_eq!(
+        focus(&app),
+        Some(open),
+        "hovering Open puts the menu on it (was {first:?})"
+    );
+    taps(&mut app, &[KeyCode::ArrowDown, KeyCode::ArrowDown]);
+    assert_eq!(
+        focus(&app),
+        Some(autosave),
+        "Down goes on from the hovered row, past Recent"
+    );
+    // The pointer leaving the panel keeps the last row.
+    move_to(&mut app, Vec2::new(900.0, 500.0));
+    assert_eq!(focus(&app), Some(autosave));
+    tap(&mut app, KeyCode::Enter);
+    assert_eq!(chosen(&app), vec!["Autosave"], "Enter chooses it");
+
+    // A disabled row is hovered and focused but chooses nothing.
+    let view = title(&mut app, "View");
+    click_on(&mut app, view);
+    let zoom_out = item(&mut app, "Zoom out");
+    let at = rect(&app, zoom_out).center();
+    move_to(&mut app, at);
+    assert_eq!(focus(&app), Some(zoom_out), "a disabled row is hovered");
+    tap(&mut app, KeyCode::Enter);
+    assert_eq!(
+        chosen(&app),
+        vec!["Autosave"],
+        "Enter on it chooses nothing"
+    );
+    assert!(is_open(&app, view));
 }
 
 /// The issue's acceptance: F10, Right, Down, Enter chooses the second menu's first item.
