@@ -460,19 +460,20 @@ pub use tooltip::{
 pub use tree::{Tree, TreeNode, TreeToggled, tree_by_input, update_trees};
 pub use type_select::{TypeSelectGroup, TypedPrefix};
 pub use widgets::{
-    aspect_image, band, binding, button, button_box, button_row, card_grid, cell, check_item,
-    choice, color_field, column, column_with, combobox, command_palette, context_menu, count_text,
-    cover, dialog, dock, edge_tab, fill_column, fill_region, fill_region_with, fill_text,
-    fill_text_with, glyph_button, heading, hold_button, icon, icon_button, image_box,
-    interface_size, label, label_with, led, list, list_row, menu, menu_bar, menu_item, menu_title,
-    meter, motion_row, notification_center, number_field, overlay, pad_style, panel, placed,
-    placed_at, plain_button, popover, popover_modal, primary_button, progress, prompt, prompts,
-    prompts_at, quiet_list_row, radial, radio_item, row, row_with, screen, scrim, scroll_region,
-    scroll_viewport, section, select, separator, side_tab_page, side_tabs, side_tabs_icons, sized,
-    sized_panel, skin_preset, slider, slot_grid, spacer, spinner, split, status_bar, status_item,
-    status_item_quiet, status_mark, status_progress, submenu, surface, tab_page, table, tabs,
-    text_area, text_area_fill, text_input, text_size, toast, toast_alert, toast_note, toggle,
-    toggle_group, toolbar, toolbar_separator, tree, vec_field, viewport,
+    ToggleChip, aspect_image, band, binding, button, button_box, button_row, card_grid, cell,
+    check_item, chip, choice, color_field, column, column_with, combobox, command_palette,
+    context_menu, count_text, cover, dialog, dock, edge_tab, fill_column, fill_region,
+    fill_region_with, fill_text, fill_text_with, glyph_button, heading, hold_button, icon,
+    icon_button, image_box, interface_size, label, label_with, led, list, list_row, menu, menu_bar,
+    menu_item, menu_title, meter, motion_row, notification_center, number_field, overlay,
+    pad_style, panel, placed, placed_at, plain_button, popover, popover_modal, primary_button,
+    progress, prompt, prompts, prompts_at, quiet_list_row, radial, radio_item, row, row_with,
+    screen, scrim, scroll_region, scroll_viewport, section, select, separator, side_tab_page,
+    side_tabs, side_tabs_icons, sized, sized_panel, skin_preset, slider, slot_grid, spacer,
+    spinner, split, status_bar, status_item, status_item_quiet, status_mark, status_progress,
+    submenu, surface, tab_page, table, tabs, text_area, text_area_fill, text_input, text_size,
+    toast, toast_alert, toast_note, toggle, toggle_chip, toggle_group, toolbar, toolbar_separator,
+    tree, vec_field, viewport,
 };
 
 use bevy::app::PluginGroupBuilder;
@@ -540,6 +541,7 @@ impl Plugin for GooeyStylePlugin {
             .register_type::<CellWidth>()
             .register_type::<BoxSize>()
             .register_type::<RowLayout>()
+            .register_type::<ToggleChip>()
             .register_type::<Space>()
             .register_type::<Sides<Space>>()
             .register_type::<Spacing>()

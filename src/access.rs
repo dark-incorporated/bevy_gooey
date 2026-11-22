@@ -182,11 +182,13 @@ fn spec(role: Role) -> Spec {
         | Role::GlyphButton
         | Role::EdgeTab
         | Role::Band
+        | Role::Chip
         | Role::ListRow
         | Role::FillText
         | Role::CountText => Spec::Node,
         Role::ButtonText
         | Role::MenuTitleText
+        | Role::ChipText
         | Role::MeterFill
         | Role::MeterTrail
         | Role::ToggleTrack
@@ -306,6 +308,7 @@ fn names(role: Role) -> bool {
         role,
         Role::ButtonText
             | Role::MenuTitleText
+            | Role::ChipText
             | Role::TabText
             | Role::FillText
             | Role::CountText
@@ -374,6 +377,7 @@ pub(crate) struct Facts {
     node: Option<&'static Node>,
     disabled: Has<InteractionDisabled>,
     selected: Has<Selected>,
+    toggle_chip: Has<crate::widgets::ToggleChip>,
     checked: Has<Checked>,
     open: Has<MenuOpen>,
     capturing: Has<Capturing>,
@@ -618,6 +622,16 @@ fn describe(entity: Entity, role: Role, facts: &FactsItem, look: &Look) -> Optio
                 && let Ok(open) = look.sections.get(parent)
             {
                 wanted.expanded = Some(open.0);
+            }
+        }
+        // A chip is a button named by its words. A toggle chip is a toggle button (pressed or
+        // not); a plain one the host lights says it is selected.
+        Role::Chip => {
+            wanted.name = look.words(entity, names);
+            if facts.toggle_chip {
+                wanted.toggled = Some(facts.selected);
+            } else if facts.selected {
+                wanted.selected = Some(true);
             }
         }
         Role::Meter => {

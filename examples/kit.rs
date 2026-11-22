@@ -2,7 +2,8 @@
 //! `edge_tab`s (click one: the edge along its bottom moves and nothing else does), a grouped list
 //! whose `band` headers fold their group on a click, a `fill_text` name that wraps inside its own
 //! column beside a `count_text` that keeps its words whole, and a `glyph_button` whose hit area is
-//! the skin's target however small the mark in it is.
+//! the skin's target however small the mark in it is, and a wrapping row of `chip`s and
+//! `toggle_chip`s (the long one wraps its own words and the row never overflows).
 //!
 //! Run `cargo run --release --example kit`.
 //!
@@ -15,6 +16,7 @@ use bevy::picking::events::PointerClick;
 use bevy::prelude::*;
 use bevy::render::view::screenshot::{Screenshot, save_to_disk};
 use bevy::ui::Selected;
+use bevy::ui_widgets::Activate;
 use bevy::window::WindowResolution;
 use bevy_gooey::*;
 
@@ -80,6 +82,7 @@ fn setup(mut commands: Commands) {
                 children![
                     heading("Kit"),
                     strip(),
+                    chips(),
                     group(
                         "kenney_prototype-kit/Models/GLB format",
                         145,
@@ -110,6 +113,44 @@ fn strip() -> impl Bundle {
             (edge_tab("Kits"), StripTab, observe(pick)),
         ],
     )
+}
+
+/// A tag block: a wrapping row of `chip`s. The first three are an exclusive category the host
+/// lights (a click moves `Selected`), the last two are `toggle_chip` filters that flip themselves,
+/// and the long one wraps its own words inside the panel instead of pushing it wider.
+fn chips() -> impl Bundle {
+    (
+        row_with(
+            0.5,
+            RowLayout {
+                wrap: Some(FlexWrap::Wrap),
+                align: Some(AlignItems::FlexStart),
+                ..default()
+            },
+        ),
+        children![
+            (chip("All (193)"), Category, Selected, observe(choose)),
+            (chip("Weapons (12)"), Category, observe(choose)),
+            (chip("Armour (9)"), Category, observe(choose)),
+            toggle_chip("Hide imported", true),
+            toggle_chip("Not imported yet because the converter failed (4)", false),
+        ],
+    )
+}
+
+/// A category chip.
+#[derive(Component)]
+struct Category;
+
+/// A click on a category chip lights it and no other: the host writes `Selected`.
+fn choose(activate: On<Activate>, chips: Query<Entity, With<Category>>, mut commands: Commands) {
+    for chip in &chips {
+        if chip == activate.entity {
+            commands.entity(chip).insert(Selected);
+        } else {
+            commands.entity(chip).remove::<Selected>();
+        }
+    }
 }
 
 /// A click on a tab selects it and no other: the host writes `Selected`, the skin lights the edge.
