@@ -10,7 +10,7 @@ To check a bump quickly, build with `cargo check --all-targets`: every item belo
 
 `Role` is not `#[non_exhaustive]`, so a variant added to it breaks an exhaustive `match`. Add the arms, or a `_ =>` if the match was only ever about the roles you spawn.
 
-- `Role` gained the variants `GlyphButton`, `EdgeTab`, `Band`, `FillText`, `CountText` (G-82), `ButtonRow`, `FillColumn`, `FillRegion`, `Placed`, `AspectImage` (G-84), `Spacer`, `Sized`, `ListRow` (G-85), `Backdrop` (G-87), `ScrollRegion`, `ScrollView` (G-88), `ScrollViewport` (G-90), the `Markdown…` roles (the Markdown view) and the `Code…` roles (the code editor).
+- `Role` gained the variants `GlyphButton`, `EdgeTab`, `Band`, `FillText`, `CountText` (G-82), `ButtonRow`, `FillColumn`, `FillRegion`, `Placed`, `AspectImage` (G-84), `Spacer`, `Sized`, `ListRow` (G-85), `Chip`, `ChipText` (iteration 105), `Backdrop` (G-87), `ScrollRegion`, `ScrollView` (G-88), `ScrollViewport` (G-90), the `Markdown…` roles (the Markdown view) and the `Code…` roles (the code editor).
 
 ## You build `SideTab` or `GooeyFonts` by hand
 

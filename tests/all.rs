@@ -14,6 +14,7 @@ mod binding;
 mod button_variant;
 mod cancel;
 mod card;
+mod chip;
 mod choice;
 mod clamp_total;
 mod code_decor;

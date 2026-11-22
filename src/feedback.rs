@@ -51,6 +51,7 @@ pub(crate) fn feedback_on_activate(
         Ok(Role::Button
             | Role::GlyphButton
             | Role::Band
+            | Role::Chip
             | Role::ListRow
             | Role::ToastAction
             | Role::StatusItem
@@ -114,6 +115,7 @@ pub fn feedback_on_focus(
             Ok(Role::Button
                 | Role::GlyphButton
                 | Role::Band
+                | Role::Chip
                 | Role::ListRow
                 | Role::ToastAction
                 | Role::Toggle
