@@ -18640,3 +18640,160 @@ pass	seq	phase	kind	category	tool	start	seconds	detail
 346	337	log	model	model		2026-11-22T10:21:15Z	9.7	
 346	338	log	tool	push gate	bash	2026-11-22T10:21:25Z	2.0	cd /home/ladvien/bevy_gooey_loop && cat >> docs/loop-log.md <<'E' ## Iteration 105 — 2026-11-22 — chip **Change.** `chip(label)` and `toggle_chip(label, on)` (`
 346	339	log	model	model		2026-11-22T10:21:27Z	7.1	
+347	1	orient	model	model		2026-11-22T13:39:34Z	3.1	
+347	2	orient	tool	phase mark	bash	2026-11-22T13:39:37Z	1.4	cd ~/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark orient; git fetch -q origin loop-stats; git show origin/loop-stats:steps/bevy_gooey_loop-aud
+347	3	orient	model	model		2026-11-22T13:39:39Z	1.9	
+347	4	orient	tool	github	bash	2026-11-22T13:39:41Z	1.7	cd ~/bevy_gooey_loop && gh issue list --repo bevy-coven/bevy_gooey --state open --limit 100 --json number,title,labels,createdAt --jq '.[] | "#\(.number) \(.tit
+347	5	orient	model	model		2026-11-22T13:39:42Z	1.2	
+347	6	orient	tool	github	bash	2026-11-22T13:39:44Z	0.7	cd ~/bevy_gooey_loop && gh issue view 115 -R bevy-coven/bevy_gooey --comments | cut -c1-1500; git show --stat f200e9f | head; git show --stat e5dc238 | head -12
+347	7	orient	model	model		2026-11-22T13:39:44Z	1.3	
+347	8	orient	tool	github	bash	2026-11-22T13:39:45Z	0.7	cd ~/bevy_gooey_loop && gh issue view 115 -R dark-incorporated/bevy_gooey --comments 2>&1 | cut -c1-2500
+347	9	orient	model	model		2026-11-22T13:39:46Z	1.4	
+347	10	orient	tool	github	bash	2026-11-22T13:39:48Z	0.8	cd ~/bevy_gooey_loop && gh api repos/dark-incorporated/bevy_gooey/issues/115 --jq '.title,.body,.state' 2>&1 | head -60; gh api repos/dark-incorporated/bevy_goo
+347	11	orient	model	model		2026-11-22T13:39:48Z	1.5	
+347	12	choose	tool	phase mark	bash	2026-11-22T13:39:50Z	0.1	cd ~/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark choose; grep -n "SyntaxRole" -r src | head -40; grep -n "Type\b\|Emphasis\|Strong" src/code_
+347	13	choose	model	model		2026-11-22T13:39:50Z	1.7	
+347	14	choose	tool	shell	bash	2026-11-22T13:39:52Z	0.0	cd ~/bevy_gooey_loop && sed -n 1,70p src/code_decor.rs; cat src/code_syntax.rs; sed -n 145,200p src/code_markdown.rs; grep -rn "SyntaxRole::ALL\|SyntaxRole::Typ
+347	15	choose	model	model		2026-11-22T13:39:52Z	14.8	
+347	16	research	tool	phase mark	bash	2026-11-22T13:40:07Z	11.1	cd ~/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark research; timeout 20 hs status 2>&1 | head -5; ls docs/research | grep -i "markdown\|wrap"; 
+347	17	research	tool	shell	bash	2026-11-22T13:40:07Z	11.1	cd /tmp && mkdir -p g106 && cd g106 && curl -sL https://spec.commonmark.org/0.31.2/ | python3 -c " import sys,re,html t=sys.stdin.read() t=re.sub(r'<[^>]+>','',
+347	18	research	model	model		2026-11-22T13:40:18Z	3.6	
+347	19	research	tool	shell	bash	2026-11-22T13:40:21Z	0.1	cd /tmp/g106 && curl -sL "https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html" | python3 -c " import sys,re,html t=sys.stdin.read() t=re.sub(r'<[^>]+>
+347	20	research	model	model		2026-11-22T13:40:21Z	11.6	
+347	21	research	tool	git	bash	2026-11-22T13:40:33Z	0.0	cd ~/bevy_gooey_loop && cat > docs/research/markdown-emphasis.md <<'EOF' # Emphasis and strong in two inks (`CodeMarkdown`) Written 2026-11-22 for issue #115, a
+347	22	research	model	model		2026-11-22T13:40:33Z	2.9	
+347	23	build	tool	phase mark	bash	2026-11-22T13:40:36Z	0.1	cd ~/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark build; grep -rn "Type\b" docs/guide/code-editor.md README.md | head; grep -rn "emphasis" doc
+347	24	build	model	model		2026-11-22T13:40:36Z	7.3	
+347	25	build	tool	shell	bash	2026-11-22T13:40:43Z	0.1	cd ~/bevy_gooey_loop && python3 - <<'EOF' import re p='src/code_decor.rs'; s=open(p).read() s=s.replace(""" /// An operator. Operator, """,""" /// An operator. 
+347	26	build	model	model		2026-11-22T13:40:43Z	5.6	
+347	27	build	tool	shell	bash	2026-11-22T13:40:49Z	0.1	cd ~/bevy_gooey_loop && python3 - <<'EOF' p='src/code_markdown.rs'; s=open(p).read() s=s.replace("""//! [`SyntaxRole::Keyword`], code a [`SyntaxRole::String`], 
+347	28	build	model	model		2026-11-22T13:40:49Z	4.5	
+347	29	build	tool	cargo test	bash	2026-11-22T13:40:54Z	1.4	cd ~/bevy_gooey_loop && sed -n 725,732p tests/code_decor.rs && python3 - <<'EOF' p='tests/code_decor.rs'; s=open(p).read() s=s.replace("""// -- #114: Markdown i
+347	30	build	model	model		2026-11-22T13:40:55Z	1.8	
+347	31	build	tool	shell	bash	2026-11-22T13:40:57Z	0.0	cd ~/bevy_gooey_loop && env | grep -i "cargo\|rustc\|sccache";
+347	32	build	model	model		2026-11-22T13:40:57Z	3.1	
+347	33	build	tool	shell	bash	2026-11-22T13:41:00Z	0.0	cat ~/.cargo/config.toml 2>/dev/null | head -20; ls ~/target/gooey-loop/debug 2>/dev/null | head
+347	34	build	model	model		2026-11-22T13:41:00Z	1.8	
+347	35	build	tool	cargo test	bash	2026-11-22T13:41:02Z	0.0	[launched bg_1] cd ~/bevy_gooey_loop && export RUSTC_WRAPPER=; (timeout 3300 cargo nextest run --all-features --lib --tests -E 'test(code_decor::) | test(code_markdown) | test(
+347	36	build	model	model		2026-11-22T13:41:02Z	1.7	
+347	37	build	tool	shell	bash	2026-11-22T13:41:04Z	0.0	cd ~/bevy_gooey_loop && sed -n 1,12p CHANGELOG.md | cut -c1-300; grep -n "SyntaxRole\|Markdown" README.md | head
+347	38	build	model	model		2026-11-22T13:41:04Z	3.4	
+347	39	build	tool	git	bash	2026-11-22T13:41:07Z	0.1	cd ~/bevy_gooey_loop && python3 - <<'EOF' p='CHANGELOG.md'; s=open(p).read() s=s.replace("## [Unreleased]\n","""## [Unreleased] ### Breaking - `SyntaxRole` has 
+347	40	build	model	model		2026-11-22T13:41:07Z	1.8	
+347	41	build	tool	wait: other	wait	2026-11-22T13:41:09Z	5.1	{}
+347	42	build	model	model		2026-11-22T13:41:14Z	0.9	
+347	43	build	tool	wait: other	wait	2026-11-22T13:41:15Z	68.2	{}
+347	44	build	model	model		2026-11-22T13:42:23Z	3.7	
+347	45	build	tool	cargo test	bash	2026-11-22T13:42:27Z	1.2	cd ~/bevy_gooey_loop && python3 - <<'EOF' p='src/code_markdown.rs'; s=open(p).read() s=s.replace('fn emphasis_and_strong_are_two_roles_even_nested() {\n let got
+347	46	build	model	model		2026-11-22T13:42:28Z	1.5	
+347	47	build	tool	cargo test	bash	2026-11-22T13:42:29Z	32.1	cd ~/bevy_gooey_loop && export RUSTC_WRAPPER=; (timeout 3300 cargo nextest run --all-features --lib --tests --no-fail-fast -E 'test(code_decor::) | test(code_ma
+347	48	build	model	model		2026-11-22T13:43:01Z	1.2	
+347	49	build	tool	cargo test	bash	2026-11-22T13:43:03Z	1.0	cd ~/bevy_gooey_loop && export RUSTC_WRAPPER=; cargo nextest run --all-features --lib --tests -E 'test(emphasis_and_strong_inks)' 2>&1 | grep -m3 "apart"
+347	50	build	model	model		2026-11-22T13:43:04Z	1.3	
+347	51	build	tool	cargo test	bash	2026-11-22T13:43:05Z	0.7	cd ~/bevy_gooey_loop && export RUSTC_WRAPPER=; cargo nextest run --all-features --lib --tests -E 'test(emphasis_and_strong_inks)' 2>&1 | grep -B2 -A3 "panicked"
+347	52	build	model	model		2026-11-22T13:43:06Z	8.3	
+347	53	build	tool	cargo build	bash	2026-11-22T13:43:14Z	60.0	[launched bg_2] cd ~/bevy_gooey_loop && export RUSTC_WRAPPER=; mkdir -p /tmp/g106 && cat > examples/_probe106.rs <<'EOF' use bevy_gooey::*; use bevy::prelude::*; fn main(){ for
+347	54	build	model	model		2026-11-22T13:44:14Z	1.6	
+347	55	build	tool	wait: other	wait	2026-11-22T13:44:16Z	5.0	{}
+347	56	build	model	model		2026-11-22T13:44:21Z	0.7	
+347	57	build	tool	wait: other	wait	2026-11-22T13:44:21Z	43.9	{}
+347	58	build	model	model		2026-11-22T13:45:05Z	20.8	
+347	59	build	tool	cargo build	bash	2026-11-22T13:45:26Z	7.0	cd ~/bevy_gooey_loop && export RUSTC_WRAPPER=; cat > examples/_probe106.rs <<'EOF' use bevy_gooey::*; use bevy::prelude::*; use bevy::color::{Oklcha, Laba}; fn 
+347	60	build	model	model		2026-11-22T13:45:33Z	2.4	
+347	61	build	tool	cargo build	bash	2026-11-22T13:45:36Z	3.8	cd ~/bevy_gooey_loop && export RUSTC_WRAPPER=; sed -i 's/\bgen(/mk(/g' examples/_probe106.rs && cargo run -q --example _probe106 2>&1 | tail -40
+347	62	build	model	model		2026-11-22T13:45:39Z	10.2	
+347	63	build	tool	cargo build	bash	2026-11-22T13:45:50Z	8.3	cd ~/bevy_gooey_loop && export RUSTC_WRAPPER=; sed -i 's/SyntaxRole::Emphasis => 345.0/SyntaxRole::Emphasis => 290.0/; s/SyntaxRole::Strong => 25.0/SyntaxRole::
+347	64	build	model	model		2026-11-22T13:45:58Z	4.7	
+347	65	build	tool	cargo test	bash	2026-11-22T13:46:03Z	22.5	cd ~/bevy_gooey_loop && export RUSTC_WRAPPER=; rm examples/_probe106.rs; python3 - <<'EOF' p='docs/research/markdown-emphasis.md'; s=open(p).read() a=s.index("H
+347	66	build	model	model		2026-11-22T13:46:25Z	2.6	
+347	67	build	tool	cargo test	bash	2026-11-22T13:46:28Z	4.6	cd ~/bevy_gooey_loop && export RUSTC_WRAPPER=; cargo nextest run --all-features --lib --tests --no-fail-fast -E 'test(code_decor::) | test(code_markdown) | test
+347	68	build	model	model		2026-11-22T13:46:32Z	2.6	
+347	69	build	tool	cargo test	bash	2026-11-22T13:46:35Z	21.3	cd ~/bevy_gooey_loop && export RUSTC_WRAPPER=; cp src/code_markdown.rs /tmp/g106/cm.rs; sed -i 's/SyntaxRole::Strong$/SyntaxRole::Emphasis/;s/^\(\s*\)SyntaxRole
+347	70	build	model	model		2026-11-22T13:46:56Z	1.6	
+347	71	build	tool	shell	bash	2026-11-22T13:46:58Z	0.0	cd ~/bevy_gooey_loop && grep -n "prose" docs/media/README.md | cut -c1-400; grep -n "\*\*\|GOOEY_" examples/prose.rs | head -20; echo $DISPLAY; ls ~/target 2>/d
+347	72	build	model	model		2026-11-22T13:46:58Z	2.4	
+347	73	build	tool	cargo build	bash	2026-11-22T13:47:00Z	60.0	[launched bg_3] cd ~/bevy_gooey_loop && export RUSTC_WRAPPER=; echo $CARGO_TARGET_DIR; cargo build -q --release --example prose --all-features 2>&1 | tail -3; T=${CARGO_TARGET_
+347	74	build	model	model		2026-11-22T13:48:00Z	1.6	
+347	75	build	tool	wait: other	wait	2026-11-22T13:48:02Z	5.0	{}
+347	76	build	model	model		2026-11-22T13:48:07Z	0.6	
+347	77	build	tool	wait: other	wait	2026-11-22T13:48:08Z	85.3	{}
+347	78	build	model	model		2026-11-22T13:49:33Z	2.2	
+347	79	build	tool	read files	read	2026-11-22T13:49:35Z	0.0	/tmp/g106/after_dark_1280x720.png
+347	80	build	tool	read files	read	2026-11-22T13:49:35Z	0.0	/tmp/g106/after_parchment_1280x720.png
+347	81	build	model	model		2026-11-22T13:49:35Z	2.0	
+347	82	build	tool	shell	bash	2026-11-22T13:49:37Z	0.0	cd ~/bevy_gooey_loop && sed -n 44,80p examples/prose.rs; xdpyinfo -display :93 2>&1 | grep dimensions
+347	83	build	model	model		2026-11-22T13:49:37Z	2.1	
+347	84	build	tool	shell	bash	2026-11-22T13:49:39Z	0.1	pgrep -a Xvfb; ls /tmp/.X11-unix; systemctl --user list-units 2>/dev/null | grep -i "xvfb\|wiggum"; ls ~/bevy_gooey_loop/tools/loop 2>/dev/null | head; ls ~/bev
+347	85	build	model	model		2026-11-22T13:49:39Z	3.1	
+347	86	build	tool	shell	bash	2026-11-22T13:49:42Z	0.1	systemctl --user show wiggum@gooey -p Environment | tr ' ' '\n' | head -30; cat /proc/$(pgrep -f "wiggum.*gooey" | head -1)/environ 2>/dev/null | tr '\0' '\n' |
+347	87	build	model	model		2026-11-22T13:49:42Z	2.8	
+347	88	build	tool	shell	bash	2026-11-22T13:49:45Z	51.5	cd /tmp/g106 && GOOEY_SKIN=dark GOOEY_SIZE=1280x720 GOOEY_FRAMES=90 GOOEY_SHOT=/tmp/g106/t.png timeout 150 ~/target/gooey-loop/release/examples/prose 2>&1 | gre
+347	89	build	model	model		2026-11-22T13:50:37Z	3.2	
+347	90	build	tool	shell	bash	2026-11-22T13:50:40Z	0.0	cd ~/bevy_gooey_loop && grep -rhn -i "lavapipe\|llvmpipe\|VK_ICD\|WGPU_" docs/loop-log.md AGENTS.md .omp/commands/*.md 2>/dev/null | cut -c1-260 | head -8; ls /
+347	91	build	model	model		2026-11-22T13:50:40Z	2.8	
+347	92	build	tool	shell	bash	2026-11-22T13:50:43Z	56.0	cd ~/bevy_gooey_loop && grep -n -i "capture\b.*\(:9\|display\|xvfb\)\|Xvfb" docs/loop-log.md | tail -6 | cut -c1-300; for d in :97 :99; do echo $d; DISPLAY=$d G
+347	93	build	model	model		2026-11-22T13:51:39Z	3.0	
+347	94	build	tool	shell	bash	2026-11-22T13:51:42Z	0.0	cd ~/bevy_gooey_loop && sed -n 3414,3420p docs/loop-log.md | cut -c1-500; grep -n "software\|llvmpipe\|MESA\|LIBGL" docs/loop-log.md | tail -5 | cut -c1-300; ls
+347	95	build	model	model		2026-11-22T13:51:42Z	2.2	
+347	96	build	tool	shell	bash	2026-11-22T13:51:44Z	0.0	cd /tmp/g106 && WGPU_BACKEND=gl GOOEY_SIZE=1280x720 GOOEY_FRAMES=60 GOOEY_SHOT=/tmp/g106/gl.png timeout 90 ~/target/gooey-loop/release/examples/prose 2>&1 | gre
+347	97	build	model	model		2026-11-22T13:51:44Z	2.4	
+347	98	build	tool	shell	bash	2026-11-22T13:51:46Z	31.3	pacman -Q 2>/dev/null | grep -i "vulkan\|mesa" | head; find / -name "lvp_icd*" 2>/dev/null | head -3; ls /usr/share/vulkan/icd.d /etc/vulkan/icd.d 2>&1 | head
+347	99	build	model	model		2026-11-22T13:52:18Z	3.1	
+347	100	build	tool	shell	bash	2026-11-22T13:52:21Z	0.0	cat /var/lib/flatpak/runtime/org.freedesktop.Platform.GL.default/x86_64/25.08/*/files/lib/vulkan/icd.d/lvp_icd.x86_64.json; ls /var/lib/flatpak/runtime/org.free
+347	101	build	model	model		2026-11-22T13:52:21Z	3.1	
+347	102	build	tool	shell	bash	2026-11-22T13:52:24Z	27.8	cd /tmp/g106 && FL=/var/lib/flatpak/runtime/org.freedesktop.Platform.GL.default/x86_64/25.08/active/files/lib && cat > lvp.json <<EOF {"ICD":{"api_version":"1.4
+347	103	build	model	model		2026-11-22T13:52:52Z	3.7	
+347	104	build	tool	shell	bash	2026-11-22T13:52:55Z	23.8	cd /tmp/g106 && (setsid nohup Xvfb :95 -screen 0 1920x1080x24 -nolisten tcp -ac >/tmp/g106/xvfb.log 2>&1 & disown); sleep 2; FL=/var/lib/flatpak/runtime/org.fre
+347	105	build	model	model		2026-11-22T13:53:19Z	3.5	
+347	106	build	tool	shell	bash	2026-11-22T13:53:23Z	0.1	cd ~/bevy_gooey_loop && grep -n "## Iteration 105" docs/loop-log.md; awk '/## Iteration 105/{f=1} f' docs/loop-log.md | grep -n -i "capture\|xvfb\|render\|still
+347	107	build	model	model		2026-11-22T13:53:23Z	1.0	
+347	108	build	tool	shell	bash	2026-11-22T13:53:24Z	0.0	cd ~/bevy_gooey_loop && sed -n 3516,3560p docs/loop-log.md | cut -c1-500
+347	109	build	model	model		2026-11-22T13:53:24Z	4.5	
+347	110	build	tool	shell	bash	2026-11-22T13:53:28Z	1.4	env | grep -i "wayland\|XDG_SESSION\|XAUTH"; cd /tmp/g106; FL=/var/lib/flatpak/runtime/org.freedesktop.Platform.GL.default/x86_64/25.08/active/files/lib; env -u
+347	111	build	model	model		2026-11-22T13:53:30Z	4.8	
+347	112	build	tool	shell	bash	2026-11-22T13:53:34Z	9.4	cd /tmp/g106; cat > cap.sh <<'EOF' #!/bin/bash FL=/var/lib/flatpak/runtime/org.freedesktop.Platform.GL.default/x86_64/25.08/active/files/lib env -u WAYLAND_DISP
+347	113	build	tool	read files	read	2026-11-22T13:53:34Z	9.4	/home/ladvien/bevy_gooey_loop/docs/media/prose.png
+347	114	build	model	model		2026-11-22T13:53:44Z	1.6	
+347	115	build	tool	read files	read	2026-11-22T13:53:45Z	0.1	/tmp/g106/after_dark_1280x720.png
+347	116	build	tool	read files	read	2026-11-22T13:53:45Z	0.1	/tmp/g106/after_parchment_1280x720.png
+347	117	build	tool	read files	read	2026-11-22T13:53:45Z	0.1	/tmp/g106/after_high_contrast_1280x720.png
+347	118	build	model	model		2026-11-22T13:53:45Z	4.2	
+347	119	build	tool	read files	read	2026-11-22T13:53:50Z	0.1	/tmp/g106/after_dark_2560x1440.png
+347	120	build	model	model		2026-11-22T13:53:50Z	2.6	
+347	121	prove	tool	phase mark	bash	2026-11-22T13:53:52Z	0.1	cd ~/bevy_gooey_loop && cp /tmp/g106/after_dark_1280x720.png docs/media/prose.png && grep -n "emphasis" AGENTS.md docs/media/README.md docs/guide/*.md README.md
+347	122	prove	model	model		2026-11-22T13:53:52Z	1.6	
+347	123	prove	tool	shell	bash	2026-11-22T13:53:54Z	0.0	cd ~/bevy_gooey_loop && sed -n 93,96p docs/guide/code-editor.md | cut -c1-400; grep -n "SyntaxRole" docs/guide/code-editor.md | cut -c1-200 | head; sed -n 76p d
+347	124	prove	model	model		2026-11-22T13:53:54Z	2.1	
+347	125	prove	tool	git	bash	2026-11-22T13:53:56Z	0.0	cd ~/bevy_gooey_loop && python3 - <<'EOF' p='docs/media/README.md'; s=open(p).read() s=s.replace("`**bold**`, `*emphasis*`, `` `code` ``, list dashes","`**bold*
+347	126	prove	model	model		2026-11-22T13:53:56Z	2.8	
+347	127	prove	tool	eval	eval	2026-11-22T13:53:59Z	0.2	{"language": "py", "code": "d = await commit.draft()\nprint(d)"}
+347	128	prove	model	model		2026-11-22T13:53:59Z	4.1	
+347	129	gate	tool	phase mark	bash	2026-11-22T13:54:03Z	0.1	cd ~/bevy_gooey_loop && git add docs/research/markdown-emphasis.md && git commit -qm "Research: emphasis hues chosen by sweep (#115)" && git add src tests && gi
+347	130	gate	model	model		2026-11-22T13:54:03Z	3.1	
+347	131	gate	tool	cargo test	bash	2026-11-22T13:54:06Z	0.0	[launched bg_4] cd ~/bevy_gooey_loop && cat > /tmp/g106/gate.sh <<'EOF' #!/bin/bash cd ~/bevy_gooey_loop; export RUSTC_WRAPPER= set -x cargo fmt --check && cargo clippy --all-t
+347	132	gate	model	model		2026-11-22T13:54:06Z	7.5	
+347	133	gate	tool	shell	bash	2026-11-22T13:54:14Z	0.0	cd ~/bevy_gooey_loop && cat > /tmp/g106/log.md <<'EOF' ## Iteration 106 — 2026-11-22 — emphasis and strong in two inks (#115) **Change.** `SyntaxRole::Emphasis`
+347	134	gate	bg	shell	bash	2026-11-22T13:54:13Z	1.2	bg_4 completed: cat > /tmp/g106/gate.sh <<'EOF' #!/bin/bash cd ~/bevy_gooey_loop; export RUSTC_WRAPPER= set -x cargo fmt --check && c...
+347	135	gate	model	model		2026-11-22T13:54:14Z	1.4	
+347	136	gate	tool	shell	bash	2026-11-22T13:54:15Z	0.0	[launched bg_5] cd ~/bevy_gooey_loop && export RUSTC_WRAPPER=; cargo fmt && git add tests && git commit -qm "Format the emphasis ink test" && /tmp/g106/gate.sh > /tmp/g106/gate
+347	137	gate	model	model		2026-11-22T13:54:15Z	0.6	
+347	138	gate	tool	wait: other	wait	2026-11-22T13:54:16Z	5.0	{}
+347	139	gate	model	model		2026-11-22T13:54:21Z	0.7	
+347	140	gate	tool	wait: other	wait	2026-11-22T13:54:22Z	240.0	{}
+347	141	gate	model	model		2026-11-22T13:58:22Z	2.4	
+347	142	gate	tool	wait: other	wait	2026-11-22T13:58:24Z	216.0	{}
+347	143	gate	model	model		2026-11-22T14:02:00Z	2.7	
+347	144	ship	tool	phase mark	bash	2026-11-22T14:02:03Z	3.0	cd ~/bevy_gooey_loop && grep -E "Summary|test result" /tmp/g106/gate.log; python3 ~/.local/share/wiggum/steps.py mark ship; git push -q -u origin loop/iter-106 
+347	145	ship	model	model		2026-11-22T14:02:06Z	3.0	
+347	146	ship	tool	git	bash	2026-11-22T14:02:09Z	28.6	cd ~/bevy_gooey_loop && git diff loop/iter-106 main --stat | tail -1; git fetch -q; git log --oneline main..origin/main | head -2; export RUSTC_WRAPPER=; cargo 
+347	147	ship	model	model		2026-11-22T14:02:37Z	3.0	
+347	148	ship	tool	shell	bash	2026-11-22T14:02:41Z	0.0	cd ~/bevy_gooey_loop && grep -n "0\.55" Cargo.toml README.md CHANGELOG.md | head; head -8 CHANGELOG.md | cut -c1-120; grep -n '^name = "bevy_gooey"' -A1 Cargo.l
+347	149	ship	model	model		2026-11-22T14:02:41Z	2.1	
+347	150	ship	tool	cargo publish	bash	2026-11-22T14:02:43Z	39.9	cd ~/bevy_gooey_loop && export RUSTC_WRAPPER=; sed -i '0,/^## \[Unreleased\]/s//## [Unreleased]\n\n## [0.56.0] - 2026-11-22/' CHANGELOG.md && sed -i '3s/0.55.0/
+347	151	ship	model	model		2026-11-22T14:03:23Z	2.9	
+347	152	ship	tool	cargo publish	bash	2026-11-22T14:03:25Z	8.8	cd ~/bevy_gooey_loop && git status --short; git ls-files Cargo.lock; wc -l README.md; git add -A CHANGELOG.md Cargo.toml README.md Cargo.lock 2>/dev/null; git c
+347	153	ship	model	model		2026-11-22T14:03:34Z	5.0	
+347	154	release	tool	phase mark	bash	2026-11-22T14:03:39Z	3.8	cd ~/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark release; git tag -a v0.56.0 -m "bevy_gooey 0.56.0: emphasis and strong in two inks (#115)" &
+347	155	release	model	model		2026-11-22T14:03:43Z	8.2	
+347	156	log	tool	phase mark	bash	2026-11-22T14:03:51Z	1.8	cd ~/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark log; cat >> /tmp/g106/log.md <<'EOF' **Checklist.** Tests: `code_decor::emphasis_and_strong_
+347	157	log	model	model		2026-11-22T14:03:53Z	5.8	
