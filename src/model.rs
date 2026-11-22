@@ -106,6 +106,11 @@ pub fn cie_lightness(srgb: [f32; 3]) -> f32 {
 /// far. See [`crate::GooeySkin::primary_hovered`].
 pub const PRIMARY_LIFT_L: f32 = 6.0;
 
+/// How far a toned meter's trail stands from its fill, in CIE L\* toward the text
+/// ([`crate::GooeySkin::meter_trail`]): over five times [`STATE_STEP`], so the lost length reads as
+/// a lighter band of the bar's own colour and not as shading of it.
+pub const METER_TRAIL_LIFT_L: f32 = 22.0;
+
 /// How finely [`lift_toward`] walks the line between its two colours: 256 steps, finer than an
 /// 8-bit channel.
 const LIFT_STEPS: u16 = 256;

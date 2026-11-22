@@ -36,10 +36,11 @@ use crate::layout::{
     AspectBox, BoxSize, CardWidth, CellWidth, LayoutGap, OverlayStacked, PlacedAt, RowLayout,
 };
 use crate::led::LedSize;
+use crate::meter::MeterTone;
 use crate::list::ListView;
 use crate::menu::{MenuMarked, MenuOpen};
 use crate::model::{
-    COMFORT_TARGET_PX, ELEVATION_STEP, ENHANCED_CONTRAST, MIN_TARGET_PX, NON_TEXT_CONTRAST,
+    COMFORT_TARGET_PX, ELEVATION_STEP, ENHANCED_CONTRAST, METER_TRAIL_LIFT_L, MIN_TARGET_PX, NON_TEXT_CONTRAST,
     PRIMARY_LIFT_L, STATE_STEP, TEXT_CONTRAST, cie_lightness, composite, contrast_ratio,
     lift_toward, list_height, snap_line_width, snap_text_size, tree_indent,
 };
@@ -788,6 +789,36 @@ impl GooeySkin {
     /// [`GooeySkin::primary_hovered`].
     pub fn primary_pressed(&self) -> Color {
         self.lifted(PRIMARY_LIFT_L * 2.0)
+    }
+
+    /// A [`crate::meter`]'s fill: the [`crate::MeterTone`] it names (a tone of this skin, else one
+    /// of its own colours, as [`GooeySkin::tone_problems`] resolves a name), else
+    /// [`GooeySkin::accent`]. A name this skin does not know is the accent too.
+    ///
+    /// ```
+    /// use bevy::prelude::*;
+    /// use bevy_gooey::GooeySkin;
+    /// let mut skin = GooeySkin::dark();
+    /// skin.tones.insert("health".into(), Color::srgb(0.8, 0.2, 0.25));
+    /// assert_eq!(skin.meter_fill(Some("health")), Color::srgb(0.8, 0.2, 0.25));
+    /// assert_eq!(skin.meter_fill(Some("unknown")), skin.accent);
+    /// assert_eq!(skin.meter_fill(None), skin.accent);
+    /// ```
+    pub fn meter_fill(&self, tone: Option<&str>) -> Color {
+        tone.and_then(|name| self.colour_named(name))
+            .unwrap_or(self.accent)
+    }
+
+    /// A [`crate::meter`]'s trail: [`GooeySkin::danger`] for a meter with no tone, else the
+    /// fill's own colour moved [`METER_TRAIL_LIFT_L`] of CIE L\* toward [`GooeySkin::text`], so
+    /// the length just lost reads as the same bar lighter and not as a second, longer one.
+    pub fn meter_trail(&self, tone: Option<&str>) -> Color {
+        if true {
+            return self.danger;
+        }
+        let fill = self.meter_fill(tone);
+        let [red, green, blue] = lift_toward(rgb(fill), rgb(self.text), METER_TRAIL_LIFT_L);
+        Color::srgba(red, green, blue, fill.alpha())
     }
 
     /// The accent moved `step_l` of CIE L\* toward the text, at the accent's own alpha.
@@ -1621,6 +1652,12 @@ pub enum Role {
     /// A meter's trail: the length the fill just lost, behind it in [`GooeySkin::danger`] while it
     /// holds and drains. Zero wide at rest.
     MeterTrail,
+    /// The lane a [`crate::MeterSegments`] meter's notches stand in: the meter's inside, over the
+    /// fill. Built by [`crate::update_meter_notches`].
+    MeterNotchLane,
+    /// One notch between two cells of a [`crate::MeterSegments`] meter: a line weight wide, in the
+    /// track's colour, so it cuts the fill like the gap between two cells.
+    MeterNotch,
     /// The track under a [`crate::hold_button`]'s label: a [`Role::Meter`]'s frame and height with
     /// no least width, so the button is as wide as its label.
     HoldTrack,
@@ -2374,6 +2411,8 @@ struct State {
     gap_px: Option<f32>,
     /// A [`crate::led`]'s text step ([`LedSize`]); none is the body's size.
     led_size: Option<usize>,
+    /// A [`crate::meter`]'s tone ([`MeterTone`]); none is the accent.
+    meter_tone: Option<&'static str>,
     /// The rail lane of a scroll region's viewport ([`ScrollGutter`]).
     scroll_gutter: Option<Option<crate::box_model::Space>>,
     /// The gap of a [`crate::fill_region_with`], a multiple of the skin's gap; none is no gap.
@@ -2435,6 +2474,7 @@ impl Default for State {
             ink_follow: false,
             gap_px: None,
             led_size: None,
+            meter_tone: None,
             scroll_gutter: None,
             region_gap: None,
             layout_gap: 1.0,
@@ -2497,6 +2537,7 @@ type StateQuery = (
                 Option<&'static GapPx>,
                 Option<&'static ScrollGutter>,
                 Option<&'static LedSize>,
+                Option<&'static MeterTone>,
             ),
         ),
     ),
@@ -2563,6 +2604,7 @@ type Restyle = (
                     Changed<GapPx>,
                     Changed<ScrollGutter>,
                     Changed<LedSize>,
+                    Changed<MeterTone>,
                 )>,
             )>,
         )>,
@@ -2608,6 +2650,7 @@ type Removals<'w, 's> = (
         RemovedComponents<'w, 's, OverlayStacked>,
         RemovedComponents<'w, 's, InkFollow>,
         RemovedComponents<'w, 's, LedSize>,
+        RemovedComponents<'w, 's, MeterTone>,
     ),
 );
 
@@ -2623,6 +2666,7 @@ fn owns_parts(role: Option<&Role>) -> bool {
                 | Role::ListRow
                 | Role::EdgeTab
                 | Role::CardCell
+                | Role::Meter
                 | Role::Toggle
                 | Role::Slider
                 | Role::Choice
@@ -2698,7 +2742,7 @@ pub fn apply_skin(
         unprimed,
         unsized_controls,
         unvaried,
-        (unheld, unstacked, uninked, unled),
+        (unheld, unstacked, uninked, unled, untoned),
     ) = &mut removed;
     let any_scope = !scopes.is_empty();
     let look = Look {
@@ -2754,7 +2798,7 @@ pub fn apply_skin(
                             visibility,
                             border_px,
                             ink_override,
-                            (host_geometry, ink_follow, gap_px, scroll_gutter, led_size),
+                            (host_geometry, ink_follow, gap_px, scroll_gutter, led_size, meter_tone),
                         ),
                     ),
                     row,
@@ -2824,6 +2868,7 @@ pub fn apply_skin(
                         ink_follow,
                         gap_px: gap_px.map(|gap| gap.0),
                         led_size: led_size.map(|size| size.0),
+                        meter_tone: meter_tone.map(|tone| tone.0),
                         scroll_gutter: scroll_gutter.map(|gutter| gutter.0),
                         visibility: visibility.copied().unwrap_or_default(),
                         region_gap: gap.map(|gap| gap.0),
@@ -2910,6 +2955,7 @@ pub fn apply_skin(
         unstacked.clear();
         uninked.clear();
         unled.clear();
+        untoned.clear();
         unscoped.clear();
         orphaned.clear();
         for item in &mut styled {
@@ -2965,6 +3011,7 @@ pub fn apply_skin(
     dirty.extend(unstacked.read());
     dirty.extend(uninked.read());
     dirty.extend(unled.read());
+    dirty.extend(untoned.read());
     if focus.is_changed() || visible.is_changed() {
         dirty.extend(
             styled
@@ -3429,8 +3476,10 @@ fn restyle(
             },
             owner.alpha,
         )),
-        Role::MeterFill | Role::HoldFill => Some(skin.accent),
-        Role::MeterTrail => Some(skin.danger),
+        Role::MeterFill => Some(skin.meter_fill(parent.and_then(|p| p.meter_tone))),
+        Role::HoldFill => Some(skin.accent),
+        Role::MeterTrail => Some(skin.meter_trail(parent.and_then(|p| p.meter_tone))),
+        Role::MeterNotch => Some(skin.surface_raised),
         Role::FieldMark => Some(problem_colour(skin, owner.problem)),
         Role::MarkdownCode | Role::MarkdownCell | Role::MarkdownMissing => Some(skin.solid_surface()),
         Role::MarkdownHeadCell => Some(skin.surface_raised),
@@ -3705,6 +3754,7 @@ fn restyle(
         | Role::MarkdownLine
         | Role::MarkdownQuote
         | Role::MarkdownPath
+        | Role::MeterNotchLane
         | Role::PaletteCount => None,
     };
     // A shape's fill is a level of the surface ladder; none leaves what the role draws.
@@ -4416,6 +4466,21 @@ fn restyle(
             // CSS's content-edge radius: the track's minus its frame and gap, so the corners are
             // concentric. Bevy clips a child to a rectangle, never to its parent's curve, so the
             // fill is rounded itself.
+            // The notches' lane is the meter's inside: the gap in from every side of the padding box, so
+            // a notch's percentage is the fill's.
+            Role::MeterNotchLane => {
+                next.position_type = PositionType::Absolute;
+                next.left = Val::Px(0.0);
+                next.right = Val::Px(0.0);
+                next.top = Val::Px(line);
+                next.bottom = Val::Px(line);
+            }
+            Role::MeterNotch => {
+                next.position_type = PositionType::Absolute;
+                next.top = Val::ZERO;
+                next.bottom = Val::ZERO;
+                next.width = Val::Px(line);
+            }
             Role::MeterFill | Role::MeterTrail | Role::HoldFill | Role::SliderFill => {
                 next.border_radius =
                     BorderRadius::all(Val::Px((skin.radius - 2.0 * line).max(0.0)));
