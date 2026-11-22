@@ -26,6 +26,7 @@ use crate::code_overlay::{
     MATCH_ALPHA, MATCH_LIT_ALPHA, MINIMAP_BAND_ALPHA, MINIMAP_BAND_EDGE_ALPHA, MINIMAP_BAR_ALPHA,
     MINIMAP_BAR_PX, MINIMAP_EM, MINIMAP_GROUND_ALPHA, MINIMAP_MARK_PX, SQUIGGLE_HEIGHT,
 };
+use crate::code_syntax::SyntaxTheme;
 use crate::color_motion::ColorTrack;
 use crate::control_size::ControlSize;
 use crate::drag::{DropCandidate, DropRefusing};
@@ -404,6 +405,12 @@ pub struct GooeySkin {
     /// carries tones lists them in name order. Not checked by [`GooeySkin::problems`]: the crate
     /// cannot know which pairs a host draws.
     pub tones: BTreeMap<String, Color>,
+    /// The hues of the code editor's colours ([`GooeySkin::syntax`]); empty (the skin's own) in every
+    /// preset. The host's choice like [`GooeySkin::tones`]: the theme step
+    /// ([`GooeySkin::with_colours_of`]) leaves it alone. Every ink is still held to the contrast
+    /// bar; an ink [`GooeySkin::problems`] cannot use is [`SkinProblem::BadSize`]
+    /// (`syntax_theme`).
+    pub syntax_theme: SyntaxTheme,
     /// The fill of a row, chip or field under the pointer; `None` draws
     /// [`GooeySkin::surface_raised`] a third of the way to [`GooeySkin::accent`]. Read it with
     /// [`GooeySkin::hovered`]: every hovered widget of the crate draws it, and [`Role::Hovered`]
@@ -611,6 +618,7 @@ impl GooeySkin {
             type_scale: [14.0, 16.0, 20.0, 26.0, 32.0],
             surfaces: vec![Color::BLACK],
             tones: BTreeMap::new(),
+            syntax_theme: SyntaxTheme::skin(),
             hover: None,
             pressed: None,
             held: None,
@@ -1148,6 +1156,11 @@ impl GooeySkin {
         if !(0.0..=1.0).contains(&self.held_fade) {
             // Out of range or NaN (a NaN is in no range).
             out.push(SkinProblem::BadSize { field: "held_fade" });
+        }
+        if !self.syntax_theme.is_usable() {
+            out.push(SkinProblem::BadSize {
+                field: "syntax_theme",
+            });
         }
         if let Some(field) = self.motion.problem() {
             out.push(SkinProblem::BadMotion { field });

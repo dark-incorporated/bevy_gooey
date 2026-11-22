@@ -833,3 +833,217 @@ fn without_the_marker_text_stays_plain_and_a_hosts_own_highlights_still_draw() {
         Role::CodeSyntax(SyntaxRole::Number)
     );
 }
+
+// -- #116: syntax themes -----------------------------------------------------------------------
+
+/// CIE L*a*b* distance of two colours, 100 scale.
+fn lab_apart(a: Color, b: Color) -> f32 {
+    use bevy::color::{Laba, Srgba};
+    let lab = |c: Color| Laba::from(Srgba::from(c));
+    let (a, b) = (lab(a), lab(b));
+    100.0 * ((a.lightness - b.lightness).powi(2) + (a.a - b.a).powi(2) + (a.b - b.b).powi(2)).sqrt()
+}
+
+/// Every skin a host can be on: the four looks and the high-contrast one.
+fn every_skin() -> Vec<(String, GooeySkin)> {
+    let mut skins: Vec<_> = SkinPreset::ALL
+        .into_iter()
+        .map(|p| (p.name().to_string(), p.skin()))
+        .collect();
+    skins.push(("high contrast".into(), GooeySkin::high_contrast()));
+    skins
+}
+
+#[test]
+fn every_syntax_preset_holds_the_contrast_bar_on_every_skin() {
+    for (name, base) in every_skin() {
+        for preset in SyntaxPreset::ALL {
+            let mut skin = base.clone();
+            skin.syntax_theme = preset.theme();
+            assert!(
+                skin.problems().is_empty(),
+                "{} on {name}: {:?}",
+                preset.name(),
+                skin.problems()
+            );
+            if name == "high contrast" {
+                assert!(
+                    skin.high_contrast_problems().is_empty(),
+                    "{} on {name}: {:?}",
+                    preset.name(),
+                    skin.high_contrast_problems()
+                );
+            }
+        }
+    }
+}
+
+#[test]
+fn the_skins_own_theme_draws_the_colours_a_skin_always_drew() {
+    for (name, base) in every_skin() {
+        assert_eq!(base.syntax_theme, SyntaxTheme::skin(), "{name}");
+        let mut named = base.clone();
+        named.syntax_theme = SyntaxTheme::skin();
+        for role in SyntaxRole::ALL {
+            assert_eq!(base.syntax(role), named.syntax(role), "{name} {role:?}");
+        }
+    }
+    // The theme step is the host's colours, not the host's ink theme.
+    let mut host = GooeySkin::dark();
+    host.syntax_theme = SyntaxTheme::mono();
+    assert_eq!(
+        host.with_colours_of(&GooeySkin::parchment()).syntax_theme,
+        SyntaxTheme::mono()
+    );
+    // Fixed roles never follow a theme.
+    let plain = GooeySkin::dark();
+    let mut themed = GooeySkin::dark();
+    themed.syntax_theme = SyntaxTheme::warm();
+    for role in [SyntaxRole::Comment, SyntaxRole::Operator, SyntaxRole::Error] {
+        assert_eq!(plain.syntax(role), themed.syntax(role), "{role:?}");
+    }
+}
+
+#[test]
+fn the_hued_themes_keep_every_role_apart_on_every_skin() {
+    for (name, base) in every_skin() {
+        for preset in [
+            SyntaxPreset::Warm,
+            SyntaxPreset::Cool,
+            SyntaxPreset::Separated,
+        ] {
+            let mut skin = base.clone();
+            skin.syntax_theme = preset.theme();
+            let mut least = (f32::MAX, SyntaxRole::Key, SyntaxRole::Key);
+            for (i, a) in SyntaxRole::ALL.into_iter().enumerate() {
+                for b in SyntaxRole::ALL.into_iter().skip(i + 1) {
+                    let gap = lab_apart(skin.syntax(a), skin.syntax(b));
+                    if gap < least.0 {
+                        least = (gap, a, b);
+                    }
+                }
+            }
+            // CIE L*a*b* units: 2.3 is a just-noticeable difference, so 8 reads at a glance. The
+            // high-contrast skin's 7:1 bar pushes every ink toward the text and leaves 6.
+            let wanted = if name.eq_ignore_ascii_case("high contrast") {
+                6.0
+            } else {
+                8.0
+            };
+            assert!(
+                least.0 >= wanted,
+                "{} on {name}: {:?} and {:?} only {:.1} apart (want {wanted})",
+                preset.name(),
+                least.1,
+                least.2,
+                least.0
+            );
+        }
+    }
+}
+
+#[test]
+fn switching_the_syntax_theme_recolours_an_open_editor_in_that_frame() {
+    let mut app = app_with(MotionSettings::off());
+    let editor = editor_of(&mut app, "name: \"Ada\" # who");
+    let revision = value(&app, editor).revision();
+    app.world_mut().entity_mut(editor).insert(Highlights::new(
+        revision,
+        [
+            (0..4, SyntaxRole::Key),
+            (6..11, SyntaxRole::String),
+            (12..17, SyntaxRole::Comment),
+        ],
+    ));
+    settle(&mut app);
+    let colour = |app: &App, text: &str| {
+        spans(app, editor)
+            .into_iter()
+            .find(|(t, ..)| t == text)
+            .unwrap_or_else(|| panic!("a run {text:?}"))
+            .2
+    };
+    let skin = app.world().resource::<GooeySkin>().clone();
+    let (key, string, comment) = (
+        colour(&app, "name"),
+        colour(&app, "\"Ada\""),
+        colour(&app, "# who"),
+    );
+    assert_eq!(key, skin.syntax(SyntaxRole::Key));
+    for preset in [SyntaxPreset::Warm, SyntaxPreset::Mono] {
+        let mut next = skin.clone();
+        next.syntax_theme = preset.theme();
+        app.world_mut().insert_resource(next.clone());
+        settle(&mut app);
+        assert_eq!(colour(&app, "name"), next.syntax(SyntaxRole::Key));
+        assert_eq!(colour(&app, "\"Ada\""), next.syntax(SyntaxRole::String));
+        assert_ne!(
+            colour(&app, "name"),
+            key,
+            "{}: the key's ink moved",
+            preset.name()
+        );
+        assert_ne!(
+            colour(&app, "\"Ada\""),
+            string,
+            "{}: the string's ink moved",
+            preset.name()
+        );
+        assert_eq!(
+            colour(&app, "# who"),
+            comment,
+            "a comment stays the muted text"
+        );
+    }
+    // Back to the skin's own: the colours the editor had.
+    app.world_mut().insert_resource(skin);
+    settle(&mut app);
+    assert_eq!(colour(&app, "name"), key);
+}
+
+#[test]
+fn a_syntax_theme_a_skin_cannot_use_is_reported_and_the_last_ink_of_a_role_wins() {
+    let mut skin = GooeySkin::dark();
+    for bad in [
+        SyntaxInk::new(SyntaxRole::Comment, 10.0),
+        SyntaxInk::new(SyntaxRole::Key, f32::NAN),
+        SyntaxInk::new(SyntaxRole::Key, 10.0).chroma(0.9),
+        SyntaxInk::new(SyntaxRole::Key, 10.0).shift(2.0),
+    ] {
+        skin.syntax_theme = SyntaxTheme { inks: vec![bad] };
+        assert!(
+            skin.problems().contains(&SkinProblem::BadSize {
+                field: "syntax_theme"
+            }),
+            "{bad:?}"
+        );
+    }
+    let key_of = |hue: f32| {
+        let mut skin = GooeySkin::dark();
+        skin.syntax_theme = SyntaxTheme {
+            inks: vec![SyntaxInk::new(SyntaxRole::Key, hue)],
+        };
+        skin.syntax(SyntaxRole::Key)
+    };
+    let mut skin = GooeySkin::dark();
+    skin.syntax_theme = SyntaxTheme {
+        inks: vec![
+            SyntaxInk::new(SyntaxRole::Key, 10.0),
+            SyntaxInk::new(SyntaxRole::Key, 200.0),
+        ],
+    };
+    assert_eq!(skin.syntax(SyntaxRole::Key), key_of(200.0));
+    assert_ne!(key_of(10.0), key_of(200.0));
+}
+
+#[cfg(feature = "serde")]
+#[test]
+fn a_syntax_theme_is_data_and_a_skin_without_one_reads_as_the_skins_own() {
+    let mut skin = GooeySkin::parchment();
+    skin.syntax_theme = SyntaxTheme::cool();
+    let text = ron::to_string(&skin).expect("a skin writes");
+    let back: GooeySkin = ron::from_str(&text).expect("a skin reads");
+    assert_eq!(back.syntax_theme, SyntaxTheme::cool());
+    let none: GooeySkin = ron::from_str("(text_scale: 1.0)").expect("a thin skin reads");
+    assert_eq!(none.syntax_theme, SyntaxTheme::skin());
+}
