@@ -3601,3 +3601,42 @@ under 24 px.
 **Cleanup.** Removed my own `/tmp/g106` and the `Xvfb :95` I started (by PID). No baseline worktree was made (the committed
 `prose.png` was the before). Left: `~/g17_base`, `~/g17_parked`, `~/g17s_base`; parked branches `wiggum/parked-pass-*`
 untouched.
+
+## Iteration 107 — 2026-11-22 — meter tone and segments
+
+**Changed.** `meter()` bars were all the accent, so Health, Mana, Stamina and Ammo differed only by label, and a hit's trail was
+always `danger`. Added `MeterTone("health")` (resolves a skin tone, else one of the skin's own colours, unknown falls back to
+accent; the trail is the tone lifted `METER_TRAIL_LIFT_L` = 22 CIE L\* toward `text`, an untoned meter keeps its `danger`
+trail, so existing meters are unchanged) and `MeterSegments(n)` (`n-1` notches in `surface_raised`, a line weight wide, in a
+`Role::MeterNotchLane` over the fill; under 2 draws none, over `METER_MAX_SEGMENTS` = 64 warns). The fill is still `Children[0]`.
+`GooeySkin::meter_fill` / `meter_trail` are the accessors; a host checks its tones with `GooeySkin::tone_problems` (no new
+`problems()` entry). `examples/hud.rs`, guide section in `docs/guide/widgets.md`, README line, `docs/media/hud.gif`. Ranked
+first because a HUD that tells four resources apart by colour is the most common thing a game asks of a meter and the crate
+had no way to say it. Runner-up: incremental wrap-map rebuild (#114 gap), then a `problems()` note for a divider under 24 px.
+Assumed decision: the trail of a toned meter is the lifted tone, not `danger`.
+
+**Sources** (`docs/research/meter-tone-segments.md`): WCAG 1.4.1 and 1.4.11, XAG 102, plus the research note's own list of
+HUD-meter conventions by stem.
+
+**Critique and verdict.** dark 720p: four distinct tones, pink trail, 7 of 12 ammo cells countable, layout identical: GREAT.
+parchment 1440p: tones hold on the tan track, notches on whole device pixels: GREAT. dark 720p at 150% text: found my own
+example's fixed 96 px label clipping "Stamina"; fixed with `cell(8.0)`, re-captured, clean: GREAT. `hud.gif`: GREAT.
+
+**Checklist.** fmt, clippy `-D warnings`, nextest 1680 passed (7 new in `meter_style`, mutation-checked: the untoned-trail
+branch and the lane inset), doctests, `cargo check --lib` and wasm32, `cargo doc -D warnings` all green on the branch.
+`mean_ms` hud 720p, load 17-21, five alternating pairs: after 16.5-16.6 (one 40.2 outlier), before 16.6-19.5: no change.
+`cargo semver-checks` (baseline crates.io 0.51.8): no update required, bumped minor to 0.57.0 for the new pub types and Role
+variants. **Release:** `cargo publish` returned 403 "authentication failed" (the owner's token; 0.51.9 to 0.57.0 unpublished);
+tag `v0.57.0` pushed.
+
+**Commits.** 21917b7, 53b90fc (research), 6767bed (impl), 28d453a (docs), 6843557 (merge), 2d19396 (release v0.57.0).
+
+**Top 5 backlog.** (1) crates.io token for 0.51.9 to 0.57.0; (2) incremental wrap-map rebuild; (3) windowed variable-height
+table; (4) minimap and indent guides under soft wrap; (5) a `problems()` note for a divider under 24 px. A threshold marker or
+vertical meter was left out.
+
+Parked trees 341 and 343 were stale and not adopted.
+
+**Cleanup.** Removed my own `/tmp/g107*`, `~/g107_base` worktree. `df -h .` before 163G free at 96%, after 119G at 97% (shared
+target growth from other agents' builds and the semver baseline). Left: `~/g17_base`, `~/g17_parked`, `~/g17s_base`; parked
+branches `wiggum/parked-pass-*` untouched.
