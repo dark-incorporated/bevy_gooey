@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.56.0] - 2026-11-22
+
 ### Breaking
 
 - `SyntaxRole` has two new variants, `Emphasis` and `Strong`, and `SyntaxRole::ALL` is 12 long; a `match` over it needs arms.
