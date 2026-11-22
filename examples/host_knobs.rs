@@ -82,11 +82,23 @@ fn main() {
 /// The table's rows: a name, a count and a note that is sometimes much longer than its cell.
 fn rows() -> Vec<Vec<String>> {
     [
-        ("Meadow", "12", "Open ground east of the mill; the stream runs along its southern edge."),
+        (
+            "Meadow",
+            "12",
+            "Open ground east of the mill; the stream runs along its southern edge.",
+        ),
         ("Harbour", "9", "Quiet."),
-        ("Mill", "3", "Wheel is jammed. The miller says the pond froze overnight and cracked the axle."),
+        (
+            "Mill",
+            "3",
+            "Wheel is jammed. The miller says the pond froze overnight and cracked the axle.",
+        ),
         ("Cellar", "1", "Locked from the inside."),
-        ("Orchard", "27", "Frost took the early blossom; the late varieties are untouched."),
+        (
+            "Orchard",
+            "27",
+            "Frost took the early blossom; the late varieties are untouched.",
+        ),
     ]
     .into_iter()
     .map(|(a, b, c)| vec![a.to_string(), b.to_string(), c.to_string()])
