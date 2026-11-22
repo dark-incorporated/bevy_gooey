@@ -221,6 +221,7 @@ mod status;
 mod tab_scroll;
 mod table;
 mod tabs;
+mod tag;
 mod text;
 mod text_area;
 mod toast;
@@ -442,6 +443,7 @@ pub use tabs::{
     CornerBadge, IconTab, SideTab, TabPageOf, TabsCount, TabsValue, VerticalTab, land_tab_focus,
     step_tabs, update_tab_pages, update_tabs,
 };
+pub use tag::{Tag, TagTone, update_tags};
 pub use text::{
     TextEdited, TextEditing, TextHint, TextInputOf, TextInputValue, TextLimit, is_text_editing,
     track_text_editing, update_text_inputs,
@@ -570,6 +572,8 @@ impl Plugin for GooeyStylePlugin {
             .register_type::<OverlayStacked>()
             .register_type::<Meter>()
             .register_type::<MeterTone>()
+            .register_type::<Tag>()
+            .register_type::<TagTone>()
             .register_type::<MeterSegments>()
             .register_type::<WorldAnchor>()
             .register_type::<AnchorPinned>()
@@ -757,7 +761,7 @@ impl Plugin for GooeyStylePlugin {
                         update_field_problems,
                         update_progress,
                         update_spinners,
-                        (update_cooldowns, update_leds),
+                        (update_cooldowns, update_leds, update_tags),
                         update_hold_bars,
                         (update_toggle_groups, fit_bars).chain(),
                         (update_sections, update_section_glides).chain(),

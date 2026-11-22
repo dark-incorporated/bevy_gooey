@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- `tag("ELITE")`: a read-only word on a plate whose colour names a kind of thing, for a name plate, a "NEW" mark, a level pill or a "2 STALE" count. `TagTone("danger")` picks the plate from the skin's tones or one of its own colours (`GooeySkin::tag_fill`); the skin picks the words' ink so any tone stays readable (`GooeySkin::tag_ink`); none or an unknown name is the quiet plate. A tag with empty words takes no room (`update_tags`). It takes no input and no focus, and a screen reader reads it as one label. `GooeySkin::tone`'s lookup also names `"warning"` and `"live"`. `Role::Tag` and `Role::TagText` are new variants (a `match` over `Role` needs arms).
+
 ## [0.57.0] - 2026-11-22
 
 ### Added

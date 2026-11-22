@@ -82,6 +82,10 @@ the skin's sizes scale with the window, every border and every text size stays a
 
 `(label("Section"), Spacing { margin: Sides { bottom: Some(Space::Step(2)), ..default() }, padding: Sides::x(Space::Step(1)) })` puts a margin and a padding on a text, a row, a panel or a placed node from `GooeySkin::spacing`, so a theme moves all of it, and a side left `None` leaves the node alone ([layout](layout.md))
 
+## Mark a thing with a coloured word
+
+`tag("ELITE")` is a read-only word on a plate, and `(tag("ELITE"), TagTone("danger"))` colours the plate from the skin's tones or one of its own colours (`accent`, `danger`, `warning`, `live`, ...) while the skin picks an ink that reads on it, so a name plate, a "NEW" mark or a level pill is one line and a theme change moves it. A tag whose words are empty takes no room, so `tag(format!("{n} STALE"))` can become `tag("")` with nothing else to hide. It takes no input; one the player presses is a `chip` ([tags](tags.md), `cargo run --example kit`).
+
 ## Build a tool's lists and strips from parts that know their size
 
 `glyph_button("v", "Fold")` is a caret whose hit area is the skin's target however small the mark, `edge_tab("Meshes")` is a tab of a strip you select with Bevy's `Selected` whose bottom edge lights and moves nothing, `band()` is a full-width header row that is a button and shades like a list row, `chip("Weapons (12)")` is a small clickable tag whose words wrap at a word so a wrapping row of them never overflows (`toggle_chip` flips itself and sends `ValueChange<bool>`), and `fill_text(name)` beside `count_text("145")` is a name that wraps in its own column next to a tally that never does; a label over a 3D view pane is a `WorldAnchor` with `.camera(stage)` ([layout](layout.md), `cargo run --example kit`).

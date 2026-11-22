@@ -185,8 +185,10 @@ fn spec(role: Role) -> Spec {
         | Role::Chip
         | Role::ListRow
         | Role::FillText
-        | Role::CountText => Spec::Node,
+        | Role::CountText
+        | Role::Tag => Spec::Node,
         Role::ButtonText
+        | Role::TagText
         | Role::MenuTitleText
         | Role::ChipText
         | Role::MeterFill
@@ -314,6 +316,7 @@ fn names(role: Role) -> bool {
             | Role::TabText
             | Role::FillText
             | Role::CountText
+            | Role::TagText
             | Role::TabBadge
             | Role::CornerBadge
             | Role::MenuText
@@ -625,6 +628,11 @@ fn describe(entity: Entity, role: Role, facts: &FactsItem, look: &Look) -> Optio
             {
                 wanted.expanded = Some(open.0);
             }
+        }
+        // A tag is a label read by its words, which are said once, on the plate.
+        Role::Tag => {
+            wanted.role = Some(Ak::Label);
+            wanted.value = look.words(entity, names);
         }
         // A chip is a button named by its words. A toggle chip is a toggle button (pressed or
         // not); a plain one the host lights says it is selected.

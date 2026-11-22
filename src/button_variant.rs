@@ -239,7 +239,7 @@ impl GooeySkin {
 
     /// The first of the panel, the ground, the text, black and white that reads on `fill` at 7:1, so
     /// a skin's own colours are preferred; failing all, whichever reads best.
-    fn ink_on(&self, fill: Color) -> Color {
+    pub(crate) fn ink_on(&self, fill: Color) -> Color {
         let backing = rgb(fill);
         let candidates = [
             self.surface,
