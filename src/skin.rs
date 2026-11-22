@@ -50,6 +50,7 @@ use crate::prompt::PromptsAnchor;
 use crate::selection_indicator::Indicating;
 use crate::status::StatusKind;
 use crate::table::TableRow;
+use crate::tag::TagTone;
 use crate::toast::{Toast, ToastKind};
 use crate::tooltip::TooltipBox;
 use crate::{MotionTokens, PopoverSlide};
@@ -652,6 +653,8 @@ impl GooeySkin {
             "accent" => Some(self.accent),
             "accent_text" => Some(self.accent_text),
             "danger" => Some(self.danger),
+            "warning" => Some(self.warning()),
+            "live" => Some(self.live()),
             "focus_ring" => Some(self.focus_ring),
             "outline" => Some(self.outline),
             _ => None,
@@ -807,6 +810,34 @@ impl GooeySkin {
     pub fn meter_fill(&self, tone: Option<&str>) -> Color {
         tone.and_then(|name| self.colour_named(name))
             .unwrap_or(self.accent)
+    }
+
+    /// A [`crate::tag`]'s plate: the [`crate::TagTone`] it names (a tone of this skin, else one of its
+    /// own colours, `"warning"` and `"live"` included), else [`GooeySkin::surface_raised`], the quiet
+    /// plate. A name this skin does not know is the quiet plate too.
+    ///
+    /// ```
+    /// use bevy::prelude::*;
+    /// use bevy_gooey::GooeySkin;
+    /// let mut skin = GooeySkin::dark();
+    /// skin.tones.insert("elite".into(), Color::srgb(0.85, 0.65, 0.1));
+    /// assert_eq!(skin.tag_fill(Some("elite")), Color::srgb(0.85, 0.65, 0.1));
+    /// assert_eq!(skin.tag_fill(Some("unknown")), skin.surface_raised);
+    /// assert_eq!(skin.tag_fill(None), skin.surface_raised);
+    /// ```
+    pub fn tag_fill(&self, tone: Option<&str>) -> Color {
+        tone.and_then(|name| self.colour_named(name))
+            .unwrap_or(self.surface_raised)
+    }
+
+    /// The words of a [`crate::tag`] of `tone`: [`GooeySkin::text`] on the quiet plate, else the
+    /// first of the panel, the ground, the text, black and white that reads on the tone at 7:1
+    /// (whichever reads best when none does), so a host's tone is never unreadable.
+    pub fn tag_ink(&self, tone: Option<&str>) -> Color {
+        match tone.and_then(|name| self.colour_named(name)) {
+            Some(fill) => self.ink_on(fill),
+            None => self.text,
+        }
     }
 
     /// A [`crate::meter`]'s trail: [`GooeySkin::danger`] for a meter with no tone, else the
@@ -1912,6 +1943,13 @@ pub enum Role {
     /// accent, [`GooeySkin::text_muted`] disabled) under a role of its own, so a host counting
     /// [`Role::ButtonText`] to find a dialog's answers does not count the chips.
     ChipText,
+    /// A [`crate::tag`]: a short read-only word on a plate whose colour names a kind of thing
+    /// ([`crate::TagTone`]). Quiet ([`GooeySkin::surface_raised`] with the text's ink and an
+    /// `outline` frame) with no tone, else the tone's colour in the ink [`GooeySkin::tag_ink`]
+    /// picks from it. It takes no input, never wraps and never shrinks below its words.
+    Tag,
+    /// A tag's words: [`GooeySkin::tag_ink`] of the tag's tone, in the small step of the type scale.
+    TagText,
     /// A [`crate::fill_text`]: a text that is a flex item of its own which takes the room its row
     /// leaves and wraps inside it, so a long name never pushes its row wider.
     FillText,
@@ -2413,6 +2451,8 @@ struct State {
     led_size: Option<usize>,
     /// A [`crate::meter`]'s tone ([`MeterTone`]); none is the accent.
     meter_tone: Option<&'static str>,
+    /// A [`crate::tag`]'s tone ([`crate::TagTone`]); none is the quiet plate.
+    tag_tone: Option<&'static str>,
     /// The rail lane of a scroll region's viewport ([`ScrollGutter`]).
     scroll_gutter: Option<Option<crate::box_model::Space>>,
     /// The gap of a [`crate::fill_region_with`], a multiple of the skin's gap; none is no gap.
@@ -2475,6 +2515,7 @@ impl Default for State {
             gap_px: None,
             led_size: None,
             meter_tone: None,
+            tag_tone: None,
             scroll_gutter: None,
             region_gap: None,
             layout_gap: 1.0,
@@ -2538,6 +2579,7 @@ type StateQuery = (
                 Option<&'static ScrollGutter>,
                 Option<&'static LedSize>,
                 Option<&'static MeterTone>,
+                Option<&'static TagTone>,
             ),
         ),
     ),
@@ -2605,6 +2647,7 @@ type Restyle = (
                     Changed<ScrollGutter>,
                     Changed<LedSize>,
                     Changed<MeterTone>,
+                    Changed<TagTone>,
                 )>,
             )>,
         )>,
@@ -2651,6 +2694,7 @@ type Removals<'w, 's> = (
         RemovedComponents<'w, 's, InkFollow>,
         RemovedComponents<'w, 's, LedSize>,
         RemovedComponents<'w, 's, MeterTone>,
+        RemovedComponents<'w, 's, TagTone>,
     ),
 );
 
@@ -2663,6 +2707,7 @@ fn owns_parts(role: Option<&Role>) -> bool {
                 | Role::GlyphButton
                 | Role::Band
                 | Role::Chip
+                | Role::Tag
                 | Role::ListRow
                 | Role::EdgeTab
                 | Role::CardCell
@@ -2742,7 +2787,7 @@ pub fn apply_skin(
         unprimed,
         unsized_controls,
         unvaried,
-        (unheld, unstacked, uninked, unled, untoned),
+        (unheld, unstacked, uninked, unled, untoned, untagged),
     ) = &mut removed;
     let any_scope = !scopes.is_empty();
     let look = Look {
@@ -2805,6 +2850,7 @@ pub fn apply_skin(
                                 scroll_gutter,
                                 led_size,
                                 meter_tone,
+                                tag_tone,
                             ),
                         ),
                     ),
@@ -2876,6 +2922,7 @@ pub fn apply_skin(
                         gap_px: gap_px.map(|gap| gap.0),
                         led_size: led_size.map(|size| size.0),
                         meter_tone: meter_tone.map(|tone| tone.0),
+                        tag_tone: tag_tone.map(|tone| tone.0),
                         scroll_gutter: scroll_gutter.map(|gutter| gutter.0),
                         visibility: visibility.copied().unwrap_or_default(),
                         region_gap: gap.map(|gap| gap.0),
@@ -2963,6 +3010,7 @@ pub fn apply_skin(
         uninked.clear();
         unled.clear();
         untoned.clear();
+        untagged.clear();
         unscoped.clear();
         orphaned.clear();
         for item in &mut styled {
@@ -3019,6 +3067,7 @@ pub fn apply_skin(
     dirty.extend(uninked.read());
     dirty.extend(unled.read());
     dirty.extend(untoned.read());
+    dirty.extend(untagged.read());
     if focus.is_changed() || visible.is_changed() {
         dirty.extend(
             styled
@@ -3327,6 +3376,7 @@ fn restyle(
         } else {
             skin.surface_raised
         }),
+        Role::Tag => Some(skin.tag_fill(state.tag_tone)),
         Role::Button | Role::GlyphButton | Role::Band | Role::TableHeaderCell => Some(if state.disabled {
             skin.surface
         } else if state.primary {
@@ -3645,6 +3695,7 @@ fn restyle(
         | Role::ButtonText
         | Role::MenuTitleText
         | Role::ChipText
+        | Role::TagText
         | Role::FillText
         | Role::CountText
         | Role::Toggle
@@ -3842,6 +3893,12 @@ fn restyle(
         Role::Button if state.variant.is_framed() && !state.disabled => {
             Some(BorderColor::all(skin.outline))
         }
+        // A tag's frame is its own plate's colour when it names a tone, so a toned tag is one solid
+        // shape; the quiet plate has the outline.
+        Role::Tag => Some(BorderColor::all(match state.tag_tone {
+            Some(_) => skin.tag_fill(state.tag_tone),
+            None => skin.outline,
+        })),
         // A chip's frame is the outline at rest and its fill's own colour while it is on, so the
         // lit chip is one solid shape; the line is laid out either way.
         Role::Chip => Some(BorderColor::all(if state.disabled {
@@ -4317,6 +4374,21 @@ fn restyle(
                 next.min_height = Val::Px(control);
                 next.flex_grow = 0.0;
                 next.flex_shrink = 1.0;
+            }
+            // A tag is a word on a plate: a line all round, a small step's air inside, no input and
+            // no growing. It never shrinks below its words (they never wrap), and is clipped at its
+            // host's edge rather than overflowing it. Smaller than a chip, so it never sets a
+            // row's height.
+            Role::Tag => {
+                next.border = UiRect::all(Val::Px(line));
+                next.border_radius = radius;
+                next.padding = UiRect::axes(Val::Px(skin.pad() * 0.5), Val::Px(skin.pad() * 0.2));
+                next.align_items = AlignItems::Center;
+                next.min_width = Val::ZERO;
+                next.max_width = Val::Percent(100.0);
+                next.flex_grow = 0.0;
+                next.flex_shrink = 1.0;
+                next.overflow = Overflow::clip();
             }
             // A list row is as wide as its host, a button's air inside, a line all round and a rail's
             // width on the left: that width is always there, lit only while selected, so selecting
@@ -5720,6 +5792,12 @@ fn restyle(
             };
             Some((color, &look.fonts.body, skin.text_size))
         }
+        // A tag's words: the quiet plate's text, or the ink picked from the tone's colour.
+        Role::TagText => Some((
+            skin.tag_ink(parent.and_then(|p| p.tag_tone)),
+            &look.fonts.body,
+            skin.type_scale[1],
+        )),
         Role::ButtonText | Role::MenuTitleText | Role::FillText | Role::CountText => {
             let parent = parent.unwrap_or_default();
             let color = if parent.disabled {
