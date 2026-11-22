@@ -336,7 +336,11 @@ fn the_row_under_the_pointer_is_the_row_the_menu_is_on() {
     let first = focus(&app);
     let at = rect(&app, open).center();
     move_to(&mut app, at);
-    assert_eq!(focus(&app), Some(open), "hovering Open puts the menu on it (was {first:?})");
+    assert_eq!(
+        focus(&app),
+        Some(open),
+        "hovering Open puts the menu on it (was {first:?})"
+    );
     taps(&mut app, &[KeyCode::ArrowDown, KeyCode::ArrowDown]);
     assert_eq!(
         focus(&app),
@@ -357,7 +361,11 @@ fn the_row_under_the_pointer_is_the_row_the_menu_is_on() {
     move_to(&mut app, at);
     assert_eq!(focus(&app), Some(zoom_out), "a disabled row is hovered");
     tap(&mut app, KeyCode::Enter);
-    assert_eq!(chosen(&app), vec!["Autosave"], "Enter on it chooses nothing");
+    assert_eq!(
+        chosen(&app),
+        vec!["Autosave"],
+        "Enter on it chooses nothing"
+    );
     assert!(is_open(&app, view));
 }
 
