@@ -751,7 +751,9 @@ fn emphasis_and_strong_inks_are_apart_from_each_other_and_from_every_other_role(
     let lab = |c: Color| Laba::from(Srgba::from(c));
     let apart = |a: Color, b: Color| {
         let (a, b) = (lab(a), lab(b));
-        100.0 * ((a.lightness - b.lightness).powi(2) + (a.a - b.a).powi(2) + (a.b - b.b).powi(2)).sqrt()
+        100.0
+            * ((a.lightness - b.lightness).powi(2) + (a.a - b.a).powi(2) + (a.b - b.b).powi(2))
+                .sqrt()
     };
     for preset in SkinPreset::ALL {
         let skin = preset.skin();
