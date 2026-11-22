@@ -922,3 +922,238 @@ fn the_selection_keeps_the_text_readable_in_every_preset() {
         );
     }
 }
+
+// -- #114: soft wrap -----------------------------------------------------------------------------
+
+/// An editor of `text` with `CodeSoftWrap` on, in a host column of the usual size.
+fn wrapped_editor_of(app: &mut App, text: &str) -> Entity {
+    let world = app.world_mut();
+    let editor = world.spawn((code_editor("Notes", text), CodeSoftWrap)).id();
+    let host = world
+        .spawn(Node {
+            width: Val::Px(WIDTH),
+            height: Val::Px(HEIGHT),
+            flex_direction: FlexDirection::Column,
+            ..default()
+        })
+        .add_child(editor)
+        .id();
+    world.spawn(screen()).add_child(host);
+    settle(app);
+    app.world_mut()
+        .resource_mut::<InputFocus>()
+        .set(editor, FocusCause::Navigated);
+    settle(app);
+    editor
+}
+
+fn prose(words: usize) -> String {
+    (0..words).map(|i| format!("word{i} ")).collect::<String>()
+}
+
+fn caret_col(app: &App, editor: Entity) -> usize {
+    state(app, editor).buffer().caret().col
+}
+
+#[test]
+fn a_long_line_wraps_at_the_editors_edge_and_the_text_is_never_changed() {
+    let mut app = app();
+    let text = prose(60);
+    let editor = wrapped_editor_of(&mut app, &text);
+    let drawn = row_texts(&app, editor);
+    assert!(
+        drawn.len() >= 8,
+        "a 400-character line is many rows: {}",
+        drawn.len()
+    );
+    let area = rect(&app, part(&app, editor, Role::CodeArea)[0]);
+    let columns = (area.width() / advance(&app, editor)).floor() as usize;
+    for row in &drawn {
+        assert!(
+            row.trim_end().chars().count() <= columns,
+            "a row never runs past the edge: {} > {columns}",
+            row.trim_end().len()
+        );
+    }
+    assert_eq!(
+        drawn.concat(),
+        text,
+        "the rows are the line, whole and in order"
+    );
+    assert_eq!(
+        text_of(&app, editor),
+        text,
+        "a wrap is drawn, never written"
+    );
+    assert_eq!(
+        state(&app, editor).scroll().x,
+        0.0,
+        "there is nothing to scroll sideways"
+    );
+}
+
+#[test]
+fn an_unwrapped_editor_still_draws_one_row_for_a_long_line() {
+    let mut app = app();
+    let editor = editor_of(&mut app, &prose(60));
+    let drawn = row_texts(&app, editor);
+    assert_eq!(drawn.iter().filter(|row| !row.is_empty()).count(), 1);
+}
+
+#[test]
+fn a_settled_unwrapped_editor_writes_nothing_either() {
+    let mut app = app();
+    let editor = editor_of(&mut app, &prose(60));
+    let before = node_ticks(&app, editor);
+    for _ in 0..10 {
+        app.update();
+    }
+    assert_eq!(node_ticks(&app, editor), before);
+}
+
+/// Change ticks of each drawn row's words (the blink writes the editor's own state, not these).
+fn node_ticks(app: &App, editor: Entity) -> Vec<u32> {
+    rows(app, editor)
+        .into_iter()
+        .map(|e| {
+            let text = app.world().entity(e).get_ref::<Text>();
+            text.expect("a row's text").last_changed().get()
+        })
+        .collect()
+}
+
+#[test]
+fn a_click_lands_on_the_row_it_is_on_and_the_caret_is_drawn_there() {
+    let mut app = app();
+    let editor = wrapped_editor_of(&mut app, &prose(60));
+    let drawn = row_texts(&app, editor);
+    let at = on_text(&app, editor, 2, 3);
+    click(&mut app, at);
+    settle(&mut app);
+    let expected = drawn[0].len() + drawn[1].len() + 3;
+    assert_eq!(caret_col(&app, editor), expected);
+    let caret = rect(&app, part(&app, editor, Role::CodeCaret)[0]);
+    let row = rect(&app, rows(&app, editor)[2]);
+    assert!(
+        caret.center().y > row.min.y && caret.center().y < row.max.y,
+        "the caret is on the third row"
+    );
+    let step = advance(&app, editor);
+    assert!(
+        (caret.min.x - (row.min.x + 3.0 * step)).abs() < 1.5,
+        "and three columns in: {} vs {}",
+        caret.min.x,
+        row.min.x + 3.0 * step
+    );
+}
+
+#[test]
+fn up_and_down_move_by_row_and_keep_their_column() {
+    let mut app = app();
+    let editor = wrapped_editor_of(&mut app, &prose(60));
+    let drawn = row_texts(&app, editor);
+    let at = on_text(&app, editor, 0, 4);
+    click(&mut app, at);
+    settle(&mut app);
+    assert_eq!(caret_col(&app, editor), 4);
+    arrow(&mut app, &[], KeyCode::ArrowDown);
+    assert_eq!(caret_col(&app, editor), drawn[0].len() + 4);
+    arrow(&mut app, &[], KeyCode::ArrowDown);
+    assert_eq!(caret_col(&app, editor), drawn[0].len() + drawn[1].len() + 4);
+    arrow(&mut app, &[], KeyCode::ArrowUp);
+    assert_eq!(caret_col(&app, editor), drawn[0].len() + 4);
+}
+
+#[test]
+fn home_and_end_go_to_the_rows_edge_first_and_the_lines_on_a_second_press() {
+    let mut app = app();
+    let text = prose(60);
+    let editor = wrapped_editor_of(&mut app, &text);
+    let drawn = row_texts(&app, editor);
+    let at = on_text(&app, editor, 1, 2);
+    click(&mut app, at);
+    settle(&mut app);
+    let start = drawn[0].len();
+    tap_named(&mut app, KeyCode::Home, Key::Home);
+    assert_eq!(caret_col(&app, editor), start, "Home: the start of the row");
+    tap_named(&mut app, KeyCode::Home, Key::Home);
+    assert_eq!(
+        caret_col(&app, editor),
+        0,
+        "Home again: the start of the line"
+    );
+    tap_named(&mut app, KeyCode::End, Key::End);
+    assert_eq!(
+        caret_col(&app, editor),
+        drawn[0].trim_end().len(),
+        "End: the end of the row's words, before its hanging blank"
+    );
+    tap_named(&mut app, KeyCode::End, Key::End);
+    tap_named(&mut app, KeyCode::End, Key::End);
+    assert_eq!(
+        caret_col(&app, editor),
+        text.len(),
+        "End again: the end of the line"
+    );
+}
+
+#[test]
+fn only_a_lines_first_row_carries_its_number() {
+    let mut app = app();
+    let text = format!("{}\nshort\n{}", prose(30), prose(30));
+    let editor = wrapped_editor_of(&mut app, &text);
+    let numbers: Vec<String> = part(&app, editor, Role::CodeNumber)
+        .into_iter()
+        .chain(part(&app, editor, Role::CodeNumberLit))
+        .filter(|&e| shown_node(&app, e))
+        .map(|e| {
+            app.world()
+                .get::<Text>(e)
+                .expect("text")
+                .0
+                .trim()
+                .to_owned()
+        })
+        .filter(|t| !t.is_empty())
+        .collect();
+    assert_eq!(numbers.len(), 3, "three lines, three numbers: {numbers:?}");
+}
+
+fn shown_node(app: &App, entity: Entity) -> bool {
+    app.world()
+        .get::<Node>(entity)
+        .is_some_and(|n| n.display != Display::None)
+}
+
+#[test]
+fn a_selection_across_a_wrap_is_a_band_on_each_row_it_covers() {
+    let mut app = app();
+    let editor = wrapped_editor_of(&mut app, &prose(60));
+    let drawn = row_texts(&app, editor);
+    app.world_mut()
+        .get_mut::<CodeEditor>(editor)
+        .expect("editor")
+        .select(
+            CodePos::new(0, 2),
+            CodePos::new(0, drawn[0].len() + drawn[1].len() - 3),
+        );
+    settle(&mut app);
+    let bands: Vec<_> = part(&app, editor, Role::CodeSelection)
+        .into_iter()
+        .filter(|&e| shown_node(&app, e))
+        .map(|e| rect(&app, e))
+        .collect();
+    assert_eq!(bands.len(), 2, "two rows, a band each");
+    assert!(bands[0].min.y < bands[1].min.y);
+}
+
+#[test]
+fn a_settled_wrapped_editor_writes_nothing() {
+    let mut app = app();
+    let editor = wrapped_editor_of(&mut app, &prose(60));
+    let before = node_ticks(&app, editor);
+    for _ in 0..10 {
+        app.update();
+    }
+    assert_eq!(node_ticks(&app, editor), before);
+}

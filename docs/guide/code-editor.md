@@ -77,9 +77,22 @@ The rows are a pool of a screenful and two entities, re-pointed at other lines a
 ## What it does not do (yet)
 
 - One caret and one selection: no multi-cursor, no column selection.
-- No soft wrap.
+- Soft wrap is opt-in (`CodeSoftWrap`, below) and breaks at words only; there is no wrap indent and no hanging line-number column.
 - Wide (CJK) characters take one column.
 - Assistive technology is told the editor's role (a multi-line text input) and its label, not its text: mirroring a 2 MB file into the accessibility tree on every edit is a cost no player asked for. A host that needs the text reads `CodeEditorValue`.
+
+## Prose: soft wrap and Markdown
+
+Two markers on the editor make it a notes pane (#114). They are components, not fields of `CodeEditorSettings`, so a code pane and a prose pane in one app never have to agree.
+
+```rust
+commands.spawn((code_editor("Notes", text), CodeSoftWrap, CodeMarkdown));
+```
+
+- **`CodeSoftWrap`** breaks a long line at the editor's edge, at a word where there is one (a word longer than a row is cut at the edge) and with the blank that ended the row left hanging at its end. The text is never changed: a wrap is drawn, not written, so `CodeEditorValue` and the undo history are as without it. There is no horizontal scroll while it is on. Each line keeps one number, on its first row. Up and Down move by row and keep their column, **Home** and **End** go to the row's edge first and the line's on a second press, a click lands on the row it is on, and a selection, a find match and a squiggle that cross a wrap are a piece on each row. A wrap is recomputed only when the text or the editor's width changes (`docs/research/code-soft-wrap.md`).
+- **`CodeMarkdown`** draws the text as Markdown, from `markdown_highlights(text, revision)`: headings, fenced code (the fence carries over lines), block quotes, list markers, code spans, emphasis and links, each in an ink of the skin (`GooeySkin::syntax`), at the 7:1 or 4.5:1 the skin already holds them to. The editor keeps the spans current with the text, so a character typed is never drawn in the old colours. A host's own `Highlights` on the same editor are ignored while the marker is there. It is a line scanner, not a CommonMark parser: what it cannot read as Markdown it leaves plain.
+
+![The prose example: one page of notes in two editors. Left, wrapped at the pane's edge with the heading, bold, code, quote, list marks and links each in their own ink; right, the same text unwrapped on one long line per paragraph](../media/prose.png)
 
 ## What the host draws onto it
 
