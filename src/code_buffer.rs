@@ -82,6 +82,9 @@ pub enum CodeMove {
     /// To this line, keeping the display column the caret last stood at: a move by rows when
     /// some lines are folded away.
     ToLine(usize),
+    /// To the character boundary of this line nearest this display column, forgetting any column
+    /// the caret was keeping: a move a wrapping editor makes between the rows of its lines.
+    ToColumn(usize, usize),
 }
 
 /// A selection or caret: where it began and where it is now. They are equal for a bare caret.
@@ -646,6 +649,10 @@ impl CodeBuffer {
                 self.want = Some(want);
                 let line = line.min(self.lines.len() - 1);
                 CodePos::new(line, byte_at_display(self.line(line), want, self.tab_width))
+            }
+            CodeMove::ToColumn(line, col) => {
+                let line = line.min(self.lines.len() - 1);
+                CodePos::new(line, byte_at_display(self.line(line), col, self.tab_width))
             }
             CodeMove::Up(lines) | CodeMove::Down(lines) => {
                 keeps_column = true;

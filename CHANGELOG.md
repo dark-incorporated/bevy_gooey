@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+### Added
+
+- #114 (`docs/research/code-soft-wrap.md`, `tests/code_editor.rs`, `tests/code_decor.rs`, `examples/prose.rs`):
+  `CodeSoftWrap` on a `code_editor` wraps a long line at the editor's edge (at words; the text is untouched, one
+  number per line, Up/Down by row, Home/End by row then line, per-row selection, find and squiggle pieces) and
+  `CodeMarkdown` draws the text as Markdown in the skin's inks, kept current with every edit. `markdown_highlights`
+  is the engine-free scanner. `CodeMove::ToColumn(line, display_col)` is the move wrapped Up/Down use.
+  Both are per-editor components rather than `CodeEditorSettings` fields (assumed decision, see the issue).
+
 ## [0.53.0] - 2026-11-22
 
 ### Breaking

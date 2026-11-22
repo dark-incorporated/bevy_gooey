@@ -381,9 +381,9 @@ pub(crate) fn update_code_find(
                     break;
                 }
                 let row = editor.fold.row_of(start.line);
-                if !(view.first_row..view.first_row + view.needed).contains(&row)
-                    || editor.fold.is_hidden(start.line)
-                {
+                let in_view = row < view.first_row + view.needed
+                    && row + editor.fold.rows_of(start.line) > view.first_row;
+                if !in_view || editor.fold.is_hidden(start.line) {
                     if start.line > first_line + view.needed + 4 + editor.fold.hidden_lines() {
                         break;
                     }
@@ -392,7 +392,27 @@ pub(crate) fn update_code_find(
                 let text = editor.buffer.line(start.line);
                 let from = display_col(text, start.col, tab);
                 let to = display_col(text, end.col.min(text.len()), tab).max(from + 1);
-                segments.push((row, from, to, find.current == Some(index)));
+                if editor.fold.wraps() {
+                    // A match is drawn in the piece each row of its line shows.
+                    let (first, last) = (
+                        editor.fold.row_at(start.line, from),
+                        editor.fold.row_at(start.line, to - 1),
+                    );
+                    for row in first..=last {
+                        if !(view.first_row..view.first_row + view.needed).contains(&row) {
+                            continue;
+                        }
+                        if let Some((_, row_from, row_to)) = editor.fold.window(row) {
+                            let (from, to) =
+                                (from.max(row_from), to.min(row_to.unwrap_or(usize::MAX)));
+                            if from < to {
+                                segments.push((row, from, to, find.current == Some(index)));
+                            }
+                        }
+                    }
+                } else {
+                    segments.push((row, from, to, find.current == Some(index)));
+                }
             }
         }
         while find.bands.len() < segments.len() {
@@ -416,7 +436,10 @@ pub(crate) fn update_code_find(
                     if node.display != Display::Flex {
                         node.display = Display::Flex;
                     }
-                    let left = Val::Px(view.pad + from as f32 * view.advance - view.shown.x);
+                    let left = Val::Px(
+                        view.pad + from as f32 * view.advance
+                            - editor.fold.origin_x(row, view.shown.x, view.advance),
+                    );
                     let width = Val::Px((to - from) as f32 * view.advance);
                     let top = Val::Px(row as f32 * view.line_px - view.shown.y);
                     if node.left != left {
