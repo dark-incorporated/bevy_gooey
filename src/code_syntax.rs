@@ -40,6 +40,8 @@ fn hue(role: SyntaxRole) -> f32 {
         SyntaxRole::Reference => 205.0,
         SyntaxRole::Function => 95.0,
         SyntaxRole::Type => 175.0,
+        SyntaxRole::Emphasis => 290.0,
+        SyntaxRole::Strong => 350.0,
         // Roles that take a colour the skin already has, or the danger hue, never ask.
         SyntaxRole::Comment | SyntaxRole::Operator | SyntaxRole::Error => 0.0,
     }
@@ -124,7 +126,7 @@ impl GooeySkin {
     /// The pairs [`GooeySkin::problems`] checks for the code editor: every syntax colour on the
     /// editor's ground.
     pub(crate) fn syntax_pairs(&self) -> Vec<(&'static str, [f32; 3], [f32; 3])> {
-        const LABELS: [&str; 10] = [
+        const LABELS: [&str; 12] = [
             "syntax key on surface",
             "syntax string on surface",
             "syntax number on surface",
@@ -134,6 +136,8 @@ impl GooeySkin {
             "syntax function on surface",
             "syntax type on surface",
             "syntax operator on surface",
+            "syntax emphasis on surface",
+            "syntax strong on surface",
             "syntax error on surface",
         ];
         let ground = rgb(self.solid_surface());
