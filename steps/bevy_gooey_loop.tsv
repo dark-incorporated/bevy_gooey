@@ -17127,3 +17127,301 @@ pass	seq	phase	kind	category	tool	start	seconds	detail
 91	376	ship	model	model		2026-11-07T06:15:52Z	10.8	
 91	377	log	tool	phase mark	bash	2026-11-07T06:16:03Z	2.1	cd /home/ladvien/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark log; df -h . | tail -1; git worktree remove ~/g65_base && rm -rf /tmp/g65 && df 
 91	378	log	model	model		2026-11-07T06:16:05Z	11.7	
+341	1	orient	model	model		2026-11-22T06:39:27Z	3.3	
+341	2	orient	tool	phase mark	bash	2026-11-22T06:39:30Z	0.9	cd ~/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark orient; git status --short | head; git fetch -q origin main loop-stats 2>&1 | tail -2; git l
+341	3	orient	model	model		2026-11-22T06:39:31Z	2.3	
+341	4	orient	tool	github	bash	2026-11-22T06:39:33Z	0.5	cd ~/bevy_gooey_loop && git log --format='%h %ad %s' --date=short -25; gh issue list --repo bevy-coven/bevy_gooey --state open --limit 100 --json number,title,l
+341	5	orient	model	model		2026-11-22T06:39:34Z	2.2	
+341	6	orient	tool	github	bash	2026-11-22T06:39:36Z	1.3	cd ~/bevy_gooey_loop && for n in 91 92 107; do echo "=== $n"; gh issue view $n --repo bevy-coven/bevy_gooey --json body,comments,state --jq '.body, (.comments[]
+341	7	orient	model	model		2026-11-22T06:39:37Z	2.1	
+341	8	orient	tool	git	bash	2026-11-22T06:39:39Z	0.0	cd ~/bevy_gooey_loop && git log --oneline --all -S'GLOW_BLUR_DOTS' -- src/led.rs | head; grep -n 'GLOW' src/led.rs | head -20; grep -n 'Hovered\|hover' src/menu
+341	9	orient	model	model		2026-11-22T06:39:39Z	3.0	
+341	10	choose	tool	phase mark	bash	2026-11-22T06:39:42Z	0.1	cd ~/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark choose; sed -n 1,230p src/led.rs; cat tests/led.rs | head -150
+341	11	choose	model	model		2026-11-22T06:39:42Z	10.3	
+341	12	choose	tool	shell	bash	2026-11-22T06:39:53Z	0.0	cd ~/bevy_gooey_loop && grep -n 'fn to_bevy' -B3 -A25 src/elevation.rs; sed -n 150,330p tests/led.rs; ls examples | grep -i led; grep -n 'led' docs/media/README
+341	13	choose	model	model		2026-11-22T06:39:53Z	7.7	
+341	14	choose	tool	shell	bash	2026-11-22T06:40:00Z	0.1	cd ~/bevy_gooey_loop && python3 - <<'EOF' import re p='src/led.rs' s=open(p).read() s=s.replace("""/// The glow's blur, in dot sizes. const GLOW_BLUR_DOTS: f32 
+341	15	choose	model	model		2026-11-22T06:40:00Z	10.7	
+341	16	choose	tool	cargo test	bash	2026-11-22T06:40:11Z	0.2	cd ~/bevy_gooey_loop && python3 - <<'EOF' p='tests/led.rs' s=open(p).read() s=s.replace(""" assert!(hi - lo > 0.3, "it swings over a period: {lo}..{hi}"); asser
+341	17	choose	model	model		2026-11-22T06:40:11Z	0.9	
+341	18	choose	tool	shell	bash	2026-11-22T06:40:12Z	0.0	cd ~/bevy_gooey_loop && env | grep -i 'cargo\|rustc\|sccache';
+341	19	choose	model	model		2026-11-22T06:40:12Z	1.7	
+341	20	choose	tool	cargo test	bash	2026-11-22T06:40:14Z	0.0	[launched bg_1] cd ~/bevy_gooey_loop && cat ~/.cargo/config.toml 2>/dev/null | head -20; unset CARGO_INCREMENTAL; (timeout 3000 cargo nextest run --all-features -E 'test(led::)
+341	21	choose	model	model		2026-11-22T06:40:14Z	1.2	
+341	22	choose	tool	shell	bash	2026-11-22T06:40:15Z	0.0	cd ~/bevy_gooey_loop && sed -n 880,960p src/menu.rs; grep -n 'Selected\|lit\b\|InputFocus\|fn menu_by_input' src/menu.rs | head -50
+341	23	choose	model	model		2026-11-22T06:40:15Z	9.4	
+341	24	choose	tool	shell	bash	2026-11-22T06:40:25Z	0.1	cd ~/bevy_gooey_loop && sed -n 195,300p src/menu.rs; sed -n 495,545p src/menu.rs; grep -n 'PointerMove' src/*.rs | head
+341	25	choose	model	model		2026-11-22T06:40:25Z	5.8	
+341	26	choose	tool	shell	bash	2026-11-22T06:40:30Z	0.0	cd ~/bevy_gooey_loop && sed -n 300,335p src/palette.rs; grep -n '^use' src/menu.rs | head -30; grep -n 'fn .*menu.*hover\|hover' tests/menu.rs | head
+341	27	choose	model	model		2026-11-22T06:40:30Z	5.8	
+341	28	choose	tool	shell	bash	2026-11-22T06:40:36Z	0.0	cd ~/bevy_gooey_loop && python3 - <<'EOF' p='src/menu.rs' s=open(p).read() s=s.replace(""" TabIndex(0), AutoDirectionalNavigation::default(), )); if item.on {""
+341	29	choose	model	model		2026-11-22T06:40:36Z	1.1	
+341	30	choose	tool	shell	bash	2026-11-22T06:40:37Z	0.0	cd ~/bevy_gooey_loop && sed -n 255,330p tests/menu.rs; grep -n 'fn \|^#\[test\]' tests/menu.rs | sed -n 1,80p
+341	31	choose	model	model		2026-11-22T06:40:37Z	2.2	
+341	32	choose	tool	shell	bash	2026-11-22T06:40:40Z	0.0	cd ~/bevy_gooey_loop && sed -n 100,172p tests/menu.rs; sed -n 354,393p tests/menu.rs; sed -n 681,713p tests/menu.rs
+341	33	choose	model	model		2026-11-22T06:40:40Z	11.2	
+341	34	choose	tool	shell	bash	2026-11-22T06:40:51Z	0.1	cd ~/bevy_gooey_loop && python3 - <<'EOF' p='tests/menu.rs' s=open(p).read() s=s.replace('''fn click_at(app: &mut App, at: Vec2) {''','''/// The pointer moving 
+341	35	choose	model	model		2026-11-22T06:40:51Z	2.0	
+341	36	choose	tool	shell	bash	2026-11-22T06:40:53Z	0.0	cd ~/bevy_gooey_loop && grep -n -i 'chevron' src/code_overlay.rs src/code_editor.rs src/code_fold.rs src/skin.rs | head -40
+341	37	choose	model	model		2026-11-22T06:40:53Z	1.2	
+341	38	choose	tool	shell	bash	2026-11-22T06:40:54Z	0.0	cd ~/bevy_gooey_loop && sed -n 1050,1130p src/code_overlay.rs; grep -n 'gutter_w' src/code_editor.rs | head -20; grep -n 'CodeChevron' src/*.rs
+341	39	choose	model	model		2026-11-22T06:40:54Z	1.0	
+341	40	choose	tool	shell	bash	2026-11-22T06:40:55Z	0.0	cd ~/bevy_gooey_loop && sed -n 1255,1345p src/code_editor.rs; grep -n 'fold\|Fold' tests/code_navigation.rs | head -30
+341	41	choose	model	model		2026-11-22T06:40:55Z	7.0	
+341	42	choose	tool	shell	bash	2026-11-22T06:41:02Z	0.0	cd ~/bevy_gooey_loop && grep -n 'gutter\|chevron\|Chevron\|fn press\|fn click' tests/code_navigation.rs tests/code_decor.rs tests/code_editor.rs | head -30
+341	43	choose	model	model		2026-11-22T06:41:02Z	1.0	
+341	44	choose	tool	shell	bash	2026-11-22T06:41:03Z	0.0	cd ~/bevy_gooey_loop && sed -n 1,110p tests/code_navigation.rs; sed -n 165,235p tests/code_navigation.rs; sed -n 300,345p tests/code_editor.rs
+341	45	choose	model	model		2026-11-22T06:41:03Z	2.9	
+341	46	choose	tool	shell	bash	2026-11-22T06:41:06Z	0.0	cd ~/bevy_gooey_loop && grep -n 'fn hidden\|fn shown_by_role\|fn rect' -A14 tests/code_navigation.rs | head -70; grep -n 'pub fn click' -A6 src/testing.rs
+341	47	choose	model	model		2026-11-22T06:41:06Z	3.1	
+341	48	choose	tool	read files	read	2026-11-22T06:41:09Z	0.0	local://1.log
+341	49	choose	model	model		2026-11-22T06:41:09Z	3.6	
+341	50	choose	tool	shell	bash	2026-11-22T06:41:13Z	0.0	cd ~/bevy_gooey_loop && sed -n 305,325p src/palette.rs
+341	51	choose	tool	wait: other	wait	2026-11-22T06:41:13Z	5.0	{}
+341	52	choose	model	model		2026-11-22T06:41:18Z	2.3	
+341	53	choose	tool	search	grep	2026-11-22T06:41:20Z	0.0	src/code_overlay.rs;src/code_editor.rs;src/skin.rs;src/access.rs
+341	54	choose	model	model		2026-11-22T06:41:20Z	1.3	
+341	55	choose	tool	read files	read	2026-11-22T06:41:21Z	0.0	src/code_overlay.rs:1040-1125
+341	56	choose	tool	search	grep	2026-11-22T06:41:21Z	0.0	src/code_editor.rs;src/code_fold.rs
+341	57	choose	model	model		2026-11-22T06:41:21Z	0.8	
+341	58	choose	tool	read files	read	2026-11-22T06:41:22Z	0.0	src/code_editor.rs:1270-1325
+341	59	choose	model	model		2026-11-22T06:41:22Z	2.0	
+341	60	choose	tool	github	bash	2026-11-22T06:41:24Z	0.4	cd ~/bevy_gooey_loop && gh issue view 107 -R bevy-coven/bevy_gooey --json body -q .body | head -40
+341	61	choose	model	model		2026-11-22T06:41:25Z	2.9	
+341	62	choose	tool	search	grep	2026-11-22T06:41:28Z	0.0	tests/code_navigation.rs
+341	63	choose	model	model		2026-11-22T06:41:28Z	0.8	
+341	64	choose	tool	read files	read	2026-11-22T06:41:28Z	0.0	tests/code_navigation.rs:150-260
+341	65	choose	model	model		2026-11-22T06:41:28Z	1.9	
+341	66	choose	tool	search	grep	2026-11-22T06:41:30Z	0.0	tests/code_navigation.rs
+341	67	choose	model	model		2026-11-22T06:41:30Z	0.9	
+341	68	choose	tool	read files	read	2026-11-22T06:41:31Z	0.0	tests/code_navigation.rs:395-450
+341	69	choose	tool	read files	read	2026-11-22T06:41:31Z	0.0	tests/code_navigation.rs:459-536
+341	70	choose	model	model		2026-11-22T06:41:31Z	7.8	
+341	71	choose	tool	shell	bash	2026-11-22T06:41:39Z	0.1	cd ~/bevy_gooey_loop && cat >> tests/code_navigation.rs <<'EOF' /// A real primary press at `at` (the pointer first moved there, so picking has a hover). fn pre
+341	72	choose	model	model		2026-11-22T06:41:39Z	2.1	
+341	73	choose	tool	edit files	edit	2026-11-22T06:41:41Z	0.0	[src/code_overlay.rs#8AB5] PUT >39: + +/// An open fold's mark in the gutter: a down-pointing triangle, a shape and not a letter (#107). +/// U+25BC is in FiraM
+341	74	choose	model	model		2026-11-22T06:41:41Z	1.6	
+341	75	choose	tool	edit files	edit	2026-11-22T06:41:43Z	0.0	[src/code_overlay.rs#8AB5] PUT >39: + +/// An open fold's mark in the gutter: a down-pointing triangle, a shape and not a letter (#107). +/// U+25BC is in FiraM
+341	76	choose	model	model		2026-11-22T06:41:43Z	2.2	
+341	77	choose	tool	wait: other	wait	2026-11-22T06:41:45Z	240.6	{}
+341	78	choose	model	model		2026-11-22T06:45:46Z	16.4	
+341	79	choose	tool	read files	read	2026-11-22T06:46:02Z	4.6	https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html
+341	80	choose	tool	read files	read	2026-11-22T06:46:03Z	4.4	https://www.w3.org/WAI/ARIA/apg/patterns/menubar/examples/menubar-navigation/
+341	81	choose	model	model		2026-11-22T06:46:07Z	22.0	
+341	82	choose	tool	edit files	write	2026-11-22T06:46:31Z	2.9	docs/research/cluster-led-menu-fold.md
+341	83	research	tool	phase mark	bash	2026-11-22T06:46:34Z	8.1	cd ~/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark research; git status --short
+341	84	research	model	model		2026-11-22T06:46:42Z	4.9	
+341	85	research	tool	eval	eval	2026-11-22T06:46:48Z	6.8	{"language": "py", "code": "d = await commit.draft()\nprint([x for x in dir(d) if not x.startswith('_')])\nprint(d)"}
+341	86	research	tool	read files	read	2026-11-22T06:46:55Z	0.8	help://eval/commit
+341	87	research	model	model		2026-11-22T06:46:56Z	3.7	
+341	88	research	tool	eval	eval	2026-11-22T06:47:00Z	2.5	{"language": "py", "code": "d = await commit.draft()\nawait d.only(\"docs/research/cluster-led-menu-fold.md\")\nawait d.commit(\"docs(research): iteration 102 n
+341	89	research	tool	wait: other	wait	2026-11-22T06:47:03Z	5.2	{}
+341	90	research	model	model		2026-11-22T06:47:08Z	3.1	
+341	91	build	tool	phase mark	bash	2026-11-22T06:47:11Z	1.3	python3 ~/.local/share/wiggum/steps.py mark build; df -h ~ | tail -1; uptime
+341	92	build	tool	wait: other	wait	2026-11-22T06:47:12Z	147.8	{}
+341	93	build	model	model		2026-11-22T06:49:40Z	0.1	
+342	1	orient	model	model		2026-11-22T06:58:38Z	4.2	
+342	2	orient	tool	phase mark	bash	2026-11-22T06:58:42Z	0.7	cd ~/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark orient; git fetch -q origin loop-stats; git show origin/loop-stats:steps/bevy_gooey_loop-aud
+342	3	orient	tool	github	bash	2026-11-22T06:58:42Z	1.2	cd ~/bevy_gooey_loop && gh issue list --repo bevy-coven/bevy_gooey --state open --limit 100 --json number,title,labels,createdAt --jq '.[] | "#\(.number) \(.tit
+342	4	orient	model	model		2026-11-22T06:58:44Z	4.5	
+342	5	orient	tool	github	bash	2026-11-22T06:58:48Z	1.5	cd ~/bevy_gooey_loop && git show --stat e5dc238 | head -20; git log --oneline main..e5dc238 | head; git log --oneline -3 e5dc238; grep -n "^## Iteration" docs/l
+342	6	orient	model	model		2026-11-22T06:58:50Z	3.2	
+342	7	bugs	tool	phase mark	bash	2026-11-22T06:58:53Z	0.1	cd ~/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark bugs; git diff main e5dc238 -- src | head -200; wc -l docs/research/cluster-led-menu-fold.md
+342	8	bugs	model	model		2026-11-22T06:58:53Z	4.3	
+342	9	bugs	tool	git	bash	2026-11-22T06:58:57Z	0.0	cd ~/bevy_gooey_loop && git checkout -q -b loop/iter-102 && git checkout e5dc238 -- src tests && git status --short; cat docs/research/cluster-led-menu-fold.md 
+342	10	bugs	model	model		2026-11-22T06:58:57Z	2.8	
+342	11	build	tool	phase mark	bash	2026-11-22T06:59:00Z	0.2	cd ~/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark build; grep -n "gutter_w" src/code_editor.rs | head -30; grep -n "CodeChevron" src/*.rs | he
+342	12	build	model	model		2026-11-22T06:59:00Z	2.0	
+342	13	build	tool	shell	bash	2026-11-22T06:59:02Z	0.0	cd ~/bevy_gooey_loop && sed -n 1270,1340p src/code_editor.rs; sed -n 1060,1125p src/code_overlay.rs
+342	14	build	model	model		2026-11-22T06:59:02Z	4.0	
+342	15	build	tool	cargo test	bash	2026-11-22T06:59:06Z	0.0	[launched bg_2] cd ~/bevy_gooey_loop && echo $CARGO_TARGET_DIR; time cargo nextest run --all-features --lib --tests -E 'test(led::) | test(menu::) | test(code_navigation::)' 2>
+342	16	build	model	model		2026-11-22T06:59:06Z	3.5	
+342	17	build	tool	git	bash	2026-11-22T06:59:10Z	0.0	cd ~/bevy_gooey_loop && git diff --cached tests/led.rs | head -140
+342	18	build	bg	cargo test	bash	2026-11-22T06:59:10Z	0.1	bg_2 completed: echo $CARGO_TARGET_DIR; time cargo nextest run --all-features --lib --tests -E 'test(led::) | test(menu::) | test(cod...
+342	19	build	model	model		2026-11-22T06:59:10Z	2.7	
+342	20	build	tool	shell	bash	2026-11-22T06:59:12Z	0.0	cd ~/bevy_gooey_loop && env | grep -E "CARGO|RUSTC|SCCACHE";
+342	21	build	model	model		2026-11-22T06:59:12Z	3.0	
+342	22	build	tool	cargo test	bash	2026-11-22T06:59:15Z	0.0	[launched bg_3] cd ~/bevy_gooey_loop && unset CARGO_INCREMENTAL; time cargo nextest run --all-features --lib --tests -E 'test(led::) | test(menu::) | test(code_navigation::)' 2
+342	23	build	model	model		2026-11-22T06:59:15Z	3.0	
+342	24	build	tool	github	bash	2026-11-22T06:59:18Z	1.8	cd ~/bevy_gooey_loop && for i in 108 109 110 114; do echo "=== $i"; gh issue view $i -R bevy-coven/bevy_gooey --json body,comments --jq '.body, (.comments[]|.bo
+342	25	build	bg	cargo test	bash	2026-11-22T06:59:20Z	0.1	bg_3 completed: unset CARGO_INCREMENTAL; time cargo nextest run --all-features --lib --tests -E 'test(led::) | test(menu::) | test(co...
+342	26	build	model	model		2026-11-22T06:59:20Z	2.7	
+342	27	build	tool	cargo test	bash	2026-11-22T06:59:23Z	0.0	[launched bg_4] cd ~/bevy_gooey_loop && export CARGO_INCREMENTAL=0; time cargo nextest run --all-features --lib --tests -E 'test(led::) | test(menu::) | test(code_navigation::)
+342	28	build	model	model		2026-11-22T06:59:23Z	4.0	
+342	29	build	tool	wait: other	wait	2026-11-22T06:59:27Z	0.0	{}
+342	30	build	model	model		2026-11-22T06:59:27Z	5.6	
+342	31	build	tool	shell	bash	2026-11-22T06:59:33Z	0.0	cd ~/bevy_gooey_loop && cat ~/.cargo/config.toml .cargo/config.toml 2>/dev/null | head -30; env | grep -i wrapper
+342	32	build	model	model		2026-11-22T06:59:33Z	4.1	
+342	33	build	tool	cargo test	bash	2026-11-22T06:59:37Z	0.0	[launched bg_5] cd ~/bevy_gooey_loop && export CARGO_INCREMENTAL=1 CARGO_BUILD_RUSTC_WRAPPER=; time cargo nextest run --all-features --lib --tests -E 'test(led::) | test(menu::
+342	34	build	model	model		2026-11-22T06:59:37Z	1.6	
+342	35	build	tool	wait: other	wait	2026-11-22T06:59:38Z	5.0	{}
+342	36	build	model	model		2026-11-22T06:59:43Z	1.6	
+342	37	build	tool	wait: other	wait	2026-11-22T06:59:45Z	51.9	{}
+342	38	build	model	model		2026-11-22T07:00:37Z	2.5	
+342	39	build	tool	cargo test	bash	2026-11-22T07:00:39Z	19.4	cd ~/bevy_gooey_loop && export CARGO_INCREMENTAL=1 CARGO_BUILD_RUSTC_WRAPPER=; cargo nextest run --all-features --lib --tests --no-fail-fast -E 'test(led::) | t
+342	40	build	model	model		2026-11-22T07:00:59Z	10.9	
+342	41	build	tool	shell	bash	2026-11-22T07:01:09Z	0.0	cd ~/bevy_gooey_loop && grep -n "column_gap\|LedDot =>\|Role::Led =>" src/skin.rs | head; sed -n 1,60p tests/led.rs; grep -n "fn glow_alpha" -A12 tests/led.rs
+342	42	build	model	model		2026-11-22T07:01:09Z	6.2	
+342	43	build	tool	shell	bash	2026-11-22T07:01:16Z	0.0	cd ~/bevy_gooey_loop && sed -n 60,126p tests/led.rs; grep -n "fn shadow_sigma" -B3 -A6 src/model.rs; sed -n 300,335p tests/led.rs
+342	44	build	model	model		2026-11-22T07:01:16Z	5.7	
+342	45	build	tool	shell	bash	2026-11-22T07:01:21Z	0.0	cd ~/bevy_gooey_loop && grep -n "fn to_bevy" -B3 -A22 src/elevation.rs; grep -n "GLOW" -B2 -A6 src/led.rs | sed -n 1,90p
+342	46	build	model	model		2026-11-22T07:01:21Z	15.1	
+342	47	build	tool	cargo test	bash	2026-11-22T07:01:37Z	27.4	cd ~/bevy_gooey_loop && python3 - <<'EOF' import re p='tests/led.rs' s=open(p).read() i=s.index("#[test]\nfn the_word_and_the_chips_beside_an_led_keep") new='''
+342	48	build	model	model		2026-11-22T07:02:04Z	10.0	
+342	49	build	tool	cargo test	bash	2026-11-22T07:02:14Z	39.5	cd ~/bevy_gooey_loop && python3 - <<'EOF' p='tests/led.rs' s=open(p).read() s=s.replace("GLOW_MAX_ALPHA * 2.0 * upper_tail(word_at / sigma) * 0.5","GLOW_MAX_ALP
+342	50	build	model	model		2026-11-22T07:02:53Z	4.0	
+342	51	prove	tool	phase mark	bash	2026-11-22T07:02:57Z	0.0	[launched bg_6] cd ~/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark prove; mkdir -p /tmp/g102/before /tmp/g102/after; grep -n "GOOEY_" examples/led.rs | head -2
+342	52	prove	model	model		2026-11-22T07:02:57Z	0.5	
+342	53	prove	tool	wait: other	wait	2026-11-22T07:02:58Z	5.0	{}
+342	54	prove	model	model		2026-11-22T07:03:03Z	0.6	
+342	55	prove	tool	wait: other	wait	2026-11-22T07:03:04Z	240.1	{}
+342	56	prove	model	model		2026-11-22T07:07:04Z	3.0	
+342	57	prove	tool	shell	bash	2026-11-22T07:07:07Z	0.0	cd ~/bevy_gooey_loop && sed -n 1,25p CHANGELOG.md | cut -c1-300; grep -n -i "glow" README.md docs/guide/*.md | head; grep -n -i "hover" docs/guide/menus.md | he
+342	58	prove	model	model		2026-11-22T07:07:07Z	5.9	
+342	59	prove	tool	git	bash	2026-11-22T07:07:13Z	0.1	cd ~/bevy_gooey_loop && python3 - <<'EOF' p='CHANGELOG.md' s=open(p).read() entry='''### Fixed - An LED's glow is a halo, not a lamp (#91, `docs/research/cluste
+342	60	prove	model	model		2026-11-22T07:07:13Z	2.7	
+342	61	prove	tool	git	bash	2026-11-22T07:07:15Z	0.0	cd ~/bevy_gooey_loop && git status --short | head -20; grep -n -i "glow\|hover" docs/guide/status-bar.md docs/guide/menus.md | head; grep -n -i "chevron\|fold" 
+342	62	prove	model	model		2026-11-22T07:07:15Z	4.6	
+342	63	prove	tool	shell	bash	2026-11-22T07:07:20Z	0.1	cd ~/bevy_gooey_loop && ls -la /tmp/g102 $CARGO_TARGET_DIR/release/examples/led $CARGO_TARGET_DIR/release/examples/menus 2>&1 | head; echo $DISPLAY; ps aux | gr
+342	64	prove	model	model		2026-11-22T07:07:20Z	3.5	
+342	65	prove	tool	cargo build	bash	2026-11-22T07:07:24Z	0.0	[launched bg_7] cd ~/bevy_gooey_loop && export CARGO_INCREMENTAL=1 CARGO_BUILD_RUSTC_WRAPPER=; cargo build --release --example led --example menus 2>&1 | tail -3; cp $CARGO_TAR
+342	66	prove	model	model		2026-11-22T07:07:24Z	1.5	
+342	67	prove	tool	wait: other	wait	2026-11-22T07:07:25Z	31.8	{}
+342	68	prove	model	model		2026-11-22T07:07:57Z	3.2	
+342	69	prove	tool	wait: other	wait	2026-11-22T07:08:00Z	5.0	{}
+342	70	prove	model	model		2026-11-22T07:08:05Z	0.8	
+342	71	prove	tool	wait: other	wait	2026-11-22T07:08:06Z	240.0	{}
+342	72	prove	model	model		2026-11-22T07:12:06Z	4.3	
+342	73	prove	tool	shell	bash	2026-11-22T07:12:10Z	0.0	cd ~/bevy_gooey_loop && ls examples | tr '\n' ' '; grep -n "fold" -i examples/code*.rs | head -5; grep -n "led\|menus\|code" docs/media/README.md | head
+342	74	prove	model	model		2026-11-22T07:12:10Z	0.6	
+342	75	prove	tool	wait: other	wait	2026-11-22T07:12:11Z	41.9	{}
+342	76	prove	model	model		2026-11-22T07:12:53Z	2.0	
+342	77	prove	tool	shell	bash	2026-11-22T07:12:55Z	0.0	cd ~/bevy_gooey_loop && sed -n 12,26p examples/led.rs; grep -n "\"off\"\|\"busy\"\|\"live\"\|\"fail\|=> Step\|\"home\"" examples/led.rs | head; grep -n "led.gif
+342	78	prove	model	model		2026-11-22T07:12:55Z	4.4	
+342	79	prove	tool	shell	bash	2026-11-22T07:12:59Z	24.8	cd /tmp/g102 && export DISPLAY=:93; K='home,home,enter,home,home,home,home,home,down,enter,home,home,home,down,enter,home,home,home,down,down,enter,home' for v 
+342	80	prove	model	model		2026-11-22T07:13:24Z	3.2	
+342	81	prove	tool	shell	bash	2026-11-22T07:13:27Z	0.0	cd /tmp/g102 && ls after/1280x720 | sed -n '1,4p;30,34p';
+342	82	prove	model	model		2026-11-22T07:13:27Z	3.2	
+342	83	prove	tool	shell	bash	2026-11-22T07:13:30Z	0.1	cd /tmp/g102 && for v in before after; do for sz in 1280x720 2560x1440; do d=$v/$sz; magick $d/f_0003.png -format "%wx%h\n" info: ; done; done | head -2; for v 
+342	84	prove	model	model		2026-11-22T07:13:30Z	1.8	
+342	85	prove	tool	shell	bash	2026-11-22T07:13:32Z	0.0	cd /tmp/g102 && magick identify after/1280x720/shot.png after/2560x1440/shot.png after/1280x720/f_0020.png after/1280x720/f_0100.png
+342	86	prove	model	model		2026-11-22T07:13:32Z	2.8	
+342	87	prove	tool	shell	bash	2026-11-22T07:13:35Z	1.2	cd /tmp/g102 && ps aux | grep Xvfb | grep -v grep | cut -c1-200; xdpyinfo -display :93 2>/dev/null | grep dimensions; GOOEY_FRAMES=40 GOOEY_SIZE=1280x720 GOOEY_
+342	88	prove	model	model		2026-11-22T07:13:36Z	3.3	
+342	89	prove	tool	shell	bash	2026-11-22T07:13:40Z	0.0	cd /tmp/g102 && ls -la $CARGO_TARGET_DIR/release/examples/gallery; GOOEY_FRAMES=40 GOOEY_SIZE=1280x720 GOOEY_SHOT=/tmp/g102/t2.png DISPLAY=:93 timeout 60 $CARGO
+342	90	prove	model	model		2026-11-22T07:13:40Z	5.0	
+342	91	prove	tool	shell	bash	2026-11-22T07:13:45Z	0.0	cd ~/bevy_gooey_loop && grep -n -i "xvfb\|:93\|:99\|39x71\|tiny window\|window manager" docs/loop-log.md | tail -12 | cut -c1-400; xdpyinfo -display :97 | grep 
+342	92	prove	model	model		2026-11-22T07:13:45Z	3.3	
+342	93	prove	tool	shell	bash	2026-11-22T07:13:48Z	1.2	cd /tmp/g102 && ls /usr/share/vulkan/icd.d/; for a in llvmpipe; do WGPU_ADAPTER_NAME=$a GOOEY_FRAMES=40 GOOEY_SIZE=1280x720 GOOEY_SHOT=/tmp/g102/t3.png DISPLAY=
+342	94	prove	model	model		2026-11-22T07:13:49Z	2.9	
+342	95	prove	tool	shell	bash	2026-11-22T07:13:52Z	1.2	cd /tmp/g102 && for d in :97; do DISPLAY=$d GOOEY_FRAMES=40 GOOEY_SIZE=1280x720 GOOEY_SHOT=/tmp/g102/t4.png timeout 90 ./led_after 2>&1 | grep -E "mean_ms|panic
+342	96	prove	model	model		2026-11-22T07:13:53Z	3.4	
+342	97	prove	tool	shell	bash	2026-11-22T07:13:57Z	1.8	cd /tmp/g102 && DISPLAY=:93 GOOEY_FRAMES=60 GOOEY_SIZE=1280x720 GOOEY_SHOT=/tmp/g102/t5.png timeout 90 ./menus_after 2>&1 | grep -E "mean_ms|WARN|ERROR" | cut -
+342	98	prove	model	model		2026-11-22T07:13:58Z	3.3	
+342	99	prove	tool	shell	bash	2026-11-22T07:14:02Z	60.0	[launched bg_8] cd /tmp/g102 && rm -rf before/* after/*; unset WAYLAND_DISPLAY; export DISPLAY=:93; K='home,home,enter,home,home,home,home,home,down,enter,home,home,home,down,e
+342	100	prove	model	model		2026-11-22T07:15:02Z	2.4	
+342	101	prove	tool	wait: other	wait	2026-11-22T07:15:04Z	5.0	{}
+342	102	prove	model	model		2026-11-22T07:15:09Z	0.5	
+342	103	prove	tool	wait: other	wait	2026-11-22T07:15:10Z	23.8	{}
+342	104	prove	model	model		2026-11-22T07:15:34Z	1.4	
+342	105	prove	tool	shell	bash	2026-11-22T07:15:35Z	0.1	cd /tmp/g102 && ls after/1280x720 | wc -l; magick after/1280x720/f_0052.png -resize 50% /tmp/g102/v.png
+342	106	prove	tool	read files	read	2026-11-22T07:15:35Z	0.1	/tmp/g102/v.png
+342	107	prove	model	model		2026-11-22T07:15:35Z	4.6	
+342	108	prove	tool	shell	bash	2026-11-22T07:15:40Z	1.6	cd /tmp/g102 && for v in before after; do for st in 3 20 52 76; do f=$(printf "f_%04d.png" $st); magick $v/1280x720/$f -crop 250x44+520+82 +repage -filter point
+342	109	prove	model	model		2026-11-22T07:15:41Z	1.0	
+342	110	prove	tool	read files	read	2026-11-22T07:15:42Z	0.1	/tmp/g102/cmp_1x.png
+342	111	prove	tool	read files	read	2026-11-22T07:15:42Z	0.1	/tmp/g102/cmp_2x.png
+342	112	prove	model	model		2026-11-22T07:15:42Z	3.7	
+342	113	prove	tool	shell	bash	2026-11-22T07:15:46Z	0.0	cd ~/bevy_gooey_loop && grep -ln "code_editor" examples/*.rs; grep -n "FoldRanges" examples/*.rs | head -3
+342	114	prove	model	model		2026-11-22T07:15:46Z	3.9	
+342	115	prove	tool	github	bash	2026-11-22T07:15:50Z	0.5	cd ~/bevy_gooey_loop && gh issue view 107 -R bevy-coven/bevy_gooey --json body,comments --jq '.body,(.comments[].body)' | cut -c1-1500; grep -n "25BC\|25BA\|tri
+342	116	prove	model	model		2026-11-22T07:15:50Z	3.5	
+342	117	prove	tool	shell	bash	2026-11-22T07:15:54Z	0.0	cd ~/bevy_gooey_loop && sed -n 74p docs/media/README.md | cut -c760-2000; ls -la docs/media/led.gif
+342	118	prove	model	model		2026-11-22T07:15:54Z	3.6	
+342	119	prove	tool	clip record/render	bash	2026-11-22T07:15:57Z	17.1	cd /tmp/g102 && unset WAYLAND_DISPLAY; export DISPLAY=:93; mkdir -p gif crop; K='home,home,enter,home,home,home,home,home,down,enter,home,home,home,down,enter,h
+342	120	prove	model	model		2026-11-22T07:16:15Z	1.7	
+342	121	prove	tool	shell	bash	2026-11-22T07:16:16Z	0.0	cd /tmp/g102 && magick led.gif'[150]' g150.png && magick identify g150.png
+342	122	prove	tool	read files	read	2026-11-22T07:16:16Z	0.1	/tmp/g102/g150.png
+342	123	prove	model	model		2026-11-22T07:16:16Z	1.6	
+342	124	prove	tool	clip record/render	bash	2026-11-22T07:16:18Z	0.1	cd /tmp/g102 && magick led.gif'[150]' -coalesce +repage g150.png 2>&1; ffmpeg -loglevel error -y -i led.gif -vf "select=eq(n\,150)" -frames:v 1 g150.png; magick
+342	125	prove	tool	read files	read	2026-11-22T07:16:18Z	0.1	/tmp/g102/g150.png
+342	126	prove	model	model		2026-11-22T07:16:18Z	5.2	
+342	127	prove	tool	phase mark	bash	2026-11-22T07:16:23Z	0.2	cd ~/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark prove >/dev/null; cp /tmp/g102/led.gif docs/media/led.gif; magick /tmp/g102/cmp_1x.png -resi
+342	128	prove	model	model		2026-11-22T07:16:24Z	5.9	
+342	129	prove	tool	git	bash	2026-11-22T07:16:29Z	0.0	cd ~/bevy_gooey_loop && python3 - <<'EOF' p='AGENTS.md' s=open(p).read() a="The pulse is `Time<Real>` modulo 1.2 s;" assert a in s s=s.replace(a,"**The glow is 
+342	130	prove	model	model		2026-11-22T07:16:29Z	3.3	
+342	131	prove	tool	cargo test	bash	2026-11-22T07:16:33Z	46.3	cd ~/bevy_gooey_loop && export CARGO_INCREMENTAL=1 CARGO_BUILD_RUSTC_WRAPPER=; cp src/led.rs /tmp/g102/led.rs.bak; cp src/menu.rs /tmp/g102/menu.rs.bak; sed -i 
+342	132	prove	model	model		2026-11-22T07:17:19Z	3.3	
+342	133	prove	tool	git	bash	2026-11-22T07:17:22Z	1.2	cd ~/bevy_gooey_loop && git status --short; cargo fmt --check 2>&1 | head -20
+342	134	prove	model	model		2026-11-22T07:17:24Z	3.3	
+342	135	gate	tool	phase mark	bash	2026-11-22T07:17:27Z	0.0	[launched bg_9] cd ~/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark gate; cargo fmt && git status --short | head -20; export CARGO_INCREMENTAL=1 CARGO_BUILD_RUS
+342	136	gate	model	model		2026-11-22T07:17:27Z	5.1	
+342	137	gate	tool	edit files	write	2026-11-22T07:17:32Z	0.0	/tmp/g102/critique.md
+342	138	gate	model	model		2026-11-22T07:17:32Z	0.5	
+342	139	gate	tool	wait: other	wait	2026-11-22T07:17:33Z	5.0	{}
+342	140	gate	model	model		2026-11-22T07:17:38Z	0.7	
+342	141	gate	tool	wait: other	wait	2026-11-22T07:17:38Z	66.6	{}
+342	142	gate	model	model		2026-11-22T07:18:45Z	4.5	
+342	143	gate	tool	cargo test	bash	2026-11-22T07:18:49Z	0.1	cd ~/bevy_gooey_loop && git add src/led.rs tests/led.rs && git commit -q -m "fix(led): the glow is a halo that ends within a dot of the dot (#91) Fixes #91" && 
+342	144	gate	model	model		2026-11-22T07:18:49Z	1.3	
+342	145	gate	tool	remote wait	bash	2026-11-22T07:18:51Z	5.3	sleep 5; pgrep -f "nextest run" | head -3; cat /tmp/g102/gate3.log | head
+342	146	gate	model	model		2026-11-22T07:18:56Z	6.3	
+342	147	gate	tool	github	bash	2026-11-22T07:19:02Z	9.8	cd ~/bevy_gooey_loop && gh label create assumed-decision --color FBCA04 -R bevy-coven/bevy_gooey 2>/dev/null; gh issue comment 91 -R bevy-coven/bevy_gooey -b "A
+342	148	gate	model	model		2026-11-22T07:19:12Z	2.8	
+342	149	gate	tool	remote wait	bash	2026-11-22T07:19:15Z	0.0	[launched bg_10] while pgrep -f "cargo (nextest|test)" >/dev/null; do sleep 10; done; cat /tmp/g102/gate3.log
+342	150	gate	model	model		2026-11-22T07:19:15Z	0.6	
+342	151	gate	tool	wait: other	wait	2026-11-22T07:19:16Z	5.0	{}
+342	152	gate	model	model		2026-11-22T07:19:21Z	0.6	
+342	153	gate	tool	wait: other	wait	2026-11-22T07:19:21Z	240.1	{}
+342	154	gate	model	model		2026-11-22T07:23:21Z	2.4	
+342	155	gate	tool	github	bash	2026-11-22T07:23:24Z	0.5	cd ~/bevy_gooey_loop && gh issue view 108 -R bevy-coven/bevy_gooey --json body --jq .body | cut -c1-1800
+342	156	gate	model	model		2026-11-22T07:23:24Z	6.3	
+342	157	gate	tool	shell	bash	2026-11-22T07:23:30Z	0.0	cd ~/bevy_gooey_loop && grep -n "SplitDivider" src/skin.rs | head -20; grep -n "pub min_target" -B3 -A3 src/skin.rs; grep -n "min_target" src/skin.rs | head -30
+342	158	gate	model	model		2026-11-22T07:23:30Z	2.4	
+342	159	gate	tool	shell	bash	2026-11-22T07:23:33Z	0.0	cd ~/bevy_gooey_loop && sed -n 5025,5075p src/skin.rs; grep -rn "min_target:" src tests examples | grep -v "^src/skin.rs" | head; grep -n "held_fade" src/skin.r
+342	160	gate	model	model		2026-11-22T07:23:33Z	3.2	
+342	161	gate	tool	shell	bash	2026-11-22T07:23:36Z	0.0	cd ~/bevy_gooey_loop && grep -n "MIN_TARGET_PX" src/*.rs | grep -v "^src/skin.rs" | head; sed -n 1095,1112p src/skin.rs; sed -n 1455,1472p src/skin.rs; sed -n 4
+342	162	gate	model	model		2026-11-22T07:23:36Z	3.5	
+342	163	gate	tool	shell	bash	2026-11-22T07:23:39Z	0.0	cd ~/bevy_gooey_loop && grep -n "thickness\|divider.*size\|\.size\.\(x\|y\)" src/split.rs | head -20; grep -n "BadSize" src/skin.rs | head; sed -n 1112,1135p sr
+342	164	gate	model	model		2026-11-22T07:23:40Z	7.9	
+342	165	gate	tool	shell	bash	2026-11-22T07:23:47Z	0.0	cd ~/bevy_gooey_loop && sed -n 600,612p src/skin.rs; sed -n 1170,1186p src/skin.rs; ls docs/research | head -3; sed -n 1,30p docs/research/cluster-led-menu-fold
+342	166	gate	model	model		2026-11-22T07:23:47Z	2.8	
+342	167	gate	tool	shell	bash	2026-11-22T07:23:50Z	0.1	date -u +%H:%M; cat /tmp/g102/gate3.log | tail -8; pgrep -f "cargo (nextest|test)" | head -2
+342	168	gate	model	model		2026-11-22T07:23:50Z	4.2	
+342	169	gate	tool	cargo build	bash	2026-11-22T07:23:55Z	60.0	[launched bg_11] cd ~/bevy_gooey_loop && export CARGO_INCREMENTAL=1 CARGO_BUILD_RUSTC_WRAPPER=; cargo check --lib 2>&1 | tail -2; cargo check --lib --target wasm32-unknown-unkno
+342	170	gate	model	model		2026-11-22T07:24:55Z	1.6	
+342	171	gate	tool	wait: other	wait	2026-11-22T07:24:56Z	5.0	{}
+342	172	gate	model	model		2026-11-22T07:25:01Z	0.6	
+342	173	gate	tool	wait: other	wait	2026-11-22T07:25:02Z	22.6	{}
+342	174	gate	model	model		2026-11-22T07:25:24Z	3.1	
+342	175	ship	tool	phase mark	bash	2026-11-22T07:25:27Z	12.3	cd ~/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark ship; git checkout -q main && git merge --no-ff -q loop/iter-102 -m "Merge loop/iter-102: LE
+342	176	ship	model	model		2026-11-22T07:25:40Z	3.0	
+342	177	ship	tool	git	bash	2026-11-22T07:25:43Z	0.1	cd ~/bevy_gooey_loop && git tag --sort=-v:refname | head -3; git log -1 --format=%cd $(git tag --sort=-v:refname | head -1); cargo info bevy_gooey 2>&1 | grep -
+342	178	ship	model	model		2026-11-22T07:25:43Z	3.2	
+342	179	ship	tool	git	bash	2026-11-22T07:25:46Z	0.9	cd ~/bevy_gooey_loop && git fetch -q origin; git rev-list --left-right --count main...origin/main; git merge-base main origin/main | cut -c1-8; git log --onelin
+342	180	ship	model	model		2026-11-22T07:25:47Z	4.7	
+342	181	release	tool	phase mark	bash	2026-11-22T07:25:52Z	50.3	cd ~/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark release; export CARGO_INCREMENTAL=1 CARGO_BUILD_RUSTC_WRAPPER=; cargo semver-checks 2>&1 | t
+342	182	release	bg	remote wait	bash	2026-11-22T07:19:49Z	413.1	bg_10 completed: while pgrep -f "cargo (nextest|test)" >/dev/null; do sleep 10; done; cat /tmp/g102/gate3.log
+342	183	release	model	model		2026-11-22T07:26:42Z	3.1	
+342	184	release	tool	shell	bash	2026-11-22T07:26:45Z	0.0	cd ~/bevy_gooey_loop && grep -n "^## \[" CHANGELOG.md | head -3; grep -n "0.52" README.md | head; grep -n '^version' Cargo.toml
+342	185	release	model	model		2026-11-22T07:26:45Z	2.8	
+342	186	release	tool	shell	bash	2026-11-22T07:26:48Z	0.6	cd ~/bevy_gooey_loop && sed -i '3s/0.52.1/0.52.2/' Cargo.toml && sed -i '3s/.*/## [Unreleased]\n\n## [0.52.2] - 2026-11-22/' CHANGELOG.md && sed -i '116s/0.52.1
+342	187	release	model	model		2026-11-22T07:26:48Z	2.5	
+342	188	release	tool	cargo publish	bash	2026-11-22T07:26:51Z	60.0	[launched bg_12] cd ~/bevy_gooey_loop && export CARGO_INCREMENTAL=1 CARGO_BUILD_RUSTC_WRAPPER=; git add Cargo.toml CHANGELOG.md README.md && git status --short | head -3; git co
+342	189	release	model	model		2026-11-22T07:27:51Z	1.7	
+342	190	release	tool	wait: other	wait	2026-11-22T07:27:53Z	2.0	{}
+342	191	release	model	model		2026-11-22T07:27:55Z	1.9	
+342	192	release	tool	cargo publish	bash	2026-11-22T07:27:56Z	6.2	cd ~/bevy_gooey_loop && cargo publish 2>&1 | tail -6
+342	193	release	model	model		2026-11-22T07:28:03Z	4.1	
+342	194	release	tool	push gate	bash	2026-11-22T07:28:07Z	3.3	cd ~/bevy_gooey_loop && ls ~/.cargo/credentials* 2>&1 | head -2; env | grep -c CARGO_REGISTRY_TOKEN; git tag v0.52.2 && git push origin main 2>&1 | tail -2; git
+342	195	release	model	model		2026-11-22T07:28:10Z	2.7	
+342	196	release	tool	push gate	bash	2026-11-22T07:28:13Z	2.9	cd ~/bevy_gooey_loop && for n in 91 92 107; do gh issue view $n -R dark-incorporated/bevy_gooey --json state,labels,comments --jq '[.state,([.labels[].name]|joi
+342	197	release	model	model		2026-11-22T07:28:16Z	3.0	
+342	198	log	tool	phase mark	bash	2026-11-22T07:28:19Z	0.5	cd ~/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark log; df -h /home | tail -1; tail -30 docs/loop-log.md | cut -c1-220; gh issue list -R dark-i
+342	199	log	model	model		2026-11-22T07:28:19Z	2.0	
+342	200	log	tool	git	bash	2026-11-22T07:28:21Z	0.0	cd ~/bevy_gooey_loop && git worktree list; ls /tmp | grep g102; ls ~ | grep g102; du -sh /tmp/g102 | cut -f1
+342	201	log	model	model		2026-11-22T07:28:21Z	2.3	
+342	202	log	tool	shell	bash	2026-11-22T07:28:24Z	0.0	ls -la /tmp/g102_base | head -5; du -sh /tmp/g102_base
+342	203	log	model	model		2026-11-22T07:28:24Z	13.8	
+342	204	log	tool	push gate	bash	2026-11-22T07:28:37Z	2.0	cd ~/bevy_gooey_loop && cat >> docs/loop-log.md <<'EOF' ## Iteration 102 — 2026-11-22 — LED halo, menu hover focus, fold triangle (#91, #92, #107) **What and wh
+342	205	log	model	model		2026-11-22T07:28:39Z	7.6	
