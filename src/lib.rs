@@ -156,10 +156,12 @@ mod code_decor;
 mod code_editor;
 mod code_find;
 mod code_fold;
+mod code_markdown;
 mod code_overlay;
 mod code_regex;
 mod code_search;
 mod code_syntax;
+mod code_wrap;
 mod color;
 mod color_motion;
 mod combobox;
@@ -266,12 +268,13 @@ pub use code_decor::{
 pub use code_editor::{
     CARET_BLINK_PERIOD_S, CARET_SPRING_FRACTION, CODE_LINE_EM, CODE_MIN_LINES,
     CODE_SELECTION_ALPHA, CodeEditor, CodeEditorSettings, CodeEditorValue, CodeIndentation,
-    DEFAULT_COMPLETION_TRIGGERS, PERF_BUDGET, code_editor,
+    CodeMarkdown, CodeSoftWrap, DEFAULT_COMPLETION_TRIGGERS, PERF_BUDGET, code_editor,
 };
 pub use code_find::{
     FIND_LIMIT, FIND_WORK_BASE, FIND_WORK_PER_BYTE, FindError, FindOptions, find_all, replace_edits,
 };
 pub use code_fold::FoldMap;
+pub use code_markdown::markdown_highlights;
 pub use code_overlay::{CODE_HOVER_DELAY_S, COMPLETION_ROWS, CodeMinimap};
 pub use code_search::CodeFind;
 pub use color::{
@@ -670,6 +673,8 @@ impl Plugin for GooeyStylePlugin {
             .register_type::<Lift>()
             .register_type::<Led>()
             .register_type::<CodeEditorSettings>()
+            .register_type::<CodeSoftWrap>()
+            .register_type::<CodeMarkdown>()
             .register_type::<CodeEditorValue>()
             .register_type::<SyntaxRole>()
             .register_type::<CodeSeverity>()

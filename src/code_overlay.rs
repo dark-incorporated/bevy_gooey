@@ -272,12 +272,12 @@ pub(crate) fn update_code_folds(
         if dirty || editor.fold_dirty {
             editor.fold_dirty = false;
             let available = editor.overlay.available_folds.clone();
-            editor.fold = FoldMap::new(
+            editor.fold.set_fold(FoldMap::new(
                 editor
                     .folded
                     .iter()
                     .filter_map(|header| available.iter().find(|r| r.start == *header).cloned()),
-            );
+            ));
             editor.keep_caret_out_of_folds();
             editor.reveal = true;
         }
@@ -644,13 +644,23 @@ pub(crate) fn update_code_overlays(
                     if to <= from {
                         to = from + 1;
                     }
+                    // A wrapped line's range is drawn in the pieces the rows of it show.
+                    let (from, to) = match fold.window(row) {
+                        Some((_, row_from, row_to)) if fold.wraps() => {
+                            (from.max(row_from), to.min(row_to.unwrap_or(usize::MAX)))
+                        }
+                        _ => (from, to),
+                    };
+                    if to <= from {
+                        continue;
+                    }
                     segments.push(Segment {
                         row,
                         from,
                         to,
                         severity: item.severity,
                     });
-                    if line == start.line {
+                    if line == start.line && fold.row_of(line) == row {
                         match marks_by_row.iter_mut().find(|(r, _)| *r == row) {
                             Some((_, severity)) => *severity = (*severity).max(item.severity),
                             None => marks_by_row.push((row, item.severity)),
@@ -685,8 +695,14 @@ pub(crate) fn update_code_overlays(
                 set_display(&mut node, Display::None);
                 continue;
             };
-            let from = segment.from.max(view.first_col);
-            let to = segment.to.min(view.first_col + view.cols);
+            let (from, to) = if fold.wraps() {
+                (segment.from, segment.to)
+            } else {
+                (
+                    segment.from.max(view.first_col),
+                    segment.to.min(view.first_col + view.cols),
+                )
+            };
             if to <= from {
                 set_display(&mut node, Display::None);
                 continue;
@@ -694,7 +710,8 @@ pub(crate) fn update_code_overlays(
             set_display(&mut node, Display::Flex);
             set_px(
                 &mut node.left,
-                view.pad + from as f32 * view.advance - view.shown.x,
+                view.pad + from as f32 * view.advance
+                    - fold.origin_x(segment.row, view.shown.x, view.advance),
             );
             set_px(
                 &mut node.top,
@@ -819,7 +836,10 @@ pub(crate) fn update_code_overlays(
             if row >= 0.0 && (row as usize) < view.rows && x >= 0.0 {
                 let line = line_of(row as usize);
                 let text = editor.buffer.line(line);
-                let col = (x / view.advance).floor() as usize;
+                let mut col = (x / view.advance).floor() as usize;
+                if let Some((_, from, _)) = fold.window(row as usize) {
+                    col += from;
+                }
                 if col < display_col(text, text.len(), tab).max(1) {
                     let pos = CodePos::new(line, byte_at_display(text, col, tab).min(text.len()));
                     let offset = editor.buffer.offset_of(pos);
@@ -870,9 +890,9 @@ pub(crate) fn update_code_overlays(
         if let Some(note) = &editor.overlay.note
             && let Ok((mut node, _, _, _)) = items.get_mut(note.entity)
         {
-            let row = fold.row_of(note.at.line);
             let text = editor.buffer.line(note.at.line);
             let col = display_col(text, note.at.col, tab);
+            let row = fold.row_at(note.at.line, col);
             let height = boxes.get(note.entity).map_or(view.line_px * 2.0, |(n, _)| {
                 n.size().y * n.inverse_scale_factor()
             });
@@ -885,7 +905,9 @@ pub(crate) fn update_code_overlays(
             set_px(&mut node.top, top);
             set_px(
                 &mut node.left,
-                (view.pad + col as f32 * view.advance - view.shown.x).max(0.0),
+                (view.pad + col as f32 * view.advance
+                    - fold.origin_x(row, view.shown.x, view.advance))
+                .max(0.0),
             );
         }
 
@@ -949,9 +971,9 @@ fn draw_navigation(
             if fold.is_hidden(place.line) {
                 continue;
             }
-            let row = fold.row_of(place.line);
+            let col = display_col(editor.buffer.line(place.line), place.col, tab);
+            let row = fold.row_at(place.line, col);
             if visible.contains(&row) {
-                let col = display_col(editor.buffer.line(place.line), place.col, tab);
                 spots.push((row, col));
             }
         }
@@ -976,7 +998,8 @@ fn draw_navigation(
                 set_display(&mut node, Display::Flex);
                 set_px(
                     &mut node.left,
-                    view.pad + col as f32 * view.advance - view.shown.x,
+                    view.pad + col as f32 * view.advance
+                        - fold.origin_x(row, view.shown.x, view.advance),
                 );
                 set_px(&mut node.width, view.advance);
                 set_px(&mut node.top, row as f32 * view.line_px - view.shown.y);
@@ -1062,11 +1085,12 @@ fn draw_navigation(
     let mut chevrons: Vec<(usize, bool)> = Vec::new();
     for row in visible.clone() {
         let line = fold.line_at(row);
-        if editor
-            .overlay
-            .available_folds
-            .iter()
-            .any(|r| r.start == line)
+        if fold.row_of(line) == row
+            && editor
+                .overlay
+                .available_folds
+                .iter()
+                .any(|r| r.start == line)
         {
             chevrons.push((row, editor.folded.contains(&line)));
         }
@@ -1334,7 +1358,7 @@ fn update_completion(
     editor: &mut CodeEditor,
     completions: Option<&CodeCompletions>,
     view: &crate::code_editor::View,
-    fold: &crate::code_fold::FoldMap,
+    fold: &crate::code_wrap::RowMap,
     area: Entity,
     items: &mut Query<OverlayItem, With<OverlayPart>>,
     boxes: &Query<(&ComputedNode, &UiGlobalTransform)>,
@@ -1458,9 +1482,9 @@ fn update_completion(
     if let Some(panel) = completion.panel
         && let Ok((mut node, _, _, _)) = items.get_mut(panel)
     {
-        let row = fold.row_of(caret.line);
         let text = editor.buffer.line(caret.line);
         let col = display_col(text, caret.col, editor.buffer.tab_width());
+        let row = fold.row_at(caret.line, col);
         let height = boxes
             .get(panel)
             .map_or(view.line_px * COMPLETION_ROWS as f32, |(n, _)| {
@@ -1476,7 +1500,8 @@ fn update_completion(
         set_px(&mut node.top, top);
         set_px(
             &mut node.left,
-            (view.pad + col as f32 * view.advance - view.shown.x).max(0.0),
+            (view.pad + col as f32 * view.advance - fold.origin_x(row, view.shown.x, view.advance))
+                .max(0.0),
         );
     }
     for (slot, &(row, label, detail)) in completion.rows.iter().enumerate() {

@@ -744,3 +744,62 @@ fn every_syntax_colour_holds_the_contrast_bar_in_every_preset() {
             .is_empty()
     );
 }
+
+// -- #114: Markdown ink ------------------------------------------------------------------------
+
+#[test]
+fn a_markdown_editor_draws_each_kind_of_mark_in_its_own_ink_and_keeps_them_while_typing() {
+    let mut app = app_with(MotionSettings::off());
+    let editor = editor_of(
+        &mut app,
+        "# Title\nplain `code` and **bold** [site](http://x.y)",
+    );
+    app.world_mut().entity_mut(editor).insert(CodeMarkdown);
+    settle(&mut app);
+    let skin = app.world().resource::<GooeySkin>().clone();
+    let runs = spans(&app, editor);
+    let find = |text: &str| {
+        runs.iter()
+            .find(|(t, ..)| t == text)
+            .unwrap_or_else(|| panic!("a run {text:?} in {runs:?}"))
+            .clone()
+    };
+    assert_eq!(find("# Title").2, skin.syntax(SyntaxRole::Keyword));
+    assert_eq!(find("`code`").2, skin.syntax(SyntaxRole::String));
+    assert_eq!(find("**bold**").2, skin.syntax(SyntaxRole::Type));
+    assert_eq!(find("[site]").2, skin.syntax(SyntaxRole::Reference));
+    let inks: std::collections::HashSet<String> =
+        runs.iter().map(|(_, _, c)| format!("{c:?}")).collect();
+    assert!(inks.len() >= 4, "rows are drawn in several inks: {inks:?}");
+
+    // Typing never draws new text in the old text's colours: the very next frame is current.
+    tap(&mut app, KeyCode::End, Key::End);
+    type_str(&mut app, "!");
+    let revision = value(&app, editor).revision();
+    assert!(!spans(&app, editor).is_empty(), "spans survive an edit");
+    assert_eq!(
+        app.world()
+            .get::<CodeEditorValue>(editor)
+            .map(CodeEditorValue::revision),
+        Some(revision)
+    );
+}
+
+#[test]
+fn without_the_marker_text_stays_plain_and_a_hosts_own_highlights_still_draw() {
+    let mut app = app_with(MotionSettings::off());
+    let editor = editor_of(&mut app, "# Title");
+    assert!(
+        spans(&app, editor).is_empty(),
+        "nothing is styled by default"
+    );
+    let revision = value(&app, editor).revision();
+    app.world_mut()
+        .entity_mut(editor)
+        .insert(Highlights::new(revision, [(0..1, SyntaxRole::Number)]));
+    settle(&mut app);
+    assert_eq!(
+        spans(&app, editor)[0].1,
+        Role::CodeSyntax(SyntaxRole::Number)
+    );
+}
