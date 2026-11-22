@@ -16,7 +16,8 @@ use bevy::render::RenderPlugin;
 use bevy::render::render_resource::TextureFormat;
 use bevy::render::settings::WgpuSettings;
 use bevy::ui::{
-    ComputedNode, ComputedUiTargetCamera, InteractionDisabled, IsDefaultUiCamera, UiGlobalTransform,
+    ComputedNode, ComputedUiTargetCamera, InteractionDisabled, IsDefaultUiCamera, Pressed,
+    UiGlobalTransform,
 };
 use bevy::window::{PrimaryWindow, WindowRef, WindowResolution};
 use bevy::winit::WinitPlugin;
@@ -1287,4 +1288,82 @@ fn peek_enabled(app: &App) -> bool {
     app.world()
         .get_resource::<SplitPeekSettings>()
         .is_some_and(|s| s.enabled)
+}
+
+// A divider's thickness is the host's number (#108).
+
+fn thickness_of(app: &App, divider: Entity, axis: SplitAxis) -> f32 {
+    along(rect(app, divider).size(), axis)
+}
+
+#[test]
+fn a_split_thickness_is_the_dividers_laid_out_thickness_at_ui_scale_one_and_two_point_four() {
+    // 720 px is the scale's reference side: 720 gives a UI scale of 1, 1728 gives 2.4.
+    for (width, height) in [(1280, 720), (3072, 1728)] {
+        for axis in [H, V] {
+            let mut app = app_sized(width, height);
+            let ui = rig(&mut app, axis, 0.5, SplitMin::default());
+            assert!(
+                (thickness_of(&app, ui.divider, axis) - BAR).abs() < 0.5,
+                "unset, the divider is the target's minimum"
+            );
+            app.world_mut()
+                .entity_mut(ui.split)
+                .insert(SplitThickness(12.0));
+            settle(&mut app);
+            let now = thickness_of(&app, ui.divider, axis);
+            assert!(
+                (now - 12.0).abs() < 0.5,
+                "{axis:?} at {height}: the divider is {now} px, not 12"
+            );
+            // The grip stays centred in a channel narrower than the target.
+            let grip = child_of(&app, ui.divider);
+            let (g, d) = (rect(&app, grip).center(), rect(&app, ui.divider).center());
+            assert!((g - d).length() < 0.5, "the grip is centred: {g:?} in {d:?}");
+        }
+    }
+}
+
+#[test]
+fn a_thin_divider_keeps_its_thickness_through_hover_press_and_focus_and_still_drags() {
+    let mut app = app();
+    let ui = rig(&mut app, H, 0.5, SplitMin::default());
+    app.world_mut()
+        .entity_mut(ui.split)
+        .insert(SplitThickness(12.0));
+    settle(&mut app);
+    let on_divider = at(&app, rect(&app, ui.divider).center());
+    point_at(&mut app, on_divider);
+    settle(&mut app);
+    assert!((thickness_of(&app, ui.divider, H) - 12.0).abs() < 0.5, "hovered");
+    focus(&mut app, ui.divider);
+    settle(&mut app);
+    assert!((thickness_of(&app, ui.divider, H) - 12.0).abs() < 0.5, "focused");
+    app.world_mut().entity_mut(ui.divider).insert(Pressed);
+    settle(&mut app);
+    assert!((thickness_of(&app, ui.divider, H) - 12.0).abs() < 0.5, "pressed");
+    app.world_mut().entity_mut(ui.divider).remove::<Pressed>();
+    settle(&mut app);
+    let room = room(&app, &ui, H);
+    assert!((room - (800.0 - 12.0)).abs() < 0.5, "the panes share the split less 12: {room}");
+    drag(&mut app, ui.divider, Vec2::new(100.0, 0.0));
+    let want = 0.5 + 100.0 / room;
+    assert!(
+        (fraction(&app, ui.split) - want).abs() < 0.002,
+        "dragged 100 px of {room}: {} of {want}",
+        fraction(&app, ui.split)
+    );
+}
+
+#[test]
+fn taking_the_split_thickness_off_gives_the_divider_its_target_back() {
+    let mut app = app();
+    let ui = rig(&mut app, H, 0.5, SplitMin::default());
+    app.world_mut()
+        .entity_mut(ui.split)
+        .insert(SplitThickness(12.0));
+    settle(&mut app);
+    app.world_mut().entity_mut(ui.split).remove::<SplitThickness>();
+    settle(&mut app);
+    assert!((thickness_of(&app, ui.divider, H) - BAR).abs() < 0.5);
 }

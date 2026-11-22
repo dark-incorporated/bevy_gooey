@@ -14,9 +14,11 @@ use bevy::prelude::*;
 use bevy::ui::{InteractionDisabled, Pressed};
 use bevy::ui_widgets::ValueChange;
 
+use crate::box_model::{Extent, Sizing};
 use crate::clicks::DoublePress;
 use crate::model::{
-    PAD_REPEAT_DELAY, PAD_REPEAT_RATE, SPLIT_KEY_STEP_PX, repeat_steps, split_clamp, split_drag,
+    MIN_TARGET_PX, PAD_REPEAT_DELAY, PAD_REPEAT_RATE, SPLIT_KEY_STEP_PX, repeat_steps, split_clamp,
+    split_drag,
     split_mins,
 };
 use crate::nav::show_focus;
@@ -117,6 +119,44 @@ impl SplitMin {
         Self { first, second }
     }
 }
+
+/// How thick a [`crate::split`]'s divider is, in logical pixels: put it on the split's root.
+///
+/// The divider's channel is [`MIN_TARGET_PX`](crate::MIN_TARGET_PX) (24 px) thick unless this says
+/// otherwise; the grip inside stays centred. The number survives every restyle (hover, press, focus),
+/// the panes share the room the divider leaves, and a drag moves the fraction by the pointer's
+/// distance over that room. Taking the component off gives the divider its target back. A value that
+/// is not finite is ignored; below 1 px is 1 px.
+///
+/// **A divider thinner than 24 px is under WCAG 2.2 SC 2.5.8's minimum target.** A divider's keys
+/// (arrows, Home, End, Enter, the D-pad) are the *Equivalent* exception, and its hit area is its
+/// channel, so a thin seam is a thin hit area: that is the host's choice, and `problems()` does not
+/// check it.
+///
+/// It is carried to the divider as a private [`Sizing`](crate::Sizing) by [`update_splits`], which
+/// replaces any `Sizing` the host put on the divider itself.
+///
+/// ```
+/// # use bevy::prelude::*;
+/// # use bevy_gooey::*;
+/// # fn ui(mut commands: Commands) {
+/// commands.spawn((
+///     split(SplitAxis::Horizontal, panel(), panel()),
+///     SplitThickness(12.0),
+/// ));
+/// # }
+/// ```
+#[derive(Component, Clone, Copy, Debug, PartialEq, Reflect)]
+#[reflect(Component, Debug, PartialEq, Clone)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+pub struct SplitThickness(pub f32);
+
+/// The thickness [`update_splits`] last wrote into a divider's [`Sizing`] for a
+/// [`SplitThickness`] (absent while the divider has its target's size): what tells the system a
+/// change from the last one it made. Not for hosts to write.
+#[derive(Component, Clone, Copy, Debug, PartialEq)]
+#[doc(hidden)]
+pub struct DividerThickness(f32);
 
 /// A [`crate::split`]'s divider, the part a pointer grabs and focus rests on. Part of what
 /// `split()` spawns. Give it `InteractionDisabled` to fix the layout: it still takes focus, and
@@ -713,6 +753,7 @@ type LaidOutSplit = (
     &'static Children,
     Option<&'static SplitGlide>,
     &'static SplitPeek,
+    Option<&'static SplitThickness>,
 );
 
 /// Lays each split's panes out from its [`SplitFraction`] and [`SplitMin`]: the first pane grows by
@@ -726,8 +767,10 @@ pub fn update_splits(
     splits: Query<LaidOutSplit>,
     dividers: Query<&ComputedNode, With<SplitDivider>>,
     mut parts: Query<(&Role, &mut Node)>,
+    written: Query<Option<&DividerThickness>, With<SplitDivider>>,
+    mut commands: Commands,
 ) {
-    for (split, fraction, min, node, children, glide, peek) in &splits {
+    for (split, fraction, min, node, children, glide, peek, thickness) in &splits {
         // A collapse or a restore on its way lays the panes out where it has got to.
         let fraction = glide.map_or(fraction.0, SplitGlide::shown);
         let along = |size: Vec2| match split.axis {
@@ -841,6 +884,35 @@ pub fn update_splits(
             };
             if *role != Role::SplitDivider {
                 continue;
+            }
+            // The host's thickness rides on the divider's own `Sizing`, which `apply_skin` applies
+            // after the role's arm on every restyle: one writer, nothing for the host to fight.
+            let want = thickness
+                .map(|t| t.0)
+                .filter(|px| px.is_finite())
+                .map(|px| px.max(1.0));
+            let held = written.get(child).ok().flatten().map(|w| w.0);
+            if want != held {
+                // Taking the thickness off writes the target's minimum back through the same
+                // `Sizing` (a changed one restyles the divider; a removed one would not).
+                let px = want.unwrap_or(MIN_TARGET_PX);
+                let least = Some(Extent::Px(px));
+                let sizing = match split.axis {
+                    SplitAxis::Horizontal => Sizing {
+                        min_width: least,
+                        ..Sizing::default()
+                    },
+                    SplitAxis::Vertical => Sizing {
+                        min_height: least,
+                        ..Sizing::default()
+                    },
+                };
+                let mut divider = commands.entity(child);
+                divider.insert(sizing);
+                match want {
+                    Some(px) => divider.insert(DividerThickness(px)),
+                    None => divider.remove::<DividerThickness>(),
+                };
             }
             let mut next = node.clone();
             (

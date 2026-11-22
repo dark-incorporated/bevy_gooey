@@ -424,7 +424,7 @@ pub use slots::{
 };
 pub use split::{
     CollapseSplit, Split, SplitAxis, SplitDivider, SplitFraction, SplitGeometry, SplitMin,
-    SplitSaved, split_by_pad, update_splits,
+    SplitSaved, SplitThickness, split_by_pad, update_splits,
 };
 pub use split_peek::{SplitPeek, SplitPeekSettings, update_split_peeks};
 pub use status::{StatusBar, StatusItem, StatusKind, StatusPriority};
@@ -634,6 +634,7 @@ impl Plugin for GooeyStylePlugin {
             .register_type::<SplitAxis>()
             .register_type::<SplitFraction>()
             .register_type::<SplitMin>()
+            .register_type::<SplitThickness>()
             .register_type::<TableSort>()
             .register_type::<SelectMode>()
             .register_type::<TableRows>()
