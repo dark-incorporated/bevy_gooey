@@ -32,6 +32,7 @@ use bevy::ui::{InteractionDisabled, Pressed, Selected};
 use bevy::ui_widgets::{Activate, ScrollArea, ValueChange, observe};
 use bevy::window::SystemCursorIcon;
 
+use crate::box_model::{Extent, Sizing};
 use crate::clicks::DoublePress;
 use crate::list::ListView;
 use crate::model::{
@@ -158,8 +159,8 @@ impl RowSource for Vec<Vec<String>> {
 /// ```
 /// # use bevy_gooey::Column;
 /// let name = Column::new("Name").width(14.0);
-/// let notes = Column::new("Notes").unsortable();
-/// assert_eq!((name.width, name.sortable, notes.sortable), (14.0, true, false));
+/// let notes = Column::new("Notes").unsortable().wrap();
+/// assert_eq!((name.width, name.sortable, notes.sortable, notes.wrap), (14.0, true, false, true));
 /// ```
 #[derive(Clone, Debug, PartialEq)]
 pub struct Column {
@@ -170,6 +171,11 @@ pub struct Column {
     pub width: f32,
     /// Whether a click on the header sorts by the column.
     pub sortable: bool,
+    /// Whether the column's text wraps at the column's edge instead of being cut on one line.
+    /// A row is then as tall as its tallest cell (never under a pitch). A table with a wrapping
+    /// column binds **every** row and lets the viewport scroll what is laid out, because the rows
+    /// no longer share a height: keep it for a few hundred rows of notes, not ten thousand.
+    pub wrap: bool,
 }
 
 impl Column {
@@ -179,6 +185,7 @@ impl Column {
             title: title.into(),
             width: 8.0,
             sortable: true,
+            wrap: false,
         }
     }
 
@@ -191,6 +198,14 @@ impl Column {
     /// This column, not sortable: its header sorts nothing and sends no [`SortBy`].
     pub fn unsortable(mut self) -> Self {
         self.sortable = false;
+        self
+    }
+
+    /// This column, wrapping its text at the column's edge (a long word breaks where it must). The
+    /// rows a table with a wrapping column draws are as tall as their tallest cell, and every row
+    /// is bound at once (see the `wrap` field).
+    pub fn wrap(mut self) -> Self {
+        self.wrap = true;
         self
     }
 }
@@ -494,6 +509,8 @@ pub struct TableCache {
     /// The body text size the widths were laid out at.
     text_px: f32,
     pitch: f32,
+    /// Each column's `wrap` as the pool's cells were spawned.
+    wrapped: Vec<bool>,
     /// The source's [`RowSource::revision`] this cache was last made from.
     seen: u64,
 }
@@ -1090,6 +1107,7 @@ pub fn update_tables(
     time: Option<Res<Time<Real>>>,
     mut texts: Query<&mut Text>,
     mut rows: Query<(&mut TableRow, Has<Selected>)>,
+    laid_out: Query<&ComputedNode>,
     mut commands: Commands,
 ) {
     for (entity, table, sort, widths, rows_tall, mut selection, mut cursor, mut cache, parts) in
@@ -1100,6 +1118,16 @@ pub fn update_tables(
         let pitch = skin.table_pitch();
         let len = table.source.len();
         let columns = table.columns.len();
+        // A wrapping column makes the rows differ in height, so the pitch arithmetic that windows
+        // a table (which row is at a scroll, how long the scroll is) does not hold: such a table
+        // binds every row and reads its lengths from the layout.
+        let wraps = table.columns.iter().any(|c| c.wrap);
+        if !cache.wrapped.iter().copied().eq(table.columns.iter().map(|c| c.wrap)) {
+            for gone in cache.pool.drain(..) {
+                commands.entity(gone.row).despawn();
+            }
+            cache.wrapped = table.columns.iter().map(|c| c.wrap).collect();
+        }
         let tree = table.source::<Tree>();
         let indent = tree_indent(text_px);
         let cache = &mut *cache;
@@ -1133,8 +1161,17 @@ pub fn update_tables(
             view.rows = rows_tall.0;
         }
         let tall = rows_tall.0.max(0.0);
-        let view_h = (tall * pitch).min(len as f32 * pitch);
-        let max = (len as f32 * pitch - view_h).max(0.0);
+        let (view_h, max) = if wraps {
+            laid_out.get(parts.view).map_or((0.0, 0.0), |node| {
+                let to_logical = node.inverse_scale_factor;
+                let inside = node.size().y * to_logical;
+                let content = node.content_size().y * to_logical;
+                (inside, (content - inside).max(0.0))
+            })
+        } else {
+            let view_h = (tall * pitch).min(len as f32 * pitch);
+            (view_h, (len as f32 * pitch - view_h).max(0.0))
+        };
         let mut y = scroll.y.clamp(0.0, max);
 
         if let Some((row, count @ 1..)) = patch {
@@ -1163,7 +1200,9 @@ pub fn update_tables(
                 if table.is_changed() {
                     // Rows came or went: the row at the top stays at the top.
                     let now = cache.index_of(old_first_key);
-                    y = table_anchor(y, pitch, old_first, now, max);
+                    if !wraps {
+                        y = table_anchor(y, pitch, old_first, now, max);
+                    }
                     // A selected row that is gone is no longer selected (a tree's node under a
                     // closed parent is not gone); a cursor row that is gone moves to where it
                     // stood, and a tree's to the nearest node of its own that is shown.
@@ -1210,9 +1249,24 @@ pub fn update_tables(
         if cache.follow {
             cache.follow = false;
             if let Some(i) = cache.index_of(cursor.0) {
-                let top = i as f32 * pitch;
+                let (top, bottom) = if wraps {
+                    // The rows' laid-out heights (a row not laid out yet is a pitch).
+                    let height = |slot: &PoolRow| {
+                        laid_out
+                            .get(slot.row)
+                            .ok()
+                            .map(|node| node.size().y * node.inverse_scale_factor)
+                            .filter(|h| *h > 0.0)
+                            .unwrap_or(pitch)
+                    };
+                    let top: f32 = cache.pool.iter().take(i).map(height).sum();
+                    let own = cache.pool.get(i).map_or(pitch, height);
+                    (top, top + own)
+                } else {
+                    (i as f32 * pitch, (i + 1) as f32 * pitch)
+                };
                 let base = glide.goal().unwrap_or(y);
-                let want = scroll_to_reveal(top, top + pitch, view_h, base, max, pitch);
+                let want = scroll_to_reveal(top, bottom, view_h, base, max, pitch);
                 if (want - base).abs() > 0.01 {
                     glide.go(&scroll, want);
                 }
@@ -1234,7 +1288,11 @@ pub fn update_tables(
             scroll.y = y;
         }
 
-        let pool = (tall.ceil() as usize + 1).min(len);
+        let pool = if wraps {
+            len
+        } else {
+            (tall.ceil() as usize + 1).min(len)
+        };
         let first = table_window(y, pitch, pool, len);
         let moved = first != cache.first || pool != cache.pool.len() || rebuilt || patch.is_some();
         let resized = cache.text_px != text_px || cache.pitch != pitch;
@@ -1323,6 +1381,9 @@ pub fn update_tables(
             if selection.contains(key) {
                 commands.entity(row).insert(Selected);
             }
+            if wraps {
+                commands.entity(row).insert(row_sizing(pitch));
+            }
             let mut lead = None;
             let cells = (0..columns)
                 .map(|c| {
@@ -1344,10 +1405,11 @@ pub fn update_tables(
                             indent,
                         ));
                     }
+                    let wrapped = table.columns.get(c).is_some_and(|column| column.wrap);
                     let text = commands
                         .spawn((
                             Text::new(table.source.cell(source, c).into_owned()),
-                            ONE_LINE,
+                            if wrapped { WRAPPED } else { ONE_LINE },
                             Role::TableCellText,
                             Pickable::IGNORE,
                             ChildOf(cell),
@@ -1414,8 +1476,26 @@ pub fn update_tables(
                 }
             }
         }
+        if wraps && resized {
+            for slot in &cache.pool {
+                commands.entity(slot.row).insert(row_sizing(pitch));
+            }
+        }
         cache.text_px = text_px;
         cache.pitch = pitch;
+    }
+}
+
+/// How a wrapping column's text breaks: at a word, or inside one that is wider than the cell.
+const WRAPPED: TextLayout = TextLayout::new(Justify::Left, LineBreak::WordOrCharacter);
+
+/// The row of a table with a wrapping column: at least a pitch high, as tall as its tallest cell.
+/// (`Sizing` is applied after the role's own one-pitch height, which it replaces.)
+fn row_sizing(pitch: f32) -> Sizing {
+    Sizing {
+        height: Some(Extent::Auto),
+        min_height: Some(Extent::Px(pitch)),
+        ..default()
     }
 }
 
