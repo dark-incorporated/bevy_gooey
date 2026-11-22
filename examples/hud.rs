@@ -8,7 +8,7 @@
 //! bars as a game had them before: four amber bars of one length.
 //!
 //! Capture mode, for a still and a GIF: `GOOEY_FRAMES=<n>` saves a screenshot at frame `n` to
-//! `GOOEY_SHOT` (default `led.png`), prints `gooey: frames <n> mean_ms <x>` and exits 10 frames
+//! `GOOEY_SHOT` (default `hud.png`), prints `gooey: frames <n> mean_ms <x>` and exits 10 frames
 //! later; `GOOEY_SHOT_DIR=<dir>` also keeps every `GOOEY_SHOT_EVERY`th frame from `GOOEY_SHOT_FROM`
 //! (default 30) there as `f_%04d.png`. `GOOEY_SKIN=parchment`, `GOOEY_TEXT_SCALE=<f>` and
 //! `GOOEY_SIZE=<w>x<h>` set the start. `GOOEY_KEYS=down,enter,…` presses one key every
@@ -100,6 +100,7 @@ fn main() {
     .insert_resource(ClearColor(skin.background))
     .insert_resource(skin)
     .add_systems(Startup, setup)
+    .add_systems(PostStartup, decorate)
     .add_systems(
         Update,
         (follow_background, capture, stage_keys.after(capture)),
@@ -144,7 +145,7 @@ fn main() {
 
 /// The resource a bar shows.
 #[derive(Component, Clone, Copy)]
-enum Resource {
+enum Stat {
     Health,
     Mana,
     Stamina,
@@ -152,44 +153,29 @@ enum Resource {
 }
 
 /// A row: the name, then the bar.
-fn bar(
-    name: &'static str,
-    resource: Resource,
-    value: f32,
-    max: f32,
-    extra: impl Bundle,
-) -> impl Bundle {
-    let plain = std::env::var_os("GOOEY_PLAIN").is_some();
-    let extra = if plain { None } else { Some(extra) };
+fn bar(name: &'static str, resource: Stat, value: f32, max: f32) -> impl Bundle {
     (
         row(1.0),
         children![
-            (
-                label(name),
-                Node {
-                    width: Val::Px(96.0),
-                    ..default()
-                }
-            ),
+            (cell(8.0), children![label(name)]),
             (
                 meter(value, max),
                 resource,
                 Sizing {
-                    width: Some(Extent::Px(240.0)),
+                    width: Some(Extent::Text(18.0)),
                     ..default()
                 },
-                extra
             ),
         ],
     )
 }
 
 /// A button that moves one resource by `delta`, held to its range.
-fn spend(text: &'static str, which: Resource, delta: f32) -> impl Bundle {
+fn spend(text: &'static str, which: Stat, delta: f32) -> impl Bundle {
     (
         button(text),
         observe(
-            move |_: On<Activate>, mut bars: Query<(&Resource, &mut Meter)>| {
+            move |_: On<Activate>, mut bars: Query<(&Stat, &mut Meter)>| {
                 for (resource, mut meter) in &mut bars {
                     if std::mem::discriminant(resource) == std::mem::discriminant(&which) {
                         meter.value = (meter.value + delta).clamp(0.0, meter.max);
@@ -217,32 +203,14 @@ fn setup(mut commands: Commands) {
                     panel(),
                     children![
                         heading("Party"),
-                        bar(
-                            "Health",
-                            Resource::Health,
-                            100.0,
-                            100.0,
-                            MeterTone("health")
-                        ),
-                        bar("Mana", Resource::Mana, 40.0, 60.0, MeterTone("mana")),
-                        bar(
-                            "Stamina",
-                            Resource::Stamina,
-                            72.0,
-                            100.0,
-                            MeterTone("stamina")
-                        ),
-                        bar(
-                            "Ammo",
-                            Resource::Ammo,
-                            7.0,
-                            12.0,
-                            (MeterTone("ammo"), MeterSegments(12))
-                        ),
-                        (spend("Take a hit", Resource::Health, -45.0), AutoFocus),
-                        spend("Cast a spell", Resource::Mana, -15.0),
-                        spend("Fire", Resource::Ammo, -1.0),
-                        spend("Reload", Resource::Ammo, 12.0),
+                        bar("Health", Stat::Health, 100.0, 100.0),
+                        bar("Mana", Stat::Mana, 40.0, 60.0),
+                        bar("Stamina", Stat::Stamina, 72.0, 100.0),
+                        bar("Ammo", Stat::Ammo, 7.0, 12.0),
+                        (spend("Take a hit", Stat::Health, -45.0), AutoFocus),
+                        spend("Cast a spell", Stat::Mana, -15.0),
+                        spend("Fire", Stat::Ammo, -1.0),
+                        spend("Reload", Stat::Ammo, 12.0),
                     ]
                 )],
             ),
@@ -363,5 +331,25 @@ fn stage_keys(
             }
         }
         _ => {}
+    }
+}
+
+/// The tones and the ammo's cells, put on after the bars are spawned: `GOOEY_PLAIN=1` leaves them off,
+/// the bars as a game had them before `MeterTone` and `MeterSegments`.
+fn decorate(mut commands: Commands, bars: Query<(Entity, &Stat), With<Meter>>) {
+    if std::env::var_os("GOOEY_PLAIN").is_some() {
+        return;
+    }
+    for (entity, stat) in &bars {
+        let (tone, segments) = match stat {
+            Stat::Health => ("health", 0),
+            Stat::Mana => ("mana", 0),
+            Stat::Stamina => ("stamina", 0),
+            Stat::Ammo => ("ammo", 12),
+        };
+        commands.entity(entity).insert(MeterTone(tone));
+        if segments > 0 {
+            commands.entity(entity).insert(MeterSegments(segments));
+        }
     }
 }
