@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- `MeterTone("health")` on a `meter()` paints its fill in the skin's tone of that name (or one of its own colours), so a HUD's bars are told apart by colour; a toned meter's trail is its colour lifted (`GooeySkin::meter_fill`, `GooeySkin::meter_trail`, `model::METER_TRAIL_LIFT_L`). `MeterSegments(12)` cuts the bar into cells with notches at the cell edges (`update_meter_notches`, `METER_MAX_SEGMENTS`). `Role::MeterNotchLane` and `Role::MeterNotch` are new variants (a `match` over `Role` needs arms). `examples/hud.rs`; guide in `docs/guide/widgets.md`.
+
 ## [0.56.0] - 2026-11-22
 
 ### Breaking
