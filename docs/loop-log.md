@@ -3550,3 +3550,54 @@ under 24 px.
 
 **Cleanup.** Removing my own `/tmp/g105` and worktree `~/g105_base`. Left: `~/g17_base`, `~/g17_parked`, `~/g17s_base`;
 parked branches `wiggum/parked-pass-*` untouched. `df -h .`: 173G free (96%).
+
+## Iteration 106 — 2026-11-22 — emphasis and strong in two inks (#115)
+
+**Change.** `SyntaxRole::Emphasis` and `SyntaxRole::Strong` (`src/code_decor.rs`, hues 290 and 350 in `src/code_syntax.rs`).
+`markdown_highlights` gives a run of one `*`/`_` `Emphasis` and a run of two or more `Strong`; both were `SyntaxRole::Type`,
+which is why bevy_dark_factory's Files editor had to drop its `emphasis != strong` assertion. `SyntaxRole::ALL` is 12 long;
+`syntax_pairs()` checks the two new colours at 4.5:1 (7:1 in high contrast). Chosen over the runner-up, an own candidate
+(an icon slot for `chip`), because #115 is a consumer issue.
+
+**Assumed decisions.** Two new variants instead of reusing `Function` for one of them (a host reading `Highlights` sees
+roles that mean what they say); a run of 3 (`***both***`) is `Strong`; hues taken by sweeping every 10 degrees through the
+skin's own generator in all four presets (a first pick of 25 for strong was 2.1 from `Error`, 345 for emphasis 0.5 from
+`Keyword` in parchment). Breaking for an exhaustive `match` over `SyntaxRole`: minor bump.
+
+**Sources.** `markdown-emphasis` (WCAG 2.2 SC 1.4.1 for craft; TextMate scope naming, `markup.bold`/`markup.italic` as two
+scopes, for shipping editors; CommonMark 0.31.2 for the technical rule).
+
+**Critique / verdict.** Viewed `prose` at 1280x720 dark, parchment and high contrast and 2560x1440 dark. Before: `**north
+rows**` and `*Bramley*` both teal. After: bold a salmon-rose, emphasis a lavender; in parchment a crimson and an indigo;
+neither is mistakable for the heading (lilac), the code span (green) or links (cyan/teal). In dark the heading's lilac and the
+emphasis lavender are the closest pair of inks on the page, still a visible step, and the test holds every pair at 12 or more
+CIE L\*a\*b\* units. GREEN. `docs/media/prose.png` replaced.
+
+**Capture note.** This session's shell has `WAYLAND_DISPLAY` set, so the winit window opened on the real compositor, never
+presented to Xvfb, and every screenshot was 13x10 with `Couldn't get swap chain texture: Timeout`. Fix: `env -u WAYLAND_DISPLAY`,
+plus a software Vulkan: this host has no `vulkan-swrast`, so I pointed `VK_ICD_FILENAMES` at the flatpak runtime's
+`libvulkan_lvp.so` with `LD_LIBRARY_PATH` at its `lib/`, on my own `Xvfb :95`.
+
+**Checklist.** Tests: `code_decor::emphasis_and_strong_inks_are_apart_from_each_other_and_from_every_other_role` (new), the
+Markdown scanner test `emphasis_and_strong_are_two_roles`, the `**bold**` assertion in `tests/code_decor.rs` now `Strong` and
+a new `*soft*` one (two `Role::CodeSyntax`s, two colours), three pins in `src/code_markdown.rs` updated. Mutation-checked:
+mapping strong back to `Emphasis` fails the scanner and `code_decor` tests. Gate green on the merged tree (identical to the
+branch tree: main had only the research commit): fmt, clippy -D warnings, nextest 1673 passed, 350 doctests, `check --lib`,
+wasm32, `doc -D warnings`. Perf: a match arm and two colours in a table, no per-frame work; no paired run (prose example on
+llvmpipe: 15.9 to 18.4 ms at 1280x720, one run each, not a comparison). Commits: research 8c901a1/a3296b9, implementation
+591a903, docs 4954843, merge cc20d6e, release 4f48206 (v0.56.0).
+
+**Release.** Tagged and pushed v0.56.0 (`cargo semver-checks` compared with the last published 0.51.8 and says "no semver
+update required" because 0.52 to 0.55 were never published; the breaking enum variants make this a minor bump from 0.55.0).
+`cargo publish --dry-run` ok, the one publish attempt answered 403 "authentication failed" (owner token), not retried.
+Newest on crates.io is still 0.51.8. #115 commented (the assumed decision) and closed by the merge.
+
+**Gaps left.** No strikethrough ink in `CodeMarkdown` (`~~x~~` is plain); no bold-italic third ink.
+
+**Backlog (top 5).** (1) crates.io token, publish 0.51.9..0.56.0; (2) incremental wrap rebuild from `take_line_edits`;
+(3) a windowed variable-height table; (4) minimap and indent guides under wrap; (5) a `problems()` note for a divider
+under 24 px.
+
+**Cleanup.** Removed my own `/tmp/g106` and the `Xvfb :95` I started (by PID). No baseline worktree was made (the committed
+`prose.png` was the before). Left: `~/g17_base`, `~/g17_parked`, `~/g17s_base`; parked branches `wiggum/parked-pass-*`
+untouched.
