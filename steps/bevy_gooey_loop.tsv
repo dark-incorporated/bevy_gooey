@@ -19096,3 +19096,244 @@ pass	seq	phase	kind	category	tool	start	seconds	detail
 348	297	log	model	model		2026-11-22T15:12:05Z	10.9	
 348	298	log	tool	push gate	bash	2026-11-22T15:12:16Z	1.8	cd ~/bevy_gooey_loop && git worktree remove ~/g107_base && rm -rf /tmp/g107 /tmp/g107_* ; ls -d ~/g107_base-target 2>/dev/null; df -h . | tail -1; cat >> docs/l
 348	299	log	model	model		2026-11-22T15:12:18Z	7.6	
+349	1	orient	model	model		2026-11-22T15:12:52Z	4.3	
+349	2	orient	tool	phase mark	bash	2026-11-22T15:12:56Z	0.8	cd /home/ladvien/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark orient; git fetch -q origin loop-stats 2>&1 | tail -1; git show origin/loop-stat
+349	3	orient	tool	github	bash	2026-11-22T15:12:56Z	0.8	cd /home/ladvien/bevy_gooey_loop && gh issue list --repo bevy-coven/bevy_gooey --state open --limit 100 --json number,title,labels,createdAt --jq '.[] | "#\(.nu
+349	4	orient	model	model		2026-11-22T15:12:57Z	5.0	
+349	5	orient	tool	github	bash	2026-11-22T15:13:02Z	1.2	cd /home/ladvien/bevy_gooey_loop && git remote -v | head -2; gh issue list --repo dark-incorporated/bevy_gooey --state open --limit 100 --json number,title,labe
+349	6	orient	model	model		2026-11-22T15:13:03Z	6.1	
+349	7	choose	tool	phase mark	bash	2026-11-22T15:13:09Z	0.1	cd /home/ladvien/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark choose; wc -l README.md docs/loop-log.md; sed -n 1,120p README.md | cut -c1-220
+349	8	choose	model	model		2026-11-22T15:13:09Z	2.5	
+349	9	choose	tool	github	bash	2026-11-22T15:13:12Z	60.0	[launched bg_1] mkdir -p /tmp/g108 && cd /tmp/g108 && (timeout 90 gh repo clone Ladvien/sanctuary sanctuary -- --depth 1 2>&1 | tail -2); (timeout 90 gh repo clone dark-incorpo
+349	10	choose	model	model		2026-11-22T15:14:12Z	1.7	
+349	11	choose	tool	wait: other	wait	2026-11-22T15:14:13Z	5.0	{}
+349	12	choose	model	model		2026-11-22T15:14:18Z	1.0	
+349	13	choose	tool	wait: other	wait	2026-11-22T15:14:19Z	20.2	{}
+349	14	choose	model	model		2026-11-22T15:14:40Z	1.2	
+349	15	choose	tool	shell	bash	2026-11-22T15:14:41Z	0.0	cd /tmp/g108/sanctuary/src/ui && wc -l *.rs; grep -n "^pub fn\|^fn \|^pub struct\|^struct\|^pub enum" widgets.rs juice.rs review.rs work.rs theme.rs | cut -c1-1
+349	16	choose	model	model		2026-11-22T15:14:41Z	4.7	
+349	17	choose	tool	shell	bash	2026-11-22T15:14:45Z	0.0	cd /tmp/g108/sanctuary/src/ui && sed -n 290,352p widgets.rs; sed -n 80,125p work.rs; cd /home/ladvien/bevy_gooey_loop; grep -n "^pub fn" src/widgets.rs | cut -c
+349	18	choose	model	model		2026-11-22T15:14:46Z	6.4	
+349	19	choose	tool	shell	bash	2026-11-22T15:14:52Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 4060,4096p src/widgets.rs; sed -n 4636,4662p src/widgets.rs; grep -n "Separator" src/skin.rs | head -20; grep -rn "ru
+349	20	choose	model	model		2026-11-22T15:14:52Z	8.5	
+349	21	choose	tool	shell	bash	2026-11-22T15:15:00Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 5355,5385p src/skin.rs; sed -n 3455,3465p src/skin.rs; grep -n "badge\|tag\b\|Tag" docs/guide/catalogue.md | head; gr
+349	22	choose	model	model		2026-11-22T15:15:00Z	4.8	
+349	23	choose	tool	shell	bash	2026-11-22T15:15:05Z	0.0	cd /tmp/g108/grimoire/crates/bevy_dark_factory/src && grep -rn "fn .*\(rule\|hairline\|divider\|separator\|pill\|badge\|tag\)\b" *.rs | cut -c1-170 | head -30; 
+349	24	choose	model	model		2026-11-22T15:15:05Z	1.7	
+349	25	choose	tool	shell	bash	2026-11-22T15:15:07Z	0.1	cd /tmp/g108/grimoire/crates/bevy_dark_factory/src && sed -n 2750,2830p chrome.rs; grep -rn "palette_rule\|Sizing {[^}]*height: Some(Extent::Px(1" *.rs | wc -l;
+349	26	choose	model	model		2026-11-22T15:15:07Z	9.3	
+349	27	choose	tool	shell	bash	2026-11-22T15:15:16Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "fn colour_named\|fn meter_fill\|fn ink_on\|fn best_ink\|fn readable\|fn tone\b\|fn tone_problems\|fn warning\|fn li
+349	28	choose	model	model		2026-11-22T15:15:16Z	12.4	
+349	29	choose	tool	shell	bash	2026-11-22T15:15:29Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "PromptKey" src/*.rs | cut -c1-160; sed -n 2535,2580p src/widgets.rs
+349	30	choose	model	model		2026-11-22T15:15:29Z	1.5	
+349	31	choose	tool	shell	bash	2026-11-22T15:15:30Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 3595,3602p src/skin.rs; sed -n 3810,3822p src/skin.rs; sed -n 4980,5020p src/skin.rs; sed -n 5865,5880p src/skin.rs; 
+349	32	choose	model	model		2026-11-22T15:15:30Z	4.8	
+349	33	choose	tool	shell	bash	2026-11-22T15:15:35Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 180,262p src/button_variant.rs; sed -n 630,700p src/skin.rs; sed -n 795,850p src/skin.rs; grep -n "meter_tone" src/*.
+349	34	choose	model	model		2026-11-22T15:15:35Z	3.5	
+349	35	choose	tool	read files	read	2026-11-22T15:15:39Z	0.0	local://1.log
+349	36	choose	model	model		2026-11-22T15:15:39Z	4.6	
+349	37	choose	tool	read files	read	2026-11-22T15:15:43Z	0.0	local://1.log:300-760
+349	38	choose	model	model		2026-11-22T15:15:43Z	5.2	
+349	39	choose	tool	shell	bash	2026-11-22T15:15:49Z	0.1	cd /tmp/g108/grimoire/crates/bevy_dark_factory/src && grep -n "pill\|Pill" console.rs | head -20; sed -n 140,160p help.rs; sed -n 340,380p anim_watch.rs; grep -
+349	40	choose	model	model		2026-11-22T15:15:49Z	10.1	
+349	41	choose	tool	shell	bash	2026-11-22T15:15:59Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "ChipText\|Role::Chip\b\| Chip,\|CHIP_TEXT" src/*.rs | cut -c1-170; sed -n 236,262p src/button_variant.rs; grep -n "
+349	42	choose	model	model		2026-11-22T15:15:59Z	5.2	
+349	43	research	tool	phase mark	bash	2026-11-22T15:16:04Z	14.8	cd /home/ladvien/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark research; (timeout 20 hs status 2>&1 | head -8)
+349	44	research	tool	read files	read	2026-11-22T15:16:04Z	14.8	https://carbondesignsystem.com/components/tag/usage/
+349	45	research	tool	read files	read	2026-11-22T15:16:04Z	14.8	https://m3.material.io/components/badges/guidelines
+349	46	research	model	model		2026-11-22T15:16:19Z	7.3	
+349	47	research	tool	web	web_search	2026-11-22T15:16:26Z	6.9	Diablo IV item rarity label colour blind accessibility text "Rare" "Legendary" tooltip header rarity named not only colour
+349	48	research	model	model		2026-11-22T15:16:33Z	3.6	
+349	49	research	tool	shell	bash	2026-11-22T15:16:37Z	0.6	cd /tmp/g108 && curl -sL https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html | python3 -c " import sys,re,html t=sys.stdin.read() t=re.sub(r'<script.*
+349	50	research	model	model		2026-11-22T15:16:37Z	9.4	
+349	51	research	tool	shell	bash	2026-11-22T15:16:47Z	0.1	cd /home/ladvien/bevy_gooey_loop && sed -n 800,835p src/skin.rs; sed -n 4300,4335p src/skin.rs; sed -n 5705,5735p src/skin.rs; sed -n 3308,3322p src/skin.rs; se
+349	52	research	model	model		2026-11-22T15:16:47Z	2.7	
+349	53	research	tool	shell	bash	2026-11-22T15:16:50Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "Role::Label\b" src/access.rs src/skin.rs | head; sed -n 2405,2420p src/skin.rs; sed -n 2530,2548p src/skin.rs; sed 
+349	54	research	model	model		2026-11-22T15:16:50Z	27.6	
+349	55	research	tool	git	bash	2026-11-22T15:17:17Z	0.1	cd /home/ladvien/bevy_gooey_loop && cat > docs/research/tag.md <<'EOF' # A tag: `tag`, a read-only label whose colour names a category Researched 2026-11-22 (it
+349	56	research	tool	eval	eval	2026-11-22T15:17:17Z	0.3	{"language": "py", "code": "d = await commit.draft()\nawait d.commit(\"Research: tag\", [\"- a read-only coloured label (tag) with TagTone; sources Carbon tag g
+349	57	research	model	model		2026-11-22T15:17:18Z	4.2	
+349	58	build	tool	phase mark	bash	2026-11-22T15:17:22Z	0.1	cd /home/ladvien/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark build; sed -n 1,110p tests/meter_style.rs; sed -n 2795,2812p src/skin.rs; sed -n
+349	59	build	model	model		2026-11-22T15:17:22Z	10.7	
+349	60	build	tool	shell	bash	2026-11-22T15:17:33Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 1900,1918p src/skin.rs; sed -n 3025,3036p src/skin.rs; sed -n 3636,3652p src/skin.rs; sed -n 3822,3842p src/skin.rs; 
+349	61	build	model	model		2026-11-22T15:17:33Z	4.8	
+349	62	build	tool	search	grep	2026-11-22T15:17:37Z	0.0	src/skin.rs
+349	63	build	tool	search	grep	2026-11-22T15:17:37Z	0.0	src/access.rs
+349	64	build	tool	search	grep	2026-11-22T15:17:37Z	0.0	src/skin.rs
+349	65	build	model	model		2026-11-22T15:17:37Z	4.1	
+349	66	build	tool	read files	read	2026-11-22T15:17:42Z	0.1	src/skin.rs:2530-2548
+349	67	build	tool	read files	read	2026-11-22T15:17:42Z	0.1	src/skin.rs:2596-2614
+349	68	build	tool	read files	read	2026-11-22T15:17:42Z	0.1	src/skin.rs:2644-2670
+349	69	build	tool	read files	read	2026-11-22T15:17:42Z	0.1	src/skin.rs:2794-2812
+349	70	build	tool	read files	read	2026-11-22T15:17:42Z	0.1	src/skin.rs:2868-2882
+349	71	build	model	model		2026-11-22T15:17:42Z	5.4	
+349	72	build	tool	read files	read	2026-11-22T15:17:47Z	0.0	src/skin.rs:792-830
+349	73	build	tool	read files	read	2026-11-22T15:17:47Z	0.0	src/skin.rs:1906-1918
+349	74	build	tool	read files	read	2026-11-22T15:17:47Z	0.0	src/skin.rs:3306-3330
+349	75	build	tool	read files	read	2026-11-22T15:17:47Z	0.0	src/skin.rs:3640-3652
+349	76	build	tool	read files	read	2026-11-22T15:17:47Z	0.0	src/skin.rs:3824-3860
+349	77	build	tool	read files	read	2026-11-22T15:17:47Z	0.0	src/skin.rs:4300-4335
+349	78	build	tool	read files	read	2026-11-22T15:17:47Z	0.0	src/skin.rs:5700-5740
+349	79	build	model	model		2026-11-22T15:17:47Z	3.3	
+349	80	build	tool	search	grep	2026-11-22T15:17:50Z	0.0	src
+349	81	build	model	model		2026-11-22T15:17:50Z	1.2	
+349	82	build	tool	read files	read	2026-11-22T15:17:51Z	0.0	src/button_variant.rs:150-270
+349	83	build	tool	read files	read	2026-11-22T15:17:51Z	0.0	src/skin.rs:700-735
+349	84	build	tool	read files	read	2026-11-22T15:17:51Z	0.0	src/skin.rs:630-700
+349	85	build	model	model		2026-11-22T15:17:51Z	14.5	
+349	86	build	tool	search	grep	2026-11-22T15:18:06Z	0.1	src/widgets.rs
+349	87	build	tool	search	grep	2026-11-22T15:18:06Z	0.1	src/lib.rs
+349	88	build	tool	search	grep	2026-11-22T15:18:06Z	0.1	tests
+349	89	build	model	model		2026-11-22T15:18:06Z	3.2	
+349	90	build	tool	read files	read	2026-11-22T15:18:09Z	0.2	src/widgets.rs:4380-4430
+349	91	build	tool	read files	read	2026-11-22T15:18:09Z	0.2	src/lib.rs:745-775
+349	92	build	tool	read files	read	2026-11-22T15:18:09Z	0.2	src/lib.rs:680-695
+349	93	build	tool	read files	read	2026-11-22T15:18:09Z	0.2	src/lib.rs:315-325
+349	94	build	tool	read files	read	2026-11-22T15:18:09Z	0.2	src/access.rs:178-195
+349	95	build	tool	read files	read	2026-11-22T15:18:09Z	0.2	src/access.rs:305-318
+349	96	build	tool	read files	read	2026-11-22T15:18:09Z	0.2	src/access.rs:622-650
+349	97	build	model	model		2026-11-22T15:18:10Z	2.8	
+349	98	build	tool	search	grep	2026-11-22T15:18:12Z	0.0	src/access.rs
+349	99	build	tool	search	grep	2026-11-22T15:18:12Z	0.0	src/skin.rs
+349	100	build	model	model		2026-11-22T15:18:12Z	1.6	
+349	101	build	tool	read files	read	2026-11-22T15:18:14Z	0.0	src/access.rs:596-612
+349	102	build	tool	read files	read	2026-11-22T15:18:14Z	0.0	src/skin.rs:4150-4185
+349	103	build	tool	read files	read	2026-11-22T15:18:14Z	0.0	src/skin.rs:5758-5775
+349	104	build	tool	read files	read	2026-11-22T15:18:14Z	0.0	src/skin.rs:3370-3380
+349	105	build	model	model		2026-11-22T15:18:14Z	2.2	
+349	106	build	tool	read files	read	2026-11-22T15:18:16Z	0.0	tests/meter_style.rs:1-90
+349	107	build	tool	search	grep	2026-11-22T15:18:16Z	0.0	tests/all.rs
+349	108	build	model	model		2026-11-22T15:18:16Z	11.1	
+349	109	build	tool	search	grep	2026-11-22T15:18:27Z	0.0	tests/access.rs
+349	110	build	model	model		2026-11-22T15:18:27Z	1.0	
+349	111	build	tool	read files	read	2026-11-22T15:18:28Z	0.0	tests/access.rs:17-105
+349	112	build	tool	read files	read	2026-11-22T15:18:28Z	0.0	tests/access.rs:217-241
+349	113	build	model	model		2026-11-22T15:18:28Z	30.6	
+349	114	build	tool	edit files	write	2026-11-22T15:18:59Z	0.0	tests/tag.rs
+349	115	build	model	model		2026-11-22T15:18:59Z	5.8	
+349	116	build	tool	shell	bash	2026-11-22T15:19:05Z	0.1	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' import re p='tests/tag.rs' s=open(p).read() a=s.index("#[test]\nfn a_label_too_long") b=s.index("#[test]\n
+349	117	build	model	model		2026-11-22T15:19:05Z	3.0	
+349	118	build	tool	shell	bash	2026-11-22T15:19:08Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -i '70d' tests/all.rs && sed -i 's/^mod tabs;/mod tabs;\nmod tag;/' tests/all.rs && grep -n "mod tag\|mod tabs" tests/al
+349	119	build	model	model		2026-11-22T15:19:08Z	6.9	
+349	120	build	tool	edit files	write	2026-11-22T15:19:15Z	0.0	src/tag.rs
+349	121	build	model	model		2026-11-22T15:19:15Z	5.5	
+349	122	build	tool	edit files	edit	2026-11-22T15:19:20Z	0.0	[src/skin.rs#4709] PUT >1914: + /// A [`crate::tag`]: a short read-only word on a plate whose colour names a kind of thing + /// ([`crate::TagTone`]). Quiet ([`
+349	123	build	model	model		2026-11-22T15:19:20Z	5.2	
+349	124	build	tool	edit files	edit	2026-11-22T15:19:26Z	0.1	[src/skin.rs#4709] PUT >1914: + /// A [`crate::tag`]: a short read-only word on a plate whose colour names a kind of thing + /// ([`crate::TagTone`]). Quiet ([`
+349	125	build	model	model		2026-11-22T15:19:26Z	3.9	
+349	126	build	tool	read files	read	2026-11-22T15:19:30Z	0.1	src/skin.rs:1905-1918
+349	127	build	model	model		2026-11-22T15:19:30Z	2.8	
+349	128	build	tool	edit files	edit	2026-11-22T15:19:33Z	0.0	[src/skin.rs#4709] PUT >1914: + /// A [`crate::tag`]: a short read-only word on a plate whose colour names a kind of thing + /// ([`crate::TagTone`]). Quiet ([`
+349	129	build	model	model		2026-11-22T15:19:33Z	1.0	
+349	130	build	tool	search	grep	2026-11-22T15:19:34Z	0.0	src/skin.rs
+349	131	build	model	model		2026-11-22T15:19:34Z	1.6	
+349	132	build	tool	read files	read	2026-11-22T15:19:35Z	0.1	src/skin.rs:640-675
+349	133	build	tool	read files	read	2026-11-22T15:19:35Z	0.1	src/skin.rs:795-830
+349	134	build	tool	shell	bash	2026-11-22T15:19:35Z	0.2	cd /home/ladvien/bevy_gooey_loop && grep -n "fn ink_on" -B3 -A22 src/button_variant.rs; git log --oneline -3
+349	135	build	model	model		2026-11-22T15:19:35Z	6.0	
+349	136	build	tool	edit files	edit	2026-11-22T15:19:41Z	0.0	[src/skin.rs#5AED] PUT 654.=654: + "danger" => Some(self.danger), + "warning" => Some(self.warning()), + "live" => Some(self.live()), PUT >810: + + /// A [`crat
+349	137	build	model	model		2026-11-22T15:19:41Z	2.3	
+349	138	build	tool	read files	read	2026-11-22T15:19:44Z	0.0	src/button_variant.rs:240-243
+349	139	build	model	model		2026-11-22T15:19:44Z	1.2	
+349	140	build	tool	edit files	edit	2026-11-22T15:19:45Z	0.0	[src/button_variant.rs#D32C] PUT 242.=242: + pub(crate) fn ink_on(&self, fill: Color) -> Color {
+349	141	build	tool	read files	read	2026-11-22T15:19:45Z	0.0	src/skin.rs:2440-2460
+349	142	build	model	model		2026-11-22T15:19:45Z	1.4	
+349	143	build	tool	edit files	edit	2026-11-22T15:19:46Z	0.0	[src/skin.rs#553A] PUT >2452: + /// A [`crate::tag`]'s tone ([`crate::TagTone`]); none is the quiet plate. + tag_tone: Option<&'static str>,
+349	144	build	tool	search	grep	2026-11-22T15:19:46Z	0.0	src/skin.rs
+349	145	build	model	model		2026-11-22T15:19:46Z	2.8	
+349	146	build	tool	read files	read	2026-11-22T15:19:49Z	0.0	src/skin.rs:2514-2518
+349	147	build	tool	read files	read	2026-11-22T15:19:49Z	0.0	src/skin.rs:2570-2585
+349	148	build	tool	read files	read	2026-11-22T15:19:49Z	0.0	src/skin.rs:2625-2705
+349	149	build	tool	read files	read	2026-11-22T15:19:49Z	0.0	src/skin.rs:2836-2850
+349	150	build	tool	read files	read	2026-11-22T15:19:49Z	0.0	src/skin.rs:2912-2920
+349	151	build	model	model		2026-11-22T15:19:49Z	2.5	
+349	152	build	tool	edit files	edit	2026-11-22T15:19:52Z	0.0	[src/skin.rs#9BD9] PUT >2917: + tag_tone: tag_tone.map(|tone| tone.0), PUT >2846: + tag_tone, PUT >2692: + RemovedComponents<'w, 's, TagTone>, PUT >2646: + Chan
+349	153	build	tool	search	grep	2026-11-22T15:19:52Z	0.0	src/skin.rs
+349	154	build	model	model		2026-11-22T15:19:52Z	2.8	
+349	155	build	tool	read files	read	2026-11-22T15:19:54Z	0.0	src/skin.rs:3355-3372
+349	156	build	tool	read files	read	2026-11-22T15:19:54Z	0.0	src/skin.rs:3685-3700
+349	157	build	tool	read files	read	2026-11-22T15:19:54Z	0.0	src/skin.rs:3868-3912
+349	158	build	tool	read files	read	2026-11-22T15:19:54Z	0.0	src/skin.rs:4345-4390
+349	159	build	tool	read files	read	2026-11-22T15:19:54Z	0.0	src/skin.rs:5740-5800
+349	160	build	model	model		2026-11-22T15:19:54Z	3.2	
+349	161	build	tool	search	grep	2026-11-22T15:19:58Z	0.0	src/skin.rs
+349	162	build	model	model		2026-11-22T15:19:58Z	6.7	
+349	163	build	tool	edit files	edit	2026-11-22T15:20:04Z	0.1	[src/skin.rs#D473] PUT >5768: + // A tag's words: the quiet plate's text, or the ink picked from the tone's colour. + Role::TagText => Some(( + skin.tag_ink(par
+349	164	build	model	model		2026-11-22T15:20:04Z	4.2	
+349	165	build	tool	search	grep	2026-11-22T15:20:09Z	0.0	src/access.rs
+349	166	build	tool	search	grep	2026-11-22T15:20:09Z	0.0	src/lib.rs
+349	167	build	model	model		2026-11-22T15:20:09Z	2.1	
+349	168	build	tool	read files	read	2026-11-22T15:20:11Z	0.0	src/access.rs:183-193
+349	169	build	tool	read files	read	2026-11-22T15:20:11Z	0.0	src/access.rs:309-316
+349	170	build	tool	read files	read	2026-11-22T15:20:11Z	0.0	src/access.rs:622-650
+349	171	build	tool	read files	read	2026-11-22T15:20:11Z	0.0	src/lib.rs:186-190
+349	172	build	tool	read files	read	2026-11-22T15:20:11Z	0.0	src/lib.rs:320-324
+349	173	build	tool	read files	read	2026-11-22T15:20:11Z	0.0	src/lib.rs:570-574
+349	174	build	tool	read files	read	2026-11-22T15:20:11Z	0.0	src/lib.rs:750-775
+349	175	build	model	model		2026-11-22T15:20:11Z	3.0	
+349	176	build	tool	search	grep	2026-11-22T15:20:14Z	0.0	src/access.rs
+349	177	build	model	model		2026-11-22T15:20:14Z	0.7	
+349	178	build	tool	read files	read	2026-11-22T15:20:15Z	0.0	src/access.rs:588-614
+349	179	build	model	model		2026-11-22T15:20:15Z	2.9	
+349	180	build	tool	edit files	edit	2026-11-22T15:20:17Z	0.0	[src/access.rs#D2D7] PUT >628: + // A tag is a label read by its words, which are said once, on the plate. + Role::Tag => { + wanted.role = Some(Ak::Label); + w
+349	181	build	tool	edit files	edit	2026-11-22T15:20:18Z	0.0	[src/lib.rs#463B] PUT 760.=760: + (update_cooldowns, update_leds, update_tags), PUT >572: + .register_type::<Tag>() + .register_type::<TagTone>() PUT >322: +pub
+349	182	build	model	model		2026-11-22T15:20:18Z	2.3	
+349	183	build	tool	search	grep	2026-11-22T15:20:20Z	0.0	src/widgets.rs
+349	184	build	model	model		2026-11-22T15:20:20Z	0.9	
+349	185	build	tool	search	grep	2026-11-22T15:20:21Z	0.0	src/widgets.rs
+349	186	build	model	model		2026-11-22T15:20:21Z	0.7	
+349	187	build	tool	read files	read	2026-11-22T15:20:22Z	0.0	src/widgets.rs:4380-4432
+349	188	build	model	model		2026-11-22T15:20:22Z	5.7	
+349	189	build	tool	edit files	edit	2026-11-22T15:20:27Z	0.0	[src/widgets.rs#C7EF] PUT >4438: + +/// A tag: a short word on a plate whose colour names a kind of thing ("ELITE", "NEW", "2 STALE", +/// "Rare"). It is read-o
+349	190	build	tool	edit files	edit	2026-11-22T15:20:27Z	0.0	[src/widgets.rs#C7EF] PUT >97: +use crate::tag::Tag;
+349	191	build	model	model		2026-11-22T15:20:27Z	5.6	
+349	192	build	tool	cargo test	bash	2026-11-22T15:20:33Z	0.0	[launched bg_2] cd /home/ladvien/bevy_gooey_loop && cargo fmt && export CARGO_TARGET_DIR=${CARGO_TARGET_DIR:-$HOME/.cargo-target-shared/global} && timeout 3000 cargo nextest ru
+349	193	build	model	model		2026-11-22T15:20:33Z	0.6	
+349	194	build	tool	wait: other	wait	2026-11-22T15:20:33Z	0.8	{}
+349	195	build	model	model		2026-11-22T15:20:34Z	1.8	
+349	196	build	tool	cargo test	bash	2026-11-22T15:20:36Z	0.0	[launched bg_3] cd /home/ladvien/bevy_gooey_loop && unset CARGO_INCREMENTAL; export CARGO_TARGET_DIR=${CARGO_TARGET_DIR:-$HOME/.cargo-target-shared/global}; timeout 3000 cargo 
+349	197	build	model	model		2026-11-22T15:20:36Z	0.6	
+349	198	build	tool	wait: other	wait	2026-11-22T15:20:37Z	0.0	{}
+349	199	build	model	model		2026-11-22T15:20:37Z	2.3	
+349	200	build	tool	shell	bash	2026-11-22T15:20:39Z	0.0	cd /home/ladvien/bevy_gooey_loop && env | grep -i -E "cargo|rustc|sccache"; cat .cargo/config.toml 2>/dev/null | head; cat ~/.cargo/config.toml 2>/dev/null | he
+349	201	build	model	model		2026-11-22T15:20:39Z	4.6	
+349	202	build	tool	cargo test	bash	2026-11-22T15:20:44Z	0.0	[launched bg_4] cd /home/ladvien/bevy_gooey_loop && export CARGO_BUILD_RUSTC_WRAPPER=; timeout 3000 cargo nextest run --all-features -E 'test(tag::)' > /tmp/g108_tag.log 2>&1; 
+349	203	build	model	model		2026-11-22T15:20:44Z	0.6	
+349	204	build	tool	wait: other	wait	2026-11-22T15:20:44Z	5.0	{}
+349	205	build	model	model		2026-11-22T15:20:49Z	0.7	
+349	206	build	tool	wait: other	wait	2026-11-22T15:20:50Z	19.5	{}
+349	207	build	model	model		2026-11-22T15:21:09Z	1.9	
+349	208	build	tool	shell	bash	2026-11-22T15:21:11Z	0.0	grep -A14 "E0308" /tmp/g108_tag.log | head -30 | cut -c1-200
+349	209	build	model	model		2026-11-22T15:21:11Z	0.9	
+349	210	build	tool	search	grep	2026-11-22T15:21:12Z	0.0	src/skin.rs
+349	211	build	model	model		2026-11-22T15:21:12Z	1.4	
+349	212	build	tool	edit files	edit	2026-11-22T15:21:14Z	0.1	[src/skin.rs#08BD] PUT 3068.=3068: + dirty.extend(untoned.read()); + dirty.extend(untagged.read()); PUT 3012.=3012: + untoned.clear(); + untagged.clear(); PUT 2
+349	213	build	model	model		2026-11-22T15:21:14Z	4.1	
+349	214	build	tool	git	bash	2026-11-22T15:21:18Z	0.1	cd /home/ladvien/bevy_gooey_loop && git diff -U2 src/skin.rs | grep -n -E "untoned|untagged|^-" | cut -c1-160 | head -30; grep -n "untoned\|untagged" src/skin.r
+349	215	build	model	model		2026-11-22T15:21:18Z	2.8	
+349	216	build	tool	cargo test	bash	2026-11-22T15:21:21Z	0.0	[launched bg_5] cd /home/ladvien/bevy_gooey_loop && cargo fmt && timeout 3000 cargo nextest run --all-features -E 'test(tag::)' > /tmp/g108_tag.log 2>&1; grep -E "^error|PASS|F
+349	217	build	model	model		2026-11-22T15:21:21Z	0.5	
+349	218	build	tool	wait: other	wait	2026-11-22T15:21:21Z	0.8	{}
+349	219	build	model	model		2026-11-22T15:21:22Z	2.5	
+349	220	build	tool	cargo test	bash	2026-11-22T15:21:25Z	0.0	[launched bg_6] cd /home/ladvien/bevy_gooey_loop && export RUSTC_WRAPPER= CARGO_BUILD_RUSTC_WRAPPER=; timeout 3000 cargo nextest run --all-features -E 'test(tag::)' > /tmp/g108
+349	221	build	model	model		2026-11-22T15:21:25Z	1.6	
+349	222	build	tool	wait: other	wait	2026-11-22T15:21:26Z	5.0	{}
+349	223	build	model	model		2026-11-22T15:21:31Z	0.8	
+349	224	build	tool	wait: other	wait	2026-11-22T15:21:32Z	240.3	{}
+349	225	build	model	model		2026-11-22T15:25:32Z	4.3	
+349	226	build	tool	read files	read	2026-11-22T15:25:37Z	0.1	CHANGELOG.md:1-14
+349	227	build	model	model		2026-11-22T15:25:37Z	3.1	
+349	228	build	tool	edit files	edit	2026-11-22T15:25:40Z	0.2	[CHANGELOG.md#B721] PUT >3: + +### Added + +- `tag("ELITE")`: a read-only word on a plate whose colour names a kind of thing, for a name plate, a "NEW" mark, a 
+349	229	build	tool	shell	bash	2026-11-22T15:25:40Z	0.5	cd /home/ladvien/bevy_gooey_loop && ls docs/guide | head -40; grep -n "chip" docs/guide/*.md README.md | cut -c1-140 | head
+349	230	build	model	model		2026-11-22T15:25:41Z	3.1	
+349	231	build	tool	read files	read	2026-11-22T15:25:44Z	0.0	docs/guide/catalogue.md:84-92
+349	232	build	model	model		2026-11-22T15:25:44Z	3.2	
+349	233	build	tool	edit files	edit	2026-11-22T15:25:47Z	0.1	[docs/guide/catalogue.md#3F85] PUT >84: +## Mark a thing with a coloured word + +`tag("ELITE")` is a read-only word on a plate, and `(tag("ELITE"), TagTone("dan
+349	234	build	tool	read files	read	2026-11-22T15:25:47Z	0.0	docs/guide/README.md:34-38
+349	235	build	tool	read files	read	2026-11-22T15:25:47Z	0.0	docs/guide/progress.md
+349	236	build	model	model		2026-11-22T15:25:47Z	7.1	
+349	237	build	tool	edit files	write	2026-11-22T15:25:54Z	0.0	docs/guide/tags.md
+349	238	build	tool	edit files	edit	2026-11-22T15:25:54Z	0.1	[docs/guide/README.md#C0BB] PUT >41: +- [Tags](tags.md) — `tag("ELITE")` and `TagTone("danger")`: a read-only coloured word for a name plate, a "NEW" mark or a 
+349	239	build	model	model		2026-11-22T15:25:54Z	0.7	
+349	240	build	tool	wait: other	wait	2026-11-22T15:25:55Z	176.8	{}
+349	241	build	model	model		2026-11-22T15:28:52Z	0.0	
