@@ -57,8 +57,13 @@ full chroma).
 
 - every preset theme on every `SkinPreset` has `problems()` empty and `high_contrast_problems()` empty on high contrast;
 - two themes give different `Role::CodeSyntax` colours for one role in one `code_editor`, in the frame of the change;
-- the default theme is byte-equal to the old table; `warm` and `cool` roles pairwise at least 6 CIE L\*a\*b\* apart where the
-  default holds them, `separated` at least as far as the default.
+- the default theme is byte-equal to the old table; `warm`, `cool` and `separated` hold all twelve roles pairwise at least 8 CIE
+  L\*a\*b\* apart on every skin (6 on high contrast, where the 7:1 bar pushes every ink toward the text).
+
+Measured after building (2026-11-22): the first warm table had Number/Strong 5.6 apart on dark and 4.4 on high contrast, and
+Key/Function 7.9 on parchment (hues 75 and 92 with near shifts); moving Function to 102 with shift 0.34, Key to 70 with shift 0 and
+Emphasis/Strong to 300/345 brought the least pair to the thresholds above. `mono` at chroma 0.07 left the link and code span
+almost the grey of the muted URL in dark; 0.11 reads as one blue with lightness steps. `mono` keeps no separation promise.
 
 ## What great looks like
 

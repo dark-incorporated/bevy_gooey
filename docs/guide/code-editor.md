@@ -119,6 +119,21 @@ fn decorate(
 - **Hover**: after the pointer rests, the editor shows a diagnostic there, or sends `CodeHoverRequested` and shows your `CodeHover { revision, range, text }`.
 - **Edits from elsewhere**: `editor.apply_external_edit(&[CodeEdit::new(range, text)], CodeAuthor::new("Ada", colour))`. The edit lands without moving the player's caret or selection (both stay on the text they were on, an edit inside a selection included), lines added above the view move the scroll so the text in view stays put, the changed lines glide in tinted in the author's colour, and the tint fades over `EXTERNAL_EDIT_FADE_S`. A range that names text that is not there (inverted, past the end, inside a character or a line break, or overlapping another) is refused with a `CodeEditError` and nothing changes. Folds the player closed follow the text, so lines added above them move them down. The player's undo history is dropped (a person's undo never rewrites someone else's text). `CodeEditorValue` has the new text the same frame, with no `ValueChange`.
 
+## Ink themes
+
+The hues of the colours above come from `GooeySkin::syntax_theme` (a `SyntaxTheme`), which a settings screen can switch without touching the rest of the skin (`examples/prose.rs`: F3 steps them, `GOOEY_SYNTAX=warm` starts on one):
+
+```rust
+fn pick(mut skin: ResMut<GooeySkin>) {
+    skin.syntax_theme = SyntaxPreset::Warm.theme(); // or SyntaxTheme { inks: vec![SyntaxInk::new(SyntaxRole::Key, 250.0)] }
+}
+```
+
+- **Presets**: `SyntaxTheme::skin()` (the default, empty: the skin's own hues), `warm()`, `cool()`, `mono()` (one hue, roles told apart by lightness: the one theme with no separation promise) and `separated()` (widest hue spacing, full chroma). `SyntaxPreset::ALL` lists them for a settings row.
+- **Your own**: a `SyntaxInk { role, hue, chroma, shift }` per role (`SyntaxInk::new(role, hue).chroma(0.14).shift(0.2)`); a role you leave out keeps the skin's hue and the last ink for a role wins. `Comment`, `Operator` and `Error` are the skin's muted text, text and danger and are not themable.
+- **The bar is the crate's**: a theme picks hue, chroma and where the lightness search starts, and the search still moves each ink toward the text until it holds 4.5:1 on the editor's ground (7:1 on a high-contrast skin), so no theme can fail it. `GooeySkin::problems()` checks the active theme and reports one it cannot use (a themed `Comment`, a hue that is not finite, a chroma outside 0 to 0.2, a shift outside 0 to 1) as `SkinProblem::BadSize { field: "syntax_theme" }`.
+- **It follows the skin**: a `SkinScope` can give one pane its own theme, an open editor (and a `CodeMarkdown` one) recolours in the frame the skin changes with no easing, and the theme step (`with_colours_of`, the Theme row) leaves it alone, as it leaves `tones`.
+
 ## Navigating a long file
 
 - **`CodeMinimap`** on the editor draws the text small down the right edge: a bar a line as long as the line, the part in view as a band that follows the glided scroll, and the diagnostics marked. Press or drag it to scroll.
