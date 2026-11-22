@@ -743,12 +743,18 @@ fn a_press_on_the_fold_chevron_toggles_its_fold_and_the_mark_is_a_triangle() {
     };
     let folded = |app: &App| !shown_words(app, editor).contains(&"l2".to_owned());
     let (glyph, chevron) = mark(&app);
-    assert_eq!(glyph, "\u{25BC}", "an open fold is a down-pointing triangle");
+    assert_eq!(
+        glyph, "\u{25BC}",
+        "an open fold is a down-pointing triangle"
+    );
     assert!(!folded(&app));
     press_at(&mut app, chevron.center());
     assert!(folded(&app), "a press on the chevron folded the block");
     let (glyph, chevron) = mark(&app);
-    assert_eq!(glyph, "\u{25BA}", "a closed fold is a right-pointing triangle");
+    assert_eq!(
+        glyph, "\u{25BA}",
+        "a closed fold is a right-pointing triangle"
+    );
     press_at(&mut app, chevron.center());
     assert!(!folded(&app), "a second press opened it again");
     // The corners of the box are the control too: the box is the target, not the ink.
