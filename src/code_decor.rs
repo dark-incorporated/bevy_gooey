@@ -39,13 +39,18 @@ pub enum SyntaxRole {
     Type,
     /// An operator.
     Operator,
+    /// Words set apart by the writer for stress: Markdown's `*emphasis*` and `_emphasis_`. Drawn in
+    /// an ink of its own, never [`SyntaxRole::Strong`]'s.
+    Emphasis,
+    /// Words set apart for weight: Markdown's `**strong**` and `__strong__`.
+    Strong,
     /// Something wrong: the skin's danger colour.
     Error,
 }
 
 impl SyntaxRole {
     /// Every role, in the order the skin checks them.
-    pub const ALL: [SyntaxRole; 10] = [
+    pub const ALL: [SyntaxRole; 12] = [
         Self::Key,
         Self::String,
         Self::Number,
@@ -55,6 +60,8 @@ impl SyntaxRole {
         Self::Function,
         Self::Type,
         Self::Operator,
+        Self::Emphasis,
+        Self::Strong,
         Self::Error,
     ];
 }

@@ -9,8 +9,8 @@
 //! read as Markdown is left unstyled, and an unclosed mark ends at the end of its line.
 //!
 //! The roles are the skin's own ([`GooeySkin::syntax`](crate::GooeySkin::syntax)): a heading is a
-//! [`SyntaxRole::Keyword`], code a [`SyntaxRole::String`], emphasis a [`SyntaxRole::Type`], a
-//! link's words a [`SyntaxRole::Reference`] and its address a [`SyntaxRole::Comment`], a list
+//! [`SyntaxRole::Keyword`], code a [`SyntaxRole::String`], emphasis a [`SyntaxRole::Emphasis`],
+//! strong a [`SyntaxRole::Strong`], a link's words a [`SyntaxRole::Reference`] and its address a [`SyntaxRole::Comment`], a list
 //! marker a [`SyntaxRole::Number`], and quote marks, rules and fences a [`SyntaxRole::Comment`].
 
 use std::ops::Range;
@@ -173,7 +173,12 @@ fn inline(text: &str, base: usize, spans: &mut Vec<(Range<usize>, SyntaxRole)>) 
                     .flatten()
                 {
                     Some(end) if end > i + run => {
-                        spans.push((base + i..base + end + width, SyntaxRole::Type));
+                        let role = if width == 1 {
+                            SyntaxRole::Emphasis
+                        } else {
+                            SyntaxRole::Strong
+                        };
+                        spans.push((base + i..base + end + width, role));
                         i = end + width;
                     }
                     _ => i += run,
@@ -282,10 +287,22 @@ mod tests {
             got,
             [
                 ("`b*c`", SyntaxRole::String),
-                ("**bold**", SyntaxRole::Type),
-                ("_it_", SyntaxRole::Type),
+                ("**bold**", SyntaxRole::Strong),
+                ("_it_", SyntaxRole::Emphasis),
                 ("[site]", SyntaxRole::Reference),
                 ("(http://x.y)", SyntaxRole::Comment),
+            ]
+        );
+    }
+
+    #[test]
+    fn emphasis_and_strong_are_two_roles() {
+        let got = roles("*em* and **strong**");
+        assert_eq!(
+            got,
+            [
+                ("*em*", SyntaxRole::Emphasis),
+                ("**strong**", SyntaxRole::Strong),
             ]
         );
     }
@@ -300,7 +317,7 @@ mod tests {
                 ("`c`", SyntaxRole::String),
                 ("12.", SyntaxRole::Number),
                 (">", SyntaxRole::Comment),
-                ("**b**", SyntaxRole::Type),
+                ("**b**", SyntaxRole::Strong),
             ]
         );
     }
