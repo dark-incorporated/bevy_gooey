@@ -71,6 +71,7 @@ Type-select is not only for menus: a `ListView`'s rows have it, and any other co
 
 ## What is not here
 
+- The row under a moving pointer is the row the menu is on (focus goes to it, as in every desktop menu): the arrows go on from it and Enter chooses it, a disabled row is reached the same way and chooses nothing, and a pointer that leaves the panel leaves the row where it was.
 - No hover-to-open for submenus and no safe triangle: a submenu opens on Right, Enter, Space or a click.
 - A game's own chord for a command is the game's: the row shows it, `Shortcut::just_pressed` matches it.
 - Bevy's `bevy_ui_widgets::menu` is not used: it closes a menu when focus leaves it, holds one menu open at a time and has no submenus.
