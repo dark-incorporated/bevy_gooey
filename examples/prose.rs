@@ -7,6 +7,10 @@
 //! Capture mode: `GOOEY_FRAMES=<n>` saves a screenshot at frame `n` to `GOOEY_SHOT` (default
 //! `prose.png`), prints `gooey: frames <n> mean_ms <x>` and exits 10 frames later.
 //! `GOOEY_SKIN=parchment`, `GOOEY_TEXT_SCALE=<f>` and `GOOEY_SIZE=<w>x<h>` set the start.
+//!
+//! The ink theme (#116): F3 steps through the `SyntaxPreset`s (skin, warm, cool, mono, separated),
+//! `GOOEY_SYNTAX=warm` (or any other `SyntaxPreset` name, lower case) starts on one. The skin does
+//! the rest: both editors recolour in the frame it changes.
 
 use bevy::prelude::*;
 use bevy::render::view::screenshot::{Screenshot, save_to_disk};
@@ -40,6 +44,15 @@ fn main() {
     if let Some(scale) = env("GOOEY_TEXT_SCALE") {
         skin.text_scale = scale;
     }
+    if let Ok(name) = std::env::var("GOOEY_SYNTAX") {
+        match SyntaxPreset::ALL
+            .into_iter()
+            .find(|p| p.name().eq_ignore_ascii_case(&name))
+        {
+            Some(preset) => skin.syntax_theme = preset.theme(),
+            None => eprintln!("gooey: GOOEY_SYNTAX {name:?} is not a syntax preset"),
+        }
+    }
     let mut window = Window {
         title: "bevy_gooey prose".into(),
         ..default()
@@ -62,7 +75,7 @@ fn main() {
     .insert_resource(ClearColor(skin.background))
     .insert_resource(skin)
     .add_systems(Startup, setup)
-    .add_systems(Update, (follow_background, capture));
+    .add_systems(Update, (follow_background, step_syntax_theme, capture));
     if let Some(at) = env("GOOEY_FRAMES") {
         app.insert_resource(Capture {
             at,
@@ -119,6 +132,19 @@ fn setup(mut commands: Commands) {
             ],
         )],
     ));
+}
+
+/// F3 gives the skin the next ink theme after the one it has (the skin's own after a custom one).
+fn step_syntax_theme(keys: Res<ButtonInput<KeyCode>>, mut skin: ResMut<GooeySkin>) {
+    if !keys.just_pressed(KeyCode::F3) {
+        return;
+    }
+    let at = SyntaxPreset::ALL
+        .into_iter()
+        .position(|p| p.theme() == skin.syntax_theme);
+    let next = SyntaxPreset::ALL[at.map_or(0, |i| (i + 1) % SyntaxPreset::ALL.len())];
+    info!("gooey: syntax theme {}", next.name());
+    skin.syntax_theme = next.theme();
 }
 
 fn follow_background(skin: Res<GooeySkin>, mut clear: ResMut<ClearColor>) {
