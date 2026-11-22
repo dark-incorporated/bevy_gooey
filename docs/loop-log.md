@@ -3383,3 +3383,54 @@ is **33 GB** and 102 of its 198 binaries were written in the last two hours (thi
 rules protect, so **nothing was deleted**: shrinking it (e.g. the unused release example binaries) needs
 the owner's word, because it removes artifacts no single pass created. The three leftover worktrees
 `~/g17_base`, `~/g17_parked` and `~/g17s_base` are 1.8 MB each and clean; listed, left.
+
+## Iteration 102 — 2026-11-22 — LED halo, menu hover focus, fold triangle (#91, #92, #107)
+
+**What and why.** The three oldest open `bug` issues from bevy_grimoire (all `consumer:bevy_grimoire`) were
+the best value: they are visible in the editor's every session. A killed earlier pass had left a finished,
+never-gated draft on a parked commit; this pass **adopted it by checking out its paths onto `loop/iter-102`**
+(never merging the parked branch), re-read the diff and gated it. Research note
+`docs/research/cluster-led-menu-fold.md` (on main already).
+- **#91 LED glow:** blur 0.6 dots (was 1.6), spread 0 (was 0.15), alpha 0.4 steady and 0.12 to 0.45 pulsing
+  (was 0.7 and 0.25 to 0.85). `tests/led.rs` holds the extent at text scale 1.0 and 3.0 under a named bound and
+  the word's contrast under the densest glow (an erf tail at the word's distance) at 4.5:1 (7:1 in high
+  contrast) in all four presets. Mutation: blur back to 1.6 fails.
+- **#92 menu hover:** `item_on_pointer_move` makes the row under a moving pointer the focused one (a disabled row
+  too, activating nothing), so Down and Enter go on from the hovered row. Mutation: removing the observer fails.
+- **#107 fold mark:** `▼` open, `►` closed. The press already resolved in the gutter band and the mark lies
+  inside it, so `code_editor.rs` needed no change; the test presses the mark's box at its centre and corner.
+- Assumed decisions (owner may override) are on #91, #92 and #107, each labelled `assumed-decision`.
+
+**Sources.** `docs/research/cluster-led-menu-fold.md` (W3C APG menu pattern for focus-follows-hover; the
+issues' own measurements).
+
+**Critique and verdict.** `/tmp/g102/cmp_1x.png` and `cmp_2x.png`, before beside after, four LED states at
+1280x720 and 2560x1440, inspected by eye: the old glow was a wash about three dots wide that tinted the word
+and the panel; the new one is a halo ending within about one dot, silhouettes stay the signal, off is
+unchanged. Verdict **GREAT** (LED); menu and fold are behaviour fixes proved by tests. Demo: `docs/media/led.gif`
+regenerated (new glow) and `docs/media/led-glow-before-after.png` added (both listed in `docs/media/README.md`).
+The menu hover and the fold press need a real pointer, which `GOOEY_KEYS` cannot stage, so no clip for them.
+
+**Perf.** Constants and one observer: no per-frame cost. `led` example `mean_ms` (software Xvfb, one run each,
+load not pinned, so noise): 27.33 before, 23.88 after at 1280x720; 111.38 and 102.07 at 2560x1440.
+
+**Gate:** fmt, clippy, nextest **1619/1619**, doctests 344, `check --lib` + wasm32, `doc -D warnings`; the merge
+was a fast tree (main had not moved), so the merged tree is the branch's. Merge `74380a4`, release commit
+`cf8f628`, tag `v0.52.2`, pushed.
+
+**Release: NOT PUBLISHED.** `cargo publish` of 0.52.2 answered **403 Forbidden, "authentication failed"**
+(not a 429): `~/.cargo/credentials.toml` exists but crates.io refuses it. crates.io's newest is **0.51.8**
+(2026-11-09), so **fourteen versions (0.51.9 to 0.52.2) wait**. This is an owner action (a fresh token);
+`cargo publish --dry-run` is clean. Not retried. `cargo semver-checks` ran 0 checks against 0.51.8 (the
+manifest was already past a major bump, "no semver update required"); the bump 0.52.1 to 0.52.2 is for fixes
+with no API change.
+
+**Backlog (top 5):** (1) publish 0.52.2: needs a working crates.io token; (2) #108 a split divider's thickness
+is `MIN_TARGET_PX` and the host cannot set it; (3) #109 a table cell's text cannot wrap; (4) #110 an LED's
+label cannot be made quieter; (5) #114 `CodeEditorSettings` has no soft wrap or syntax highlighting toggle.
+
+**Cleanup.** Removed my own `/tmp/g102` (872 MB: before/after example binaries and captures) and the worktree
+`~/g102_base` (plain `git worktree remove`); no `~/g102_base-target` existed (it built into the shared target).
+Left: the parked branch `loop/iter-102` pushed to origin, and the three old worktrees `~/g17_base`,
+`~/g17_parked`, `~/g17s_base`. `/home` free: 263 GB at orient, 254 GB at the end (the release example binaries
+in the shared build cache, not deleted).
