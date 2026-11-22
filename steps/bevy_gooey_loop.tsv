@@ -17878,3 +17878,426 @@ pass	seq	phase	kind	category	tool	start	seconds	detail
 344	277	log	model	model		2026-11-22T08:44:06Z	11.1	
 344	278	log	tool	push gate	bash	2026-11-22T08:44:18Z	1.8	cd /home/ladvien/bevy_gooey_loop && cat >> docs/loop-log.md <<'EOF' ## Iteration 103 — 2026-11-22 — SplitThickness, Column::wrap, LedSize (#108 #109 #110) **Wha
 344	279	log	model	model		2026-11-22T08:44:19Z	9.2	
+345	1	orient	model	model		2026-11-22T08:44:54Z	2.8	
+345	2	orient	tool	phase mark	bash	2026-11-22T08:44:56Z	0.8	cd /home/ladvien/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark orient; git status --short | head; git branch --show-current; git fetch -q origi
+345	3	orient	model	model		2026-11-22T08:44:57Z	3.4	
+345	4	orient	tool	github	bash	2026-11-22T08:45:01Z	0.6	cd /home/ladvien/bevy_gooey_loop && git log --oneline -8; git tag --sort=-creatordate | head -3; grep -m1 '^version' Cargo.toml; git log -1 --format=%cd v0.52.2
+345	5	orient	model	model		2026-11-22T08:45:01Z	5.4	
+345	6	release	tool	phase mark	bash	2026-11-22T08:45:06Z	0.8	cd /home/ladvien/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark release; gh issue view 108 --json state,comments --jq '.state, (.comments[-1].bo
+345	7	release	model	model		2026-11-22T08:45:07Z	2.2	
+345	8	release	tool	shell	bash	2026-11-22T08:45:09Z	0.1	cd /home/ladvien/bevy_gooey_loop && (env -u CARGO_INCREMENTAL timeout 1500 cargo semver-checks check-release --baseline-rev v0.52.2 2>&1 | tail -15)
+345	9	release	model	model		2026-11-22T08:45:10Z	2.9	
+345	10	release	tool	shell	bash	2026-11-22T08:45:12Z	27.1	cd /home/ladvien/bevy_gooey_loop && env | grep -i -E 'sccache|INCREMENTAL|RUSTC_WRAP|CARGO'; (RUSTC_WRAPPER= CARGO_INCREMENTAL=0 timeout 1500 cargo semver-check
+345	11	release	model	model		2026-11-22T08:45:40Z	4.9	
+345	12	release	tool	shell	bash	2026-11-22T08:45:44Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 1,30p CHANGELOG.md | cut -c1-200; grep -n 'bevy_gooey' README.md | grep -n -E '0\.5[0-9]' | head; grep -n -A2 'name =
+345	13	release	model	model		2026-11-22T08:45:44Z	3.0	
+345	14	release	tool	cargo publish	bash	2026-11-22T08:45:47Z	0.3	cd /home/ladvien/bevy_gooey_loop && git checkout -q -b release/0.53.0 && sed -i 's/^## \[Unreleased\]$/## [Unreleased]\n\n## [0.53.0] - 2026-11-22/' CHANGELOG.m
+345	15	release	model	model		2026-11-22T08:45:48Z	3.6	
+345	16	release	tool	cargo publish	bash	2026-11-22T08:45:51Z	1.1	cd /home/ladvien/bevy_gooey_loop && sed -i '116s/0.52.2/0.53.0/' README.md && python3 - <<'E' p='CHANGELOG.md' s=open(p).read() s=s.replace("## [0.53.0] - 2026-
+345	17	release	model	model		2026-11-22T08:45:52Z	3.0	
+345	18	release	tool	cargo publish	bash	2026-11-22T08:45:55Z	0.9	cd /home/ladvien/bevy_gooey_loop && export CARGO_INCREMENTAL=0 && cargo publish --dry-run 2>&1 | tail -4 && cargo publish 2>&1 | tail -6
+345	19	release	model	model		2026-11-22T08:45:56Z	3.0	
+345	20	release	tool	cargo publish	bash	2026-11-22T08:45:59Z	53.5	cd /home/ladvien/bevy_gooey_loop && unset CARGO_INCREMENTAL; export RUSTC_WRAPPER=; cargo publish --dry-run 2>&1 | tail -4 && cargo publish 2>&1 | tail -6
+345	21	release	model	model		2026-11-22T08:46:53Z	5.7	
+345	22	release	tool	push gate	bash	2026-11-22T08:46:58Z	5.5	cd /home/ladvien/bevy_gooey_loop && git checkout -q main && git merge -q --ff-only release/0.53.0 && git tag -a v0.53.0 -m v0.53.0 && git push -q origin main &&
+345	23	release	model	model		2026-11-22T08:47:04Z	6.2	
+345	24	choose	tool	phase mark	bash	2026-11-22T08:47:10Z	11.7	cd /home/ladvien/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark choose; wc -l src/code_*.rs docs/research/code-editor.md docs/guide/code-editor.
+345	25	choose	model	model		2026-11-22T08:47:22Z	6.3	
+345	26	choose	tool	shell	bash	2026-11-22T08:47:28Z	0.0	cd /home/ladvien/bevy_gooey_loop && cat docs/research/code-editor.md | cut -c1-500; grep -n "row_of\|line_at\|\.rows()\|fn \|first_col\|display_col\|byte_at_dis
+345	27	choose	model	model		2026-11-22T08:47:28Z	3.8	
+345	28	choose	tool	shell	bash	2026-11-22T08:47:32Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "row_of\|line_at\|fold\.rows\|\.rows()" src/code_*.rs | grep -v "^src/code_fold.rs" | cut -c1-190; sed -n 1,161p src
+345	29	choose	model	model		2026-11-22T08:47:32Z	11.2	
+345	30	choose	tool	shell	bash	2026-11-22T08:47:43Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 225,300p src/code_editor.rs; sed -n 1091,1330p src/code_editor.rs
+345	31	choose	model	model		2026-11-22T08:47:43Z	8.2	
+345	32	choose	tool	shell	bash	2026-11-22T08:47:51Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 1330,1830p src/code_editor.rs
+345	33	choose	model	model		2026-11-22T08:47:51Z	12.5	
+345	34	choose	tool	shell	bash	2026-11-22T08:48:04Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "\bfold\b\|\.fold\." src/code_*.rs src/lib.rs | grep -v "^src/code_fold.rs" | grep -v "^\S*:[0-9]*:\s*//" | cut -c1-
+345	35	choose	model	model		2026-11-22T08:48:04Z	32.4	
+345	36	choose	tool	shell	bash	2026-11-22T08:48:36Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "move_rows\|CodeMove::\(Up\|Down\|Page\|Line\)\|ToLine\|goal_col\|want_col" src/code_*.rs | cut -c1-170; sed -n 455,
+345	37	choose	model	model		2026-11-22T08:48:36Z	2.7	
+345	38	choose	tool	shell	bash	2026-11-22T08:48:39Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 600,700p src/code_buffer.rs; sed -n 800,840p src/code_editor.rs
+345	39	choose	model	model		2026-11-22T08:48:39Z	7.6	
+345	40	choose	tool	shell	bash	2026-11-22T08:48:47Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 355,400p src/code_overlay.rs; sed -n 505,700p src/code_overlay.rs
+345	41	choose	model	model		2026-11-22T08:48:47Z	2.7	
+345	42	choose	tool	read files	read	2026-11-22T08:48:49Z	0.1	src/code_editor.rs:1091-1330
+345	43	choose	model	model		2026-11-22T08:48:49Z	5.8	
+345	44	choose	tool	shell	bash	2026-11-22T08:48:55Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "row_of\|line_at\|\.rows(\|first_col\|display_col\|expand_slice\|byte_at_display\|hidden_before" src/code_overlay.rs
+345	45	choose	model	model		2026-11-22T08:48:55Z	4.5	
+345	46	choose	tool	read files	read	2026-11-22T08:49:00Z	0.0	src/code_overlay.rs:340-420
+345	47	choose	tool	read files	read	2026-11-22T08:49:00Z	0.0	src/code_overlay.rs:500-720
+345	48	choose	model	model		2026-11-22T08:49:00Z	12.6	
+345	49	choose	tool	shell	bash	2026-11-22T08:49:12Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "fold\b" src/code_editor.rs src/code_overlay.rs src/code_search.rs src/code_fold.rs | grep -v "^\S*:[0-9]*:\s*//" | 
+345	50	choose	model	model		2026-11-22T08:49:12Z	19.0	
+345	51	choose	tool	read files	read	2026-11-22T08:49:31Z	0.0	src/code_editor.rs:1334-1830
+345	52	choose	model	model		2026-11-22T08:49:31Z	7.6	
+345	53	research	tool	phase mark	bash	2026-11-22T08:49:39Z	0.1	cd /home/ladvien/bevy_gooey_loop && git checkout -q -b loop/iter-104 && python3 ~/.local/share/wiggum/steps.py mark research; grep -n "pub enum SyntaxRole" -A30
+345	54	research	model	model		2026-11-22T08:49:39Z	4.8	
+345	55	research	tool	homestill	bash	2026-11-22T08:49:44Z	3.5	cd /home/ladvien/bevy_gooey_loop && (hs distill search "soft wrap text editor line breaking visual lines" --output json 2>&1 | head -c 1800); echo; (hs distill 
+345	56	research	tool	read files	read	2026-11-22T08:49:44Z	3.5	https://xi-editor.io/docs/rope_science_05.html
+345	57	research	tool	read files	read	2026-11-22T08:49:44Z	3.5	https://code.visualstudio.com/docs/editor/codebasics
+345	58	research	model	model		2026-11-22T08:49:47Z	4.8	
+345	59	research	tool	web	web_search	2026-11-22T08:49:52Z	4.9	Roblox Studio script editor "Text Wrapping" setting long lines wrap
+345	60	research	tool	web	web_search	2026-11-22T08:49:52Z	5.3	CodeMirror 6 EditorView.lineWrapping "wrap long lines" docs
+345	61	research	model	model		2026-11-22T08:49:57Z	10.5	
+345	62	research	tool	shell	bash	2026-11-22T08:50:08Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 440,500p src/code_editor.rs; grep -n "ToLine\|goal_col\|fn vertical\|want" src/code_buffer.rs | head -30
+345	63	research	model	model		2026-11-22T08:50:08Z	1.7	
+345	64	research	tool	shell	bash	2026-11-22T08:50:10Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 625,690p src/code_buffer.rs; grep -n "move_rows\|CodeMove::Home\|CodeMove::LineStart\|CodeMove::LineEnd\|LineEnd\|Lin
+345	65	research	model	model		2026-11-22T08:50:10Z	27.1	
+345	66	research	tool	shell	bash	2026-11-22T08:50:37Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 1,12p docs/research/code-editor.md | cut -c1-400 | head -5; ls docs/research | tail -5; grep -n "^## " docs/research/
+345	67	research	model	model		2026-11-22T08:50:37Z	2.5	
+345	68	research	tool	read files	read	2026-11-22T08:50:39Z	0.0	local://3.log
+345	69	research	model	model		2026-11-22T08:50:39Z	4.4	
+345	70	research	tool	shell	bash	2026-11-22T08:50:44Z	0.0	cd /tmp && grep -n -i "wordWrap\|word wrap\|wrapping\|Reflow\|horizontal scroll" ~/.omp/agent/sessions/-bevy_gooey_loop/*/local/3.log | cut -c1-300 | head -20
+345	71	research	model	model		2026-11-22T08:50:44Z	3.0	
+345	72	research	tool	read files	read	2026-11-22T08:50:47Z	0.0	local://3.log:488-540
+345	73	research	tool	shell	bash	2026-11-22T08:50:47Z	0.0	cd /tmp && grep -n -i "word wrap\|wordWrap" ~/.omp/agent/sessions/-bevy_gooey_loop/2026-11-22T08-44-53-360Z_01a2026e-00f0-7671-8597-ceb56e04fc8b/local/3.log | s
+345	74	research	model	model		2026-11-22T08:50:47Z	3.6	
+345	75	research	tool	shell	bash	2026-11-22T08:50:50Z	0.3	cd /tmp && curl -s https://code.visualstudio.com/docs/editing/codebasics.md | grep -i -n "wrap" | cut -c1-400 | head
+345	76	research	model	model		2026-11-22T08:50:51Z	3.4	
+345	77	research	tool	homestill	bash	2026-11-22T08:50:54Z	1.1	cd /tmp && curl -s https://www.w3.org/WAI/WCAG22/Understanding/reflow.html | sed 's/<[^>]*>//g' | grep -i -m6 "two-dimensional\|horizontal scroll\|320 CSS" | cu
+345	78	research	model	model		2026-11-22T08:50:55Z	29.4	
+345	79	research	tool	edit files	write	2026-11-22T08:51:24Z	0.0	/home/ladvien/bevy_gooey_loop/docs/research/code-soft-wrap.md
+345	80	research	model	model		2026-11-22T08:51:24Z	3.3	
+345	81	research	tool	eval	eval	2026-11-22T08:51:28Z	0.3	{"language": "py", "code": "d = await commit.draft()\nawait d.commit(\"Research: code editor soft wrap\", [\"- per-editor CodeSoftWrap, word-boundary breaks on 
+345	82	build	tool	phase mark	bash	2026-11-22T08:51:28Z	0.1	cd /home/ladvien/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark build; git log --oneline | head -2; wc -l src/code_editor.rs src/code_fold.rs sr
+345	83	build	model	model		2026-11-22T08:51:28Z	4.4	
+345	84	build	tool	read files	read	2026-11-22T08:51:32Z	0.0	src/code_fold.rs:1-161
+345	85	build	model	model		2026-11-22T08:51:32Z	3.6	
+345	86	build	tool	shell	bash	2026-11-22T08:51:36Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "fold\b\|fold\.\|FoldMap\|\.row_of\|\.line_at\|first_col\|view\.cols\|\.cols\b" src/*.rs | grep -v "^src/code_fold.r
+345	87	build	tool	read files	read	2026-11-22T08:51:36Z	0.0	/tmp/g104sites.txt
+345	88	build	model	model		2026-11-22T08:51:36Z	5.1	
+345	89	build	tool	read files	read	2026-11-22T08:51:41Z	0.0	src/code_overlay.rs:360-400
+345	90	build	tool	read files	read	2026-11-22T08:51:41Z	0.0	src/code_overlay.rs:485-720
+345	91	build	model	model		2026-11-22T08:51:41Z	11.7	
+345	92	build	tool	read files	read	2026-11-22T08:51:53Z	0.0	src/code_overlay.rs:724-935
+345	93	build	model	model		2026-11-22T08:51:53Z	15.0	
+345	94	build	tool	shell	bash	2026-11-22T08:52:08Z	0.1	cd /home/ladvien/bevy_gooey_loop && grep -n "pub fn display_col\|pub fn byte_at_display\|pub fn expand_slice\|pub fn display_width\|pub fn line(\|pub fn line_co
+345	95	build	model	model		2026-11-22T08:52:08Z	2.4	
+345	96	build	tool	read files	read	2026-11-22T08:52:10Z	0.0	src/code_buffer.rs:1320-1410
+345	97	build	tool	read files	read	2026-11-22T08:52:10Z	0.0	src/code_buffer.rs:280-296
+345	98	build	tool	read files	read	2026-11-22T08:52:10Z	0.0	src/code_buffer.rs:384-400
+345	99	build	model	model		2026-11-22T08:52:10Z	9.2	
+345	100	build	tool	read files	read	2026-11-22T08:52:19Z	0.0	src/code_editor.rs:225-300
+345	101	build	tool	read files	read	2026-11-22T08:52:19Z	0.0	src/code_editor.rs:340-520
+345	102	build	model	model		2026-11-22T08:52:19Z	2.7	
+345	103	build	tool	shell	bash	2026-11-22T08:52:22Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "ToLine\|want\b\|self.want\|LineUp\|LineDown\|Home\b\|LineStart\|LineEnd" src/code_buffer.rs | head -50
+345	104	build	model	model		2026-11-22T08:52:22Z	1.3	
+345	105	build	tool	read files	read	2026-11-22T08:52:24Z	0.0	src/code_buffer.rs:600-690
+345	106	build	tool	read files	read	2026-11-22T08:52:24Z	0.0	src/code_buffer.rs:50-100
+345	107	build	model	model		2026-11-22T08:52:24Z	8.0	
+345	108	build	tool	shell	bash	2026-11-22T08:52:31Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "CodeMove::Home\|CodeMove::LineEnd\|move_rows\|CodeMove::Up\|CodeMove::Down\|KeyCode::Home\|KeyCode::End\|page()" sr
+345	109	build	model	model		2026-11-22T08:52:32Z	2.7	
+345	110	build	tool	read files	read	2026-11-22T08:52:34Z	0.0	local://4.log
+345	111	build	model	model		2026-11-22T08:52:34Z	9.1	
+345	112	build	tool	read files	read	2026-11-22T08:52:43Z	0.0	src/code_editor.rs:1091-1330
+345	113	build	model	model		2026-11-22T08:52:43Z	3.0	
+345	114	build	tool	read files	read	2026-11-22T08:52:46Z	0.0	src/code_editor.rs:1334-1530:raw
+345	115	build	model	model		2026-11-22T08:52:46Z	19.5	
+345	116	build	tool	read files	read	2026-11-22T08:53:06Z	0.0	src/code_buffer.rs:1318-1412:raw
+345	117	build	tool	read files	read	2026-11-22T08:53:06Z	0.0	src/code_fold.rs:60-161:raw
+345	118	build	model	model		2026-11-22T08:53:06Z	29.3	
+345	119	build	tool	search	grep	2026-11-22T08:53:35Z	0.0	src/code_editor.rs
+345	120	build	tool	search	grep	2026-11-22T08:53:35Z	0.0	src/code_buffer.rs
+345	121	build	model	model		2026-11-22T08:53:35Z	2.5	
+345	122	build	tool	read files	read	2026-11-22T08:53:38Z	0.0	src/code_editor.rs:455-495:raw
+345	123	build	tool	read files	read	2026-11-22T08:53:38Z	0.0	src/code_editor.rs:780-840:raw
+345	124	build	tool	read files	read	2026-11-22T08:53:38Z	0.0	src/code_buffer.rs:55-100:raw
+345	125	build	model	model		2026-11-22T08:53:38Z	2.3	
+345	126	build	tool	search	grep	2026-11-22T08:53:40Z	0.0	src/code_buffer.rs
+345	127	build	model	model		2026-11-22T08:53:40Z	1.7	
+345	128	build	tool	read files	read	2026-11-22T08:53:42Z	0.0	src/code_buffer.rs:612-700:raw
+345	129	build	model	model		2026-11-22T08:53:42Z	14.8	
+345	130	build	tool	read files	read	2026-11-22T08:53:57Z	0.0	src/code_editor.rs:1530-1700:raw
+345	131	build	model	model		2026-11-22T08:53:57Z	4.1	
+345	132	build	tool	read files	read	2026-11-22T08:54:01Z	0.0	src/code_editor.rs:1700-1828:raw
+345	133	build	model	model		2026-11-22T08:54:01Z	6.3	
+345	134	build	tool	search	grep	2026-11-22T08:54:07Z	0.0	src/lib.rs
+345	135	build	tool	search	grep	2026-11-22T08:54:07Z	0.0	src
+345	136	build	model	model		2026-11-22T08:54:07Z	2.6	
+345	137	build	tool	read files	read	2026-11-22T08:54:10Z	0.0	src/code_overlay.rs:1265-1280:raw
+345	138	build	tool	read files	read	2026-11-22T08:54:10Z	0.0	src/lib.rs:262-285:raw
+345	139	build	tool	read files	read	2026-11-22T08:54:10Z	0.0	src/lib.rs:664-680:raw
+345	140	build	tool	read files	read	2026-11-22T08:54:10Z	0.0	src/lib.rs:825-860:raw
+345	141	build	model	model		2026-11-22T08:54:10Z	44.7	
+345	142	build	tool	edit files	write	2026-11-22T08:54:54Z	0.0	/home/ladvien/bevy_gooey_loop/src/code_wrap.rs
+345	143	build	model	model		2026-11-22T08:54:54Z	6.6	
+345	144	build	tool	shell	bash	2026-11-22T08:55:01Z	0.1	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' p='src/code_wrap.rs' s=open(p).read() a=s.index(" assert_eq!(map.row_of(7), map.rows(2) + 5);") b=s.index(
+345	145	build	model	model		2026-11-22T08:55:01Z	2.2	
+345	146	build	tool	edit files	edit	2026-11-22T08:55:03Z	0.0	[src/lib.rs#24AE] PUT >161: +mod code_wrap;
+345	147	build	model	model		2026-11-22T08:55:03Z	3.3	
+345	148	build	tool	read files	read	2026-11-22T08:55:07Z	0.0	src/code_editor.rs:40-60:raw
+345	149	build	tool	read files	read	2026-11-22T08:55:07Z	0.0	src/code_editor.rs:95-135:raw
+345	150	build	tool	read files	read	2026-11-22T08:55:07Z	0.0	src/code_editor.rs:236-300:raw
+345	151	build	tool	read files	read	2026-11-22T08:55:07Z	0.0	src/code_editor.rs:352-400:raw
+345	152	build	model	model		2026-11-22T08:55:07Z	5.0	
+345	153	build	tool	shell	bash	2026-11-22T08:55:12Z	0.1	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' p='src/code_editor.rs' s=open(p).read() def rep(a,b,count=1): global s assert s.count(a)==count,(a,s.count
+345	154	build	tool	read files	read	2026-11-22T08:55:12Z	0.1	src/code_overlay.rs:268-290:raw
+345	155	build	model	model		2026-11-22T08:55:12Z	2.9	
+345	156	build	tool	git	bash	2026-11-22T08:55:15Z	0.1	cd /home/ladvien/bevy_gooey_loop && git status --short && sed -n 268,290p src/code_overlay.rs && grep -n "FoldMap\|code_wrap\|RowMap" src/code_editor.rs src/cod
+345	157	build	model	model		2026-11-22T08:55:15Z	2.1	
+345	158	build	tool	edit files	edit	2026-11-22T08:55:17Z	0.0	[src/code_overlay.rs#0000] PUT 279.=279: + ));
+345	159	build	model	model		2026-11-22T08:55:17Z	2.2	
+345	160	build	tool	edit files	edit	2026-11-22T08:55:19Z	0.0	[src/code_overlay.rs#BDAC] PUT 280.=280: + ));
+345	161	build	model	model		2026-11-22T08:55:19Z	2.1	
+345	162	build	tool	cargo build	bash	2026-11-22T08:55:21Z	17.3	cd /home/ladvien/bevy_gooey_loop && cargo check --lib --all-features 2>&1 | grep -E "^(error|warning)" -A6 | head -80
+345	163	build	model	model		2026-11-22T08:55:38Z	2.5	
+345	164	build	tool	cargo test	bash	2026-11-22T08:55:41Z	23.7	cd /home/ladvien/bevy_gooey_loop && cargo nextest run --all-features --lib -E 'test(code_wrap::)' 2>&1 | tail -40
+345	165	build	model	model		2026-11-22T08:56:05Z	5.3	
+345	166	build	tool	cargo test	bash	2026-11-22T08:56:10Z	5.8	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' p='src/code_wrap.rs' s=open(p).read() a=""" assert_eq!(map.rows(4), 2); assert_eq!(map.row_of(2), 0); asse
+345	167	build	model	model		2026-11-22T08:56:16Z	3.9	
+345	168	build	tool	read files	read	2026-11-22T08:56:20Z	0.0	src/code_editor.rs:1091-1135:raw
+345	169	build	model	model		2026-11-22T08:56:20Z	2.3	
+345	170	build	tool	read files	read	2026-11-22T08:56:22Z	0.0	src/code_editor.rs:1136-1270:raw
+345	171	build	model	model		2026-11-22T08:56:22Z	6.9	
+345	172	build	tool	shell	bash	2026-11-22T08:56:29Z	0.0	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' p='src/code_editor.rs' s=open(p).read() def rep(a,b): global s assert s.count(a)==1,(a,s.count(a)) s=s.rep
+345	173	build	model	model		2026-11-22T08:56:29Z	2.6	
+345	174	build	tool	shell	bash	2026-11-22T08:56:31Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -rn "struct CodeMinimap" -B6 src | head -20; grep -n "CodeMinimap" src/lib.rs; sed -n 80,97p src/code_editor.rs
+345	175	build	model	model		2026-11-22T08:56:31Z	5.6	
+345	176	build	tool	shell	bash	2026-11-22T08:56:37Z	0.0	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' p='src/code_editor.rs' s=open(p).read() a="/// The settings of every [`code_editor`]: a resource a host in
+345	177	build	model	model		2026-11-22T08:56:37Z	2.2	
+345	178	build	tool	shell	bash	2026-11-22T08:56:39Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "pub use code_editor::{" -A6 src/lib.rs; grep -n "CodeEditorSettings" src/lib.rs; grep -n "register_type::<CodeEdito
+345	179	build	model	model		2026-11-22T08:56:39Z	2.9	
+345	180	build	tool	shell	bash	2026-11-22T08:56:42Z	0.0	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' p='src/lib.rs' s=open(p).read() s=s.replace("CodeEditorSettings, CodeEditorValue, CodeIndentation,\n DEFAU
+345	181	build	model	model		2026-11-22T08:56:42Z	3.2	
+345	182	build	tool	read files	read	2026-11-22T08:56:45Z	0.0	src/code_editor.rs:1298-1420:raw
+345	183	build	model	model		2026-11-22T08:56:45Z	6.6	
+345	184	build	tool	shell	bash	2026-11-22T08:56:52Z	0.0	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' p='src/code_editor.rs' s=open(p).read() a=""" let col = (x / advance + 0.5).floor().max(0.0) as usize; let
+345	185	build	tool	read files	read	2026-11-22T08:56:52Z	0.0	src/code_editor.rs:1420-1520:raw
+345	186	build	model	model		2026-11-22T08:56:52Z	4.1	
+345	187	build	tool	shell	bash	2026-11-22T08:56:56Z	0.0	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' p='src/code_editor.rs' s=open(p).read() def rep(a,b): global s assert s.count(a)==1,a s=s.replace(a,b) rep
+345	188	build	tool	read files	read	2026-11-22T08:56:56Z	0.0	src/code_editor.rs:1535-1620:raw
+345	189	build	model	model		2026-11-22T08:56:56Z	2.7	
+345	190	build	tool	read files	read	2026-11-22T08:56:59Z	0.0	src/code_editor.rs:1640-1790:raw
+345	191	build	model	model		2026-11-22T08:56:59Z	5.0	
+345	192	build	tool	shell	bash	2026-11-22T08:57:04Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "pub fn expand_slice" -A30 src/code_buffer.rs | head -50; grep -n "pub fn line_runs\|pub(crate) fn line_runs" -A40 s
+345	193	build	model	model		2026-11-22T08:57:04Z	4.4	
+345	194	build	tool	shell	bash	2026-11-22T08:57:08Z	0.0	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' p='src/code_editor.rs' s=open(p).read() def rep(a,b,n=1): global s assert s.count(a)==n,(a,s.count(a)) s=s
+345	195	build	tool	read files	read	2026-11-22T08:57:08Z	0.0	src/code_editor.rs:1796-1920:raw
+345	196	build	model	model		2026-11-22T08:57:08Z	5.2	
+345	197	build	tool	read files	read	2026-11-22T08:57:13Z	0.0	src/code_editor.rs:1770-1800:raw
+345	198	build	model	model		2026-11-22T08:57:13Z	6.9	
+345	199	build	tool	cargo build	bash	2026-11-22T08:57:20Z	13.7	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' p='src/code_editor.rs' s=open(p).read() def rep(a,b,n=1): global s assert s.count(a)==n,(a,s.count(a)) s=s
+345	200	build	model	model		2026-11-22T08:57:34Z	2.6	
+345	201	build	tool	shell	bash	2026-11-22T08:57:37Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "move_rows\|CodeMove::" src/code_editor.rs
+345	202	build	model	model		2026-11-22T08:57:37Z	1.1	
+345	203	build	tool	read files	read	2026-11-22T08:57:38Z	0.0	src/code_editor.rs:480-525:raw
+345	204	build	tool	read files	read	2026-11-22T08:57:38Z	0.0	src/code_editor.rs:820-862:raw
+345	205	build	model	model		2026-11-22T08:57:38Z	1.9	
+345	206	build	tool	search	grep	2026-11-22T08:57:40Z	0.0	src/code_buffer.rs
+345	207	build	model	model		2026-11-22T08:57:40Z	0.9	
+345	208	build	tool	read files	read	2026-11-22T08:57:40Z	0.0	src/code_buffer.rs:636-675:raw
+345	209	build	model	model		2026-11-22T08:57:40Z	6.3	
+345	210	build	tool	read files	read	2026-11-22T08:57:47Z	0.0	src/code_buffer.rs:50-100:raw
+345	211	build	model	model		2026-11-22T08:57:47Z	23.8	
+345	212	build	tool	cargo build	bash	2026-11-22T08:58:11Z	5.6	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' p='src/code_buffer.rs' s=open(p).read() def rep(a,b,n=1): global s assert s.count(a)==n,(a,s.count(a)) s=s
+345	213	build	model	model		2026-11-22T08:58:16Z	3.7	
+345	214	build	tool	read files	read	2026-11-22T08:58:20Z	0.0	src/code_overlay.rs:510-620:raw
+345	215	build	model	model		2026-11-22T08:58:20Z	4.2	
+345	216	build	tool	read files	read	2026-11-22T08:58:24Z	0.0	src/code_overlay.rs:620-800:raw
+345	217	build	model	model		2026-11-22T08:58:24Z	3.7	
+345	218	build	tool	cargo build	bash	2026-11-22T08:58:28Z	0.6	cd /home/ladvien/bevy_gooey_loop && cargo check --lib --all-features 2>&1 | grep -E "^error" -A8 | head -40; echo done
+345	219	build	model	model		2026-11-22T08:58:28Z	2.9	
+345	220	build	tool	shell	bash	2026-11-22T08:58:31Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 520,700p src/code_overlay.rs
+345	221	build	model	model		2026-11-22T08:58:31Z	5.3	
+345	222	build	tool	shell	bash	2026-11-22T08:58:37Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "first_col\|view.cols\|shown\.x\|fold\.\|line_of(" src/code_overlay.rs src/code_search.rs | sed -n 1,120p
+345	223	build	model	model		2026-11-22T08:58:37Z	6.7	
+345	224	build	tool	shell	bash	2026-11-22T08:58:43Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 800,830p src/code_overlay.rs; echo ------; sed -n 866,895p src/code_overlay.rs; echo -----; sed -n 938,990p src/code_
+345	225	build	model	model		2026-11-22T08:58:43Z	13.2	
+345	226	build	tool	shell	bash	2026-11-22T08:58:57Z	0.1	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' p='src/code_overlay.rs' s=open(p).read() def rep(a,b,n=1): global s assert s.count(a)==n,(a,s.count(a)) s=
+345	227	build	model	model		2026-11-22T08:58:57Z	6.7	
+345	228	build	tool	shell	bash	2026-11-22T08:59:03Z	0.1	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' p='src/code_search.rs' s=open(p).read() def rep(a,b,n=1): global s assert s.count(a)==n,(a,s.count(a)) s=s
+345	229	build	model	model		2026-11-22T08:59:03Z	3.9	
+345	230	build	tool	shell	bash	2026-11-22T08:59:07Z	0.0	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' p='src/code_search.rs' s=open(p).read() a=""" let wrapped_rows = editor.fold.row_count_of(start.line); if 
+345	231	build	model	model		2026-11-22T08:59:07Z	0.9	
+345	232	build	tool	shell	bash	2026-11-22T08:59:08Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 140,182p src/code_wrap.rs
+345	233	build	model	model		2026-11-22T08:59:08Z	2.3	
+345	234	build	tool	cargo build	bash	2026-11-22T08:59:11Z	5.5	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' p='src/code_wrap.rs' s=open(p).read() a=" /// The row display column `col` of `line` is on." b=""" /// How
+345	235	build	model	model		2026-11-22T08:59:16Z	0.9	
+345	236	build	tool	shell	bash	2026-11-22T08:59:17Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "crate::code_fold::FoldMap" src/code_overlay.rs
+345	237	build	model	model		2026-11-22T08:59:17Z	1.4	
+345	238	build	tool	cargo build	bash	2026-11-22T08:59:18Z	11.8	cd /home/ladvien/bevy_gooey_loop && sed -i '1361s/crate::code_fold::FoldMap/crate::code_wrap::RowMap/' src/code_overlay.rs && cargo fmt && cargo check --lib --a
+345	239	build	model	model		2026-11-22T08:59:30Z	1.7	
+345	240	build	tool	shell	bash	2026-11-22T08:59:32Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 1,130p src/code_syntax.rs
+345	241	build	model	model		2026-11-22T08:59:32Z	10.0	
+345	242	build	tool	shell	bash	2026-11-22T08:59:42Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "highlights\|Highlights" src/code_editor.rs | head -40; grep -n "pub fn new\|pub fn revision\|pub fn id\|pub fn span
+345	243	build	model	model		2026-11-22T08:59:42Z	1.3	
+345	244	build	tool	shell	bash	2026-11-22T08:59:43Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 1736,1750p src/code_editor.rs; sed -n 85,135p src/code_decor.rs; grep -n "fn id" -B2 -A6 src/code_decor.rs | head -20
+345	245	build	model	model		2026-11-22T08:59:43Z	35.7	
+345	246	build	tool	remote wait	bash	2026-11-22T09:00:19Z	0.0	cd /home/ladvien/bevy_gooey_loop && cat > src/code_markdown.rs <<'EOF' //! Markdown as [`Highlights`] (#114): a line scanner for the marks a writer needs to see
+345	247	build	model	model		2026-11-22T09:00:19Z	11.3	
+345	248	build	tool	cargo build	bash	2026-11-22T09:00:30Z	11.9	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' p='src/code_markdown.rs' s=open(p).read() a=" if run == width || (mark != b'`' && run > width && width == 
+345	249	build	model	model		2026-11-22T09:00:42Z	2.7	
+345	250	build	tool	cargo test	bash	2026-11-22T09:00:45Z	60.0	[launched bg_1] cd /home/ladvien/bevy_gooey_loop && cargo nextest run --all-features --lib --tests -E 'test(code_) | test(/code_markdown/)' 2>&1 | tail -15
+345	251	build	model	model		2026-11-22T09:01:45Z	2.2	
+345	252	build	tool	shell	bash	2026-11-22T09:01:47Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 1,120p tests/code_editor.rs
+345	253	build	model	model		2026-11-22T09:01:47Z	1.3	
+345	254	build	tool	shell	bash	2026-11-22T09:01:48Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "^fn \|^const " tests/code_editor.rs | sed -n 1,80p; grep -n "fn rows_text\|fn row_texts\|CodePart" tests/code_edito
+345	255	build	model	model		2026-11-22T09:01:48Z	1.2	
+345	256	build	tool	shell	bash	2026-11-22T09:01:50Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 219,360p tests/code_editor.rs; sed -n 768,792p tests/code_editor.rs; tail -30 tests/code_editor.rs
+345	257	build	model	model		2026-11-22T09:01:50Z	7.8	
+345	258	build	tool	shell	bash	2026-11-22T09:01:57Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "idle\|settled\|is_changed\|last_changed" tests/code_editor.rs tests/code_decor.rs | head; grep -n "fn number\|CodeN
+345	259	build	model	model		2026-11-22T09:01:57Z	3.8	
+345	260	build	tool	shell	bash	2026-11-22T09:02:01Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "TextSpan\|^fn \|CodeSyntax" tests/code_decor.rs | head -50; sed -n 1,25p tests/code_decor.rs
+345	261	build	model	model		2026-11-22T09:02:01Z	1.0	
+345	262	build	tool	shell	bash	2026-11-22T09:02:02Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 56,76p tests/code_decor.rs; sed -n 170,262p tests/code_decor.rs
+345	263	build	model	model		2026-11-22T09:02:02Z	21.1	
+345	264	build	tool	shell	bash	2026-11-22T09:02:23Z	1.2	cd /home/ladvien/bevy_gooey_loop && cat >> tests/code_decor.rs <<'EOF' // -- #114: Markdown ink ----------------------------------------------------------------
+345	265	build	bg	cargo test	bash	2026-11-22T09:00:47Z	97.2	bg_1 completed: cargo nextest run --all-features --lib --tests -E 'test(code_) | test(/code_markdown/)' 2>&1 | tail -15
+345	266	build	model	model		2026-11-22T09:02:25Z	2.8	
+345	267	build	tool	cargo test	bash	2026-11-22T09:02:27Z	3.6	cd /home/ladvien/bevy_gooey_loop && cargo nextest run --all-features --lib --tests -E 'test(code_editor::) | test(code_decor::)' 2>&1 | grep -E "^error" -A6 | h
+345	268	build	model	model		2026-11-22T09:02:31Z	3.8	
+345	269	build	tool	cargo test	bash	2026-11-22T09:02:35Z	30.1	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' import re p='tests/code_editor.rs' s=open(p).read() s=re.sub(r" click\(&mut app, on_text\(&app, editor, (\
+345	270	build	model	model		2026-11-22T09:03:05Z	4.5	
+345	271	build	tool	shell	bash	2026-11-22T09:03:09Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "writes_nothing\|writes nothing\|nothing_written\|idle" tests/code_editor.rs | head; grep -n "fn row_texts" -A12 tes
+345	272	build	model	model		2026-11-22T09:03:09Z	6.6	
+345	273	build	tool	cargo test	bash	2026-11-22T09:03:16Z	13.1	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' p='tests/code_editor.rs' s=open(p).read() a=""" assert_eq!(row_texts(&app, editor).len(), 1); }""" assert 
+345	274	build	model	model		2026-11-22T09:03:29Z	7.6	
+345	275	build	tool	cargo test	bash	2026-11-22T09:03:37Z	16.3	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' p='tests/code_editor.rs' s=open(p).read() a=s.index("fn node_ticks") b=s.index("}\n",s.index("collect()",a
+345	276	build	model	model		2026-11-22T09:03:53Z	4.6	
+345	277	build	tool	cargo test	bash	2026-11-22T09:03:58Z	20.3	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' p='tests/code_editor.rs' s=open(p).read() a=""" std::iter::once(editor) .chain(rows(app, editor)) .map(|e|
+345	278	build	model	model		2026-11-22T09:04:18Z	2.7	
+345	279	build	tool	shell	bash	2026-11-22T09:04:21Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "fn node_ticks" -B2 -A14 tests/code_editor.rs
+345	280	build	model	model		2026-11-22T09:04:21Z	3.3	
+345	281	build	tool	cargo test	bash	2026-11-22T09:04:24Z	35.9	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' p='tests/code_editor.rs' L=open(p).read().split("\n") new="""/// Change ticks of each drawn row's words (t
+345	282	build	model	model		2026-11-22T09:05:00Z	3.0	
+345	283	prove	tool	phase mark	bash	2026-11-22T09:05:03Z	13.9	cd /home/ladvien/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark prove; cargo clippy --all-targets --all-features -- -D warnings 2>&1 | grep -E "
+345	284	prove	model	model		2026-11-22T09:05:17Z	2.1	
+345	285	prove	tool	cargo clippy	bash	2026-11-22T09:05:19Z	20.8	cd /home/ladvien/bevy_gooey_loop && sed -i 's/FoldMap::new(\[2\.\.4\])/FoldMap::new(std::iter::once(2..4))/; s/FoldMap::new(\[0\.\.2\])/FoldMap::new(std::iter::
+345	286	prove	model	model		2026-11-22T09:05:40Z	1.1	
+345	287	prove	tool	shell	bash	2026-11-22T09:05:41Z	0.0	cd /home/ladvien/bevy_gooey_loop && ls examples | tr '\n' ' '; grep -ln "code_editor(" examples/*.rs
+345	288	prove	model	model		2026-11-22T09:05:41Z	1.4	
+345	289	prove	tool	shell	bash	2026-11-22T09:05:42Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -ln "code_editor\|CodeEditor" examples/*.rs; grep -n "code" docs/media/README.md | head; sed -n 1,60p examples/host_kno
+345	290	prove	model	model		2026-11-22T09:05:42Z	1.9	
+345	291	prove	tool	shell	bash	2026-11-22T09:05:44Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 60,260p examples/host_knobs.rs; grep -n "example\]\|name = \"host_knobs\"" -A3 Cargo.toml | head -20
+345	292	prove	model	model		2026-11-22T09:05:44Z	11.5	
+345	293	prove	tool	cargo clippy	bash	2026-11-22T09:05:55Z	2.0	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' src=open('examples/host_knobs.rs').read() head_end=src.index("/// The table's rows") setup_start=src.index
+345	294	prove	model	model		2026-11-22T09:05:57Z	6.9	
+345	295	prove	tool	cargo build	bash	2026-11-22T09:06:04Z	60.0	[launched bg_2] cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' p='examples/prose.rs' s=open(p).read() a=s.index(" let pane = |title") b=s.index(" commands.spawn((\n scre
+345	296	prove	model	model		2026-11-22T09:07:04Z	3.0	
+345	297	prove	tool	wait: other	wait	2026-11-22T09:07:07Z	5.0	{}
+345	298	prove	model	model		2026-11-22T09:07:12Z	0.6	
+345	299	prove	tool	wait: other	wait	2026-11-22T09:07:13Z	232.7	{}
+345	300	prove	model	model		2026-11-22T09:11:06Z	2.9	
+345	301	prove	tool	cargo build	bash	2026-11-22T09:11:08Z	60.1	[launched bg_3] cd /home/ladvien/bevy_gooey_loop && ls /tmp/.X11-unix; DISPLAY=:93 GOOEY_FRAMES=60 GOOEY_SHOT=/tmp/g104/prose720.png GOOEY_SIZE=1280x720 timeout 900 cargo run -
+345	302	prove	model	model		2026-11-22T09:12:09Z	1.8	
+345	303	prove	tool	wait: other	wait	2026-11-22T09:12:10Z	5.0	{}
+345	304	prove	model	model		2026-11-22T09:12:15Z	0.7	
+345	305	prove	tool	wait: other	wait	2026-11-22T09:12:16Z	177.0	{}
+345	306	prove	model	model		2026-11-22T09:15:13Z	4.3	
+345	307	prove	tool	cargo build	bash	2026-11-22T09:15:17Z	0.0	[launched bg_4] cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' p='examples/prose.rs' s=open(p).read() a=s.index(" let pane = |title") b=s.index(" commands.spawn((\n scre
+345	308	prove	model	model		2026-11-22T09:15:17Z	1.5	
+345	309	prove	tool	shell	bash	2026-11-22T09:15:19Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 1,20p CHANGELOG.md; grep -n "code-editor\|code editor" README.md | head; wc -l README.md; tail -40 docs/guide/code-ed
+345	310	prove	model	model		2026-11-22T09:15:19Z	2.9	
+345	311	prove	tool	shell	bash	2026-11-22T09:15:22Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n -i "editor" README.md | cut -c1-260; grep -n "host_knobs" docs/media/README.md | cut -c1-200; grep -n "Layout\|code_
+345	312	prove	model	model		2026-11-22T09:15:22Z	1.3	
+345	313	prove	tool	shell	bash	2026-11-22T09:15:23Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 89,90p README.md | cut -c250-1200
+345	314	prove	model	model		2026-11-22T09:15:23Z	10.4	
+345	315	prove	tool	shell	bash	2026-11-22T09:15:33Z	0.0	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' def sub(p,a,b): s=open(p).read() assert s.count(a)==1,(p,a) open(p,'w').write(s.replace(a,b)) sub('README.
+345	316	prove	bg	shell	bash	2026-11-22T09:15:27Z	6.4	bg_4 completed: python3 - <<'EOF' p='examples/prose.rs' s=open(p).read() a=s.index(" let pane = |title") b=s.index(" commands.s...
+345	317	prove	model	model		2026-11-22T09:15:34Z	1.2	
+345	318	prove	tool	read files	read	2026-11-22T09:15:35Z	0.0	/tmp/g104/prose720.png
+345	319	prove	model	model		2026-11-22T09:15:35Z	4.0	
+345	320	prove	tool	cargo build	bash	2026-11-22T09:15:39Z	10.7	cd /home/ladvien/bevy_gooey_loop && DISPLAY=:93 GOOEY_FRAMES=150 GOOEY_SHOT=/tmp/g104/prose720.png GOOEY_SIZE=1280x720 timeout 300 cargo run --release --example
+345	321	prove	model	model		2026-11-22T09:15:49Z	1.8	
+345	322	prove	tool	shell	bash	2026-11-22T09:15:51Z	0.1	for d in :93 :97; do echo $d; DISPLAY=$d xdpyinfo 2>&1 | grep -E "dimensions|unable" ; done; ps aux | grep -i xvfb | grep -v grep | cut -c1-200; env | grep -E "
+345	323	prove	model	model		2026-11-22T09:15:51Z	2.7	
+345	324	prove	tool	cargo build	bash	2026-11-22T09:15:54Z	3.4	cd /home/ladvien/bevy_gooey_loop && env -u WAYLAND_DISPLAY DISPLAY=:93 GOOEY_FRAMES=100 GOOEY_SHOT=/tmp/g104/prose720.png GOOEY_SIZE=1280x720 timeout 300 cargo 
+345	325	prove	model	model		2026-11-22T09:15:57Z	0.8	
+345	326	prove	tool	read files	read	2026-11-22T09:15:58Z	0.0	/tmp/g104/prose720.png
+345	327	prove	model	model		2026-11-22T09:15:58Z	3.2	
+345	328	prove	tool	shell	bash	2026-11-22T09:16:01Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "pub fn code_editor" -B6 -A30 src/code_editor.rs | cut -c1-160 | head -70; grep -n "Role::CodeEditor =>" -A14 src/sk
+345	329	prove	model	model		2026-11-22T09:16:01Z	6.2	
+345	330	prove	tool	cargo build	bash	2026-11-22T09:16:08Z	9.1	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' p='examples/prose.rs' s=open(p).read() a=" children![(panel(), children![heading(title), editor])]," asser
+345	331	prove	model	model		2026-11-22T09:16:17Z	0.8	
+345	332	prove	tool	read files	read	2026-11-22T09:16:17Z	0.1	/tmp/g104/prose720.png
+345	333	prove	model	model		2026-11-22T09:16:18Z	5.0	
+345	334	prove	tool	cargo build	bash	2026-11-22T09:16:22Z	11.4	cd /home/ladvien/bevy_gooey_loop && env -u WAYLAND_DISPLAY DISPLAY=:93 GOOEY_FRAMES=100 GOOEY_SHOT=/tmp/g104/prose1440.png GOOEY_SIZE=2560x1440 timeout 300 carg
+345	335	prove	model	model		2026-11-22T09:16:34Z	2.0	
+345	336	prove	tool	read files	read	2026-11-22T09:16:36Z	0.1	/tmp/g104/prose1440.png
+345	337	prove	model	model		2026-11-22T09:16:36Z	3.8	
+345	338	prove	tool	shell	bash	2026-11-22T09:16:40Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "pub(crate) fn sync" -A25 src/code_wrap.rs | head -50; grep -n "fn new\|pub fn load\|pub fn from" src/code_buffer.rs
+345	339	prove	model	model		2026-11-22T09:16:40Z	4.4	
+345	340	prove	tool	cargo test	bash	2026-11-22T09:16:44Z	0.0	[launched bg_5] cd /home/ladvien/bevy_gooey_loop && cp src/code_wrap.rs /tmp/g104/code_wrap.rs.bak && python3 - <<'EOF' p='src/code_wrap.rs' s=open(p).read() i=s.rindex("}") s=
+345	341	prove	model	model		2026-11-22T09:16:44Z	1.8	
+345	342	prove	tool	wait: other	wait	2026-11-22T09:16:46Z	5.0	{}
+345	343	prove	model	model		2026-11-22T09:16:51Z	0.6	
+345	344	prove	tool	wait: other	wait	2026-11-22T09:16:52Z	37.4	{}
+345	345	prove	model	model		2026-11-22T09:17:29Z	13.5	
+345	346	prove	tool	cargo build	bash	2026-11-22T09:17:43Z	0.1	cd /home/ladvien/bevy_gooey_loop && cp /tmp/g104/prose720.png docs/media/prose.png && git diff --stat src/code_wrap.rs | tail -1; python3 - <<'EOF' def sub(p,a,
+345	347	prove	model	model		2026-11-22T09:17:43Z	3.2	
+345	348	prove	tool	shell	bash	2026-11-22T09:17:46Z	0.4	cd /home/ladvien/bevy_gooey_loop && grep -h "REBUILD" /home/ladvien/.omp/agent/sessions -r 2>/dev/null | head -2; git status --short | head; git diff --stat src
+345	349	prove	model	model		2026-11-22T09:17:46Z	4.3	
+345	350	prove	tool	cargo test	bash	2026-11-22T09:17:51Z	46.0	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' p='src/code_wrap.rs' s=open(p).read() i=s.rindex("}") s=s[:i]+''' #[test] fn zz_rebuild_cost() { let line 
+345	351	prove	model	model		2026-11-22T09:18:37Z	5.2	
+345	352	prove	tool	cargo clippy	bash	2026-11-22T09:18:42Z	13.4	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' p='AGENTS.md' s=open(p).read() a="so a settled editor rebuilds nothing: 3 ms for 20,000 lines of 100 chars
+345	353	prove	model	model		2026-11-22T09:18:55Z	4.1	
+345	354	prove	tool	cargo build	bash	2026-11-22T09:18:59Z	0.0	[launched bg_6] cd /home/ladvien/bevy_gooey_loop && git worktree add --detach ~/g104_base main 2>&1 | tail -1; (cd ~/g104_base && cargo build --release --example gallery --all-
+345	355	prove	model	model		2026-11-22T09:18:59Z	1.6	
+345	356	prove	tool	wait: other	wait	2026-11-22T09:19:01Z	5.0	{}
+345	357	prove	model	model		2026-11-22T09:19:06Z	1.6	
+345	358	prove	tool	wait: other	wait	2026-11-22T09:19:07Z	240.0	{}
+345	359	prove	model	model		2026-11-22T09:23:08Z	3.3	
+345	360	prove	tool	read files	read	2026-11-22T09:23:11Z	0.1	docs/media/prose.png
+345	361	prove	model	model		2026-11-22T09:23:11Z	10.8	
+345	362	prove	tool	shell	bash	2026-11-22T09:23:22Z	1.2	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' p='examples/prose.rs' s=open(p).read() a=s.index("const PAGE") b=s.index("\n",a) new='const PAGE: &str = "
+345	363	prove	model	model		2026-11-22T09:23:23Z	1.7	
+345	364	prove	tool	wait: other	wait	2026-11-22T09:23:25Z	240.0	{}
+345	365	prove	model	model		2026-11-22T09:27:25Z	2.4	
+345	366	prove	tool	wait: other	wait	2026-11-22T09:27:27Z	95.5	{}
+345	367	prove	model	model		2026-11-22T09:29:03Z	4.3	
+345	368	prove	tool	shell	bash	2026-11-22T09:29:07Z	60.0	[launched bg_7] cd /home/ladvien/bevy_gooey_loop && cat > /tmp/g104/pair.sh <<'EOF' for i in 1 2 3 4 5 6 7 8; do for v in before after; do echo "$v $(env -u WAYLAND_DISPLAY DIS
+345	369	prove	model	model		2026-11-22T09:30:07Z	1.7	
+345	370	prove	tool	wait: other	wait	2026-11-22T09:30:09Z	5.0	{}
+345	371	prove	model	model		2026-11-22T09:30:14Z	1.6	
+345	372	prove	tool	wait: other	wait	2026-11-22T09:30:15Z	20.8	{}
+345	373	prove	model	model		2026-11-22T09:30:36Z	3.4	
+345	374	prove	tool	cargo build	bash	2026-11-22T09:30:39Z	20.9	cd /home/ladvien/bevy_gooey_loop && for r in 1280x720:720 2560x1440:1440; do env -u WAYLAND_DISPLAY DISPLAY=:93 GOOEY_FRAMES=100 GOOEY_SIZE=${r%%:*} GOOEY_SHOT=
+345	375	prove	model	model		2026-11-22T09:31:00Z	2.0	
+345	376	prove	tool	read files	read	2026-11-22T09:31:02Z	0.1	/tmp/g104/prose720.png
+345	377	prove	tool	read files	read	2026-11-22T09:31:02Z	0.2	/tmp/g104/prose1440.png
+345	378	prove	model	model		2026-11-22T09:31:02Z	5.2	
+345	379	prove	tool	cargo build	bash	2026-11-22T09:31:08Z	9.3	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' p='examples/prose.rs' s=open(p).read() a="```\\n\\nSee [the plan]" assert s.count(a)==1 s=s.replace(a,"```
+345	380	prove	model	model		2026-11-22T09:31:17Z	2.4	
+345	381	prove	tool	read files	read	2026-11-22T09:31:19Z	0.1	docs/media/prose.png
+345	382	prove	model	model		2026-11-22T09:31:19Z	3.7	
+345	383	prove	tool	shell	bash	2026-11-22T09:31:23Z	1.2	cd /home/ladvien/bevy_gooey_loop && sed -i 's/over six rows with one line number/over five rows under one line number/' docs/media/README.md && grep -c "five ro
+345	384	prove	model	model		2026-11-22T09:31:24Z	2.7	
+345	385	prove	tool	eval	eval	2026-11-22T09:31:27Z	0.1	{"language": "py", "code": "d = await commit.draft()\nprint(d)"}
+345	386	prove	model	model		2026-11-22T09:31:27Z	3.9	
+345	387	prove	tool	git	bash	2026-11-22T09:31:31Z	0.0	cd /home/ladvien/bevy_gooey_loop && git status --short; git ls-files gallery.png
+345	388	prove	model	model		2026-11-22T09:31:31Z	2.7	
+345	389	prove	tool	shell	bash	2026-11-22T09:31:34Z	0.0	cd /home/ladvien/bevy_gooey_loop && rm gallery.png; cat .gitignore | head -5
+345	390	prove	tool	read files	read	2026-11-22T09:31:34Z	0.0	help://eval/commit
+345	391	prove	model	model		2026-11-22T09:31:34Z	5.0	
+345	392	prove	tool	eval	eval	2026-11-22T09:31:39Z	0.1	{"language": "py", "code": "d = await commit.draft()\nawait d.take(\"**\", silent=True)\nawait d.commit(\"Add soft wrap and Markdown ink to the code editor\", [
+345	393	prove	model	model		2026-11-22T09:31:39Z	4.5	
+345	394	gate	tool	phase mark	bash	2026-11-22T09:31:43Z	0.0	[launched bg_8] cd /home/ladvien/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark gate; git checkout main 2>&1 | tail -1; git merge --no-ff loop/iter-104 -m "Merg
+345	395	gate	model	model		2026-11-22T09:31:43Z	1.5	
+345	396	gate	tool	wait: other	wait	2026-11-22T09:31:45Z	5.0	{}
+345	397	gate	model	model		2026-11-22T09:31:50Z	1.6	
+345	398	gate	tool	wait: other	wait	2026-11-22T09:31:51Z	240.0	{}
+345	399	gate	model	model		2026-11-22T09:35:51Z	1.9	
+345	400	gate	tool	wait: other	wait	2026-11-22T09:35:53Z	133.1	{}
+345	401	gate	model	model		2026-11-22T09:38:06Z	3.2	
+345	402	ship	tool	phase mark	bash	2026-11-22T09:38:10Z	15.0	cd /home/ladvien/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark ship; git push origin main 2>&1 | tail -2; git push origin loop/iter-104 2>&1 | 
+345	403	ship	model	model		2026-11-22T09:38:25Z	4.1	
+345	404	release	tool	phase mark	bash	2026-11-22T09:38:29Z	24.4	cd /home/ladvien/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark release; RUSTC_WRAPPER= cargo semver-checks --baseline-rev v0.53.0 2>&1 | grep -
+345	405	release	model	model		2026-11-22T09:38:53Z	3.4	
+345	406	release	tool	shell	bash	2026-11-22T09:38:57Z	30.4	cd /home/ladvien/bevy_gooey_loop && RUSTC_WRAPPER= cargo semver-checks --baseline-rev v0.53.0 2>&1 | tail -25 | cut -c1-200
+345	407	release	model	model		2026-11-22T09:39:27Z	4.0	
+345	408	release	tool	cargo build	bash	2026-11-22T09:39:31Z	13.6	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' def sub(p,a,b,n=1): s=open(p).read(); assert s.count(a)==n,(p,a,s.count(a)); open(p,'w').write(s.replace(a
+345	409	release	model	model		2026-11-22T09:39:45Z	4.0	
+345	410	release	tool	eval	eval	2026-11-22T09:39:49Z	0.1	{"language": "py", "code": "d = await commit.draft()\nawait d.take(\"**\", silent=True)\nr = await d.commit(\"release: v0.54.0\", [\"- CodeMove::ToColumn added 
+345	411	release	model	model		2026-11-22T09:39:49Z	3.3	
+345	412	release	tool	push gate	bash	2026-11-22T09:39:52Z	2.5	cd /home/ladvien/bevy_gooey_loop && git tag v0.54.0 && git push origin main v0.54.0 2>&1 | tail -3; git status --short | head -3; gh issue view 114 --json state
+345	413	release	model	model		2026-11-22T09:39:55Z	4.6	
+345	414	log	tool	phase mark	bash	2026-11-22T09:39:59Z	2.5	cd /home/ladvien/bevy_gooey_loop && gh issue comment 114 --body "Fixed in 9a12dbc (v0.54.0 tag 40df24d). \`CodeSoftWrap\` and \`CodeMarkdown\` on a \`code_edito
+345	415	log	model	model		2026-11-22T09:40:02Z	11.9	
+345	416	log	tool	cargo publish	bash	2026-11-22T09:40:14Z	0.9	cd /home/ladvien/bevy_gooey_loop && cat >> docs/loop-log.md <<'EOF' ## Iteration 104 — 2026-11-22 — code editor soft wrap and Markdown ink (#114) **Audit left `
+345	417	log	tool	eval	eval	2026-11-22T09:40:14Z	0.3	{"language": "py", "code": "d = await commit.draft()\nawait d.take(\"**\", silent=True)\nr = await d.commit(\"Loop log: iteration 104, code editor soft wrap and
+345	418	log	model	model		2026-11-22T09:40:15Z	4.7	
+345	419	log	tool	shell	bash	2026-11-22T09:40:19Z	0.1	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' p='docs/loop-log.md' s=open(p).read() a="look had the last line half cut (page too long for the pane) and 
+345	420	log	tool	eval	eval	2026-11-22T09:40:20Z	0.1	{"language": "py", "code": "d = await commit.draft()\nawait d.take(\"**\", silent=True)\nr = await d.commit(\"Loop log: iteration 104, correct the critique line
+345	421	log	model	model		2026-11-22T09:40:20Z	3.2	
+345	422	log	tool	push gate	bash	2026-11-22T09:40:23Z	1.6	cd /home/ladvien/bevy_gooey_loop && git push origin main 2>&1 | tail -1; git status --short | head -3
+345	423	log	model	model		2026-11-22T09:40:24Z	8.0	
