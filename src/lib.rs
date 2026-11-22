@@ -278,6 +278,7 @@ pub use code_fold::FoldMap;
 pub use code_markdown::markdown_highlights;
 pub use code_overlay::{CODE_HOVER_DELAY_S, COMPLETION_ROWS, CodeMinimap};
 pub use code_search::CodeFind;
+pub use code_syntax::{SyntaxInk, SyntaxPreset, SyntaxTheme};
 pub use color::{
     AreaMarker, ColorArea, ColorPicker, ColorRail, ColorRefused, ColorStrip, ColorSwatch,
     ColorValue, SwatchHalf, update_colors,
@@ -698,6 +699,9 @@ impl Plugin for GooeyStylePlugin {
             .register_type::<CodeMarkdown>()
             .register_type::<CodeEditorValue>()
             .register_type::<SyntaxRole>()
+            .register_type::<SyntaxInk>()
+            .register_type::<SyntaxTheme>()
+            .register_type::<SyntaxPreset>()
             .register_type::<CodeSeverity>()
             .register_type::<CompletionTrigger>()
             .register_type::<LedState>()

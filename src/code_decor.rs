@@ -20,6 +20,7 @@ use bevy::prelude::*;
 /// semantic colours, and held at the contrast bar on the editor's own ground in every preset.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Reflect)]
 #[reflect(Debug, PartialEq, Hash, Clone)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum SyntaxRole {
     /// A key of a map or a record: a YAML key, a field name.
     Key,
