@@ -126,7 +126,7 @@ fn setup(mut commands: Commands) {
                                 [
                                     Column::new("Name").width(7.0),
                                     Column::new("Qty").width(4.0),
-                                    Column::new("Notes").width(18.0).unsortable().wrap(),
+                                    Column::new("Notes").width(15.0).unsortable().wrap(),
                                 ],
                                 rows(),
                             ),
