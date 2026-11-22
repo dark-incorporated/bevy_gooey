@@ -17599,3 +17599,282 @@ pass	seq	phase	kind	category	tool	start	seconds	detail
 343	172	research	model	model		2026-11-22T08:00:02Z	1.6	
 343	173	research	tool	wait: other	wait	2026-11-22T08:00:04Z	91.3	{}
 343	174	research	model	model		2026-11-22T08:01:35Z	0.0	
+344	1	orient	model	model		2026-11-22T08:13:42Z	4.2	
+344	2	orient	tool	phase mark	bash	2026-11-22T08:13:47Z	0.8	cd /home/ladvien/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark orient; git status --short | head; git log --oneline | head -5; git fetch -q ori
+344	3	orient	tool	github	bash	2026-11-22T08:13:47Z	1.1	cd /home/ladvien/bevy_gooey_loop && gh issue list --repo bevy-coven/bevy_gooey --state open --limit 100 --json number,title,labels,createdAt --jq '.[] | "#\(.nu
+344	4	orient	model	model		2026-11-22T08:13:48Z	3.5	
+344	5	orient	tool	cargo publish	bash	2026-11-22T08:13:51Z	2.4	cd /home/ladvien/bevy_gooey_loop && git show --stat f200e9f | head -20; git log --oneline main..loop/iter-103 | head; git branch -a --list '*parked*'; for n in 
+344	6	orient	model	model		2026-11-22T08:13:54Z	5.5	
+344	7	research	tool	phase mark	bash	2026-11-22T08:13:59Z	0.8	cd /home/ladvien/bevy_gooey_loop && git ls-remote origin 'refs/heads/loop/iter-103*'; git show --stat 5d6d44f | head; git show f200e9f -- tests/split.rs; python
+344	8	research	model	model		2026-11-22T08:14:00Z	2.6	
+344	9	research	tool	git	bash	2026-11-22T08:14:03Z	0.0	cd /home/ladvien/bevy_gooey_loop && git checkout -q -b loop/iter-103-cluster main && git cherry-pick 5d6d44f 2>&1 | tail -2; git checkout f200e9f -- tests/split
+344	10	research	model	model		2026-11-22T08:14:03Z	1.9	
+344	11	research	tool	shell	bash	2026-11-22T08:14:04Z	0.0	cd /home/ladvien/bevy_gooey_loop && cat docs/research/divider-wrap-led-size.md | cut -c1-500
+344	12	research	model	model		2026-11-22T08:14:04Z	2.8	
+344	13	build	tool	phase mark	bash	2026-11-22T08:14:07Z	0.1	cd /home/ladvien/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark build; grep -n "SplitDivider" src/skin.rs | head -30; grep -n "fn update_splits"
+344	14	build	model	model		2026-11-22T08:14:07Z	1.3	
+344	15	build	tool	shell	bash	2026-11-22T08:14:09Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 5025,5075p src/skin.rs; grep -n "sizing\|Sizing" src/skin.rs | head -30; grep -n "LaidOutSplit" src/split.rs | head -
+344	16	build	model	model		2026-11-22T08:14:09Z	9.2	
+344	17	build	tool	shell	bash	2026-11-22T08:14:18Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 300,400p src/box_model.rs; sed -n 700,724p src/split.rs; sed -n 815,900p src/split.rs; sed -n 5330,5360p src/skin.rs
+344	18	build	model	model		2026-11-22T08:14:18Z	10.1	
+344	19	build	tool	shell	bash	2026-11-22T08:14:28Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "^fn app_sized\|^fn along\|^fn child_of\|^const BAR\|^fn room\|^fn rig\|^fn drag\|^fn focus\|^fn point_at\|^fn at\b\
+344	20	build	model	model		2026-11-22T08:14:28Z	2.6	
+344	21	build	tool	shell	bash	2026-11-22T08:14:31Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "MIN_TARGET_PX" src/*.rs | grep -v "^src/skin.rs" | head; grep -n "Split.*Thickness\|SplitMin" src/lib.rs src/dock.r
+344	22	build	model	model		2026-11-22T08:14:31Z	10.8	
+344	23	build	tool	shell	bash	2026-11-22T08:14:41Z	0.1	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' import re p='src/split.rs' s=open(p).read() s=s.replace('''/// A [`crate::split`]'s divider, the part a po
+344	24	build	model	model		2026-11-22T08:14:41Z	7.0	
+344	25	build	tool	shell	bash	2026-11-22T08:14:48Z	0.0	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' p='src/split.rs' s=open(p).read() old=s[s.index(" let held = written.get(child)"):s.index(" let mut next =
+344	26	build	model	model		2026-11-22T08:14:48Z	2.7	
+344	27	build	tool	shell	bash	2026-11-22T08:14:51Z	0.1	cd /home/ladvien/bevy_gooey_loop && sed -i 's/^ PAD_REPEAT_DELAY, PAD_REPEAT_RATE, SPLIT_KEY_STEP_PX, repeat_steps, split_clamp, split_drag,$/ MIN_TARGET_PX, PA
+344	28	build	model	model		2026-11-22T08:14:51Z	2.9	
+344	29	build	tool	cargo test	bash	2026-11-22T08:14:54Z	0.2	cd /home/ladvien/bevy_gooey_loop && sed -i '427s/SplitSaved, split_by_pad, update_splits,/SplitSaved, SplitThickness, split_by_pad, update_splits,/' src/lib.rs 
+344	30	build	model	model		2026-11-22T08:14:54Z	2.6	
+344	31	build	tool	shell	bash	2026-11-22T08:14:57Z	0.0	cd /home/ladvien/bevy_gooey_loop && env | grep -i -E "cargo|rustc|sccache"; cat .cargo/config.toml 2>/dev/null | head -20; cat ~/.cargo/config.toml | head -20
+344	32	build	model	model		2026-11-22T08:14:57Z	3.0	
+344	33	build	tool	cargo test	bash	2026-11-22T08:15:00Z	0.0	[launched bg_2] cd /home/ladvien/bevy_gooey_loop && export CARGO_INCREMENTAL=0; (time cargo nextest run --all-features --lib --tests -E 'test(split::)' 2>&1 | tail -30) 2>&1 | 
+344	34	build	model	model		2026-11-22T08:15:00Z	2.7	
+344	35	build	tool	shell	bash	2026-11-22T08:15:02Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "LED_TEXT_SIZES\|type_size\|text_size\|TypeRole\|fn led\|fn update_leds\|Role::Label\|LedWord\|LedDot" src/led.rs sr
+344	36	build	bg	cargo test	bash	2026-11-22T08:15:02Z	0.1	bg_2 completed: export CARGO_INCREMENTAL=0; (time cargo nextest run --all-features --lib --tests -E 'test(split::)' 2>&1 | tail -30) ...
+344	37	build	model	model		2026-11-22T08:15:02Z	4.3	
+344	38	build	tool	shell	bash	2026-11-22T08:15:07Z	0.0	cd /home/ladvien/bevy_gooey_loop && unset CARGO_INCREMENTAL; grep -n "incremental" Cargo.toml .cargo/config.toml ~/.cargo/config.toml; env | grep INCR; cargo me
+344	39	build	model	model		2026-11-22T08:15:07Z	4.1	
+344	40	build	tool	cargo test	bash	2026-11-22T08:15:11Z	0.0	[launched bg_3] cd /home/ladvien/bevy_gooey_loop && unset CARGO_INCREMENTAL; cargo nextest run --all-features --lib --tests -E 'test(split::)' 2>&1 | tail -30
+344	41	build	model	model		2026-11-22T08:15:11Z	1.0	
+344	42	build	tool	shell	bash	2026-11-22T08:15:12Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 20,200p src/led.rs; sed -n 4725,4765p src/widgets.rs; sed -n 4095,4125p src/skin.rs
+344	43	build	bg	cargo test	bash	2026-11-22T08:15:12Z	0.1	bg_3 completed: unset CARGO_INCREMENTAL; cargo nextest run --all-features --lib --tests -E 'test(split::)' 2>&1 | tail -30
+344	44	build	model	model		2026-11-22T08:15:12Z	3.9	
+344	45	build	tool	shell	bash	2026-11-22T08:15:16Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -rn "INCREMENTAL" docs/loop-log.md AGENTS.md ~/.local/share/wiggum/*.sh 2>/dev/null | head -5; which cargo; type cargo 
+344	46	build	model	model		2026-11-22T08:15:16Z	2.5	
+344	47	build	tool	shell	bash	2026-11-22T08:15:19Z	0.6	cd /home/ladvien/bevy_gooey_loop && export CARGO_BUILD_RUSTC_WRAPPER= ; cargo metadata --format-version=1 --all-features --filter-platform=x86_64-unknown-linux-
+344	48	build	model	model		2026-11-22T08:15:19Z	1.9	
+344	49	build	tool	cargo test	bash	2026-11-22T08:15:21Z	0.0	[launched bg_4] cd /home/ladvien/bevy_gooey_loop && export CARGO_BUILD_RUSTC_WRAPPER= ; cargo nextest run --all-features --lib --tests -E 'test(split::)' 2>&1 | tail -30
+344	50	build	model	model		2026-11-22T08:15:21Z	2.5	
+344	51	build	tool	shell	bash	2026-11-22T08:15:24Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "TypeRole" src/*.rs | head -20; grep -n "Role::Label" src/skin.rs | head -20
+344	52	build	model	model		2026-11-22T08:15:24Z	1.2	
+344	53	build	tool	shell	bash	2026-11-22T08:15:25Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 5500,5545p src/skin.rs; grep -n "fn text_style\|text_style(" src/skin.rs | head; grep -n "fn type_size" -A8 src/skin.
+344	54	build	model	model		2026-11-22T08:15:25Z	7.8	
+344	55	build	tool	shell	bash	2026-11-22T08:15:33Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "Role::Label\b" src/*.rs | grep -v "^src/widgets.rs" ; sed -n 3530,3545p src/skin.rs; grep -n "LedDot\|Role::Led\b" 
+344	56	build	model	model		2026-11-22T08:15:33Z	1.6	
+344	57	build	tool	shell	bash	2026-11-22T08:15:34Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 125,135p src/access.rs; sed -n 575,600p src/access.rs; sed -n 636,642p src/access.rs; sed -n 1880,1890p src/skin.rs; 
+344	58	build	model	model		2026-11-22T08:15:34Z	16.2	
+344	59	build	tool	shell	bash	2026-11-22T08:15:50Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 108,124p src/access.rs; sed -n 595,615p src/access.rs; grep -n "Role::Label" src/color_motion.rs src/feedback.rs; gre
+344	60	build	model	model		2026-11-22T08:15:50Z	2.9	
+344	61	build	tool	shell	bash	2026-11-22T08:15:53Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "Led" src/skin.rs | head -20; grep -n "LED_TEXT" src/*.rs | head
+344	62	build	model	model		2026-11-22T08:15:53Z	2.0	
+344	63	build	tool	shell	bash	2026-11-22T08:15:55Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 4090,4125p src/skin.rs; sed -n 60,200p src/led.rs; grep -n "Role::Label" src/skin.rs
+344	64	build	model	model		2026-11-22T08:15:55Z	4.0	
+344	65	build	tool	shell	bash	2026-11-22T08:15:59Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 5500,5512p src/skin.rs; sed -n 5560,5640p src/skin.rs; grep -n "LedWord" src/widgets.rs src/skin.rs | head; grep -n "
+344	66	build	model	model		2026-11-22T08:15:59Z	5.3	
+344	67	build	tool	shell	bash	2026-11-22T08:16:05Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 4725,4765p src/widgets.rs; grep -n "text_look(\|fn text_look\|\.2 \* \|font_size" src/skin.rs | head -30
+344	68	build	model	model		2026-11-22T08:16:05Z	1.5	
+344	69	build	tool	shell	bash	2026-11-22T08:16:06Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 5690,5740p src/skin.rs; grep -n "fn text_of\|fn text_arm\|-> Option<(Color, &" src/skin.rs; grep -n "parent: Option\|
+344	70	build	model	model		2026-11-22T08:16:06Z	3.2	
+344	71	build	tool	shell	bash	2026-11-22T08:16:09Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 2170,2260p src/skin.rs; grep -n "icon_size\|IconSize" src/skin.rs
+344	72	build	model	model		2026-11-22T08:16:09Z	3.4	
+344	73	build	tool	shell	bash	2026-11-22T08:16:13Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "type StateQuery" src/skin.rs; sed -n 2262,2300p src/skin.rs; grep -n "text_scale_of\|region_gap" src/skin.rs | head
+344	74	build	bg	cargo test	bash	2026-11-22T08:15:24Z	48.4	bg_4 completed: export CARGO_BUILD_RUSTC_WRAPPER= ; cargo nextest run --all-features --lib --tests -E 'test(split::)' 2>&1 | tail -30
+344	75	build	model	model		2026-11-22T08:16:13Z	2.8	
+344	76	build	tool	cargo build	bash	2026-11-22T08:16:16Z	32.2	cd /home/ladvien/bevy_gooey_loop && export CARGO_BUILD_RUSTC_WRAPPER=; sed -n 1,40p tests/split.rs | grep -n "use"; grep -rn "ui_widgets::.*Pressed\|Pressed" te
+344	77	build	model	model		2026-11-22T08:16:48Z	3.9	
+344	78	build	tool	shell	bash	2026-11-22T08:16:52Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "Pressed" src/split.rs | head -3; sed -n 18,21p tests/split.rs
+344	79	build	tool	shell	bash	2026-11-22T08:16:52Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -i 's/^pub(crate) struct DividerThickness(f32);/pub struct DividerThickness(f32);/' src/split.rs && grep -n "struct Divi
+344	80	build	model	model		2026-11-22T08:16:52Z	8.8	
+344	81	build	tool	cargo test	bash	2026-11-22T08:17:01Z	24.5	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' p='src/split.rs' s=open(p).read() s=s.replace('''/// What [`update_splits`] last wrote into a divider's [`
+344	82	build	model	model		2026-11-22T08:17:25Z	2.8	
+344	83	build	tool	cargo test	bash	2026-11-22T08:17:28Z	45.2	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' p='tests/split.rs' s=open(p).read() s=s.replace(" point_at(&mut app, at(&app, rect(&app, ui.divider).cente
+344	84	build	model	model		2026-11-22T08:18:13Z	3.3	
+344	85	prove	tool	phase mark	bash	2026-11-22T08:18:16Z	0.1	cd /home/ladvien/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark prove >/dev/null 2>&1; git add src/split.rs src/lib.rs tests/split.rs && git com
+344	86	prove	model	model		2026-11-22T08:18:16Z	8.1	
+344	87	prove	tool	shell	bash	2026-11-22T08:18:24Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 2470,2560p src/skin.rs; sed -n 3080,3135p src/skin.rs
+344	88	prove	model	model		2026-11-22T08:18:24Z	4.9	
+344	89	prove	tool	shell	bash	2026-11-22T08:18:29Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 2585,2625p src/skin.rs; sed -n 2960,3030p src/skin.rs
+344	90	prove	model	model		2026-11-22T08:18:29Z	3.0	
+344	91	prove	tool	shell	bash	2026-11-22T08:18:32Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 2335,2365p src/skin.rs; sed -n 2760,2830p src/skin.rs; grep -n "gap_px" src/skin.rs | head
+344	92	prove	model	model		2026-11-22T08:18:32Z	4.9	
+344	93	prove	tool	shell	bash	2026-11-22T08:18:37Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "pub fn type_size" -A6 src/skin.rs; grep -n "let scaled" -A3 src/skin.rs | head; sed -n 5538,5545p src/skin.rs; sed 
+344	94	prove	model	model		2026-11-22T08:18:37Z	8.4	
+344	95	prove	tool	shell	bash	2026-11-22T08:18:46Z	0.0	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' import re p='src/skin.rs' s=open(p).read() def rep(a,b,n=1): global s assert s.count(a)>=1,a s=s.replace(a
+344	96	prove	model	model		2026-11-22T08:18:46Z	8.1	
+344	97	prove	tool	shell	bash	2026-11-22T08:18:54Z	0.0	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' p='src/led.rs' s=open(p).read() s=s.replace('''/// Marks the text that shows an [`led()`](crate::led)'s st
+344	98	prove	model	model		2026-11-22T08:18:54Z	1.9	
+344	99	prove	tool	shell	bash	2026-11-22T08:18:56Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 80,200p tests/led.rs; grep -n "^fn \|^#\[test\]" tests/led.rs | tail -20
+344	100	prove	model	model		2026-11-22T08:18:56Z	9.1	
+344	101	prove	tool	cargo test	bash	2026-11-22T08:19:05Z	60.1	[launched bg_6] cd /home/ladvien/bevy_gooey_loop && cat >> tests/led.rs <<'EOF' /// The label and the word of an LED row: their `TextFont` sizes in logical px. fn text_sizes(ap
+344	102	prove	model	model		2026-11-22T08:20:05Z	2.5	
+344	103	prove	tool	shell	bash	2026-11-22T08:20:08Z	0.1	cd /home/ladvien/bevy_gooey_loop && wc -l src/table.rs; grep -n "pub struct Column" -B4 -A40 src/table.rs | head -90; grep -n "ONE_LINE" src/table.rs
+344	104	prove	model	model		2026-11-22T08:20:08Z	2.3	
+344	105	prove	tool	shell	bash	2026-11-22T08:20:10Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 225,330p src/table.rs
+344	106	prove	tool	shell	bash	2026-11-22T08:20:10Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 1290,1420p src/table.rs
+344	107	prove	model	model		2026-11-22T08:20:10Z	2.8	
+344	108	prove	tool	shell	bash	2026-11-22T08:20:13Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 1000,1290p src/table.rs
+344	109	prove	model	model		2026-11-22T08:20:13Z	14.1	
+344	110	prove	tool	shell	bash	2026-11-22T08:20:27Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "Role::TableRow\b\|Role::TableCellText\|Role::TableCell\b\|Role::TableView\|Role::TableRows" src/skin.rs | head -20;
+344	111	prove	model	model		2026-11-22T08:20:27Z	2.5	
+344	112	prove	tool	shell	bash	2026-11-22T08:20:29Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 4884,4910p src/skin.rs; sed -n 4984,5005p src/skin.rs; sed -n 5668,5675p src/skin.rs; grep -n "fn table_window" -B2 -
+344	113	prove	model	model		2026-11-22T08:20:29Z	2.4	
+344	114	prove	tool	read files	read	2026-11-22T08:20:32Z	0.0	local://2.log:1-60
+344	115	prove	model	model		2026-11-22T08:20:32Z	3.3	
+344	116	prove	tool	cargo test	bash	2026-11-22T08:20:35Z	0.0	cd /home/ladvien/bevy_gooey_loop && export CARGO_BUILD_RUSTC_WRAPPER=; cargo nextest run --all-features --lib --tests -E 'test(led::)' > /tmp/g103/led.out 2>&1;
+344	117	prove	bg	shell	bash	2026-11-22T08:19:07Z	87.7	bg_6 completed: cat >> tests/led.rs <<'EOF' /// The label and the word of an LED row: their `TextFont` sizes in logical px. fn text_...
+344	118	prove	model	model		2026-11-22T08:20:35Z	2.5	
+344	119	prove	tool	shell	bash	2026-11-22T08:20:38Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 418,426p tests/led.rs; mkdir -p /tmp/g103; grep -n "Dirty\|dirty" src/skin.rs | head -40
+344	120	prove	model	model		2026-11-22T08:20:38Z	3.4	
+344	121	prove	tool	read files	read	2026-11-22T08:20:41Z	0.0	src/skin.rs:2990-3010
+344	122	prove	model	model		2026-11-22T08:20:41Z	2.7	
+344	123	prove	tool	shell	bash	2026-11-22T08:20:44Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "uninked\|RemovedComponents<'w, 's, InkFollow>" src/skin.rs
+344	124	prove	model	model		2026-11-22T08:20:44Z	2.0	
+344	125	prove	tool	read files	read	2026-11-22T08:20:46Z	0.0	src/skin.rs:2592-2604
+344	126	prove	tool	read files	read	2026-11-22T08:20:46Z	0.0	src/skin.rs:2896-2902
+344	127	prove	model	model		2026-11-22T08:20:46Z	3.7	
+344	128	prove	tool	cargo test	bash	2026-11-22T08:20:50Z	60.1	[launched bg_8] cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' p='src/skin.rs' s=open(p).read() s=s.replace(" RemovedComponents<'w, 's, InkFollow>,\n ),\n);"," RemovedCo
+344	129	prove	model	model		2026-11-22T08:21:50Z	2.6	
+344	130	prove	tool	search	grep	2026-11-22T08:21:52Z	0.1	src/table.rs
+344	131	prove	model	model		2026-11-22T08:21:52Z	1.7	
+344	132	prove	tool	read files	read	2026-11-22T08:21:54Z	0.0	src/table.rs:150:215
+344	133	prove	model	model		2026-11-22T08:21:54Z	2.2	
+344	134	prove	tool	read files	read	2026-11-22T08:21:56Z	0.1	src/table.rs:150-215
+344	135	prove	tool	read files	read	2026-11-22T08:21:56Z	0.1	src/table.rs:860-930
+344	136	prove	tool	read files	read	2026-11-22T08:21:56Z	0.1	src/table.rs:1082-1260
+344	137	prove	model	model		2026-11-22T08:21:56Z	4.0	
+344	138	prove	tool	read files	read	2026-11-22T08:22:00Z	0.0	src/table.rs:1264-1420
+344	139	prove	bg	shell	bash	2026-11-22T08:20:51Z	69.2	bg_8 completed: python3 - <<'EOF' p='src/skin.rs' s=open(p).read() s=s.replace(" RemovedComponents<'w, 's, InkFollow>,\n ),...
+344	140	prove	model	model		2026-11-22T08:22:00Z	2.8	
+344	141	prove	tool	git	bash	2026-11-22T08:22:03Z	0.1	cd /home/ladvien/bevy_gooey_loop && git add -A && git commit -qm "LedSize: an LED drawn at a type-scale step (#110) Fixes #110" && grep -n "Role::TableRow =>\|R
+344	142	prove	model	model		2026-11-22T08:22:03Z	1.9	
+344	143	prove	tool	read files	read	2026-11-22T08:22:05Z	0.0	src/skin.rs:4985-5015
+344	144	prove	tool	read files	read	2026-11-22T08:22:05Z	0.0	src/skin.rs:5668-5690
+344	145	prove	model	model		2026-11-22T08:22:05Z	20.7	
+344	146	prove	tool	shell	bash	2026-11-22T08:22:26Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "table_pitch\|rows_tall\|TableRows\|\.0 \* \|visible_rows\|fn page" src/table.rs src/tree.rs src/list.rs src/access*
+344	147	prove	model	model		2026-11-22T08:22:26Z	5.1	
+344	148	prove	tool	read files	read	2026-11-22T08:22:31Z	0.0	src/table.rs:480-520
+344	149	prove	model	model		2026-11-22T08:22:31Z	3.4	
+344	150	prove	tool	shell	bash	2026-11-22T08:22:34Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "pub struct Sizing" -B3 -A3 src/box_model.rs; grep -n "pub enum Extent" -A25 src/box_model.rs | grep -n "Auto\|Px"; 
+344	151	prove	model	model		2026-11-22T08:22:34Z	9.4	
+344	152	prove	tool	shell	bash	2026-11-22T08:22:44Z	0.0	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' p='src/table.rs' s=open(p).read() def rep(a,b): global s assert s.count(a)==1,(s.count(a),a) s=s.replace(a
+344	153	prove	model	model		2026-11-22T08:22:44Z	6.7	
+344	154	prove	tool	shell	bash	2026-11-22T08:22:50Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "const ONE_LINE" -B2 -A4 src/widgets.rs; grep -n "WordOrCharacter" src/widgets.rs | head -3
+344	155	prove	model	model		2026-11-22T08:22:50Z	3.3	
+344	156	prove	tool	shell	bash	2026-11-22T08:22:54Z	0.1	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' p='src/table.rs' s=open(p).read() def rep(a,b): global s assert s.count(a)==1,(s.count(a),a) s=s.replace(a
+344	157	prove	model	model		2026-11-22T08:22:54Z	13.2	
+344	158	prove	tool	cargo build	bash	2026-11-22T08:23:07Z	13.6	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' p='src/table.rs' s=open(p).read() def rep(a,b): global s assert s.count(a)==1,(s.count(a),a) s=s.replace(a
+344	159	prove	model	model		2026-11-22T08:23:21Z	4.8	
+344	160	prove	tool	shell	bash	2026-11-22T08:23:25Z	0.1	cd /home/ladvien/bevy_gooey_loop && sed -n 1,140p tests/table.rs | cut -c1-170; grep -n "^fn \|^#\[test\]" tests/table.rs | head -80
+344	161	prove	model	model		2026-11-22T08:23:26Z	2.8	
+344	162	prove	tool	shell	bash	2026-11-22T08:23:28Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 173,310p tests/table.rs; sed -n 836,857p tests/table.rs; sed -n 502,536p tests/table.rs
+344	163	prove	model	model		2026-11-22T08:23:28Z	16.3	
+344	164	prove	tool	cargo test	bash	2026-11-22T08:23:45Z	0.0	[launched bg_9] cd /home/ladvien/bevy_gooey_loop && cat >> tests/table.rs <<'EOF' // A wrapping column (#109): the text breaks at the cell's edge and the row grows with it. con
+344	165	prove	model	model		2026-11-22T08:23:45Z	1.6	
+344	166	prove	tool	wait: other	wait	2026-11-22T08:23:46Z	5.0	{}
+344	167	prove	model	model		2026-11-22T08:23:51Z	1.6	
+344	168	prove	tool	wait: other	wait	2026-11-22T08:23:53Z	18.8	{}
+344	169	prove	model	model		2026-11-22T08:24:12Z	3.2	
+344	170	prove	tool	cargo test	bash	2026-11-22T08:24:15Z	28.7	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' p='tests/table.rs' s=open(p).read() s=s.replace(" let first = rect(&app, pool(&mut app)[0].1);\n assert!(f
+344	171	prove	model	model		2026-11-22T08:24:43Z	3.7	
+344	172	prove	tool	cargo test	bash	2026-11-22T08:24:47Z	20.2	cd /home/ladvien/bevy_gooey_loop && export CARGO_BUILD_RUSTC_WRAPPER=; cp src/table.rs /tmp/g103/table.rs.bak && sed -i 's/if wrapped { WRAPPED } else { ONE_LIN
+344	173	prove	model	model		2026-11-22T08:25:07Z	4.9	
+344	174	prove	tool	cargo test	bash	2026-11-22T08:25:12Z	15.6	cd /home/ladvien/bevy_gooey_loop && export CARGO_BUILD_RUSTC_WRAPPER=; python3 - <<'EOF' p='src/table.rs' s=open(p).read() a="let (view_h, max) = if wraps {" as
+344	175	prove	model	model		2026-11-22T08:25:28Z	2.7	
+344	176	prove	tool	git	bash	2026-11-22T08:25:31Z	0.0	cd /home/ladvien/bevy_gooey_loop && git add -A && git commit -qm "Column::wrap: a table cell that wraps its text (#109) Fixes #109" && git log --oneline | head 
+344	177	prove	model	model		2026-11-22T08:25:31Z	3.7	
+344	178	prove	tool	shell	bash	2026-11-22T08:25:34Z	0.0	cd /home/ladvien/bevy_gooey_loop && cat examples/led.rs | head -150; grep -n "\[\[example\]\]" -A3 Cargo.toml | head -20; grep -n "led" docs/media/README.md | h
+344	179	prove	model	model		2026-11-22T08:25:34Z	2.3	
+344	180	prove	tool	read files	read	2026-11-22T08:25:37Z	0.0	examples/led.rs
+344	181	prove	model	model		2026-11-22T08:25:37Z	3.9	
+344	182	prove	tool	read files	read	2026-11-22T08:25:41Z	0.0	examples/led.rs:16-250
+344	183	prove	model	model		2026-11-22T08:25:41Z	2.0	
+344	184	prove	tool	shell	bash	2026-11-22T08:25:43Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "split(\|split_pane\|fn setup" -B1 -A12 examples/split.rs | sed -n 1,60p; grep -n "pub fn split\b\|pub fn split(" -B
+344	185	prove	model	model		2026-11-22T08:25:43Z	14.2	
+344	186	prove	tool	cargo build	bash	2026-11-22T08:25:57Z	0.0	cd /home/ladvien/bevy_gooey_loop && cat > examples/host_knobs.rs <<'EOF' //! Three host knobs on one screen: a split whose divider is a thin 6 px line (`SplitTh
+344	187	prove	model	model		2026-11-22T08:25:57Z	2.2	
+344	188	prove	tool	cargo build	bash	2026-11-22T08:25:59Z	0.0	[launched bg_10] cd /home/ladvien/bevy_gooey_loop && export CARGO_BUILD_RUSTC_WRAPPER=; ls /tmp/.X11-unix; echo $DISPLAY; cargo build --release --example host_knobs > /tmp/g103/
+344	189	prove	model	model		2026-11-22T08:25:59Z	1.8	
+344	190	prove	tool	shell	bash	2026-11-22T08:26:01Z	0.0	cd /home/ladvien/bevy_gooey_loop && wc -l README.md; head -30 CHANGELOG.md | cut -c1-200; grep -n "LED\|led" README.md | cut -c1-220; grep -n "ivider\|SplitMin"
+344	191	prove	model	model		2026-11-22T08:26:01Z	1.7	
+344	192	prove	tool	shell	bash	2026-11-22T08:26:02Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "led(" docs/guide/*.md | head -5; sed -n 34,45p docs/guide/splits.md | cut -c1-250; grep -n "Column::" docs/guide/ta
+344	193	prove	model	model		2026-11-22T08:26:02Z	1.5	
+344	194	prove	tool	shell	bash	2026-11-22T08:26:04Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -ln "LedState" docs/guide/*.md README.md; grep -n "LedState" docs/guide/*.md | cut -c1-120 | head
+344	195	prove	model	model		2026-11-22T08:26:04Z	1.1	
+344	196	prove	tool	shell	bash	2026-11-22T08:26:05Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 35,50p docs/guide/status-bar.md | cut -c1-300; grep -n "Where it stops" docs/guide/tables.md | cut -c1-50
+344	197	prove	model	model		2026-11-22T08:26:05Z	10.5	
+344	198	prove	tool	shell	bash	2026-11-22T08:26:16Z	0.0	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' def edit(p,f): s=open(p).read(); s=f(s); open(p,'w').write(s) IMG="![The host_knobs example: a thin 6 px d
+344	199	prove	model	model		2026-11-22T08:26:16Z	3.4	
+344	200	prove	tool	shell	bash	2026-11-22T08:26:19Z	0.0	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' p='README.md' L=open(p).read().split('\n') i=[k for k,l in enumerate(L) if l.startswith('- **Show a lot of
+344	201	prove	model	model		2026-11-22T08:26:19Z	0.6	
+344	202	prove	tool	wait: other	wait	2026-11-22T08:26:20Z	5.0	{}
+344	203	prove	model	model		2026-11-22T08:26:25Z	0.6	
+344	204	prove	tool	wait: other	wait	2026-11-22T08:26:25Z	57.5	{}
+344	205	prove	model	model		2026-11-22T08:27:23Z	3.0	
+344	206	prove	tool	shell	bash	2026-11-22T08:27:26Z	3.2	cd /home/ladvien/bevy_gooey_loop && T=${CARGO_TARGET_DIR:-$HOME/.cargo-target-shared/global}; B=$T/release/examples/host_knobs; ls -la $B | cut -c1-80; for sz i
+344	207	prove	model	model		2026-11-22T08:27:29Z	1.3	
+344	208	prove	tool	read files	read	2026-11-22T08:27:30Z	0.0	/tmp/g103/hk_1280x720.png
+344	209	prove	tool	read files	read	2026-11-22T08:27:30Z	0.0	/tmp/g103/hk_2560x1440.png
+344	210	prove	model	model		2026-11-22T08:27:30Z	3.1	
+344	211	prove	tool	shell	bash	2026-11-22T08:27:33Z	6.0	cd /home/ladvien/bevy_gooey_loop && B=$HOME/target/gooey-l*/release/examples/host_knobs; B=$(ls $HOME/target/gooey-l*/release/examples/host_knobs | head -1); xd
+344	212	prove	model	model		2026-11-22T08:27:39Z	3.7	
+344	213	prove	tool	shell	bash	2026-11-22T08:27:43Z	9.3	cd /home/ladvien/bevy_gooey_loop && B=$(ls $HOME/target/gooey-l*/release/examples/host_knobs | head -1); for d in :97 :1 :0; do DISPLAY=$d GOOEY_SIZE=1280x720 G
+344	214	prove	model	model		2026-11-22T08:27:52Z	2.4	
+344	215	prove	tool	shell	bash	2026-11-22T08:27:55Z	19.8	cd /home/ladvien/bevy_gooey_loop && B=$(ls $HOME/target/gooey-l*/release/examples/host_knobs | head -1); for sz in 1280x720 2560x1440; do env -u WAYLAND_DISPLAY
+344	216	prove	model	model		2026-11-22T08:28:14Z	1.1	
+344	217	prove	tool	read files	read	2026-11-22T08:28:15Z	0.0	/tmp/g103/hk_1280x720.png
+344	218	prove	tool	read files	read	2026-11-22T08:28:15Z	0.1	/tmp/g103/hk_2560x1440.png
+344	219	prove	model	model		2026-11-22T08:28:16Z	5.7	
+344	220	prove	tool	cargo build	bash	2026-11-22T08:28:21Z	0.0	[launched bg_11] cd /home/ladvien/bevy_gooey_loop && sed -i 's/Column::new("Qty").width(3.0)/Column::new("Qty").width(4.0)/' examples/host_knobs.rs && export CARGO_BUILD_RUSTC_W
+344	221	prove	model	model		2026-11-22T08:28:21Z	1.6	
+344	222	prove	tool	shell	bash	2026-11-22T08:28:23Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "^#" docs/research/divider-wrap-led-size.md; tail -15 docs/media/README.md | cut -c1-200
+344	223	prove	model	model		2026-11-22T08:28:23Z	0.8	
+344	224	prove	tool	read files	read	2026-11-22T08:28:24Z	0.0	docs/research/divider-wrap-led-size.md:96-112
+344	225	prove	model	model		2026-11-22T08:28:24Z	8.0	
+344	226	prove	tool	git	bash	2026-11-22T08:28:32Z	0.1	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' p='docs/media/README.md' L=open(p).read().split('\n') i=[k for k,l in enumerate(L) if l.startswith('| `led
+344	227	prove	model	model		2026-11-22T08:28:32Z	1.8	
+344	228	prove	tool	wait: other	wait	2026-11-22T08:28:34Z	5.0	{}
+344	229	prove	model	model		2026-11-22T08:28:39Z	0.7	
+344	230	prove	tool	wait: other	wait	2026-11-22T08:28:39Z	118.5	{}
+344	231	prove	model	model		2026-11-22T08:30:38Z	4.0	
+344	232	prove	tool	shell	bash	2026-11-22T08:30:42Z	60.0	[launched bg_12] cd /home/ladvien/bevy_gooey_loop && export -n WAYLAND_DISPLAY; cd /tmp/g103; for i in 1 2 3 4 5; do for v in before after; do for sz in 1280x720 2560x1440; do r
+344	233	prove	model	model		2026-11-22T08:31:42Z	1.7	
+344	234	prove	tool	wait: other	wait	2026-11-22T08:31:43Z	5.0	{}
+344	235	prove	model	model		2026-11-22T08:31:48Z	0.6	
+344	236	prove	tool	wait: other	wait	2026-11-22T08:31:49Z	220.1	{}
+344	237	prove	model	model		2026-11-22T08:35:29Z	6.9	
+344	238	prove	tool	git	bash	2026-11-22T08:35:36Z	24.5	cd /home/ladvien/bevy_gooey_loop && T=$(ls -d $HOME/target/gooey-l*); env -u WAYLAND_DISPLAY WINIT_UNIX_BACKEND=x11 DISPLAY=:93 GOOEY_SIZE=1280x720 GOOEY_FRAMES
+344	239	prove	model	model		2026-11-22T08:36:00Z	1.8	
+344	240	prove	tool	read files	read	2026-11-22T08:36:02Z	0.0	docs/media/host_knobs.png
+344	241	prove	model	model		2026-11-22T08:36:02Z	5.4	
+344	242	prove	tool	cargo build	bash	2026-11-22T08:36:08Z	10.3	cd /home/ladvien/bevy_gooey_loop && export CARGO_BUILD_RUSTC_WRAPPER= && sed -i 's/Column::new("Notes").width(18.0)/Column::new("Notes").width(15.0)/' examples/
+344	243	prove	model	model		2026-11-22T08:36:18Z	0.8	
+344	244	prove	tool	read files	read	2026-11-22T08:36:19Z	0.0	docs/media/host_knobs.png
+344	245	prove	model	model		2026-11-22T08:36:19Z	3.3	
+344	246	gate	tool	phase mark	bash	2026-11-22T08:36:22Z	0.0	[launched bg_13] cd /home/ladvien/bevy_gooey_loop && git add -A && git commit -qm "host_knobs: columns that fit the pane" && python3 ~/.local/share/wiggum/steps.py mark gate; ex
+344	247	gate	model	model		2026-11-22T08:36:22Z	0.7	
+344	248	gate	tool	wait: other	wait	2026-11-22T08:36:23Z	0.7	{}
+344	249	gate	model	model		2026-11-22T08:36:24Z	1.4	
+344	250	gate	tool	shell	bash	2026-11-22T08:36:25Z	0.0	[launched bg_14] cd /home/ladvien/bevy_gooey_loop && export CARGO_BUILD_RUSTC_WRAPPER=; cargo fmt && git add -A && git commit -qm "fmt" && /tmp/g103/gate.sh /tmp/g103/gate2.log;
+344	251	gate	model	model		2026-11-22T08:36:25Z	0.6	
+344	252	gate	tool	wait: other	wait	2026-11-22T08:36:26Z	5.0	{}
+344	253	gate	model	model		2026-11-22T08:36:31Z	0.6	
+344	254	gate	tool	wait: other	wait	2026-11-22T08:36:31Z	240.1	{}
+344	255	gate	model	model		2026-11-22T08:40:31Z	5.5	
+344	256	gate	tool	github	bash	2026-11-22T08:40:37Z	10.0	cd /home/ladvien/bevy_gooey_loop && gh label create assumed-decision --color FBCA04 2>&1 | tail -1 gh issue comment 108 --body "Assumed decision (owner may over
+344	257	gate	model	model		2026-11-22T08:40:47Z	0.6	
+344	258	gate	tool	wait: other	wait	2026-11-22T08:40:48Z	153.4	{}
+344	259	gate	model	model		2026-11-22T08:43:21Z	2.1	
+344	260	gate	tool	shell	bash	2026-11-22T08:43:23Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -E "^==|Summary|tests run|test result|FAIL" /tmp/g103/gate2.log | cut -c1-200
+344	261	gate	model	model		2026-11-22T08:43:23Z	1.6	
+344	262	ship	tool	phase mark	bash	2026-11-22T08:43:25Z	0.8	cd /home/ladvien/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark ship; git checkout -q main && git pull -q --ff-only 2>&1 | tail -1; git merge --
+344	263	ship	model	model		2026-11-22T08:43:26Z	2.9	
+344	264	ship	tool	git	bash	2026-11-22T08:43:28Z	0.0	cd /home/ladvien/bevy_gooey_loop && git status -sb | head -3 > /tmp/g103/st.out; git log --oneline | head -4 >> /tmp/g103/st.out; git diff d4d6c9d --stat | tail
+344	265	ship	model	model		2026-11-22T08:43:28Z	3.9	
+344	266	ship	tool	git	bash	2026-11-22T08:43:32Z	0.7	cd /home/ladvien/bevy_gooey_loop && git diff loop/iter-103-cluster HEAD --stat | wc -l; git fetch -q; git log --oneline origin/main | head -2
+344	267	ship	model	model		2026-11-22T08:43:33Z	2.7	
+344	268	release	tool	phase mark	bash	2026-11-22T08:43:36Z	15.4	cd /home/ladvien/bevy_gooey_loop && git push origin main 2>&1 | tail -2; git push origin loop/iter-103-cluster 2>&1 | tail -1; python3 ~/.local/share/wiggum/ste
+344	269	release	model	model		2026-11-22T08:43:51Z	4.3	
+344	270	release	tool	shell	bash	2026-11-22T08:43:55Z	0.6	cd /home/ladvien/bevy_gooey_loop && export CARGO_BUILD_RUSTC_WRAPPER=; git log -1 --format=%cd v0.52.2; date; grep -n "0\.52" Cargo.toml README.md | head; sed -
+344	271	release	model	model		2026-11-22T08:43:56Z	4.1	
+344	272	release	tool	github	bash	2026-11-22T08:44:00Z	0.8	cd /home/ladvien/bevy_gooey_loop && git checkout Cargo.toml CHANGELOG.md Cargo.lock 2>&1|tail -1; git status --short | head; gh issue list -R bevy-coven/bevy_gr
+344	273	release	model	model		2026-11-22T08:44:01Z	2.5	
+344	274	release	tool	github	bash	2026-11-22T08:44:03Z	0.5	cd /home/ladvien/bevy_gooey_loop && git checkout Cargo.toml CHANGELOG.md; git status --short | head -3; gh issue list -R bevy-coven/bevy_grimoire --state open -
+344	275	release	model	model		2026-11-22T08:44:04Z	2.3	
+344	276	log	tool	phase mark	bash	2026-11-22T08:44:06Z	0.1	cd /home/ladvien/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark log; tail -c 600 docs/loop-log.md | cut -c1-300; git log --oneline d4d6c9d..HEAD
+344	277	log	model	model		2026-11-22T08:44:06Z	11.1	
+344	278	log	tool	push gate	bash	2026-11-22T08:44:18Z	1.8	cd /home/ladvien/bevy_gooey_loop && cat >> docs/loop-log.md <<'EOF' ## Iteration 103 — 2026-11-22 — SplitThickness, Column::wrap, LedSize (#108 #109 #110) **Wha
+344	279	log	model	model		2026-11-22T08:44:19Z	9.2	
