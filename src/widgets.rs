@@ -14,11 +14,12 @@ use bevy::picking::hover::Hovered;
 use bevy::prelude::*;
 use bevy::text::{EditableText, Justify, LineBreak, TextCursorStyle, TextEdit};
 use bevy::ui::auto_directional_navigation::AutoDirectionalNavigation;
-use bevy::ui::{Checked, FixedNode};
+use bevy::ui::{Checked, FixedNode, Selected};
 use bevy::ui_widgets::{
-    Checkbox, ControlOrientation, ScrollArea, Scrollbar, ScrollbarThumb, SelectAllOnFocus, Slider,
-    SliderOrientation, SliderRange, SliderStep, SliderThumb, SliderValue, TabActivation, TabList,
-    TextInput, TrackClick, checkbox_self_update, observe, slider_self_update,
+    Activate, Checkbox, ControlOrientation, ScrollArea, Scrollbar, ScrollbarThumb,
+    SelectAllOnFocus, Slider, SliderOrientation, SliderRange, SliderStep, SliderThumb, SliderValue,
+    TabActivation, TabList, TextInput, TrackClick, ValueChange, checkbox_self_update, observe,
+    slider_self_update,
 };
 use bevy::window::SystemCursorIcon;
 
@@ -4314,6 +4315,125 @@ pub fn band() -> impl Bundle {
         Hovered::default(),
         TabIndex(0),
         AutoDirectionalNavigation::default(),
+    )
+}
+
+/// A chip's words break at a word, and at a letter when one word alone is wider than the chip may
+/// be. Its least width is its longest word, which is what lets a chip narrow before its row wraps.
+const CHIP_TEXT: TextLayout = TextLayout::new(Justify::Left, LineBreak::WordOrCharacter);
+
+/// A chip's start state, put on as it is added (see [`StartsOn`]).
+#[derive(Component)]
+#[component(on_add = start_chip_state)]
+struct ChipStartsOn(bool);
+
+fn start_chip_state(mut world: DeferredWorld, HookContext { entity, .. }: HookContext) {
+    let on = world
+        .get::<ChipStartsOn>(entity)
+        .is_some_and(|start| start.0);
+    let mut commands = world.commands();
+    let mut chip = commands.entity(entity);
+    chip.remove::<ChipStartsOn>();
+    if on {
+        chip.insert(Selected);
+    }
+}
+
+/// Marks a [`toggle_chip`]: a chip that flips its own [`Selected`](bevy::ui::Selected) and says so.
+/// Public so a host can find one with a query; nothing needs it written.
+#[derive(Component, Debug, Default, Clone, Copy, PartialEq, Eq, Reflect)]
+#[reflect(Component)]
+pub struct ToggleChip;
+
+/// A toggle chip was activated: flip it and say so, once.
+fn toggle_chip_on_activate(
+    activate: On<Activate>,
+    chips: Query<Has<Selected>, With<ToggleChip>>,
+    mut commands: Commands,
+) {
+    let Ok(was_on) = chips.get(activate.entity) else {
+        return;
+    };
+    if was_on {
+        commands.entity(activate.entity).remove::<Selected>();
+    } else {
+        commands.entity(activate.entity).insert(Selected);
+    }
+    commands.trigger(ValueChange {
+        source: activate.entity,
+        value: !was_on,
+        is_final: true,
+    });
+}
+
+/// One small clickable word, for a filter, a tag or a category (Weapons, Armour, "Not imported
+/// (4)"): a frame of one line weight that is always there, the raised fill at rest, the hovered
+/// fill under the pointer and **the accent while it carries Bevy's
+/// [`Selected`](bevy::ui::Selected)**, so lighting a chip changes a colour and moves no neighbour.
+/// It is Bevy's `Button`: focus, Tab and the arrows, Enter, Space, South and a click send
+/// [`Activate`](crate::Activate), and it is a target high at least.
+///
+/// **It gives way before its row does.** Its words break at a word (at a letter when one word is
+/// wider than its host), so its least width is its longest word: in a wrapping row
+/// ([`RowLayout`] with `wrap`) a chip first narrows and wraps its own words, and only when it
+/// cannot narrow further does the row start a new line. It is never wider than its host, so one
+/// long name does not push out of a panel.
+///
+/// A plain chip never flips itself: the host owns the selection (an exclusive filter writes
+/// `Selected` on the one that is on and takes it off the one that was). For an on/off filter that
+/// flips by itself and reports `ValueChange<bool>` use [`toggle_chip`]. Put an [`icon`] or a
+/// [`count_text`] after the words and they stand half a gap off; its words are
+/// [`Role::ChipText`](crate::Role::ChipText), not `ButtonText`, so a host that counts a dialog's
+/// `ButtonText` does not count chips.
+///
+/// ```
+/// # use bevy::prelude::*;
+/// # use bevy_gooey::*;
+/// # fn ui(mut commands: Commands) {
+/// commands.spawn((
+///     row_with(0.5, RowLayout { wrap: Some(FlexWrap::Wrap), ..default() }),
+///     children![
+///         (chip("Weapons"), bevy::ui::Selected),
+///         chip("Armour"),
+///         chip("Not imported (4)"),
+///     ],
+/// ));
+/// # }
+/// ```
+pub fn chip(label: impl Into<String>) -> impl Bundle {
+    (
+        Node::default(),
+        bevy::ui_widgets::Button,
+        Role::Chip,
+        Hovered::default(),
+        TabIndex(0),
+        AutoDirectionalNavigation::default(),
+        children![(Text::new(label), CHIP_TEXT, Role::ChipText)],
+    )
+}
+
+/// A [`chip`] that is an on/off filter: a click, Enter, Space or South flips it, lights it with
+/// [`Selected`](bevy::ui::Selected) and sends one `ValueChange<bool>` on it (`is_final: true`)
+/// with the new state. A game that writes `Selected` itself moves the chip and sends no event, as
+/// every widget of this crate does; one spawned `on` starts lit and sends nothing. Its words never
+/// change with its state. A screen reader hears a toggle button, pressed or not.
+///
+/// ```
+/// # use bevy::prelude::*;
+/// # use bevy_gooey::*;
+/// # fn ui(mut commands: Commands) {
+/// commands.spawn((
+///     toggle_chip("Armour", true),
+///     observe(|change: On<ValueChange<bool>>| info!("armour: {}", change.value)),
+/// ));
+/// # }
+/// ```
+pub fn toggle_chip(label: impl Into<String>, on: bool) -> impl Bundle {
+    (
+        chip(label),
+        ToggleChip,
+        ChipStartsOn(on),
+        observe(toggle_chip_on_activate),
     )
 }
 

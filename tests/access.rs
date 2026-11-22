@@ -1450,3 +1450,23 @@ fn a_lists_rail_is_a_scrollbar_a_reader_can_move() {
         at(&app)
     );
 }
+
+#[test]
+fn a_toggle_chip_is_a_toggle_button_named_by_its_words_and_a_lit_plain_chip_is_selected() {
+    let mut app = app();
+    screen_with(&mut app, toggle_chip("Armour", false));
+    let chip = find_by_label(&mut app, "Armour").unwrap();
+    assert_eq!(node(&app, chip).role(), Ak::Button);
+    assert_eq!(node(&app, chip).label(), Some("Armour"));
+    assert_eq!(node(&app, chip).toggled(), Some(Toggled::False));
+    click(&mut app, chip);
+    settle(&mut app);
+    assert_eq!(node(&app, chip).toggled(), Some(Toggled::True));
+
+    let mut app = self::app();
+    screen_with(&mut app, (self::chip("Weapons"), bevy::ui::Selected));
+    let plain = find_by_label(&mut app, "Weapons").unwrap();
+    assert_eq!(node(&app, plain).label(), Some("Weapons"));
+    assert_eq!(node(&app, plain).is_selected(), Some(true));
+    assert_eq!(node(&app, plain).toggled(), None);
+}

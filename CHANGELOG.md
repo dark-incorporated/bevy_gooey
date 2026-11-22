@@ -2,6 +2,19 @@
 
 ## [Unreleased]
 
+### Breaking
+
+- `Role` has two new variants, `Chip` and `ChipText`; a `match` over it needs arms.
+
+### Added
+
+- `chip(label)` and `toggle_chip(label, on)` (`docs/research/chip.md`, `tests/chip.rs`, `examples/kit.rs`): a small clickable
+  tag for a filter or category. Its words wrap at a word (a long unbroken name at a letter) so a chip is never wider than
+  its host and a wrapping row of chips makes lines; it is never under the skin's target high, takes the skin's frame, fill
+  and ink by state (the accent when lit by Bevy's `Selected`) and moves no size on any state. `toggle_chip` flips `Selected`
+  itself and sends one `ValueChange<bool>` per click; a plain `chip` sends `Activate` and the host lights it. `ToggleChip` is
+  the marker. The access tree names a chip by its words (`toggled` for a toggle chip, `selected` otherwise).
+
 ## [0.54.0] - 2026-11-22
 
 ### Breaking
