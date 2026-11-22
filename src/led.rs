@@ -12,7 +12,7 @@ use bevy::ui::UiTransform;
 
 use crate::elevation::ShadowLayer;
 use crate::motion::MotionSettings;
-use crate::skin::{GooeySkin, LED_TEXT_SIZES, Role, SkinScope, skin_of};
+use crate::skin::{GooeySkin, LED_TEXT_SIZES, Role, SkinScope, led_text_px, skin_of};
 
 /// What an [`led()`](crate::led) says.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash, Reflect)]
@@ -46,6 +46,25 @@ impl LedState {
 #[derive(Component, Clone, Copy, Debug, Default, PartialEq, Eq, Reflect)]
 #[reflect(Component, Debug, Default, PartialEq, Clone)]
 pub struct Led(pub LedState);
+
+/// How big an [`led()`](crate::led) is drawn: a step of [`GooeySkin::type_scale`] (the unit of
+/// [`IconSize`](crate::IconSize)), put on the LED's root. The label and the state word are drawn at
+/// that step's text size and the dot is as tall as 1.1 of those (the same share a body-sized LED
+/// has), so a quiet readout in a status strip is `LedSize(1)` and the whole LED follows the player's
+/// text size. A step past the end of the scale is its last. Without the component the LED is the
+/// body's size, as it always was; taking it off gives that back.
+///
+/// ```
+/// # use bevy::prelude::*;
+/// # use bevy_gooey::*;
+/// # fn ui(mut commands: Commands) {
+/// commands.spawn((led("Agent", LedState::Live), LedSize(1)));
+/// # }
+/// ```
+#[derive(Component, Clone, Copy, Debug, PartialEq, Eq, Reflect)]
+#[reflect(Component, Debug, PartialEq, Clone)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+pub struct LedSize(pub usize);
 
 /// Marks the text that shows an [`led()`](crate::led)'s state word.
 #[derive(Component, Clone, Copy, Debug, Default, PartialEq, Eq, Reflect)]
@@ -82,7 +101,7 @@ pub fn update_leds(
     skin: Res<GooeySkin>,
     scopes: Query<&SkinScope>,
     parents: Query<&ChildOf>,
-    leds: Query<(Entity, &Led, &Children)>,
+    leds: Query<(Entity, &Led, Option<&LedSize>, &Children)>,
     roles: Query<&Role>,
     mut dots: Query<(
         &mut Node,
@@ -97,9 +116,9 @@ pub fn update_leds(
     let phase = time.map_or(0.0, |t| {
         t.elapsed_secs_f64() % PULSE_SECONDS / PULSE_SECONDS
     }) as f32;
-    for (entity, led, children) in &leds {
+    for (entity, led, size, children) in &leds {
         let skin = skin_of(&skin, entity, &scopes, &parents);
-        let side = skin.text_size * skin.text_scale * LED_TEXT_SIZES;
+        let side = led_text_px(skin, size.map(|size| size.0)) * LED_TEXT_SIZES;
         let (fill, frame, radius, glow, turn) = match led.0 {
             LedState::Off => (Color::NONE, skin.outline, RADIUS_DISC, None, false),
             LedState::Live => {

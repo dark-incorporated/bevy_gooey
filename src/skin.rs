@@ -35,6 +35,7 @@ use crate::icon::{IconSize, IconTone};
 use crate::layout::{
     AspectBox, BoxSize, CardWidth, CellWidth, LayoutGap, OverlayStacked, PlacedAt, RowLayout,
 };
+use crate::led::LedSize;
 use crate::list::ListView;
 use crate::menu::{MenuMarked, MenuOpen};
 use crate::model::{
@@ -242,6 +243,14 @@ const TABLE_SORT_MARK_SCALE: f32 = 0.8;
 
 /// An LED's dot is this many body text sizes square.
 pub(crate) const LED_TEXT_SIZES: f32 = 1.1;
+
+/// The text size an LED is drawn at, in logical px with the player's text scale: the body's, or
+/// the `step` of [`GooeySkin::type_scale`] a [`LedSize`] names.
+pub(crate) fn led_text_px(skin: &GooeySkin, step: Option<usize>) -> f32 {
+    step.map_or(skin.text_size * skin.text_scale, |step| {
+        skin.type_size(step)
+    })
+}
 
 /// The share of the window, on each side, that a dialog's scrim and a prompts legend keep clear: a
 /// TV may not show the outer 5%, so nothing a player must read or press stands there.
@@ -2354,6 +2363,8 @@ struct State {
     ink_follow: bool,
     /// A gap in logical px ([`GapPx`]); none leaves the role's own.
     gap_px: Option<f32>,
+    /// A [`crate::led`]'s text step ([`LedSize`]); none is the body's size.
+    led_size: Option<usize>,
     /// The rail lane of a scroll region's viewport ([`ScrollGutter`]).
     scroll_gutter: Option<Option<crate::box_model::Space>>,
     /// The gap of a [`crate::fill_region_with`], a multiple of the skin's gap; none is no gap.
@@ -2414,6 +2425,7 @@ impl Default for State {
             host_geometry: false,
             ink_follow: false,
             gap_px: None,
+            led_size: None,
             scroll_gutter: None,
             region_gap: None,
             layout_gap: 1.0,
@@ -2475,6 +2487,7 @@ type StateQuery = (
                 Has<InkFollow>,
                 Option<&'static GapPx>,
                 Option<&'static ScrollGutter>,
+                Option<&'static LedSize>,
             ),
         ),
     ),
@@ -2540,6 +2553,7 @@ type Restyle = (
                     Changed<InkFollow>,
                     Changed<GapPx>,
                     Changed<ScrollGutter>,
+                    Changed<LedSize>,
                 )>,
             )>,
         )>,
@@ -2584,6 +2598,7 @@ type Removals<'w, 's> = (
         RemovedComponents<'w, 's, LoadingHold>,
         RemovedComponents<'w, 's, OverlayStacked>,
         RemovedComponents<'w, 's, InkFollow>,
+        RemovedComponents<'w, 's, LedSize>,
     ),
 );
 
@@ -2673,7 +2688,7 @@ pub fn apply_skin(
         unprimed,
         unsized_controls,
         unvaried,
-        (unheld, unstacked, uninked),
+        (unheld, unstacked, uninked, unled),
     ) = &mut removed;
     let any_scope = !scopes.is_empty();
     let look = Look {
@@ -2729,7 +2744,7 @@ pub fn apply_skin(
                             visibility,
                             border_px,
                             ink_override,
-                            (host_geometry, ink_follow, gap_px, scroll_gutter),
+                            (host_geometry, ink_follow, gap_px, scroll_gutter, led_size),
                         ),
                     ),
                     row,
@@ -2798,6 +2813,7 @@ pub fn apply_skin(
                         host_geometry,
                         ink_follow,
                         gap_px: gap_px.map(|gap| gap.0),
+                        led_size: led_size.map(|size| size.0),
                         scroll_gutter: scroll_gutter.map(|gutter| gutter.0),
                         visibility: visibility.copied().unwrap_or_default(),
                         region_gap: gap.map(|gap| gap.0),
@@ -2883,6 +2899,7 @@ pub fn apply_skin(
         unheld.clear();
         unstacked.clear();
         uninked.clear();
+        unled.clear();
         unscoped.clear();
         orphaned.clear();
         for item in &mut styled {
@@ -2937,6 +2954,7 @@ pub fn apply_skin(
     dirty.extend(unheld.read());
     dirty.extend(unstacked.read());
     dirty.extend(uninked.read());
+    dirty.extend(unled.read());
     if focus.is_changed() || visible.is_changed() {
         dirty.extend(
             styled
@@ -4101,7 +4119,8 @@ fn restyle(
                 next.column_gap = Val::Px(skin.gap * 0.5);
             }
             Role::LedDot => {
-                let side = Val::Px(skin.text_size * skin.text_scale * LED_TEXT_SIZES);
+                let side =
+                    Val::Px(led_text_px(skin, parent.and_then(|p| p.led_size)) * LED_TEXT_SIZES);
                 next.width = side;
                 next.height = side;
                 next.flex_shrink = 0.0;
@@ -5538,6 +5557,12 @@ fn restyle(
             })
         }
         Role::MarkdownPath => Some((skin.text_muted, &look.fonts.body, skin.type_scale[1])),
+        // An LED's label and word are a step of the type scale when it names one ([`LedSize`]).
+        Role::Label if parent.is_some_and(|p| p.led_size.is_some()) => Some((
+            skin.text,
+            &look.fonts.body,
+            led_text_px(skin, parent.and_then(|p| p.led_size)) / skin.text_scale,
+        )),
         Role::Label | Role::ProgressLine => Some((skin.text, &look.fonts.body, skin.text_size)),
         Role::SectionNote => Some((skin.text_muted, &look.fonts.body, skin.text_size)),
         // The label of a toast's button follows the button: inverted on the accent, faded with

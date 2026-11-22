@@ -316,7 +316,7 @@ pub use layout_motion::{
     LAYOUT_QUIET_FRAMES, LayoutTravel, MovesSmoothly, TravelFrom, TravelSpring, mark_moving_parts,
     update_layout_motion,
 };
-pub use led::{Led, LedState, LedWord, update_leds};
+pub use led::{Led, LedSize, LedState, LedWord, update_leds};
 pub use list::{
     ListView, manage_scroll_rails, page_lists, place_scroll_rails, scroll_region_ends,
     scroll_to_focus, update_lists,
@@ -424,7 +424,7 @@ pub use slots::{
 };
 pub use split::{
     CollapseSplit, Split, SplitAxis, SplitDivider, SplitFraction, SplitGeometry, SplitMin,
-    SplitSaved, split_by_pad, update_splits,
+    SplitSaved, SplitThickness, split_by_pad, update_splits,
 };
 pub use split_peek::{SplitPeek, SplitPeekSettings, update_split_peeks};
 pub use status::{StatusBar, StatusItem, StatusKind, StatusPriority};
@@ -634,6 +634,7 @@ impl Plugin for GooeyStylePlugin {
             .register_type::<SplitAxis>()
             .register_type::<SplitFraction>()
             .register_type::<SplitMin>()
+            .register_type::<SplitThickness>()
             .register_type::<TableSort>()
             .register_type::<SelectMode>()
             .register_type::<TableRows>()
@@ -674,6 +675,7 @@ impl Plugin for GooeyStylePlugin {
             .register_type::<CodeSeverity>()
             .register_type::<CompletionTrigger>()
             .register_type::<LedState>()
+            .register_type::<LedSize>()
             .register_type::<LedWord>()
             .register_type::<HoverGroup>()
             .register_type::<TypeSelectGroup>()

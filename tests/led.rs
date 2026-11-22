@@ -351,3 +351,94 @@ fn the_word_beside_an_led_keeps_its_contrast_under_its_glow_in_every_preset() {
         }
     }
 }
+
+/// The label and the word of an LED row: their `TextFont` sizes in logical px.
+fn text_sizes(app: &App, row: Entity) -> Vec<f32> {
+    app.world()
+        .get::<Children>(row)
+        .expect("children")
+        .iter()
+        .filter_map(|c| app.world().get::<TextFont>(c))
+        .map(|f| match f.font_size {
+            FontSize::Px(px) => px,
+            other => panic!("not a pixel size: {other:?}"),
+        })
+        .collect()
+}
+
+fn dot_side(app: &App, dot: Entity) -> f32 {
+    app.world()
+        .get::<ComputedNode>(dot)
+        .expect("laid out")
+        .size()
+        .x
+}
+
+#[test]
+fn an_led_size_draws_the_label_the_word_and_the_dot_at_that_step() {
+    let mut app = app(MotionSettings::off());
+    let (row, dot) = lit(&mut app, LedState::Live);
+    let plain = text_sizes(&app, row);
+    let plain_dot = dot_side(&app, dot);
+    assert_eq!(plain.len(), 2, "a label and a word");
+
+    app.world_mut().entity_mut(row).insert(LedSize(1));
+    frames(&mut app, 3);
+    let skin = app.world().resource::<GooeySkin>().clone();
+    let small = skin.type_size(1);
+    assert!(
+        small < skin.text_size * skin.text_scale,
+        "step 1 is quieter than the body"
+    );
+    for px in text_sizes(&app, row) {
+        assert!((px - small).abs() <= 1.0, "{px} vs {small}");
+    }
+    let side = dot_side(&app, dot);
+    assert!(
+        (side - small * 1.1).abs() < 1.5 && side < plain_dot,
+        "dot {side} vs {}",
+        small * 1.1
+    );
+
+    // It holds through a state change and a skin change (the player's text size).
+    set(&mut app, row, LedState::Failed);
+    app.world_mut().resource_mut::<GooeySkin>().text_scale = 1.5;
+    frames(&mut app, 3);
+    let skin = app.world().resource::<GooeySkin>().clone();
+    for px in text_sizes(&app, row) {
+        assert!(
+            (px - skin.type_size(1)).abs() <= 1.0,
+            "{px} vs {}",
+            skin.type_size(1)
+        );
+    }
+    let side = dot_side(&app, dot);
+    assert!((side - skin.type_size(1) * 1.1).abs() < 1.5, "dot {side}");
+
+    // Taking it off is the body's size again.
+    app.world_mut().entity_mut(row).remove::<LedSize>();
+    frames(&mut app, 3);
+    let skin = app.world().resource::<GooeySkin>().clone();
+    for px in text_sizes(&app, row) {
+        assert!((px - skin.text_size * skin.text_scale).abs() <= 1.0, "{px}");
+    }
+    assert!((dot_side(&app, dot) - skin.text_size * skin.text_scale * 1.1).abs() < 1.5);
+}
+
+#[test]
+fn an_led_without_a_size_is_unchanged() {
+    let mut app = app(MotionSettings::off());
+    let (row, dot) = lit(&mut app, LedState::Live);
+    let skin = app.world().resource::<GooeySkin>().clone();
+    for px in text_sizes(&app, row) {
+        assert!((px - skin.text_size * skin.text_scale).abs() <= 1.0, "{px}");
+    }
+    assert!((dot_side(&app, dot) - skin.text_size * skin.text_scale * 1.1).abs() < 1.5);
+    // A step past the end of the scale is its last.
+    app.world_mut().entity_mut(row).insert(LedSize(99));
+    frames(&mut app, 3);
+    let last = skin.type_size(skin.type_scale.len() - 1);
+    for px in text_sizes(&app, row) {
+        assert!((px - last).abs() <= 1.0, "{px} vs {last}");
+    }
+}

@@ -1004,3 +1004,151 @@ fn at_every_text_size_the_titles_fit_their_headers_and_the_rows_their_table() {
         }
     }
 }
+
+// A wrapping column (#109): the text breaks at the cell's edge and the row grows with it.
+
+const NOTE: &str = "A long note about this item that cannot possibly fit on one line of its cell";
+
+fn notes(n: usize) -> Vec<Vec<String>> {
+    (0..n)
+        .map(|i| {
+            vec![
+                format!("Item {i}"),
+                format!("{i}"),
+                if i % 2 == 0 {
+                    NOTE.to_string()
+                } else {
+                    "short".to_string()
+                },
+            ]
+        })
+        .collect()
+}
+
+fn spawn_wrapping(app: &mut App, n: usize) -> Entity {
+    app.world_mut().spawn((
+        panel(),
+        children![table(
+            [
+                Column::new("Name").width(8.0),
+                Column::new("Qty").width(3.0),
+                Column::new("Note").width(10.0).unsortable().wrap(),
+            ],
+            notes(n)
+        )],
+    ));
+    settle(app);
+    the_table(app)
+}
+
+fn cell_text(app: &App, row: Entity, column: usize) -> Entity {
+    let cells = app.world().get::<Children>(row).expect("cells");
+    app.world().get::<Children>(cells[column]).expect("text")[0]
+}
+
+#[test]
+fn a_wrapping_cell_breaks_inside_its_column_and_its_row_grows() {
+    let mut app = app();
+    spawn_wrapping(&mut app, 6);
+    let shown = pool(&mut app);
+    assert_eq!(shown.len(), 6, "every row of a wrapping table is bound");
+    let (long, short) = (shown[0].1, shown[1].1);
+    let pitch = pitch(&app);
+    let cells = app.world().get::<Children>(long).expect("cells").to_vec();
+    let note = rect(&app, cells[2]);
+    let words = rect(&app, cell_text(&app, long, 2));
+    assert!(
+        words.height() > pitch * 1.5,
+        "the note stands on several lines"
+    );
+    assert!(
+        words.min.x >= note.min.x - 0.5 && words.max.x <= note.max.x + 0.5,
+        "the words stay inside their cell: {words:?} in {note:?}"
+    );
+    let row = rect(&app, long);
+    assert!(row.height() > pitch * 1.5, "the row grew: {}", row.height());
+    assert!(
+        words.height() <= row.height() + 1.0,
+        "the words are inside the row"
+    );
+    // A row whose notes fit is one pitch, and the single-line column beside the long note is still
+    // one line, cut where it was, in the middle of the taller row.
+    assert!((rect(&app, short).height() - pitch).abs() < 1.0);
+    let name = rect(&app, cell_text(&app, long, 0));
+    assert!(name.height() < pitch, "the name is one line");
+    assert!(
+        (name.center().y - row.center().y).abs() < 1.5,
+        "centred in the tall row"
+    );
+    // Rows stack with no gap and no overlap.
+    let second = rect(&app, short);
+    assert!(
+        (second.min.y - row.max.y).abs() < 1.0,
+        "{second:?} under {row:?}"
+    );
+}
+
+#[test]
+fn a_table_with_no_wrapping_column_keeps_its_one_pitch_rows_and_its_pool() {
+    let mut app = app();
+    spawn_items(&mut app, 200);
+    let shown = pool(&mut app);
+    assert!(shown.len() < 20, "a windowed pool, not {}", shown.len());
+    let pitch = pitch(&app);
+    for (_, row) in &shown {
+        assert!((rect(&app, *row).height() - pitch).abs() < 1.0);
+    }
+}
+
+#[test]
+fn the_last_row_of_a_wrapping_table_is_reachable_and_the_cursor_row_stays_in_view() {
+    let mut app = app();
+    let table = spawn_wrapping(&mut app, 40);
+    let view = viewport_rect(&mut app);
+    let tall = {
+        let shown = pool(&mut app);
+        let last = rect(&app, shown.last().expect("rows").1);
+        last.max.y - rect(&app, shown[0].1).min.y
+    };
+    assert!(
+        tall > view.height() + 100.0,
+        "{tall} must overflow {view:?}"
+    );
+
+    // Scrolling to the end shows the last row whole.
+    scroll_to(&mut app, 1.0e6);
+    let view = viewport_rect(&mut app);
+    let shown = pool(&mut app);
+    let last = rect(&app, shown.last().expect("rows").1);
+    assert_eq!(shown.last().expect("rows").0.index, 39);
+    assert!(
+        last.max.y <= view.max.y + 1.0 && last.max.y >= view.max.y - 20.0,
+        "the last row {last:?} ends the scroll in {view:?}"
+    );
+    scroll_to(&mut app, 0.0);
+
+    // Walking the cursor down keeps its row whole in view, tall rows and short alike.
+    focus(&mut app, table);
+    for step in 0..40 {
+        tap(&mut app, KeyCode::ArrowDown);
+        settle(&mut app);
+        let view = viewport_rect(&mut app);
+        let at = app.world().get::<TableCursor>(table).expect("c").0;
+        let row = pool(&mut app)
+            .into_iter()
+            .find(|(r, _)| Some(r.key) == at)
+            .expect("the cursor row is bound")
+            .1;
+        let rect = rect(&app, row);
+        assert!(
+            rect.min.y >= view.min.y - 1.0 && rect.max.y <= view.max.y + 1.0,
+            "step {step}: the cursor row {rect:?} is whole in {view:?}"
+        );
+    }
+    tap(&mut app, KeyCode::Home);
+    settle(&mut app);
+    let view = viewport_rect(&mut app);
+    let top = pool(&mut app)[0].1;
+    let first = rect(&app, top);
+    assert!(first.min.y >= view.min.y - 1.0, "Home shows the first row");
+}
