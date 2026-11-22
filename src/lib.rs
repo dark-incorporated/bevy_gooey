@@ -218,6 +218,7 @@ mod slots;
 mod split;
 mod split_peek;
 mod status;
+mod style_sheet;
 mod tab_scroll;
 mod table;
 mod tabs;
@@ -433,6 +434,11 @@ pub use split::{
 };
 pub use split_peek::{SplitPeek, SplitPeekSettings, update_split_peeks};
 pub use status::{StatusBar, StatusItem, StatusKind, StatusPriority};
+pub use style_sheet::{
+    CascadeBase, CascadeReader, HostPaints, MatchedRule, Paint, Selector, SelectorError,
+    SkinColour, StyleClass, StyleDecl, StyleExplain, StyleRule, StyleRules, StyleSheet,
+    StyleSheetProblems, StyleState, apply_style_sheet, explain, is_class_name,
+};
 pub use tab_scroll::{TabScroll, scroll_tabs_to_reveal};
 pub use table::{
     Column, RowActivated, RowChange, RowSource, SelectMode, SortBy, Table, TableCursor, TableRow,
@@ -487,12 +493,16 @@ use bevy::ui::UiSystems;
 
 /// The order the crate's systems run in `Update`.
 ///
-/// [`GooeySystems::Navigate`] moves focus and activates before [`GooeySystems::Style`] draws, so a
-/// focus move is drawn in the very frame it happens.
+/// [`GooeySystems::Navigate`] moves focus and activates before [`GooeySystems::Cascade`] writes the
+/// style sheet's components, and both before [`GooeySystems::Style`] draws, so a focus move and the
+/// rules it lights are drawn in the very frame it happens.
 #[derive(SystemSet, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum GooeySystems {
     /// Arrow-key, D-pad and pad-button navigation, and the focus feedback.
     Navigate,
+    /// The style sheet's cascade ([`apply_style_sheet`]): a classed node's box and colours from the
+    /// [`StyleSheet`]'s rules. A host writes [`StyleSheet`] and [`HostPaints`] before it.
+    Cascade,
     /// The skin, the meters and the interface's scale: every widget's look.
     Style,
 }
@@ -501,7 +511,12 @@ pub enum GooeySystems {
 fn chain_sets(app: &mut App) {
     app.configure_sets(
         Update,
-        (GooeySystems::Navigate, GooeySystems::Style).chain(),
+        (
+            GooeySystems::Navigate,
+            GooeySystems::Cascade,
+            GooeySystems::Style,
+        )
+            .chain(),
     );
 }
 
@@ -691,6 +706,15 @@ impl Plugin for GooeyStylePlugin {
             .register_type::<HoverGroup>()
             .register_type::<TypeSelectGroup>()
             .register_type::<GroupReveal>()
+            .register_type::<StyleClass>()
+            .add_observer(style_sheet::take_cascade_base)
+            .add_observer(style_sheet::drop_cascade_base)
+            .add_systems(
+                Update,
+                apply_style_sheet
+                    .run_if(resource_exists::<StyleSheet>)
+                    .in_set(GooeySystems::Cascade),
+            )
             .add_observer(hover_group::holds_on_press)
             .add_observer(hover_group::holds_on_release)
             .add_observer(hover_group::holds_on_drag_end)

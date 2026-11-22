@@ -26,6 +26,7 @@ use crate::skin::GooeySkin;
 /// ```
 #[derive(Clone, Copy, Debug, Default, PartialEq, Reflect)]
 #[reflect(Debug, Default, PartialEq, Clone)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum Space {
     /// No room.
     #[default]
@@ -54,6 +55,11 @@ impl Space {
 }
 
 /// A value for each side of a box, each in an `Option`: `None` leaves that side as it is.
+///
+/// With the `serde` feature it reads as **one value** (all four sides: `padding: !Step 2` in YAML) or
+/// as a **map** of `all`, `x`, `y`, `top`, `right`, `bottom` and `left`, each optional; a side wins over
+/// its axis and an axis over `all` (`{all: !Step 1, top: Zero}` is one step everywhere but the top). An
+/// unknown key or a key given twice is refused. It writes the map of the sides that are set.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Reflect)]
 pub struct Sides<T> {
     /// The top side.
@@ -105,6 +111,130 @@ impl<T: Copy> Sides<T> {
             bottom: Some(value),
             ..default()
         }
+    }
+
+    /// These sides with every side `over` sets laid on top: the side `over` names wins, a side it
+    /// leaves `None` keeps this one's. How a style sheet's rules combine a box side by side.
+    pub fn overlaid(self, over: &Sides<T>) -> Self {
+        Self {
+            top: over.top.or(self.top),
+            right: over.right.or(self.right),
+            bottom: over.bottom.or(self.bottom),
+            left: over.left.or(self.left),
+        }
+    }
+
+    /// Whether no side is set.
+    pub fn is_empty(&self) -> bool {
+        self.top.is_none() && self.right.is_none() && self.bottom.is_none() && self.left.is_none()
+    }
+}
+
+#[cfg(feature = "serde")]
+impl<T: serde::Serialize> serde::Serialize for Sides<T> {
+    fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        use serde::ser::SerializeMap;
+        let sides = [
+            ("top", &self.top),
+            ("right", &self.right),
+            ("bottom", &self.bottom),
+            ("left", &self.left),
+        ];
+        let set = sides.iter().filter(|(_, side)| side.is_some()).count();
+        let mut map = serializer.serialize_map(Some(set))?;
+        for (name, side) in sides {
+            if let Some(value) = side {
+                map.serialize_entry(name, value)?;
+            }
+        }
+        map.end()
+    }
+}
+
+#[cfg(feature = "serde")]
+impl<'de, T: serde::Deserialize<'de> + Copy> serde::Deserialize<'de> for Sides<T> {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        deserializer.deserialize_any(SidesVisitor(std::marker::PhantomData))
+    }
+}
+
+/// Reads a [`Sides`] from one value (every side) or from its map of sides, axes and `all`.
+#[cfg(feature = "serde")]
+struct SidesVisitor<T>(std::marker::PhantomData<T>);
+
+/// The keys a [`Sides`] map may hold, in the order an error names them.
+#[cfg(feature = "serde")]
+const SIDE_KEYS: &[&str] = &["all", "x", "y", "top", "right", "bottom", "left"];
+
+#[cfg(feature = "serde")]
+impl<'de, T: serde::Deserialize<'de> + Copy> SidesVisitor<T> {
+    fn one<E: serde::de::Error>(
+        value: impl serde::Deserializer<'de, Error = E>,
+    ) -> Result<Sides<T>, E> {
+        T::deserialize(value).map(Sides::all)
+    }
+}
+
+#[cfg(feature = "serde")]
+impl<'de, T: serde::Deserialize<'de> + Copy> serde::de::Visitor<'de> for SidesVisitor<T> {
+    type Value = Sides<T>;
+
+    fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+        formatter.write_str(
+            "one value for every side, or a map of all, x, y, top, right, bottom and left",
+        )
+    }
+
+    fn visit_enum<A: serde::de::EnumAccess<'de>>(self, data: A) -> Result<Self::Value, A::Error> {
+        Self::one(serde::de::value::EnumAccessDeserializer::new(data))
+    }
+
+    fn visit_str<E: serde::de::Error>(self, v: &str) -> Result<Self::Value, E> {
+        Self::one(serde::de::value::StrDeserializer::<E>::new(v))
+    }
+
+    fn visit_borrowed_str<E: serde::de::Error>(self, v: &'de str) -> Result<Self::Value, E> {
+        Self::one(serde::de::value::BorrowedStrDeserializer::<E>::new(v))
+    }
+
+    fn visit_string<E: serde::de::Error>(self, v: String) -> Result<Self::Value, E> {
+        Self::one(serde::de::value::StringDeserializer::<E>::new(v))
+    }
+
+    fn visit_f64<E: serde::de::Error>(self, v: f64) -> Result<Self::Value, E> {
+        Self::one(serde::de::value::F64Deserializer::<E>::new(v))
+    }
+
+    fn visit_i64<E: serde::de::Error>(self, v: i64) -> Result<Self::Value, E> {
+        Self::one(serde::de::value::I64Deserializer::<E>::new(v))
+    }
+
+    fn visit_u64<E: serde::de::Error>(self, v: u64) -> Result<Self::Value, E> {
+        Self::one(serde::de::value::U64Deserializer::<E>::new(v))
+    }
+
+    fn visit_map<A: serde::de::MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+        use serde::de::Error;
+        // [all, x, y, top, right, bottom, left], in `SIDE_KEYS` order.
+        let mut given: [Option<T>; 7] = [None; 7];
+        while let Some(key) = map.next_key::<String>()? {
+            let Some(slot) = SIDE_KEYS.iter().position(|name| *name == key) else {
+                return Err(A::Error::unknown_field(&key, SIDE_KEYS));
+            };
+            if given[slot].is_some() {
+                return Err(A::Error::custom(format_args!(
+                    "the side `{key}` is given twice"
+                )));
+            }
+            given[slot] = Some(map.next_value::<T>()?);
+        }
+        let [all, x, y, top, right, bottom, left] = given;
+        Ok(Sides {
+            top: top.or(y).or(all),
+            right: right.or(x).or(all),
+            bottom: bottom.or(y).or(all),
+            left: left.or(x).or(all),
+        })
     }
 }
 

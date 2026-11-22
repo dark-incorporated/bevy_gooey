@@ -70,6 +70,8 @@ pulldown-cmark = { version = "0.13", default-features = false, optional = true }
 [dev-dependencies]
 bevy = { version = "0.20.0" }
 ron = "0.12"
+# The style sheet's tests read rules as YAML, the format a host's sheet is written in.
+serde_yaml_ng = "0.10"
 
 [[example]]
 name = "inspector"

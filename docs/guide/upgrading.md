@@ -23,6 +23,7 @@ Gooey's plugins add every system in `GooeySystems`, so a host that only adds `Go
 
 - `page_lists` takes two more query parameters (G-89), because a `scroll_region` is paged by it too. Calling it as a plain function needs them; scheduling it by hand does not.
 - `update_notification_centers` takes a different query (G-92). Nothing to change unless you ordered a system against its parameters.
+- `GooeySystems` has a new variant, `Cascade`, chained between `Navigate` and `Style` (the [style sheet](style-sheets.md)'s cascade). A `match` on `GooeySystems` needs an arm; a system ordered `.after(GooeySystems::Navigate).before(GooeySystems::Style)` is unaffected.
 
 ## You read or write the toast log
 
@@ -42,6 +43,7 @@ All of these are G-92, the journal on `notification_center()`:
 - A `split` pane is no longer marked `Hovered` while the split is open: a host that treats "any `Hovered` node under the pointer" as "the pointer is on the interface" no longer finds the map's pane.
 - `split_clamp` (so every split drag) no longer panics when the two panes' minimums fill the whole extent (G-91); `pin_to_edge` and the slider and number steps are total too. [Split panes](splits.md) has the rule.
 - Bevy's `bevy_clipboard` feature is on, for the code editor's copy and paste. It adds no dependency to a game that already uses Bevy's defaults.
+- A serde `GooeySkin` refuses a field it does not have (`deny_unknown_fields`): a skin file with a typo (`gapp: 1`) or a field an older release had is an error naming the field, where it used to be dropped without a word. Fix the file.
 
 ## Older releases
 

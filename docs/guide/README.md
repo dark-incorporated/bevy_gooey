@@ -53,6 +53,7 @@ The README is the page most people read, so it carries the pitch, the quick star
 - [The command palette](command-palette.md) — `command_palette()` over a `CommandList`: a field and a fuzzy-ranked list of every command with its chord and why it is off, recents first, Up and Down while focus stays in the field, one `RunCommand` on Enter or a click.
 - [Toasts](toasts.md) — one spawn, the reading-time maths, `ToastSettings`, and the cap on the stack; `.action(..)`, `.sticky()`, merged repeats, the `ToastLog` and its entry ids, `notification_center()` with buttons on a row (`NotificationAction`), `ToastKind::Note`, and a toast that is also a journal line (`.unlogged()`, `.logged_as(id)`).
 - [Skins](skins.md) — `GooeySkin`, its fields, the presets, every rule `problems()` checks, and `tones`: a host's own named colours, `Role::Tone` and `tone_problems`.
+- [Style sheets](style-sheets.md) — `StyleClass`, `StyleSheet` and its rules (`.list .row:hover`): a classed node's padding, size, shape, colours and z from a sheet the host reads, the cascade's specificity, `!Host` paints, `StyleSheetProblems` and `explain` for an inspector.
 - [Testing a gooey UI](testing.md) — `bevy_gooey::testing` (feature `testing`): `find_by_label`, `click`, `press`, `type_text` and `focused_label` over a headless `App`, by what the player reads.
 - [Screen size](scale.md) — `GooeyScalePlugin`, `UiScaleSettings`, and whole-device-pixel lines.
 - [The pointer](pointer.md) — which parts of the interface take the pointer and which let it through.

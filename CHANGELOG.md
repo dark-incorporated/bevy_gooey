@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+### Breaking
+
+- `GooeySystems` has a new variant, `Cascade`, chained between `Navigate` and `Style`; a `match` on it needs an arm.
+- A serde `GooeySkin` refuses a field it does not have (`deny_unknown_fields`): a typo in a skin file is an error naming the field, where it was dropped silently.
+
+### Added
+
+- Style sheets (`docs/guide/style-sheets.md`, `tests/style_sheet.rs`): `StyleClass::of("card")` on a node and a `StyleSheet` of `StyleRules` (`.card`, `.list .row:hover`, `.bar > .chip`, with `:hover`, `:pressed`, `:selected`, `:checked`, `:disabled` and `:focus`) write its `Spacing`, `Sizing`, `Shape`, `GapPx`, `InkOverride` and `GlobalZIndex` through `apply_style_sheet` (in `GooeySystems::Cascade`), highest specificity winning and a tie going to the later rule. A `StyleDecl` paints with a `Paint` (`!Skin Text`, `!Surface 3`, `!Tone warning`, `!Host panel_bg`, `!Color "#ff8000"`); a paint that is not there is a line in `StyleSheetProblems`. A node's spawn values are its base (`CascadeBase`), so deleting a rule restores them. `explain(&world, entity)` lists the rules that styled a node, for an inspector. `HostPaints` carries a host's own named colours.
+- With `serde`: `Space` and `Sides<T>` (one value, or a map of `all`, `x`, `y`, `top`, `right`, `bottom`, `left`) are (de)serialisable; `Sides::overlaid` and `Sides::is_empty`.
+
 ## [0.57.0] - 2026-11-22
 
 ### Added

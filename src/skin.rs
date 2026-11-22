@@ -299,7 +299,8 @@ const COMPACT_PADDING: f32 = 0.5;
 ///
 /// Insert a new value (or mutate the resource) and [`apply_skin`] restyles everything already on
 /// screen in the same frame. With the `serde` feature a skin is (de)serialisable, and a partial file
-/// fills every missing field from [`GooeySkin::default`]. Fonts are not here: they are asset
+/// fills every missing field from [`GooeySkin::default`]; a field the skin does not have is refused
+/// (`gapp: 1` is an error naming `gapp`, never silently dropped). Fonts are not here: they are asset
 /// handles the host loads, in [`GooeyFonts`].
 ///
 /// [`GooeySkin::problems`] checks a skin against the WCAG 2.2 contrast and target-size rules; a
@@ -315,7 +316,7 @@ const COMPACT_PADDING: f32 = 0.5;
 #[cfg_attr(
     feature = "serde",
     derive(serde::Serialize, serde::Deserialize),
-    serde(default)
+    serde(default, deny_unknown_fields)
 )]
 pub struct GooeySkin {
     /// Behind everything: a host's clear colour, and what a translucent [`GooeySkin::surface`] is
