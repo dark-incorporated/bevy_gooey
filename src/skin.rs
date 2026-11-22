@@ -1866,6 +1866,15 @@ pub enum Role {
     /// A [`crate::band`]: a full-width row that is a button, a grouped list's header, in a
     /// button's fill (the raised fill at rest, [`GooeySkin::hovered`] under the pointer).
     Band,
+    /// A [`crate::chip`]: one small clickable word (a filter, a tag) that is a button's size at
+    /// least, a frame of one line weight that is always there, and a fill that is the raised
+    /// surface at rest and the accent while it carries Bevy's [`bevy::ui::Selected`]. Its words
+    /// break at a word, so it narrows before its row wraps and a word never overflows its host.
+    Chip,
+    /// A chip's words: a button's ink ([`GooeySkin::text`], [`GooeySkin::accent_text`] on the
+    /// accent, [`GooeySkin::text_muted`] disabled) under a role of its own, so a host counting
+    /// [`Role::ButtonText`] to find a dialog's answers does not count the chips.
+    ChipText,
     /// A [`crate::fill_text`]: a text that is a flex item of its own which takes the room its row
     /// leaves and wraps inside it, so a long name never pushes its row wider.
     FillText,
@@ -2610,6 +2619,7 @@ fn owns_parts(role: Option<&Role>) -> bool {
             Role::Button
                 | Role::GlyphButton
                 | Role::Band
+                | Role::Chip
                 | Role::ListRow
                 | Role::EdgeTab
                 | Role::CardCell
@@ -2965,6 +2975,7 @@ pub fn apply_skin(
                         Role::Button
                             | Role::GlyphButton
                             | Role::Band
+                            | Role::Chip
                             | Role::ListRow
                             | Role::Toggle
                             | Role::Slider
@@ -3242,6 +3253,25 @@ fn restyle(
             skin.surface_raised
         } else {
             skin.surface
+        }),
+        // A chip that is on is the accent and lifts from it as a primary button does; one that
+        // is off is a button's raised fill, the accent only while pressed.
+        Role::Chip => Some(if state.disabled {
+            skin.surface
+        } else if state.selected {
+            if state.pressed {
+                skin.primary_pressed()
+            } else if state.hovered {
+                skin.primary_hovered()
+            } else {
+                skin.accent
+            }
+        } else if state.pressed {
+            skin.accent
+        } else if state.hovered {
+            skin.hovered()
+        } else {
+            skin.surface_raised
         }),
         Role::Button | Role::GlyphButton | Role::Band | Role::TableHeaderCell => Some(if state.disabled {
             skin.surface
@@ -3558,6 +3588,7 @@ fn restyle(
         | Role::Label
         | Role::ButtonText
         | Role::MenuTitleText
+        | Role::ChipText
         | Role::FillText
         | Role::CountText
         | Role::Toggle
@@ -3740,6 +3771,7 @@ fn restyle(
         Role::Button
         | Role::GlyphButton
         | Role::Band
+        | Role::Chip
         | Role::ListRow
         | Role::Tab
         | Role::IconTab
@@ -3753,6 +3785,15 @@ fn restyle(
         Role::Button if state.variant.is_framed() && !state.disabled => {
             Some(BorderColor::all(skin.outline))
         }
+        // A chip's frame is the outline at rest and its fill's own colour while it is on, so the
+        // lit chip is one solid shape; the line is laid out either way.
+        Role::Chip => Some(BorderColor::all(if state.disabled {
+            skin.surface_raised
+        } else if state.selected {
+            skin.accent
+        } else {
+            skin.outline
+        })),
         // The rail is the left border, reserved whether or not the row is selected, so selecting it
         // changes a colour and moves nothing.
         Role::ListRow => Some(BorderColor {
@@ -4199,6 +4240,26 @@ fn restyle(
                 next.margin = UiRect::top(Val::Px(skin.gap * 0.5));
                 next.min_height = Val::Px(control);
                 next.flex_shrink = 0.0;
+            }
+            // A chip is a word and a count, not a command: `pad()` across, a button's air up and
+            // down, a line all round that is always laid out. It gives way before its row does:
+            // it shrinks (its words break at a word, so its least width is the longest word) and
+            // never exceeds its host, so a `FlexWrap` row has something to wrap and nothing is
+            // drawn over a panel's edge. At least a target high and wide.
+            Role::Chip => {
+                next.border = UiRect::all(Val::Px(line));
+                next.border_radius = radius;
+                next.padding = UiRect::axes(
+                    Val::Px(skin.pad()),
+                    Val::Px(air(set_px * LIST_LINE_TEXT_SIZES, skin.pad() * 0.6)),
+                );
+                next.column_gap = Val::Px(skin.gap * 0.5);
+                next.align_items = AlignItems::Center;
+                next.min_width = Val::Auto;
+                next.max_width = Val::Percent(100.0);
+                next.min_height = Val::Px(control);
+                next.flex_grow = 0.0;
+                next.flex_shrink = 1.0;
             }
             // A list row is as wide as its host, a button's air inside, a line all round and a rail's
             // width on the left: that width is always there, lit only while selected, so selecting
@@ -5575,6 +5636,17 @@ fn restyle(
                 skin.text
             };
             Some((faded(color, owner.alpha), &look.fonts.body, skin.text_size))
+        }
+        Role::ChipText => {
+            let parent = parent.unwrap_or_default();
+            let color = if parent.disabled {
+                skin.text_muted
+            } else if parent.pressed || parent.selected {
+                skin.accent_text
+            } else {
+                skin.text
+            };
+            Some((color, &look.fonts.body, skin.text_size))
         }
         Role::ButtonText | Role::MenuTitleText | Role::FillText | Role::CountText => {
             let parent = parent.unwrap_or_default();
