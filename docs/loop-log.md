@@ -3512,3 +3512,41 @@ editors rebuild nothing. Commits: research b5f9d48, implementation c747181, merg
 (5) a `problems()` note for a divider under 24 px.
 
 **Cleanup.** Removing my own `/tmp/g104` and worktree `~/g104_base`. Left: `~/g17_base`, `~/g17_parked`, `~/g17s_base`.
+
+## Iteration 105 — 2026-11-22 — chip
+
+**Change.** `chip(label)` and `toggle_chip(label, on)` (`src/widgets.rs`, `Role::Chip`/`Role::ChipText`, `docs/research/chip.md`):
+a small clickable tag whose words wrap at a word inside its host instead of one `NoWrap` line, so a wrapping row of tags
+(the host's category filters) has something to wrap and a long name no longer widens its panel. Never under the skin's
+`target()` high, same size lit and unlit (the line is always laid out), frame/fill/ink by state, `UiFeedback`, access
+(`toggle_chip` is a toggle button named by its words). `examples/kit.rs` has a chips row; `docs/media/chip.png`.
+
+**Assumed decisions.** Plain chip selection is the host's, through Bevy's `Selected`; `toggle_chip` flips itself and sends
+one `ValueChange<bool>`; the frame uses the skin's radius, not a pill; both widgets ship; chip words are `ChipText`, never
+`ButtonText`; minor bump (0.55.0, two `Role` variants).
+
+**Sources.** `chip` (technical/craft research note, sources by stem in it).
+
+**Critique / verdict.** Viewed kit at 1280x720 dark and parchment, 560x640, 200% text, and a 2560x1440 crop: wrapping row two
+lines inside the panel, long chip wraps by word, lit chips accent with `accent_text`. GREAT. One minor artefact: a one-pixel
+lighter arc at the inner corner of a lit chip (inner-edge AA over a padding-box background); a transparent border removes it
+but makes the chip a line smaller than its neighbours, so left.
+
+**Checklist.** Tests (additive): `tests/chip.rs` ~15 (wrap, no self-wrap, width cap, target floor, size equal lit/unlit,
+states, toggle observer, feedback, wrapping row), one appended to `tests/access.rs`. Mutation-checked: NoWrap label and a no-op
+toggle observer each fail tests. Gate green on the merged tree: fmt, clippy -D warnings, nextest 1671 passed, 350 doctests,
+check, wasm32, doc (one broken intra-doc link caught and fixed in `be3dbc5`). Perf (gallery, 14 interleaved pairs, load
+7-15): minima 22.6 ms both, a match arm only, negligible. Commits: research ef743cb/dd48c7f, implementation 3cdf4a4, merge
+a9227ce, release a945d96 (v0.55.0).
+
+**Release.** Tagged and pushed v0.55.0; `cargo publish --dry-run` ok, the one publish attempt answered 403 "authentication
+failed" (owner token), not retried. Newest on crates.io is still 0.51.8.
+
+**Gaps left.** Chips have no icon slot or remove button; a lit chip's corner arc.
+
+**Backlog (top 5).** (1) crates.io token, publish 0.51.9..0.55.0; (2) incremental wrap rebuild from `take_line_edits`;
+(3) a windowed variable-height table; (4) minimap and indent guides under wrap; (5) a `problems()` note for a divider
+under 24 px.
+
+**Cleanup.** Removing my own `/tmp/g105` and worktree `~/g105_base`. Left: `~/g17_base`, `~/g17_parked`, `~/g17s_base`;
+parked branches `wiggum/parked-pass-*` untouched. `df -h .`: 173G free (96%).
