@@ -168,7 +168,7 @@ fn each_state_has_its_own_silhouette_and_its_word() {
         Some(app.world().resource::<GooeySkin>().live())
     );
     assert!(
-        glow_alpha(&app, dot).is_some_and(|a| a > 0.3),
+        glow_alpha(&app, dot).is_some_and(|a| a > 0.2),
         "a lit lens glows"
     );
 }
@@ -202,8 +202,8 @@ fn a_busy_glow_pulses_and_a_reduced_one_holds_still() {
     let (lo, hi) = alphas
         .iter()
         .fold((f32::MAX, f32::MIN), |(l, h), a| (l.min(*a), h.max(*a)));
-    assert!(hi - lo > 0.3, "it swings over a period: {lo}..{hi}");
-    assert!(lo >= 0.24 && hi <= 0.86, "inside its range: {lo}..{hi}");
+    assert!(hi - lo > 0.2, "it swings over a period: {lo}..{hi}");
+    assert!(lo >= 0.11 && hi <= 0.46, "inside its range: {lo}..{hi}");
     for settings in [MotionSettings::reduced(), MotionSettings::off()] {
         let mut still = app(settings);
         let (_, dot) = lit(&mut still, LedState::Busy);
@@ -247,6 +247,83 @@ fn the_colours_it_draws_in_hold_three_to_one_on_the_panel_in_every_preset() {
                 [ground.red, ground.green, ground.blue],
             );
             assert!(ratio >= 3.0, "{name}: {what} is {ratio:.2}:1 on the panel");
+        }
+    }
+}
+
+/// The most a glow may reach past the dot's edge, in dot sizes (#91): a light on the dot, not on the bar.
+const GLOW_MAX_EXTENT_DOTS: f32 = 1.0;
+/// The brightest a glow may be, as an alpha, at its densest.
+const GLOW_MAX_ALPHA: f32 = 0.5;
+
+/// Where the glow's visible edge stands past the dot, in logical px: the layer's spread on each side
+/// (Bevy's `spread_radius` grows the whole width, so half is a side's) plus the blur's fade
+/// (CSS's blur radius is twice the Gaussian's standard deviation Bevy takes).
+fn glow_extent_px(app: &App, dot: Entity) -> f32 {
+    let layer = &app.world().get::<BoxShadow>(dot).expect("shadow").0[0];
+    let px = |v: Val| match v {
+        Val::Px(p) => p,
+        other => panic!("a glow length is logical px, not {other:?}"),
+    };
+    px(layer.spread_radius) / 2.0 + 2.0 * px(layer.blur_radius)
+}
+
+#[test]
+fn a_glow_stays_within_a_dot_of_the_dot_at_every_text_scale_and_state() {
+    for scale in [0.5_f32, 1.0, 1.45, 3.0] {
+        for state in [LedState::Live, LedState::Busy, LedState::Failed] {
+            for settings in [MotionSettings::default(), MotionSettings::reduced()] {
+                let mut app = app(settings);
+                app.world_mut().resource_mut::<GooeySkin>().text_scale = scale;
+                let (_, dot) = lit(&mut app, state);
+                let skin = app.world().resource::<GooeySkin>();
+                let side = skin.text_size * skin.text_scale * 1.1;
+                for _ in 0..12 {
+                    frames(&mut app, 1);
+                    let extent = glow_extent_px(&app, dot) / side;
+                    assert!(
+                        extent <= GLOW_MAX_EXTENT_DOTS + 1e-3 && extent > 0.0,
+                        "{state:?} at text scale {scale}: the glow reaches {extent:.2} dots"
+                    );
+                    let alpha = glow_alpha(&app, dot).expect("a glow");
+                    assert!(alpha <= GLOW_MAX_ALPHA, "{state:?}: alpha {alpha}");
+                }
+            }
+        }
+    }
+}
+
+#[test]
+fn the_word_and_the_chips_beside_an_led_keep_their_contrast_under_its_glow_in_every_preset() {
+    for (name, skin, needed) in [
+        ("dark", GooeySkin::dark(), 4.5),
+        ("parchment", GooeySkin::parchment(), 4.5),
+        ("high_contrast", GooeySkin::high_contrast(), 7.0),
+        ("tool", GooeySkin::tool(), 4.5),
+    ] {
+        let ground = Srgba::from(skin.solid_surface());
+        for (what, colour) in [
+            ("live", skin.live()),
+            ("warning", skin.warning()),
+            ("danger", skin.danger),
+        ] {
+            // The densest the halo ever is, over the panel, with no fade: the worst case under any word.
+            let glow = Srgba::from(colour);
+            let a = GLOW_MAX_ALPHA;
+            let under = [
+                glow.red * a + ground.red * (1.0 - a),
+                glow.green * a + ground.green * (1.0 - a),
+                glow.blue * a + ground.blue * (1.0 - a),
+            ];
+            for (ink_name, ink) in [("text", skin.text), ("text_muted", skin.text_muted)] {
+                let ink = Srgba::from(ink);
+                let ratio =
+                    bevy_gooey::model::contrast_ratio([ink.red, ink.green, ink.blue], under);
+                assert!(
+                    ratio >= needed,
+                    "{name}: {ink_name} under a {what} glow is {ratio:.2}:1, needs {needed}"
+                );
+            }
         }
     }
 }
