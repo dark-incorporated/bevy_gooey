@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+### Breaking
+
+- `SyntaxRole` has two new variants, `Emphasis` and `Strong`, and `SyntaxRole::ALL` is 12 long; a `match` over it needs arms.
+
+### Changed
+
+- `CodeMarkdown` / `markdown_highlights` draw `*emphasis*` and `_emphasis_` as `SyntaxRole::Emphasis` and `**strong**` as `SyntaxRole::Strong`, two inks, where both were `SyntaxRole::Type` (#115). `GooeySkin::syntax` derives a colour for each, held at the same contrast bar, and `problems()` checks them.
+
 ## [0.55.0] - 2026-11-22
 
 ### Breaking

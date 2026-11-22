@@ -39,16 +39,17 @@ mean what they say.
 
 ## Parameters
 
-Hues (Oklch degrees): `Emphasis` 345 (a rose), `Strong` 25 (an orange-red), at the accent's chroma like the rest. Existing: Key
-250, String 145, Number 55, Keyword 320, Reference 205, Function 95, Type 175. `Strong` sits 30 degrees from `Number`'s 55, but
-`Number` is a bare digit run, never a whole phrase. Both are separated from `Error`, which takes the danger hue and is a
-squiggle/underline.
+Hues (Oklch degrees): `Emphasis` 290 (a violet) and `Strong` 350 (a rose), at the accent's chroma like the rest. Existing:
+Key 250, String 145, Number 55, Keyword 320, Reference 205, Function 95, Type 175, Error the danger hue (about 25).
+Chosen by sweeping every 10 degrees through the skin's own generator in all four presets and taking the hues farthest (CIE
+L\*a\*b\* distance) from every existing role: 290 and 350 are the two widest gaps on the wheel (250-320 and 320-25). A first
+pick of 25 for strong measured 2.1 from `Error` (the same colour); 345 for emphasis measured 0.5 from `Keyword` in parchment.
 
 ## Validation targets
 
 `*em*` and `**strong**` in one line resolve to two different `SyntaxRole`s and two different drawn colours in every preset;
-neither equals any other role's colour by more than a visible step (Oklab distance at least the least gap the other roles
-already keep); `problems()` empty in every preset (each clears 4.5:1, 7:1 in high contrast).
+neither is within 12 CIE L\*a\*b\* units of any other role's colour (the ten older roles keep 13.0 in parchment to 25.2 in tool
+between their closest two); `problems()` empty in every preset (each clears 4.5:1, 7:1 in high contrast).
 
 ## Deviations
 

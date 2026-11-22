@@ -745,6 +745,30 @@ fn every_syntax_colour_holds_the_contrast_bar_in_every_preset() {
     );
 }
 
+#[test]
+fn emphasis_and_strong_inks_are_apart_from_each_other_and_from_every_other_role() {
+    use bevy::color::{Laba, Srgba};
+    let lab = |c: Color| Laba::from(Srgba::from(c));
+    let apart = |a: Color, b: Color| {
+        let (a, b) = (lab(a), lab(b));
+        100.0 * ((a.lightness - b.lightness).powi(2) + (a.a - b.a).powi(2) + (a.b - b.b).powi(2)).sqrt()
+    };
+    for preset in SkinPreset::ALL {
+        let skin = preset.skin();
+        for new in [SyntaxRole::Emphasis, SyntaxRole::Strong] {
+            for other in SyntaxRole::ALL.into_iter().filter(|r| *r != new) {
+                let gap = apart(skin.syntax(new), skin.syntax(other));
+                // CIE L*a*b* units: 2.3 is a just-noticeable difference, so 8 reads at a glance.
+                assert!(
+                    gap >= 8.0,
+                    "{}: {new:?} vs {other:?} only {gap:.1} apart",
+                    preset.name()
+                );
+            }
+        }
+    }
+}
+
 // -- #114: Markdown ink ------------------------------------------------------------------------
 
 #[test]
@@ -752,7 +776,7 @@ fn a_markdown_editor_draws_each_kind_of_mark_in_its_own_ink_and_keeps_them_while
     let mut app = app_with(MotionSettings::off());
     let editor = editor_of(
         &mut app,
-        "# Title\nplain `code` and **bold** [site](http://x.y)",
+        "# Title\nplain `code` and **bold** *soft* [site](http://x.y)",
     );
     app.world_mut().entity_mut(editor).insert(CodeMarkdown);
     settle(&mut app);
@@ -766,7 +790,11 @@ fn a_markdown_editor_draws_each_kind_of_mark_in_its_own_ink_and_keeps_them_while
     };
     assert_eq!(find("# Title").2, skin.syntax(SyntaxRole::Keyword));
     assert_eq!(find("`code`").2, skin.syntax(SyntaxRole::String));
-    assert_eq!(find("**bold**").2, skin.syntax(SyntaxRole::Type));
+    assert_eq!(find("**bold**").2, skin.syntax(SyntaxRole::Strong));
+    assert_eq!(find("*soft*").2, skin.syntax(SyntaxRole::Emphasis));
+    assert_ne!(find("**bold**").2, find("*soft*").2, "#115: two inks");
+    assert_eq!(find("**bold**").1, Role::CodeSyntax(SyntaxRole::Strong));
+    assert_eq!(find("*soft*").1, Role::CodeSyntax(SyntaxRole::Emphasis));
     assert_eq!(find("[site]").2, skin.syntax(SyntaxRole::Reference));
     let inks: std::collections::HashSet<String> =
         runs.iter().map(|(_, _, c)| format!("{c:?}")).collect();
