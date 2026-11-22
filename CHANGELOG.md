@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [0.54.0] - 2026-11-22
+
+### Breaking
+
+- `CodeMove` has a new variant, `ToColumn(line, display_col)` (#114); a `match` over it needs an arm.
+
 ### Added
 
 - #114 (`docs/research/code-soft-wrap.md`, `tests/code_editor.rs`, `tests/code_decor.rs`, `examples/prose.rs`):
