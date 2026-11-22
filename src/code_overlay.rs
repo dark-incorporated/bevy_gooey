@@ -38,6 +38,12 @@ pub const CODE_HOVER_DELAY_S: f64 = 0.5;
 /// How many rows of the completion list show at once.
 pub const COMPLETION_ROWS: usize = 8;
 
+/// An open fold's mark in the gutter: a down-pointing triangle, a shape and not a letter (#107).
+/// U+25BC is in FiraMono and FiraMonoNerdFontMono, the faces the editor ships with.
+const CHEVRON_OPEN: &str = "\u{25BC}";
+/// A closed fold's mark: a right-pointing triangle (U+25BA, in the same faces).
+const CHEVRON_CLOSED: &str = "\u{25BA}";
+
 /// How wide a note may be, in body text sizes; longer words wrap.
 pub(crate) const CODE_NOTE_EM: f32 = 32.0;
 /// How wide the completion list is at least, in body text sizes.
@@ -1074,7 +1080,7 @@ fn draw_navigation(
                 commands
                     .spawn((
                         Node::default(),
-                        Text::new(">"),
+                        Text::new(CHEVRON_OPEN),
                         Role::CodeChevron,
                         Pickable::IGNORE,
                         OverlayPart,
@@ -1096,7 +1102,7 @@ fn draw_navigation(
                     );
                     set_px(&mut node.top, row as f32 * view.line_px - view.shown.y);
                     if let Some(mut text) = text {
-                        let glyph = if closed { ">" } else { "v" };
+                        let glyph = if closed { CHEVRON_CLOSED } else { CHEVRON_OPEN };
                         if text.0 != glyph {
                             text.0 = glyph.to_owned();
                         }

@@ -692,3 +692,67 @@ fn the_minimap_band_is_dragged_after_the_press_with_no_second_press() {
         PointerAction::Release(PointerButton::Primary),
     );
 }
+
+/// A real primary press at `at` (the pointer first moved there, so picking has a hover).
+fn press_at(app: &mut App, at: Vec2) {
+    let window_entity = window(app);
+    let location = Location {
+        target: NormalizedRenderTarget::Window(
+            WindowRef::Entity(window_entity)
+                .normalize(None)
+                .expect("a window"),
+        ),
+        position: at,
+    };
+    for action in [
+        PointerAction::Move { delta: Vec2::X },
+        PointerAction::Press(PointerButton::Primary),
+        PointerAction::Release(PointerButton::Primary),
+    ] {
+        app.world_mut().write_message(PointerInput::new(
+            PointerId::Mouse,
+            location.clone(),
+            action,
+        ));
+        app.update();
+    }
+    settle(app);
+}
+
+/// #107: a fold's mark is a triangle, `▼` open and `►` closed, and a press on the mark's own box
+/// toggles the fold it belongs to, one press one change.
+#[test]
+fn a_press_on_the_fold_chevron_toggles_its_fold_and_the_mark_is_a_triangle() {
+    let mut app = app();
+    let editor = editor_of(&mut app, &lines(12), ());
+    let revision = app
+        .world()
+        .get::<CodeEditorValue>(editor)
+        .expect("v")
+        .revision();
+    app.world_mut()
+        .entity_mut(editor)
+        .insert(FoldRanges::new(revision, std::iter::once(1..5)));
+    settle(&mut app);
+    settle(&mut app);
+    let mark = |app: &App| -> (String, Rect) {
+        let chevron = shown_by_role(app, editor, Role::CodeChevron);
+        assert_eq!(chevron.len(), 1, "one chevron, on the header");
+        let text = app.world().get::<Text>(chevron[0]).expect("text").0.clone();
+        (text, rect(app, chevron[0]))
+    };
+    let folded = |app: &App| !shown_words(app, editor).contains(&"l2".to_owned());
+    let (glyph, chevron) = mark(&app);
+    assert_eq!(glyph, "\u{25BC}", "an open fold is a down-pointing triangle");
+    assert!(!folded(&app));
+    press_at(&mut app, chevron.center());
+    assert!(folded(&app), "a press on the chevron folded the block");
+    let (glyph, chevron) = mark(&app);
+    assert_eq!(glyph, "\u{25BA}", "a closed fold is a right-pointing triangle");
+    press_at(&mut app, chevron.center());
+    assert!(!folded(&app), "a second press opened it again");
+    // The corners of the box are the control too: the box is the target, not the ink.
+    let (_, chevron) = mark(&app);
+    press_at(&mut app, chevron.min + Vec2::splat(0.5));
+    assert!(folded(&app), "the chevron's corner folds as well");
+}

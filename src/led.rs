@@ -52,14 +52,16 @@ pub struct Led(pub LedState);
 #[reflect(Component, Debug, Default, PartialEq, Clone)]
 pub struct LedWord;
 
-/// The glow's blur, in dot sizes.
-const GLOW_BLUR_DOTS: f32 = 1.6;
-/// How far the glow grows past the dot, in dot sizes.
-const GLOW_SPREAD_DOTS: f32 = 0.15;
-/// The glow's alpha for a steady LED.
-const GLOW_ALPHA: f32 = 0.7;
+/// The glow's blur, in dot sizes (CSS's blur radius: how far the halo fades out past the dot's
+/// edge). The whole halo, spread included, stays within one dot of the dot (#91).
+const GLOW_BLUR_DOTS: f32 = 0.6;
+/// How far the glow grows past the dot before it blurs, in dot sizes.
+const GLOW_SPREAD_DOTS: f32 = 0.0;
+/// The glow's alpha for a steady LED: a halo, not a lamp, so the word and the chips beside it keep
+/// their contrast (#91).
+const GLOW_ALPHA: f32 = 0.4;
 /// The glow's alpha range while [`LedState::Busy`] pulses.
-const PULSE_ALPHA: (f32, f32) = (0.25, 0.85);
+const PULSE_ALPHA: (f32, f32) = (0.12, 0.45);
 /// The pulse's period, seconds: slower than one a second, far under WCAG's flash threshold.
 const PULSE_SECONDS: f64 = 1.2;
 /// A diamond is a square turned this far.

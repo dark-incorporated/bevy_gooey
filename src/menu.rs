@@ -11,6 +11,7 @@ use bevy::ecs::world::DeferredWorld;
 use bevy::input::keyboard::{KeyCode, KeyboardInput};
 use bevy::input_focus::tab_navigation::{TabGroup, TabIndex};
 use bevy::input_focus::{FocusCause, FocusedInput, InputFocus, InputFocusVisible};
+use bevy::picking::events::PointerMove;
 use bevy::picking::hover::Hovered;
 use bevy::prelude::*;
 use bevy::ui::auto_directional_navigation::AutoDirectionalNavigation;
@@ -240,6 +241,7 @@ fn build_item(mut world: DeferredWorld, HookContext { entity, .. }: HookContext)
         TabIndex(0),
         AutoDirectionalNavigation::default(),
     ));
+    row.observe(item_on_pointer_move);
     if item.on {
         row.insert(Checked);
     }
@@ -295,6 +297,17 @@ fn build_item(mut world: DeferredWorld, HookContext { entity, .. }: HookContext)
             ));
         }
     });
+}
+
+/// The pointer moving over a row makes it the row the menu is on, as every desktop menu does (#92):
+/// focus goes to it, so the arrows continue from it and Enter chooses it. A disabled row is
+/// hovered too (it is focusable, and nothing activates it). A pointer that rests while the menu
+/// scrolls under it sends no move, so it takes nothing from the keyboard, and one that leaves the
+/// panel leaves the row where it was. The ring shows or stays hidden as it was.
+fn item_on_pointer_move(moved: On<PointerMove>, mut focus: ResMut<InputFocus>) {
+    if focus.get() != Some(moved.entity) {
+        focus.set(moved.entity, FocusCause::Navigated);
+    }
 }
 
 // --- opening and closing -------------------------------------------------------------------
