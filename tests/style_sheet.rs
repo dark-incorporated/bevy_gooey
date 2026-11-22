@@ -241,6 +241,59 @@ fn of_two_rules_equally_specific_the_later_wins() {
 }
 
 #[test]
+fn code_keeps_what_the_sheet_does_not_decide_and_a_host_can_ask_which_it_does() {
+    let mut app = headless();
+    app.insert_resource(sheet(
+        r##"".card": {padding: !Step 2, background: !Color "#ff0000"}"##,
+        1,
+    ));
+    let card = app
+        .world_mut()
+        .spawn((panel(), StyleClass::of("card")))
+        .id();
+    app.world_mut().spawn(screen()).add_child(card);
+    settle(&mut app);
+    let base = app
+        .world()
+        .get::<CascadeBase>(card)
+        .expect("a classed node has a cascade base");
+    assert!(
+        base.decides::<Spacing>() && base.decides::<InkOverride>(),
+        "the rule decides the padding and the fill"
+    );
+    assert!(
+        !base.decides::<Sizing>() && !base.decides::<GapPx>() && !base.decides::<Node>(),
+        "and nothing else"
+    );
+    assert_eq!(fill(&app, card), Some(RED));
+
+    // A width code writes after the sheet ran is the code's: the cascade leaves it where it is.
+    let width = Extent::Px(123.0);
+    app.world_mut().entity_mut(card).insert(Sizing {
+        width: Some(width),
+        ..default()
+    });
+    settle(&mut app);
+    assert_eq!(
+        app.world()
+            .get::<Sizing>(card)
+            .and_then(|sizing| sizing.width),
+        Some(width),
+        "the sheet does not decide the width, so it does not take it back"
+    );
+
+    app.insert_resource(sheet(r#"".card": {padding: !Step 2}"#, 2));
+    settle(&mut app);
+    assert!(
+        !app.world()
+            .get::<CascadeBase>(card)
+            .expect("still classed")
+            .decides::<InkOverride>(),
+        "a sheet that stops painting the card no longer decides its ink"
+    );
+}
+
+#[test]
 fn a_host_paint_that_is_not_there_is_one_problem_and_leaves_the_colour_alone() {
     let mut app = headless();
     app.insert_resource(sheet(

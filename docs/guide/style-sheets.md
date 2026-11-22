@@ -62,7 +62,7 @@ A `Paint` is a skin colour (`!Skin Text`), a step of the surface ladder (`!Surfa
 
 The first time a node gets a class, the cascade keeps what its spawn code set of `Spacing`, `Sizing`, `Shape`, `GapPx`, `InkOverride` and `GlobalZIndex` (and its `Node`). What it writes is always that base with the matching declarations over it, so deleting a rule gives the node back what it was spawned with. Taking `StyleClass` off does the same.
 
-A styled component the host's code changes afterwards is a fight between the code and the sheet. The cascade notices before its next write, takes the code's value as the node's new base and warns once for that node and component. A node whose geometry the host writes every frame (a drag, a measured box) should carry no class.
+A component the matching rules do not declare stays the code's: the host may write a classed panel's width every frame and the cascade takes each value as the base, silently. A component a rule declares, changed by the host's code afterwards, is a fight between the code and the sheet: the cascade notices before its next write, takes the code's value as the node's new base and warns once for that node and component. `CascadeBase::decides::<InkOverride>()` says whether the sheet decides a component on a node now, so a host that rewrites the colours it stored (a theme change) can leave the sheet's alone.
 
 ## When it runs
 

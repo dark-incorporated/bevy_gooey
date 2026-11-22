@@ -833,7 +833,34 @@ pub struct CascadeBase {
     base: Owned,
     node: Option<Node>,
     written: Option<Owned>,
+    /// Which of the six components the last cascade's declaration decided, by their bit in
+    /// [`OWNED_NAMES`] order: only those are the sheet's, and a change to one in code is a fight.
+    declared: u8,
     warned: u8,
+}
+
+impl CascadeBase {
+    /// **Whether the sheet decides `C` on this node now**: `C` is one of the six components the cascade
+    /// writes ([`Spacing`], [`Sizing`], [`Shape`], [`GapPx`], [`InkOverride`], [`GlobalZIndex`]) and a rule
+    /// matching the node declared it at the last cascade. Any other component is never the sheet's.
+    ///
+    /// A host that rewrites colours it stored (a theme change moving every drawn ink onto the new one)
+    /// skips the [`InkOverride`]s the sheet decides: those follow the skin and the [`HostPaints`] by
+    /// themselves, and a rewrite would be code fighting the sheet.
+    pub fn decides<C: Component>(&self) -> bool {
+        let owned = [
+            std::any::TypeId::of::<Spacing>(),
+            std::any::TypeId::of::<Sizing>(),
+            std::any::TypeId::of::<Shape>(),
+            std::any::TypeId::of::<GapPx>(),
+            std::any::TypeId::of::<InkOverride>(),
+            std::any::TypeId::of::<GlobalZIndex>(),
+        ];
+        owned
+            .iter()
+            .position(|owned| *owned == std::any::TypeId::of::<C>())
+            .is_some_and(|bit| self.declared & (1 << bit) != 0)
+    }
 }
 
 /// Takes a node's base the first time it gets a class. A class inserted again (a new set of names)
@@ -854,6 +881,7 @@ pub(crate) fn take_cascade_base(
         base,
         node: nodes.get(entity).ok().cloned(),
         written: None,
+        declared: 0,
         warned: 0,
     });
 }
@@ -1027,6 +1055,38 @@ fn cascaded(sheet: &StyleSheet, tree: &impl CascadeTree, entity: Entity) -> Styl
         .fold(StyleDecl::default(), |under, (index, _)| {
             under.overlaid(&sheet.rules.0[index].decl)
         })
+}
+
+/// Which of the six components `decl` decides, a bit each in [`OWNED_NAMES`] order.
+fn declared_components(decl: &StyleDecl) -> u8 {
+    let sizing = [
+        decl.width,
+        decl.height,
+        decl.min_width,
+        decl.min_height,
+        decl.max_width,
+        decl.max_height,
+    ]
+    .iter()
+    .any(Option::is_some)
+        || decl.clip.is_some();
+    [
+        decl.padding.is_some() || decl.margin.is_some(),
+        sizing,
+        decl.border.is_some()
+            || decl.border_ink.is_some()
+            || decl.radius.is_some()
+            || decl.fill.is_some(),
+        decl.gap.is_some(),
+        decl.background.is_some() || decl.color.is_some() || decl.border_color.is_some(),
+        decl.z.is_some(),
+    ]
+    .into_iter()
+    .enumerate()
+    .fold(
+        0,
+        |bits, (bit, set)| if set { bits | (1 << bit) } else { bits },
+    )
 }
 
 /// The six components for a node whose base is `base` under the declaration `decl`. A colour that
@@ -1235,41 +1295,61 @@ pub fn apply_style_sheet(
             ink: ink.as_deref().copied(),
             z: z.as_deref().copied(),
         };
-        if let Some(written) = base.written {
-            let drift = [
+        // **A component the sheet decided last time and code has changed since is a fight**: one warning per node
+        // and component, and the code's value becomes the base. A component the sheet did not decide is the
+        // code's to write as often as it likes (a dock's width, a measured box): its current value is the base,
+        // silently, and the cascade leaves it where it is.
+        let drift = [
+            current.spacing != base.base.spacing,
+            current.sizing != base.base.sizing,
+            current.shape != base.base.shape,
+            current.gap != base.base.gap,
+            current.ink != base.base.ink,
+            current.z != base.base.z,
+        ];
+        let fought = base.written.map(|written| {
+            [
                 current.spacing != written.spacing,
                 current.sizing != written.sizing,
                 current.shape != written.shape,
                 current.gap != written.gap,
                 current.ink != written.ink,
                 current.z != written.z,
-            ];
-            for (bit, moved) in drift.into_iter().enumerate() {
-                if !moved {
-                    continue;
-                }
-                if base.warned & (1 << bit) == 0 {
-                    base.warned |= 1 << bit;
-                    warn!(
-                        "bevy_gooey: `{}` on a node of class `{}` was changed in code after the style sheet wrote it; the code's value is its base now (style it in the sheet or drop the class)",
-                        OWNED_NAMES[bit],
-                        classes.0.join(" ")
-                    );
-                }
-                match bit {
-                    0 => base.base.spacing = current.spacing,
-                    1 => base.base.sizing = current.sizing,
-                    2 => base.base.shape = current.shape,
-                    3 => base.base.gap = current.gap,
-                    4 => base.base.ink = current.ink,
-                    _ => base.base.z = current.z,
-                }
+            ]
+        });
+        for (bit, moved) in drift.into_iter().enumerate() {
+            let declared = base.declared & (1 << bit) != 0;
+            let changed_in_code = if declared {
+                fought.is_some_and(|fought| fought[bit])
+            } else {
+                moved
+            };
+            if !changed_in_code {
+                continue;
+            }
+            if declared && base.warned & (1 << bit) == 0 {
+                base.warned |= 1 << bit;
+                warn!(
+                    "bevy_gooey: `{}` on a node of class `{}` was changed in code after the style sheet wrote it; the code's value is its base now (style it in the sheet or drop the class)",
+                    OWNED_NAMES[bit],
+                    classes.0.join(" ")
+                );
+            }
+            match bit {
+                0 => base.base.spacing = current.spacing,
+                1 => base.base.sizing = current.sizing,
+                2 => base.base.shape = current.shape,
+                3 => base.base.gap = current.gap,
+                4 => base.base.ink = current.ink,
+                _ => base.base.z = current.z,
             }
         }
         let decl = cascaded(&sheet, &tree, entity);
         let want = resolved(&base.base, &decl, &skin, host);
-        if base.written != Some(want) {
+        let declared = declared_components(&decl);
+        if base.written != Some(want) || base.declared != declared {
             base.written = Some(want);
+            base.declared = declared;
         }
         let mut node = node;
         let spawned = base.node.clone();
