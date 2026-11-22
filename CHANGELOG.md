@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.52.2] - 2026-11-22
+
 ### Fixed
 
 - An LED's glow is a halo, not a lamp (#91, `docs/research/cluster-led-menu-fold.md`, `tests/led.rs`): the blur is

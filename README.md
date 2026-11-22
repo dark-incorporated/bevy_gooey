@@ -113,7 +113,7 @@ Every widget on one screen, what the picture above shows. Arrows or the D-pad mo
 
 | `bevy_gooey` | Bevy |
 |---|---|
-| 0.1 – 0.52.1 and `main` | 0.20 |
+| 0.1 – 0.52.2 and `main` | 0.20 |
 
 ## Learn more
 
