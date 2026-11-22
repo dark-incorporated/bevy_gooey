@@ -5,10 +5,10 @@
 //! `Cargo.toml`), so a test is `all::<file>::<name>`. A new file in `tests/` is declared here, or
 //! `every_test_file_is_a_module` fails: an undeclared file is never compiled and its tests never run.
 
+mod a_table_fills_the_height_it_is_given;
 mod access;
 mod anchor;
 mod badges;
-mod a_table_fills_the_height_it_is_given;
 mod band_scroll;
 mod binding;
 mod button_variant;

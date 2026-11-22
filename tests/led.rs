@@ -168,7 +168,7 @@ fn each_state_has_its_own_silhouette_and_its_word() {
         Some(app.world().resource::<GooeySkin>().live())
     );
     assert!(
-        glow_alpha(&app, dot).is_some_and(|a| a > 0.3),
+        glow_alpha(&app, dot).is_some_and(|a| a > 0.2),
         "a lit lens glows"
     );
 }
@@ -202,8 +202,8 @@ fn a_busy_glow_pulses_and_a_reduced_one_holds_still() {
     let (lo, hi) = alphas
         .iter()
         .fold((f32::MAX, f32::MIN), |(l, h), a| (l.min(*a), h.max(*a)));
-    assert!(hi - lo > 0.3, "it swings over a period: {lo}..{hi}");
-    assert!(lo >= 0.24 && hi <= 0.86, "inside its range: {lo}..{hi}");
+    assert!(hi - lo > 0.2, "it swings over a period: {lo}..{hi}");
+    assert!(lo >= 0.11 && hi <= 0.46, "inside its range: {lo}..{hi}");
     for settings in [MotionSettings::reduced(), MotionSettings::off()] {
         let mut still = app(settings);
         let (_, dot) = lit(&mut still, LedState::Busy);
@@ -247,6 +247,107 @@ fn the_colours_it_draws_in_hold_three_to_one_on_the_panel_in_every_preset() {
                 [ground.red, ground.green, ground.blue],
             );
             assert!(ratio >= 3.0, "{name}: {what} is {ratio:.2}:1 on the panel");
+        }
+    }
+}
+
+/// The most a glow may reach past the dot's edge, in dot sizes (#91): a light on the dot, not on the bar.
+const GLOW_MAX_EXTENT_DOTS: f32 = 1.0;
+/// The brightest a glow may be, as an alpha, at its densest.
+const GLOW_MAX_ALPHA: f32 = 0.5;
+
+/// Where the glow's visible edge stands past the dot, in logical px: the layer's spread on each side
+/// (Bevy's `spread_radius` grows the whole width, so half is a side's) plus the blur's fade
+/// (CSS's blur radius is twice the Gaussian's standard deviation Bevy takes).
+fn glow_extent_px(app: &App, dot: Entity) -> f32 {
+    let layer = &app.world().get::<BoxShadow>(dot).expect("shadow").0[0];
+    let px = |v: Val| match v {
+        Val::Px(p) => p,
+        other => panic!("a glow length is logical px, not {other:?}"),
+    };
+    px(layer.spread_radius) / 2.0 + 2.0 * px(layer.blur_radius)
+}
+
+#[test]
+fn a_glow_stays_within_a_dot_of_the_dot_at_every_text_scale_and_state() {
+    for scale in [0.5_f32, 1.0, 1.45, 3.0] {
+        for state in [LedState::Live, LedState::Busy, LedState::Failed] {
+            for settings in [MotionSettings::default(), MotionSettings::reduced()] {
+                let mut app = app(settings);
+                app.world_mut().resource_mut::<GooeySkin>().text_scale = scale;
+                let (_, dot) = lit(&mut app, state);
+                let skin = app.world().resource::<GooeySkin>();
+                let side = skin.text_size * skin.text_scale * 1.1;
+                for _ in 0..12 {
+                    frames(&mut app, 1);
+                    let extent = glow_extent_px(&app, dot) / side;
+                    assert!(
+                        extent <= GLOW_MAX_EXTENT_DOTS + 1e-3 && extent > 0.0,
+                        "{state:?} at text scale {scale}: the glow reaches {extent:.2} dots"
+                    );
+                    let alpha = glow_alpha(&app, dot).expect("a glow");
+                    assert!(alpha <= GLOW_MAX_ALPHA, "{state:?}: alpha {alpha}");
+                }
+            }
+        }
+    }
+}
+
+/// The Gaussian's upper tail, 1 - Phi(z): Abramowitz and Stegun 7.1.26's erf, error under 1.5e-7.
+fn upper_tail(z: f32) -> f32 {
+    let x = z.abs() / std::f32::consts::SQRT_2;
+    let t = 1.0 / (1.0 + 0.327_591_1 * x);
+    let poly = t
+        * (0.254_829_6
+            + t * (-0.284_496_74 + t * (1.421_413_8 + t * (-1.453_152_1 + t * 1.061_405_4))));
+    let erf = 1.0 - poly * (-x * x).exp();
+    let tail = 0.5 * (1.0 - erf);
+    if z >= 0.0 { tail } else { 1.0 - tail }
+}
+
+/// The word beside the dot starts one half gap from its edge, where a halo of density `a` at the dot's
+/// edge has faded to `a` times the Gaussian's upper tail at that distance (a box shadow is half its
+/// strength on the box's edge): the densest it ever is under a glyph. The ink must hold its contrast
+/// on that blend, in every preset, state and text scale.
+#[test]
+fn the_word_beside_an_led_keeps_its_contrast_under_its_glow_in_every_preset() {
+    for (name, skin, needed) in [
+        ("dark", GooeySkin::dark(), 4.5),
+        ("parchment", GooeySkin::parchment(), 4.5),
+        ("high_contrast", GooeySkin::high_contrast(), 7.0),
+        ("tool", GooeySkin::tool(), 4.5),
+    ] {
+        for scale in [0.5_f32, 1.0, 1.45, 3.0] {
+            for state in [LedState::Live, LedState::Busy, LedState::Failed] {
+                let mut app = app(MotionSettings::off());
+                *app.world_mut().resource_mut::<GooeySkin>() = GooeySkin {
+                    text_scale: scale,
+                    ..skin.clone()
+                };
+                let (_, dot) = lit(&mut app, state);
+                let skin = app.world().resource::<GooeySkin>().clone();
+                let layer = &app.world().get::<BoxShadow>(dot).expect("shadow").0[0];
+                let Val::Px(sigma) = layer.blur_radius else {
+                    panic!("a glow length is logical px")
+                };
+                let word_at = skin.gap * 0.5;
+                let density = GLOW_MAX_ALPHA * upper_tail(word_at / sigma);
+                let ground = Srgba::from(skin.solid_surface());
+                let glow = layer.color.to_srgba();
+                let under = [
+                    glow.red * density + ground.red * (1.0 - density),
+                    glow.green * density + ground.green * (1.0 - density),
+                    glow.blue * density + ground.blue * (1.0 - density),
+                ];
+                // The word is a `Role::Label`, drawn in `text`.
+                let ink = Srgba::from(skin.text);
+                let ratio =
+                    bevy_gooey::model::contrast_ratio([ink.red, ink.green, ink.blue], under);
+                assert!(
+                    ratio >= needed,
+                    "{name} at {scale}: the word under a {state:?} glow is {ratio:.2}:1, needs {needed}"
+                );
+            }
         }
     }
 }
