@@ -191,6 +191,8 @@ fn spec(role: Role) -> Spec {
         | Role::ChipText
         | Role::MeterFill
         | Role::MeterTrail
+        | Role::MeterNotchLane
+        | Role::MeterNotch
         | Role::ToggleTrack
         | Role::ToggleKnob
         | Role::SliderHeader

@@ -13,7 +13,7 @@ Every widget is a free function returning a bundle, styled only by `apply_skin` 
 | `button(text)` | a Bevy `Button`, so it takes `observe`, `Tooltip` and `InteractionDisabled` |
 | `ButtonVariant` on a `button` or `icon_button` | what the button says it does: `Submit`, `Contrast`, `Danger`, `Warning`, `Outline`, `Ghost`, `GhostMuted`, `GhostFaint` (absent is the plain button); `Loading(true)` swaps the label for a spinner, keeps the width and takes no click |
 | `primary_button(text)` | the screen's one main action: a `button` with the `PrimaryButton` marker, filled with `accent` and labelled in `accent_text` at rest, lifted 6 L\* toward `text` under the pointer (`primary_hovered()`) and 12 held down (`primary_pressed()`); `problems()` checks the words on both lifts and the steps between the three fills. Move the marker to make another button the main action |
-| `meter(value, max)` | a HUD bar; `Meter { value, max }` on the entity drives it, and `update_meters` draws it |
+| `meter(value, max)` | a HUD bar (`MeterTone` colours it, `MeterSegments` cuts it into cells); `Meter { value, max }` on the entity drives it, and `update_meters` draws it |
 | `tooltip` (`Tooltip::new("…")`) | a component on any widget: its box opens beside the widget under the pointer or on visible focus, with the command's shortcut on a keycap if it has one — see [shortcuts](shortcuts.md) |
 | `dialog()` | a modal: a scrim, focus taken on opening and held, and given back to the opener on closing |
 | `popover(anchor, placement)`, `popover_modal(..)` | a panel beside a widget or at the pointer, kept inside the window and closed by Escape or a press elsewhere; the modal one holds focus like a menu does — see [popovers](popovers.md) |
@@ -50,6 +50,17 @@ fn hud(mut commands: Commands) {
 ```
 
 `Meter { value, max }` is the state: write it and the next `update_meters` draws the fill. The frame (`outline`) and the gap round the fill are drawn whole device pixels wide, so the fill sits centred in its slot at every scale.
+
+### Bars a player can tell apart and count
+
+A HUD with health, mana and stamina draws three bars of one colour unless each says which it is. `MeterTone("health")` on the meter's root paints its fill in the skin's tone of that name (`GooeySkin::tones`, or one of the skin's own colours such as `danger`), so the colours are the skin's data and a player's palette is one skin change; a name the skin does not know draws the `accent`. A toned meter's trail is its own colour lifted toward the text (`GooeySkin::meter_trail`), so the length just lost reads as a lighter piece of the same bar; an untoned meter keeps the `danger` trail. `MeterSegments(12)` cuts the bar into twelve cells with eleven notches, each a line weight wide in the track's colour, standing at the cell edges of the fill's own length, so seven of twelve shows as seven cells; below 2 nothing is cut and above `METER_MAX_SEGMENTS` (64) the notches are refused with a warning.
+
+```
+commands.spawn((meter(7.0, 12.0), MeterTone("ammo"), MeterSegments(12)));
+```
+
+Colour is never the only cue: the length says the value and a `label` says the name. Check a tone you add against the track with `GooeySkin::tone_problems` (the fill on `surface_raised` at 3:1). `examples/hud.rs` shows four bars and the buttons that spend them.
+
 
 A meter moves as its value does (see [motion](motion.md)): a loss drops the fill at once and leaves the lost length behind it, in the skin's `danger` colour, for about half a second before it drains; a gain eases up with no trail. `MotionSettings::off()` makes both instant.
 
