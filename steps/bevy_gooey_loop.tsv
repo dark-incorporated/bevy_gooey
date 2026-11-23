@@ -19555,3 +19555,166 @@ pass	seq	phase	kind	category	tool	start	seconds	detail
 350	216	log	model	model		2026-11-23T00:06:15Z	2.1	
 350	217	log	tool	shell	bash	2026-11-23T00:06:17Z	0.1	cd /tmp/g108 && rm -rf after before *.log *.sh perf.txt prose* semver.sum critique.md syntax-themes.png t*.png w.png; ls; df -h . | tail -1; cd ~/bevy_gooey_loo
 350	218	log	model	model		2026-11-23T00:06:17Z	7.4	
+351	1	orient	model	model		2026-11-23T00:07:00Z	3.4	
+351	2	orient	tool	phase mark	bash	2026-11-23T00:07:03Z	0.8	cd ~/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark orient; git fetch -q origin loop-stats 2>&1 | tail -1; git show origin/loop-stats:steps/bevy
+351	3	orient	tool	github	bash	2026-11-23T00:07:03Z	1.4	cd ~/bevy_gooey_loop && gh issue list --repo bevy-coven/bevy_gooey --state open --limit 100 --json number,title,labels,createdAt --jq '.[] | "#\(.number) \(.tit
+351	4	orient	model	model		2026-11-23T00:07:05Z	2.6	
+351	5	orient	tool	github	bash	2026-11-23T00:07:07Z	1.3	cd ~/bevy_gooey_loop && gh issue list --repo dark-incorporated/bevy_gooey --state open --limit 100 --json number,title,labels,createdAt --jq '.[] | "#\(.number)
+351	6	orient	model	model		2026-11-23T00:07:09Z	2.9	
+351	7	choose	tool	phase mark	bash	2026-11-23T00:07:12Z	0.1	cd ~/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark choose; git show 31ab481 --stat --format= ; git show 31ab481 -- src/tag.rs | head -250; git 
+351	8	choose	model	model		2026-11-23T00:07:12Z	3.9	
+351	9	choose	tool	shell	bash	2026-11-23T00:07:16Z	0.1	cd ~/bevy_gooey_loop && ls docs/research | grep -i -E 'tag|chip|badge'; git log --all --oneline -- docs/research/tag.md | head; git show 31ab481 -- src/skin.rs 
+351	10	choose	model	model		2026-11-23T00:07:16Z	2.2	
+351	11	choose	tool	git	bash	2026-11-23T00:07:18Z	0.0	cd ~/bevy_gooey_loop && git branch -a --contains 708e556; git log --oneline -3 708e556; git show 708e556 --stat --format=%s | head; git show 708e556:docs/resear
+351	12	choose	model	model		2026-11-23T00:07:18Z	4.4	
+351	13	research	tool	phase mark	bash	2026-11-23T00:07:22Z	0.1	cd ~/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark research && git checkout -q -b loop/iter-109 main && git checkout 708e556 -- docs/research/t
+351	14	research	model	model		2026-11-23T00:07:22Z	3.7	
+351	15	research	tool	git	bash	2026-11-23T00:07:26Z	0.0	cd ~/bevy_gooey_loop && git reset -q --hard HEAD && git cherry-pick -n 31ab481 2>&1 | tail -5; git status --short
+351	16	research	model	model		2026-11-23T00:07:26Z	1.7	
+351	17	research	tool	shell	bash	2026-11-23T00:07:28Z	0.0	cd ~/bevy_gooey_loop && sed -n 1,30p CHANGELOG.md | cut -c1-200
+351	18	research	model	model		2026-11-23T00:07:28Z	2.5	
+351	19	build	tool	phase mark	bash	2026-11-23T00:07:30Z	1.4	cd ~/bevy_gooey_loop && python3 - <<'E' import re s=open('CHANGELOG.md').read() m=re.search(r'<<<<<<< HEAD\n(.*?)=======\n(.*?)>>>>>>> [^\n]*\n',s,re.S) s=s[:m.
+351	20	build	model	model		2026-11-23T00:07:32Z	1.3	
+351	21	build	tool	shell	bash	2026-11-23T00:07:33Z	0.0	cd ~/bevy_gooey_loop && env | grep -E 'CARGO|RUSTC' ; git diff --stat | tail -3
+351	22	build	model	model		2026-11-23T00:07:33Z	3.0	
+351	23	build	tool	cargo clippy	bash	2026-11-23T00:07:36Z	0.0	[launched bg_2] cd ~/bevy_gooey_loop && export RUSTC_WRAPPER= ; (time cargo clippy --all-targets --all-features -- -D warnings 2>&1 | tail -30) 2>&1 | tail -40
+351	24	build	model	model		2026-11-23T00:07:36Z	1.8	
+351	25	build	tool	shell	bash	2026-11-23T00:07:38Z	0.0	cd ~/bevy_gooey_loop && sed -n 120,400p tests/tag.rs; grep -n "chip" examples/kit.rs | head -20; grep -n "kit\|hud" docs/media/README.md | head
+351	26	build	model	model		2026-11-23T00:07:38Z	1.7	
+351	27	build	tool	shell	bash	2026-11-23T00:07:40Z	0.0	cd ~/bevy_gooey_loop && sed -n 1,30p examples/kit.rs; sed -n 60,160p examples/kit.rs; grep -n "chip.png" -r docs README.md | cut -c1-160
+351	28	build	model	model		2026-11-23T00:07:40Z	3.7	
+351	29	build	tool	shell	bash	2026-11-23T00:07:43Z	0.0	cd ~/bevy_gooey_loop && grep -n "example\|autoexamples" Cargo.toml | head -20; sed -n 28,60p examples/kit.rs; sed -n 160,260p examples/kit.rs
+351	30	build	model	model		2026-11-23T00:07:43Z	0.8	
+351	31	build	tool	shell	bash	2026-11-23T00:07:44Z	0.0	cd ~/bevy_gooey_loop && sed -n 60,100p Cargo.toml
+351	32	build	model	model		2026-11-23T00:07:44Z	15.6	
+351	33	build	tool	edit files	write	2026-11-23T00:08:00Z	0.0	/home/ladvien/bevy_gooey_loop/examples/tags.rs
+351	34	build	bg	cargo clippy	bash	2026-11-23T00:07:45Z	14.9	bg_2 completed: export RUSTC_WRAPPER= ; (time cargo clippy --all-targets --all-features -- -D warnings 2>&1 | tail -30) 2>&1 | tail -40
+351	35	build	model	model		2026-11-23T00:08:00Z	2.9	
+351	36	build	tool	shell	bash	2026-11-23T00:08:03Z	0.0	cd ~/bevy_gooey_loop && grep -n "toggle_chip" src/lib.rs
+351	37	build	model	model		2026-11-23T00:08:03Z	1.1	
+351	38	build	tool	shell	bash	2026-11-23T00:08:04Z	0.0	cd ~/bevy_gooey_loop && sed -n 478,492p src/lib.rs
+351	39	build	model	model		2026-11-23T00:08:04Z	1.6	
+351	40	build	tool	cargo clippy	bash	2026-11-23T00:08:05Z	1.2	cd ~/bevy_gooey_loop && sed -i '484s/submenu, surface, tab_page, table, tabs,/submenu, surface, tab_page, table, tabs, tag,/' src/lib.rs && cargo fmt && (cargo 
+351	41	build	model	model		2026-11-23T00:08:07Z	1.7	
+351	42	build	tool	cargo clippy	bash	2026-11-23T00:08:08Z	0.0	[launched bg_3] cd ~/bevy_gooey_loop && export RUSTC_WRAPPER= && cargo clippy --all-targets --all-features -- -D warnings 2>&1 | tail -40
+351	43	build	model	model		2026-11-23T00:08:08Z	0.6	
+351	44	build	tool	wait: other	wait	2026-11-23T00:08:09Z	5.0	{}
+351	45	build	model	model		2026-11-23T00:08:14Z	0.6	
+351	46	build	tool	wait: other	wait	2026-11-23T00:08:15Z	8.8	{}
+351	47	build	model	model		2026-11-23T00:08:23Z	1.9	
+351	48	build	tool	cargo clippy	bash	2026-11-23T00:08:25Z	16.4	cd ~/bevy_gooey_loop && sed -i '483s/tab_page, table, tabs,/tab_page, table, tabs, tag,/' src/lib.rs && sed -n 483p src/lib.rs && cargo fmt && RUSTC_WRAPPER= ca
+351	49	build	model	model		2026-11-23T00:08:42Z	1.3	
+351	50	build	tool	git	bash	2026-11-23T00:08:43Z	0.0	cd ~/bevy_gooey_loop && git diff src/lib.rs | head -40; grep -n "tag" src/lib.rs | head
+351	51	build	model	model		2026-11-23T00:08:43Z	1.2	
+351	52	build	tool	shell	bash	2026-11-23T00:08:44Z	0.0	cd ~/bevy_gooey_loop && grep -n "toggle_chip" src/lib.rs; grep -n "widgets::{" src/lib.rs
+351	53	build	model	model		2026-11-23T00:08:44Z	1.3	
+351	54	build	tool	shell	bash	2026-11-23T00:08:45Z	0.0	cd ~/bevy_gooey_loop && sed -n 480,487p src/lib.rs
+351	55	build	model	model		2026-11-23T00:08:45Z	1.7	
+351	56	build	tool	cargo clippy	bash	2026-11-23T00:08:47Z	27.1	cd ~/bevy_gooey_loop && sed -i '485s/table, tabs, text_area,/table, tabs, tag, text_area,/' src/lib.rs && cargo fmt && RUSTC_WRAPPER= cargo clippy --all-targets
+351	57	build	model	model		2026-11-23T00:09:14Z	1.3	
+351	58	build	tool	shell	bash	2026-11-23T00:09:16Z	0.0	cd ~/bevy_gooey_loop && sed -n 300,335p tests/tag.rs
+351	59	build	model	model		2026-11-23T00:09:16Z	2.1	
+351	60	build	tool	cargo clippy	bash	2026-11-23T00:09:18Z	12.1	cd ~/bevy_gooey_loop && python3 - <<'E' s=open('tests/tag.rs').read() s=s.replace(""" app.world_mut() .get_mut::<Text>(words_of(&app, kids[0]))""",""" let words
+351	61	build	model	model		2026-11-23T00:09:30Z	1.7	
+351	62	build	tool	cargo test	bash	2026-11-23T00:09:32Z	60.0	[launched bg_4] cd ~/bevy_gooey_loop && RUSTC_WRAPPER= CARGO_BUILD_JOBS=4 cargo nextest run --all-features --lib --tests -E 'test(tag::)' 2>&1 | tail -50
+351	63	build	model	model		2026-11-23T00:10:32Z	0.8	
+351	64	build	tool	wait: other	wait	2026-11-23T00:10:32Z	5.1	{}
+351	65	build	model	model		2026-11-23T00:10:38Z	0.9	
+351	66	build	tool	wait: other	wait	2026-11-23T00:10:38Z	9.4	{}
+351	67	build	model	model		2026-11-23T00:10:48Z	2.0	
+351	68	prove	tool	phase mark	bash	2026-11-23T00:10:50Z	0.1	cd ~/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark prove; grep -n "fn tag_fill\|fn tag_ink" -A22 src/skin.rs | head -70; cat src/tag.rs
+351	69	prove	model	model		2026-11-23T00:10:50Z	2.3	
+351	70	prove	tool	cargo test	bash	2026-11-23T00:10:52Z	18.3	cd ~/bevy_gooey_loop && cp src/skin.rs /tmp/skin.bak && sed -i '847s/self.ink_on(fill)/self.text/' src/skin.rs && sed -n 847p src/skin.rs && RUSTC_WRAPPER= CARG
+351	71	prove	model	model		2026-11-23T00:11:11Z	2.6	
+351	72	prove	tool	shell	bash	2026-11-23T00:11:13Z	0.0	cd ~/bevy_gooey_loop && grep -n "\[\[example\]\]" -A3 Cargo.toml | grep -n "kit\|reflect\|markdown" ; grep -n "autoexamples" Cargo.toml; xdpyinfo -display ${DIS
+351	73	prove	model	model		2026-11-23T00:11:13Z	2.3	
+351	74	prove	tool	cargo build	bash	2026-11-23T00:11:16Z	0.0	[launched bg_5] cd ~/bevy_gooey_loop && mkdir -p /tmp/g109/after && export RUSTC_WRAPPER= && (time cargo build --release --example tags 2>&1 | tail -3) 2>&1 | tail -6; ls $CARG
+351	75	prove	tool	wait: other	wait	2026-11-23T00:11:16Z	5.0	{}
+351	76	prove	model	model		2026-11-23T00:11:21Z	0.7	
+351	77	prove	tool	wait: other	wait	2026-11-23T00:11:21Z	92.9	{}
+351	78	prove	model	model		2026-11-23T00:12:54Z	4.4	
+351	79	prove	tool	shell	bash	2026-11-23T00:12:59Z	5.2	cd /tmp/g109/after && B=/home/ladvien/target/gooey-loop/release/examples/tags; for skin in dark parchment; do for sz in 560x400 1120x800; do GOOEY_SKIN=$skin GO
+351	80	prove	model	model		2026-11-23T00:13:04Z	1.8	
+351	81	prove	tool	read files	read	2026-11-23T00:13:06Z	0.0	/tmp/g109/after/dark-1120x800.png
+351	82	prove	tool	read files	read	2026-11-23T00:13:06Z	0.0	/tmp/g109/after/parchment-560x400.png
+351	83	prove	model	model		2026-11-23T00:13:06Z	4.7	
+351	84	prove	tool	shell	bash	2026-11-23T00:13:10Z	0.2	cd /tmp/g109/after && python3 - <<'E' from PIL import Image for n in ['dark-1120x800','parchment-560x400','t15']: im=Image.open(n+'.png'); print(n,im.size) w,h=
+351	85	prove	model	model		2026-11-23T00:13:11Z	2.4	
+351	86	prove	tool	read files	read	2026-11-23T00:13:13Z	0.0	/tmp/g109/after/dark-1120x800-zoom.png
+351	87	prove	tool	read files	read	2026-11-23T00:13:13Z	0.0	/tmp/g109/after/parchment-560x400-zoom.png
+351	88	prove	model	model		2026-11-23T00:13:13Z	5.1	
+351	89	prove	tool	shell	bash	2026-11-23T00:13:18Z	0.1	cd /tmp/g109/after && python3 - <<'E' from PIL import Image def L(c): f=lambda v:(v/255/12.92) if v/255<=0.03928 else ((v/255+0.055)/1.055)**2.4 r,g,b=c[:3];ret
+351	90	prove	model	model		2026-11-23T00:13:18Z	5.2	
+351	91	prove	tool	cargo build	bash	2026-11-23T00:13:23Z	0.0	[launched bg_6] cd ~/bevy_gooey_loop && export RUSTC_WRAPPER= && git worktree add -q --detach ~/g109_base main && mkdir -p /tmp/g109/bin && (cd ~/g109_base && cargo build --rel
+351	92	prove	tool	wait: other	wait	2026-11-23T00:13:23Z	5.0	{}
+351	93	prove	model	model		2026-11-23T00:13:28Z	1.5	
+351	94	prove	tool	shell	bash	2026-11-23T00:13:30Z	0.0	cd ~/bevy_gooey_loop && wc -l README.md; grep -n -i "chip" README.md | cut -c1-260; git diff --cached --stat | tail -15; grep -n "tag" docs/guide/README.md docs
+351	95	prove	model	model		2026-11-23T00:13:30Z	1.6	
+351	96	prove	tool	shell	bash	2026-11-23T00:13:32Z	0.0	cd ~/bevy_gooey_loop && sed -n 94p README.md | fold -w 200; sed -n 80p docs/media/README.md | cut -c1-900; cat docs/guide/tags.md | head -30; cat CHANGELOG.md |
+351	97	prove	model	model		2026-11-23T00:13:32Z	3.3	
+351	98	prove	tool	read files	read	2026-11-23T00:13:35Z	0.0	/home/ladvien/bevy_gooey_loop/README.md:94:raw
+351	99	prove	model	model		2026-11-23T00:13:35Z	2.8	
+351	100	prove	tool	read files	read	2026-11-23T00:13:38Z	0.0	/home/ladvien/bevy_gooey_loop/README.md:93-95
+351	101	prove	model	model		2026-11-23T00:13:38Z	2.6	
+351	102	prove	tool	edit files	edit	2026-11-23T00:13:40Z	0.0	[README.md#D741] PUT >89: +- **Name a thing with a plate.** `tag("ELITE")` is a read-only word on a plate and `TagTone("danger")` colours it from the skin, so a
+351	103	prove	model	model		2026-11-23T00:13:40Z	2.5	
+351	104	prove	tool	read files	read	2026-11-23T00:13:43Z	0.0	/home/ladvien/bevy_gooey_loop/README.md:90-96
+351	105	prove	model	model		2026-11-23T00:13:43Z	3.8	
+351	106	prove	tool	edit files	edit	2026-11-23T00:13:47Z	0.0	[README.md#E8DE] CUT 90.=91 PUT >93: +- **Name a thing with a plate.** `tag("ELITE")` is a read-only word on a plate and `TagTone("danger")` colours it from the
+351	107	prove	model	model		2026-11-23T00:13:47Z	2.5	
+351	108	prove	tool	edit files	edit	2026-11-23T00:13:49Z	0.0	[README.md#A5BD] PUT >89: +
+351	109	prove	model	model		2026-11-23T00:13:49Z	4.9	
+351	110	prove	tool	shell	bash	2026-11-23T00:13:54Z	0.2	cd /tmp/g109/after && python3 - <<'E' from PIL import Image a=Image.open('dark-1120x800.png').convert('RGB').crop((60,225,300,445)) b=Image.open('parchment-560x
+351	111	prove	tool	read files	read	2026-11-23T00:13:54Z	0.2	/tmp/g109/after/tags.png
+351	112	prove	model	model		2026-11-23T00:13:54Z	3.6	
+351	113	prove	tool	shell	bash	2026-11-23T00:13:58Z	0.0	cd ~/bevy_gooey_loop && python3 - <<'E' p='README.md'; s=open(p).read() s=s.replace("![The tags example in the dark skin: a Tags panel","![The tags example in t
+351	114	prove	model	model		2026-11-23T00:13:58Z	1.9	
+351	115	prove	tool	read files	read	2026-11-23T00:14:00Z	0.0	/home/ladvien/bevy_gooey_loop/docs/media/README.md:80-81
+351	116	prove	model	model		2026-11-23T00:14:00Z	3.0	
+351	117	prove	tool	edit files	edit	2026-11-23T00:14:03Z	0.0	[docs/media/README.md#6AA0] PUT >80: +| `tags.png` | `tag` and `TagTone` (500×220: the panel of `examples/tags` in the dark skin on the left and the parchment s
+351	118	prove	model	model		2026-11-23T00:14:03Z	3.0	
+351	119	prove	tool	git	bash	2026-11-23T00:14:06Z	0.1	cd ~/bevy_gooey_loop && grep -n '^- `chip`, `toggle_chip`' AGENTS.md | cut -c1-30; python3 - <<'E' import subprocess E git show 31ab481:src/widgets.rs | grep -n
+351	120	prove	model	model		2026-11-23T00:14:06Z	2.0	
+351	121	prove	tool	read files	read	2026-11-23T00:14:08Z	0.1	/home/ladvien/bevy_gooey_loop/AGENTS.md:26-26
+351	122	prove	model	model		2026-11-23T00:14:08Z	5.0	
+351	123	prove	tool	edit files	edit	2026-11-23T00:14:13Z	0.0	[AGENTS.md#7CC9] PUT >26: +- `tag`, `Tag`, `TagTone`, `update_tags` (`src/widgets.rs` + `src/tag.rs`, iteration 109, adopted from parked pass 349, `docs/researc
+351	124	prove	model	model		2026-11-23T00:14:13Z	2.0	
+351	125	prove	tool	shell	bash	2026-11-23T00:14:15Z	0.0	cd ~/bevy_gooey_loop && sed -n 26p AGENTS.md | wc -c
+351	126	prove	model	model		2026-11-23T00:14:15Z	1.0	
+351	127	prove	tool	read files	read	2026-11-23T00:14:16Z	0.0	/home/ladvien/bevy_gooey_loop/AGENTS.md:26:raw
+351	128	prove	model	model		2026-11-23T00:14:16Z	5.0	
+351	129	prove	tool	edit files	edit	2026-11-23T00:14:21Z	0.0	[AGENTS.md#7CC9] PUT >26: +- `tag`, `Tag`, `TagTone`, `update_tags` (`src/widgets.rs` + `src/tag.rs`, iteration 109, adopted from parked pass 349, `docs/researc
+351	130	prove	model	model		2026-11-23T00:14:21Z	1.6	
+351	131	prove	tool	wait: other	wait	2026-11-23T00:14:23Z	56.3	{}
+351	132	prove	model	model		2026-11-23T00:15:19Z	4.1	
+351	133	prove	tool	shell	bash	2026-11-23T00:15:23Z	60.1	[launched bg_7] cd /tmp/g109 && uptime; for i in 1 2 3 4 5 6; do for v in before after; do echo -n "$v "; GOOEY_FRAMES=300 GOOEY_SIZE=1280x720 GOOEY_SHOT=/tmp/g109/p.png timeou
+351	134	prove	model	model		2026-11-23T00:16:23Z	8.8	
+351	135	gate	tool	phase mark	bash	2026-11-23T00:16:32Z	0.3	cd ~/bevy_gooey_loop && cat > /tmp/g109/critique.md <<'E' # Critique, iteration 109: tag (adopted from parked pass 349) Viewed the dark and parchment stills ful
+351	136	gate	bg	shell	bash	2026-11-23T00:15:24Z	68.6	bg_7 completed: uptime; for i in 1 2 3 4 5 6; do for v in before after; do echo -n "$v "; GOOEY_FRAMES=300 GOOEY_SIZE=1280x720 GOOEY_...
+351	137	gate	model	model		2026-11-23T00:16:32Z	2.2	
+351	138	gate	tool	git	bash	2026-11-23T00:16:34Z	0.0	cd ~/bevy_gooey_loop && git status --short; git diff --cached main -- src/ | grep '^-' | grep -v '^---' | head; wc -l README.md
+351	139	gate	model	model		2026-11-23T00:16:34Z	3.1	
+351	140	gate	tool	push gate	bash	2026-11-23T00:16:38Z	1.8	cd ~/bevy_gooey_loop && git diff --cached main -- src/skin.rs | grep -n "ink_on" ; sed -i 's/^- tag widget.*//' /dev/null; grep -n "tags\|tag" CHANGELOG.md | he
+351	141	gate	model	model		2026-11-23T00:16:39Z	2.8	
+351	142	gate	tool	cargo test	bash	2026-11-23T00:16:42Z	0.0	[launched bg_8] cd ~/bevy_gooey_loop && export RUSTC_WRAPPER= CARGO_TARGET_DIR=/home/ladvien/target/gooey-loop && (cargo fmt --check && echo FMT_OK && cargo clippy --all-target
+351	143	gate	model	model		2026-11-23T00:16:42Z	0.8	
+351	144	gate	tool	wait: other	wait	2026-11-23T00:16:43Z	5.0	{}
+351	145	gate	model	model		2026-11-23T00:16:48Z	0.8	
+351	146	gate	tool	wait: other	wait	2026-11-23T00:16:49Z	240.0	{}
+351	147	gate	model	model		2026-11-23T00:20:49Z	1.5	
+351	148	gate	tool	wait: other	wait	2026-11-23T00:20:50Z	141.6	{}
+351	149	gate	model	model		2026-11-23T00:23:12Z	3.0	
+351	150	gate	tool	cargo test	bash	2026-11-23T00:23:15Z	0.0	[launched bg_9] cd ~/bevy_gooey_loop && git checkout -q main && git merge --no-ff loop/iter-109 -m "Merge loop/iter-109: tag widget" 2>&1 | tail -2; export RUSTC_WRAPPER= CARGO
+351	151	gate	model	model		2026-11-23T00:23:15Z	1.8	
+351	152	gate	tool	wait: other	wait	2026-11-23T00:23:17Z	5.0	{}
+351	153	gate	model	model		2026-11-23T00:23:22Z	0.6	
+351	154	gate	tool	wait: other	wait	2026-11-23T00:23:22Z	240.0	{}
+351	155	gate	model	model		2026-11-23T00:27:22Z	0.8	
+351	156	gate	tool	wait: other	wait	2026-11-23T00:27:23Z	117.2	{}
+351	157	gate	model	model		2026-11-23T00:29:20Z	2.0	
+351	158	ship	tool	phase mark	bash	2026-11-23T00:29:22Z	12.5	cd ~/bevy_gooey_loop && git push -q origin main 2>&1 | tail -2; python3 ~/.local/share/wiggum/steps.py mark ship; python3 ~/.local/share/wiggum/steps.py mark re
+351	159	ship	model	model		2026-11-23T00:29:35Z	2.7	
+351	160	log	tool	phase mark	bash	2026-11-23T00:29:38Z	0.1	cd ~/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark log; tail -40 docs/loop-log.md | cut -c1-200; df -h . | tail -1
+351	161	log	model	model		2026-11-23T00:29:38Z	11.1	
+351	162	done	tool	phase mark	bash	2026-11-23T00:29:49Z	1.9	cd ~/bevy_gooey_loop && git checkout -q main && cat >> docs/loop-log.md <<'E' ## Iteration 109 — 2026-11-22 — tag widget **What and why.** Adopted the parked `t
+351	163	done	model	model		2026-11-23T00:29:51Z	5.7	
