@@ -3640,3 +3640,19 @@ Parked trees 341 and 343 were stale and not adopted.
 **Cleanup.** Removed my own `/tmp/g107*`, `~/g107_base` worktree. `df -h .` before 163G free at 96%, after 119G at 97% (shared
 target growth from other agents' builds and the semver baseline). Left: `~/g17_base`, `~/g17_parked`, `~/g17s_base`; parked
 branches `wiggum/parked-pass-*` untouched.
+
+## Iteration 108 — 2026-11-22 — syntax themes
+
+**What and why.** Consumer issue #116 (bevy_dark_factory): a host could not choose the hues `GooeySkin::syntax` derives its code colours from. Now `GooeySkin::syntax_theme: SyntaxTheme` lists `SyntaxInk { role, hue, chroma, shift }`; `syntax(role)` reads it and keeps its unchanged lightness search toward the text, so every theme holds 4.5:1 (7:1 on high contrast) on every skin. Presets `SyntaxPreset::{Skin, Warm, Cool, Mono, Separated}`; the empty default draws today's colours exactly (captures `cmp` identical to main). `problems()` reports an unusable theme as `BadSize { field: "syntax_theme" }`; the theme step leaves it alone like `tones`. `examples/prose.rs`: F3 and `GOOEY_SYNTAX`. Note `docs/research/syntax-theme.md` (Hannebauer 2018 on hue/colour count in code, Solarized's lightness-matched hues, Lalitha arXiv 2512.05067 on WCAG and syntax colour). Runner-up: a per-role colour map (a host's literal colours); refused because it can break the contrast bar.
+
+**Assumed decision (owner may override):** the theme is a skin field, not the issue's resource with `syntax_in(&SyntaxTheme, role)`: `apply_skin` is at its 16-parameter limit and only has the skin; a field works with `SkinScope`, is checked by `problems()` and rides skin change detection. Recorded on #116. Comment, Operator and Error stay fixed.
+
+**Critique** (`/tmp/g108/critique.md`, seven themed captures plus 2560x1440, montage `docs/media/syntax-themes.png`): first `mono` (chroma .07) left link and code span near the grey URL: NOT YET; chroma .11 fixed it. Warm's first table had pairs 4.4 to 5.6 apart (Number/Strong, Key/Function) and was retuned; the final themes hold 8 Lab apart on every skin (6 on high contrast). Verdict GREAT. Capture sizing: under Xvfb :93 several runs were not the requested size; the final set used `env -u WAYLAND_DISPLAY` and `GOOEY_SIZE`.
+
+**Checklist.** fmt, clippy `-D warnings`, nextest (`--no-fail-fast`), doctests, `cargo check --lib`, wasm32, `cargo doc -D warnings` green on the branch and again on the merged tree. 6 new tests in `tests/code_decor.rs` (every preset on every skin passes the bar, skin theme equals the old colours, role separation, an open editor recolours in the frame it switches, an unusable theme reported and the last ink of a role wins, serde). `mean_ms` prose 720p, load 12-17, three alternating pairs: before 23.76/23.90/23.82, after 23.93/23.38/24.18: no change. `cargo semver-checks` (baseline crates.io 0.51.8): no update required; bumped minor to 0.58.0 (new `GooeySkin` field breaks struct literals). **Release:** `cargo publish` 403 "authentication failed" (token; 0.51.9 to 0.58.0 unpublished), not retried; tag `v0.58.0` pushed.
+
+**Commits.** research (iter-108 branch), syntax themes (`Fixes #116`), merge 940eaa1, `release: v0.58.0` 8647648. This pass also carries the style-sheet commits 1198e74 and 7712c0a that had no log entry.
+
+**Top 5 backlog.** (1) crates.io token for 0.51.9 to 0.58.0; (2) incremental wrap-map rebuild; (3) windowed variable-height table; (4) minimap and indent guides under soft wrap; (5) a `problems()` note for a divider under 24 px. Candidate to adopt: parked pass-349 tag widget (31ab481).
+
+**Cleanup.** Removed my own `/tmp/g108` scratch files and `~/g108_base`. `~/g17_base`, `~/g17_parked`, `~/g17s_base` and `wiggum/parked-pass-*` untouched.
