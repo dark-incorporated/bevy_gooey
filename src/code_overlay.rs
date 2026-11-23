@@ -1242,10 +1242,15 @@ fn draw_navigation(
                 .id()
         },
     );
+    // A pool grown this frame holds entities `Commands` has not made yet, so the query above finds
+    // none of them: the key must not be recorded until every bar was actually written, or the
+    // minimap of a file opened for reading stays blank until the text changes (#117).
+    let mut written = true;
     if redraw {
         let column = ((width - 4.0) / MINIMAP_COLS as f32).max(0.5);
         for (slot, &entity) in editor.overlay.minimap_bars.iter().enumerate() {
             let Ok((mut node, ..)) = items.get_mut(entity) else {
+                written = false;
                 continue;
             };
             let row = first + slot;
@@ -1265,6 +1270,7 @@ fn draw_navigation(
         }
         for (slot, &entity) in editor.overlay.minimap_marks.iter().enumerate() {
             let Ok((mut node, _, mut role, _)) = items.get_mut(entity) else {
+                written = false;
                 continue;
             };
             match mark_rows.get(slot) {
@@ -1279,7 +1285,9 @@ fn draw_navigation(
                 None => set_display(&mut node, Display::None),
             }
         }
-        editor.overlay.minimap_key = Some(key);
+        if written {
+            editor.overlay.minimap_key = Some(key);
+        }
     }
     // The band over the part in view follows the glided scroll.
     if let Some(band) = editor.overlay.minimap_band
