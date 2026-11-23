@@ -85,6 +85,7 @@ use crate::split::{
 use crate::status::{StatusBar, StatusGroup, StatusItem};
 use crate::table::{Column, RowSource, table_bundle};
 use crate::tabs::{TabsCount, TabsValue, tabs_on_select, tabs_self_update};
+use crate::tag::Tag;
 use crate::text::{
     AreaField, TextHint, TextInputOf, TextInputValue, text_on_key_input, text_row_on_acquire,
     text_self_update,
@@ -4434,6 +4435,40 @@ pub fn toggle_chip(label: impl Into<String>, on: bool) -> impl Bundle {
         ToggleChip,
         ChipStartsOn(on),
         observe(toggle_chip_on_activate),
+    )
+}
+
+/// A tag: a short word on a plate whose colour names a kind of thing ("ELITE", "NEW", "2 STALE",
+/// "Rare"). It is read-only: no input, no focus, the pointer goes through it. Name the colour with
+/// [`TagTone`](crate::TagTone), a tone of the skin ([`GooeySkin::tones`](crate::GooeySkin::tones)) or
+/// one of its own colours (`"accent"`, `"danger"`, `"warning"`, `"live"`, ...); with none, or a name
+/// the skin does not know, the plate is the quiet one. The skin picks the words' ink from the plate
+/// ([`GooeySkin::tag_ink`](crate::GooeySkin::tag_ink)), so a host's colour is never unreadable. The
+/// colour is never the only cue: the words say the kind (WCAG 2.2 SC 1.4.1), and a screen reader reads
+/// them as one label.
+///
+/// Its words stay on one line and a tag too wide for its host is cut at the host's edge. A tag whose
+/// words are empty takes no room ([`update_tags`](crate::update_tags)): write the count as
+/// `"{n} STALE"` or an empty string, and nothing else needs to change. A tag the player can press is
+/// a [`chip`]; a number beside a label is a [`count_text`].
+///
+/// ```
+/// # use bevy::prelude::*;
+/// # use bevy_gooey::*;
+/// # fn ui(mut commands: Commands) {
+/// commands.spawn((
+///     row(0.5),
+///     children![label("Wolf"), (tag("ELITE"), TagTone("danger")), tag("NEW")],
+/// ));
+/// # }
+/// ```
+pub fn tag(label: impl Into<String>) -> impl Bundle {
+    (
+        Node::default(),
+        Tag,
+        Role::Tag,
+        Pickable::IGNORE,
+        children![(Text::new(label), ONE_LINE, Role::TagText, Pickable::IGNORE)],
     )
 }
 

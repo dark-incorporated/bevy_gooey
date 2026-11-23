@@ -112,6 +112,7 @@ mod style_sheet;
 mod switch_motion;
 mod table;
 mod tabs;
+mod tag;
 mod testing;
 mod text;
 mod text_area;

@@ -222,6 +222,7 @@ mod style_sheet;
 mod tab_scroll;
 mod table;
 mod tabs;
+mod tag;
 mod text;
 mod text_area;
 mod toast;
@@ -449,6 +450,7 @@ pub use tabs::{
     CornerBadge, IconTab, SideTab, TabPageOf, TabsCount, TabsValue, VerticalTab, land_tab_focus,
     step_tabs, update_tab_pages, update_tabs,
 };
+pub use tag::{Tag, TagTone, update_tags};
 pub use text::{
     TextEdited, TextEditing, TextHint, TextInputOf, TextInputValue, TextLimit, is_text_editing,
     track_text_editing, update_text_inputs,
@@ -480,7 +482,7 @@ pub use widgets::{
     screen, scrim, scroll_region, scroll_viewport, section, select, separator, side_tab_page,
     side_tabs, side_tabs_icons, sized, sized_panel, skin_preset, slider, slot_grid, spacer,
     spinner, split, status_bar, status_item, status_item_quiet, status_mark, status_progress,
-    submenu, surface, tab_page, table, tabs, text_area, text_area_fill, text_input, text_size,
+    submenu, surface, tab_page, table, tabs, tag, text_area, text_area_fill, text_input, text_size,
     toast, toast_alert, toast_note, toggle, toggle_chip, toggle_group, toolbar, toolbar_separator,
     tree, vec_field, viewport,
 };
@@ -586,6 +588,8 @@ impl Plugin for GooeyStylePlugin {
             .register_type::<OverlayStacked>()
             .register_type::<Meter>()
             .register_type::<MeterTone>()
+            .register_type::<Tag>()
+            .register_type::<TagTone>()
             .register_type::<MeterSegments>()
             .register_type::<WorldAnchor>()
             .register_type::<AnchorPinned>()
@@ -785,7 +789,7 @@ impl Plugin for GooeyStylePlugin {
                         update_field_problems,
                         update_progress,
                         update_spinners,
-                        (update_cooldowns, update_leds),
+                        (update_cooldowns, update_leds, update_tags),
                         update_hold_bars,
                         (update_toggle_groups, fit_bars).chain(),
                         (update_sections, update_section_glides).chain(),
