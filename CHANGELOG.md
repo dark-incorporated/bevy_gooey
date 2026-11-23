@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.58.0] - 2026-11-22
+
 ### Breaking
 
 - `GooeySystems` has a new variant, `Cascade`, chained between `Navigate` and `Style`; a `match` on it needs an arm.
