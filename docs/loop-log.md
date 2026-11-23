@@ -3656,3 +3656,25 @@ branches `wiggum/parked-pass-*` untouched.
 **Top 5 backlog.** (1) crates.io token for 0.51.9 to 0.58.0; (2) incremental wrap-map rebuild; (3) windowed variable-height table; (4) minimap and indent guides under soft wrap; (5) a `problems()` note for a divider under 24 px. Candidate to adopt: parked pass-349 tag widget (31ab481).
 
 **Cleanup.** Removed my own `/tmp/g108` scratch files and `~/g108_base`. `~/g17_base`, `~/g17_parked`, `~/g17s_base` and `wiggum/parked-pass-*` untouched.
+
+## Iteration 109 — 2026-11-22 — tag widget
+
+**What and why.** Adopted the parked `tag` widget (pass 349, 31ab481, a finished never-built draft): `tag("ELITE")`, a read-only word on a plate, `TagTone(&'static str)` picks the plate from `GooeySkin::tones` or one of the skin's own colours (`GooeySkin::tag_fill`), the skin picks black or white ink (`tag_ink`), no or unknown tone is the quiet plate; `update_tags` gives an empty tag `Display::None`. It fills the gap beside `chip` (clickable) for name plates, "NEW" marks and "2 STALE" counts. `Role::Tag` and `Role::TagText` are new variants. Candidates ranked: tag (finished draft, no consumer issue open); incremental wrap-map rebuild; windowed variable-height table; minimap and guides under soft wrap; divider-under-24 px `problems()` note. No open issues on either repo.
+
+**Assumed decision (owner may override):** a tag is read-only (no focus, no pointer); a tag the player presses is a `chip`.
+
+**Sources.** `docs/research/tag.md` from the parked pass (its quotes were not re-fetched; the home-still re-scan preflight was not run this pass; its `Pending index` list stands).
+
+**Fixes to the draft.** The `tag` re-export was missing from `src/lib.rs`; one borrow error (E0502) in `tests/tag.rs`. New `examples/tags.rs` (host tones `rare`, `legendary`, `frost`; `GOOEY_CLEAR=1`) and `docs/media/tags.png` (dark and parchment crops joined).
+
+**Critique** (`/tmp/g109/critique.md`, dark and parchment stills, 4x zooms, 150% text still): GREAT. Plates are distinct in both skins, one line high, no row taller than its label, an empty tag closes up. Weak spot: the dark skin's `warning` plate is a dull amber; it passes 4.5:1 and is the skin's colour, not the tag's. Captured windows came out 411x671 whatever `GOOEY_SIZE` said (Xvfb with no window manager), so the 720p/1440p pair was not met for this example; geometry tests at 1x and 2x stand in.
+
+**Checklist.** fmt, clippy `-D warnings`, nextest 1706 passed (11 new in `tag`, mutation-checked: `tag_ink` returning `text` fails three), doctests 358, `cargo check --lib`, wasm32, `cargo doc -D warnings` green on the branch and again on the merged tree. Pixel contrast: dark 2 STALE 5.35:1, ELITE 4.93:1, parchment WARN 14.4:1 (anti-aliased extremes, a floor). `mean_ms` gallery 720p, no fixed clock, six alternating pairs at load 5-9: before 16.67-16.81, after 16.67-16.85 (vsync-bound; no change). `cargo semver-checks` (baseline crates.io 0.51.8): no update required, but new pub types and `Role` variants mean a minor bump (0.59.0).
+
+**Release deferred.** v0.58.0 was tagged 25 minutes before the pass finished; the 6-hour rule applies, so no `release:` commit, no publish, no tag this pass. `[Unreleased]` in the changelog carries the tag entry for the next pass. crates.io has been at 0.51.8 for the 403 reasons logged since iteration 107.
+
+**Commits.** 084a04d (research), 1d4c71b (tag), merge of `loop/iter-109` into main.
+
+**Top 5 backlog.** (1) release 0.59.0 once 6 h have passed (and the crates.io token for 0.51.9 to 0.58.0); (2) incremental wrap-map rebuild; (3) windowed variable-height table; (4) minimap and indent guides under soft wrap; (5) a `problems()` note for a divider under 24 px. Also: a livelier dark-skin `warning` plate.
+
+**Cleanup.** Removed my own `/tmp/g109*` and `~/g109_base` worktree. `df -h .` before ~119G free, after ~117G at 97% (shared target growth). Left: `~/g17_base`, `~/g17_parked`, `~/g17s_base`; `wiggum/parked-pass-*` untouched.
