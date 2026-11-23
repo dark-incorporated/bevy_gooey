@@ -4952,12 +4952,10 @@ fn restyle(
             }
             Role::CodeMinimap => {
                 let code = CodeMetrics::of(skin, scale);
-                next.position_type = PositionType::Absolute;
-                next.top = Val::Px(0.0);
-                next.bottom = Val::Px(0.0);
-                next.right = Val::Px(0.0);
+                next.flex_shrink = 0.0;
                 next.width = Val::Px(code.font_px * MINIMAP_EM);
                 next.overflow = Overflow::clip();
+                next.border = UiRect::left(Val::Px(line));
             }
             Role::CodeMinimapBar => {
                 next.position_type = PositionType::Absolute;

@@ -784,6 +784,7 @@ pub(crate) fn update_code_overlays(
         draw_navigation(
             &mut commands,
             editor,
+            root,
             area,
             &mut items,
             &boxes,
@@ -954,6 +955,7 @@ const MINIMAP_COLS: usize = 100;
 fn draw_navigation(
     commands: &mut Commands,
     editor: &mut CodeEditor,
+    root: Entity,
     area: Entity,
     items: &mut Query<OverlayItem, With<OverlayPart>>,
     boxes: &Query<(&ComputedNode, &UiGlobalTransform)>,
@@ -1175,17 +1177,19 @@ fn draw_navigation(
     let root = match editor.overlay.minimap_root {
         Some(root) => root,
         None => {
-            let root = commands
+            // A sibling of the text area, not a child of it: the lane takes its width out of the
+            // editor's row, so a long line stops at the lane instead of running under it.
+            let lane = commands
                 .spawn((
                     Node::default(),
                     Role::CodeMinimap,
                     Pickable::IGNORE,
                     OverlayPart,
-                    ChildOf(area),
+                    ChildOf(root),
                 ))
                 .id();
-            editor.overlay.minimap_root = Some(root);
-            root
+            editor.overlay.minimap_root = Some(lane);
+            lane
         }
     };
     // Every part is spawned with the geometry it is due: the entities `Commands` makes this frame

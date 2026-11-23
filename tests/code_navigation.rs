@@ -815,4 +815,24 @@ fn an_opened_editor_lays_its_minimap_out_with_no_input_at_all() {
         band.height() > 4.0 && band.max.y <= tallest + 2.0,
         "the band covers part of the bars: band {band:?} last bar {tallest}"
     );
+    // Scrolling, with no edit at all, moves the band down its lane.
+    app.world_mut()
+        .get_mut::<CodeEditor>(editor)
+        .expect("editor")
+        .scroll_to_line(200);
+    for _ in 0..40 {
+        app.update();
+    }
+    let scrolled = app
+        .world()
+        .get::<CodeEditor>(editor)
+        .expect("editor")
+        .scroll()
+        .y;
+    assert!(scrolled > 2000.0, "the view scrolled: {scrolled}");
+    let moved = rect(&app, shown_by_role(&app, editor, Role::CodeMinimapBand)[0]);
+    assert!(
+        moved.min.y > band.min.y + 2.0,
+        "the band moved with the scroll and no edit: {band:?} to {moved:?}"
+    );
 }
