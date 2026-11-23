@@ -19337,3 +19337,221 @@ pass	seq	phase	kind	category	tool	start	seconds	detail
 349	239	build	model	model		2026-11-22T15:25:54Z	0.7	
 349	240	build	tool	wait: other	wait	2026-11-22T15:25:55Z	176.8	{}
 349	241	build	model	model		2026-11-22T15:28:52Z	0.0	
+350	1	orient	model	model		2026-11-22T23:29:37Z	3.0	
+350	2	orient	tool	phase mark	bash	2026-11-22T23:29:40Z	1.3	cd /home/ladvien/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark orient; git fetch -q origin loop-stats; git show origin/loop-stats:steps/bevy_go
+350	3	orient	tool	github	bash	2026-11-22T23:29:40Z	1.3	cd /home/ladvien/bevy_gooey_loop && gh issue list --repo dark-incorporated/bevy_gooey --state open --limit 100 --json number,title,labels,createdAt --jq '.[] | 
+350	4	orient	model	model		2026-11-22T23:29:41Z	3.1	
+350	5	orient	tool	github	bash	2026-11-22T23:29:44Z	0.5	cd /home/ladvien/bevy_gooey_loop && git branch --show-current; git status -sb | head -3; git log --oneline origin/main | head -3; git tag | sort -V | tail -3; g
+350	6	orient	model	model		2026-11-22T23:29:45Z	3.7	
+350	7	choose	tool	phase mark	bash	2026-11-22T23:29:48Z	0.1	cd /home/ladvien/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark choose; wc -l src/code_syntax.rs; cat src/code_syntax.rs | head -150; grep -n "s
+350	8	choose	model	model		2026-11-22T23:29:48Z	25.2	
+350	9	choose	tool	shell	bash	2026-11-22T23:30:14Z	10.7	cd /home/ladvien/bevy_gooey_loop && grep -n "enum SyntaxRole" -B6 -A40 src/code_decor.rs | head -90; grep -rn "GooeySkin {" src tests examples | grep -v "impl\|
+350	10	choose	model	model		2026-11-22T23:30:24Z	1.5	
+350	11	choose	tool	shell	bash	2026-11-22T23:30:26Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 725,785p tests/code_decor.rs; sed -n 300,420p src/skin.rs | grep -n "pub \|serde" | head -80; grep -n "tones" src/ski
+350	12	choose	model	model		2026-11-22T23:30:26Z	2.6	
+350	13	choose	tool	shell	bash	2026-11-22T23:30:28Z	0.0	cd /home/ladvien/bevy_gooey_loop && ls examples | tr '\n' ' '; sed -n 300,325p src/skin.rs; sed -n 396,412p src/skin.rs; sed -n 596,625p src/skin.rs; grep -n "f
+350	14	choose	model	model		2026-11-22T23:30:29Z	10.4	
+350	15	research	tool	phase mark	bash	2026-11-22T23:30:39Z	3.3	cd /home/ladvien/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark research; for q in "syntax highlighting colour effect on code comprehension" "co
+350	16	research	model	model		2026-11-22T23:30:42Z	3.5	
+350	17	research	tool	web	web_search	2026-11-22T23:30:46Z	4.3	Hannebauer "Does syntax highlighting help programming novices?" Empirical Software Engineering 2018 abstract
+350	18	research	tool	web	web_search	2026-11-22T23:30:46Z	8.3	Solarized Ethan Schoonover design lightness contrast "precision colors for machines and people" accent colors selection
+350	19	research	model	model		2026-11-22T23:30:54Z	16.6	
+350	20	build	tool	phase mark	bash	2026-11-22T23:31:11Z	0.1	cd /home/ladvien/bevy_gooey_loop && cat > docs/research/syntax-theme.md <<'EOF' # Syntax themes (#116) A host (an editor) wants to offer "a syntax highlighting 
+350	21	build	model	model		2026-11-22T23:31:11Z	11.5	
+350	22	build	tool	git	bash	2026-11-22T23:31:22Z	0.0	cd /home/ladvien/bevy_gooey_loop && git checkout -q -b loop/iter-108-syntax && grep -n "BadSize" src/skin.rs | head -20; sed -n 1040,1110p src/skin.rs; grep -n 
+350	23	build	model	model		2026-11-22T23:31:22Z	2.6	
+350	24	build	tool	shell	bash	2026-11-22T23:31:25Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 1143,1175p src/skin.rs; sed -n 1422,1436p src/skin.rs; sed -n 1500,1512p src/skin.rs; sed -n 105,112p src/skin.rs | h
+350	25	build	model	model		2026-11-22T23:31:25Z	30.5	
+350	26	build	tool	shell	bash	2026-11-22T23:31:56Z	0.2	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' import re p='src/code_syntax.rs' s=open(p).read() s=s.replace('''//! contrast preset, and any preset that 
+350	27	build	model	model		2026-11-22T23:31:56Z	5.0	
+350	28	build	tool	cargo build	bash	2026-11-22T23:32:01Z	3.7	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' p='src/code_decor.rs' s=open(p).read() s=s.replace('''#[reflect(Debug, PartialEq, Hash, Clone)] pub enum S
+350	29	build	model	model		2026-11-22T23:32:04Z	2.0	
+350	30	build	tool	cargo build	bash	2026-11-22T23:32:06Z	0.2	cd /home/ladvien/bevy_gooey_loop && git status --short; cargo check --lib --all-features 2>&1 | tail -30
+350	31	build	model	model		2026-11-22T23:32:07Z	1.3	
+350	32	build	tool	cargo build	bash	2026-11-22T23:32:08Z	0.1	cd /home/ladvien/bevy_gooey_loop && env | grep -i "CARGO\|RUSTC\|DISPLAY" ; unset CARGO_INCREMENTAL; cargo check --lib --all-features 2>&1 | tail -40
+350	33	build	model	model		2026-11-22T23:32:08Z	3.6	
+350	34	build	tool	cargo build	bash	2026-11-22T23:32:11Z	21.7	cd /home/ladvien/bevy_gooey_loop && cat ~/.cargo/config.toml 2>/dev/null | head -20; env -u CARGO_INCREMENTAL RUSTC_WRAPPER= cargo check --lib --all-features 2>
+350	35	build	model	model		2026-11-22T23:32:33Z	2.3	
+350	36	build	tool	git	bash	2026-11-22T23:32:36Z	0.0	cd /home/ladvien/bevy_gooey_loop && git diff --stat Cargo.lock | tail -1; grep -n "fn emphasis_and_strong_inks_are_apart" -B3 -A45 tests/code_decor.rs; grep -n 
+350	37	build	model	model		2026-11-22T23:32:36Z	1.3	
+350	38	build	tool	shell	bash	2026-11-22T23:32:37Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 181,234p tests/code_decor.rs; sed -n 725,747p tests/code_decor.rs
+350	39	build	model	model		2026-11-22T23:32:37Z	9.4	
+350	40	build	tool	cargo test	bash	2026-11-22T23:32:46Z	60.0	[launched bg_1] cd /home/ladvien/bevy_gooey_loop && cat >> tests/code_decor.rs <<'EOF' // -- #116: syntax themes ---------------------------------------------------------------
+350	41	build	model	model		2026-11-22T23:33:46Z	1.4	
+350	42	build	tool	shell	bash	2026-11-22T23:33:48Z	0.1	cd /home/ladvien/bevy_gooey_loop && wc -l examples/prose.rs && grep -n "GOOEY_\|GooeySkin\|fn \|Highlights" examples/prose.rs
+350	43	build	model	model		2026-11-22T23:33:48Z	1.2	
+350	44	build	tool	shell	bash	2026-11-22T23:33:49Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 1,15p examples/prose.rs; sed -n 38,48p examples/prose.rs; sed -n 82,125p examples/prose.rs
+350	45	build	model	model		2026-11-22T23:33:49Z	8.8	
+350	46	build	tool	shell	bash	2026-11-22T23:33:58Z	0.2	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' p='examples/prose.rs' s=open(p).read() s=s.replace('''//! `GOOEY_SKIN=parchment`, `GOOEY_TEXT_SCALE=<f>` a
+350	47	build	model	model		2026-11-22T23:33:58Z	1.5	
+350	48	build	tool	shell	bash	2026-11-22T23:34:00Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -i '78s/(follow_background, capture)/(follow_background, step_syntax_theme, capture)/' examples/prose.rs && sed -n 76,79
+350	49	build	tool	wait: other	wait	2026-11-22T23:34:00Z	5.0	{}
+350	50	build	model	model		2026-11-22T23:34:05Z	0.8	
+350	51	build	tool	wait: other	wait	2026-11-22T23:34:05Z	8.3	{}
+350	52	build	model	model		2026-11-22T23:34:14Z	1.7	
+350	53	build	tool	cargo test	bash	2026-11-22T23:34:15Z	1.0	cd /home/ladvien/bevy_gooey_loop && env -u CARGO_INCREMENTAL RUSTC_WRAPPER= timeout 280 cargo nextest run --all-features --lib --tests -E 'test(code_decor::the_
+350	54	build	model	model		2026-11-22T23:34:16Z	5.8	
+350	55	build	tool	cargo test	bash	2026-11-22T23:34:22Z	18.5	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' p='src/code_syntax.rs' s=open(p).read() s=s.replace(''' (355.0, None, None), (28.0, None, Some(0.10)), ]) 
+350	56	build	model	model		2026-11-22T23:34:41Z	4.0	
+350	57	build	tool	shell	bash	2026-11-22T23:34:45Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "pub fn warm" -A14 src/code_syntax.rs | head -20
+350	58	build	model	model		2026-11-22T23:34:45Z	2.0	
+350	59	build	tool	cargo test	bash	2026-11-22T23:34:47Z	23.4	cd /home/ladvien/bevy_gooey_loop && sed -i '186s/.*/ (70.0, None, Some(0.0)),/;187s/.*/ (130.0, None, None),/;191s/.*/ (102.0, None, Some(0.34)),/;192s/.*/ (158
+350	60	build	model	model		2026-11-22T23:35:10Z	5.3	
+350	61	build	tool	shell	bash	2026-11-22T23:35:15Z	0.0	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' p='tests/code_decor.rs' s=open(p).read() s=s.replace(''' // CIE L*a*b* units: 2.3 is a just-noticeable dif
+350	62	build	model	model		2026-11-22T23:35:15Z	9.9	
+350	63	build	tool	shell	bash	2026-11-22T23:35:25Z	0.0	cd /home/ladvien/bevy_gooey_loop && cat >> tests/code_decor.rs <<'EOF' #[test] fn switching_the_syntax_theme_recolours_an_open_editor_in_that_frame() { let mut 
+350	64	build	model	model		2026-11-22T23:35:25Z	2.9	
+350	65	build	tool	cargo test	bash	2026-11-22T23:35:28Z	19.7	cd /home/ladvien/bevy_gooey_loop && sed -i 's/ron::ser::to_string(&skin)/ron::to_string(\&skin)/;s/ron::de::from_str/ron::from_str/g' tests/code_decor.rs && car
+350	66	build	model	model		2026-11-22T23:35:48Z	2.3	
+350	67	build	tool	shell	bash	2026-11-22T23:35:50Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -i 's/let wanted = if name == "high contrast" {/let wanted = if name.eq_ignore_ascii_case("high contrast") {/' tests/cod
+350	68	build	model	model		2026-11-22T23:35:50Z	2.5	
+350	69	build	tool	cargo test	bash	2026-11-22T23:35:53Z	21.1	cd /home/ladvien/bevy_gooey_loop && env -u CARGO_INCREMENTAL RUSTC_WRAPPER= timeout 290 cargo nextest run --all-features --lib --tests -E 'test(code_decor::) or
+350	70	build	model	model		2026-11-22T23:36:14Z	2.7	
+350	71	build	tool	cargo test	bash	2026-11-22T23:36:16Z	21.6	cd /home/ladvien/bevy_gooey_loop && sed -i 's/for preset in \[SyntaxPreset::Warm, SyntaxPreset::Cool, SyntaxPreset::Mono\] {/for preset in [SyntaxPreset::Warm, 
+350	72	build	model	model		2026-11-22T23:36:38Z	2.6	
+350	73	build	tool	cargo test	bash	2026-11-22T23:36:41Z	41.1	cd /home/ladvien/bevy_gooey_loop && cp src/code_syntax.rs /tmp/g108_cs.rs && sed -i 's/let ink = self.syntax_theme.ink(role);/let ink: Option<\&SyntaxInk> = Non
+350	74	build	model	model		2026-11-22T23:37:22Z	2.8	
+350	75	build	tool	shell	bash	2026-11-22T23:37:25Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "pub fn with_colours_of" -A14 src/skin.rs | head -24
+350	76	build	model	model		2026-11-22T23:37:25Z	3.4	
+350	77	prove	tool	phase mark	bash	2026-11-22T23:37:28Z	60.0	[launched bg_2] cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' p='tests/code_decor.rs' s=open(p).read() s=s.replace(''' // Fixed roles never follow a theme.''',''' // Th
+350	78	prove	model	model		2026-11-22T23:38:28Z	2.1	
+350	79	prove	tool	shell	bash	2026-11-22T23:38:30Z	0.0	cd /home/ladvien/bevy_gooey_loop && wc -l README.md; grep -n "code\|prose\|Prose" README.md | head; sed -n 1,25p CHANGELOG.md; grep -n "^#" docs/guide/code-edit
+350	80	prove	model	model		2026-11-22T23:38:30Z	2.6	
+350	81	prove	tool	shell	bash	2026-11-22T23:38:33Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 97,121p docs/guide/code-editor.md | cut -c1-200; grep -n "^- \`src/code_decor.rs\`" AGENTS.md | cut -c1-80
+350	82	prove	model	model		2026-11-22T23:38:33Z	13.8	
+350	83	prove	tool	git	bash	2026-11-22T23:38:47Z	0.1	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' p='docs/guide/code-editor.md' s=open(p).read() s=s.replace('''## Navigating a long file''','''## Ink theme
+350	84	prove	tool	wait: other	wait	2026-11-22T23:38:47Z	5.0	{}
+350	85	prove	model	model		2026-11-22T23:38:52Z	0.4	
+350	86	prove	tool	wait: other	wait	2026-11-22T23:38:52Z	47.4	{}
+350	87	prove	model	model		2026-11-22T23:39:40Z	4.8	
+350	88	prove	tool	shell	bash	2026-11-22T23:39:44Z	60.0	[launched bg_3] cd /home/ladvien/bevy_gooey_loop && mkdir -p /tmp/g108/after && B=$CARGO_TARGET_DIR/release/examples/prose && ls $B && for sk in dark parchment; do for th in sk
+350	89	prove	model	model		2026-11-22T23:40:44Z	0.8	
+350	90	prove	tool	wait: other	wait	2026-11-22T23:40:45Z	5.0	{}
+350	91	prove	model	model		2026-11-22T23:40:50Z	0.7	
+350	92	prove	tool	wait: other	wait	2026-11-22T23:40:51Z	7.7	{}
+350	93	prove	model	model		2026-11-22T23:40:59Z	2.2	
+350	94	prove	tool	read files	read	2026-11-22T23:41:01Z	0.1	/tmp/g108/after/dark_skin_1280x720.png
+350	95	prove	tool	read files	read	2026-11-22T23:41:01Z	0.1	/tmp/g108/after/dark_warm_1280x720.png
+350	96	prove	tool	read files	read	2026-11-22T23:41:01Z	0.1	/tmp/g108/after/dark_mono_1280x720.png
+350	97	prove	tool	read files	read	2026-11-22T23:41:01Z	0.1	/tmp/g108/after/parchment_separated_1280x720.png
+350	98	prove	model	model		2026-11-22T23:41:01Z	9.2	
+350	99	prove	tool	shell	bash	2026-11-22T23:41:10Z	0.0	cd /tmp/g108/after && file *.png | sed 's/PNG image data, //' | cut -c1-80
+350	100	prove	model	model		2026-11-22T23:41:10Z	3.3	
+350	101	prove	tool	shell	bash	2026-11-22T23:41:14Z	2.5	cd /home/ladvien/bevy_gooey_loop && B=$CARGO_TARGET_DIR/release/examples/prose; sed -n 55,75p examples/prose.rs; GOOEY_SIZE=1280x720 GOOEY_FRAMES=100 GOOEY_SHOT
+350	102	prove	model	model		2026-11-22T23:41:16Z	4.3	
+350	103	prove	tool	shell	bash	2026-11-22T23:41:20Z	3.1	cd /home/ladvien/bevy_gooey_loop && B=$CARGO_TARGET_DIR/release/examples/prose; for i in 1 2; do GOOEY_SIZE=1280x720 GOOEY_FRAMES=60 GOOEY_SHOT=/tmp/g108/t$i.pn
+350	104	prove	model	model		2026-11-22T23:41:23Z	3.8	
+350	105	prove	tool	shell	bash	2026-11-22T23:41:27Z	2.2	cd /home/ladvien/bevy_gooey_loop && B=$CARGO_TARGET_DIR/release/examples/prose; for i in 1; do env -u WAYLAND_DISPLAY GOOEY_SIZE=1280x720 GOOEY_FRAMES=60 GOOEY_
+350	106	prove	model	model		2026-11-22T23:41:29Z	3.2	
+350	107	prove	tool	cargo test	bash	2026-11-22T23:41:33Z	25.2	cd /home/ladvien/bevy_gooey_loop && python3 - <<'EOF' p='src/code_syntax.rs' s=open(p).read() s=s.replace("(350.0, None, None),\n (322.0, None, Some(0.05)),","(
+350	108	prove	model	model		2026-11-22T23:41:58Z	2.8	
+350	109	prove	tool	shell	bash	2026-11-22T23:42:01Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 175,215p src/code_syntax.rs; cat local://3.log 2>/dev/null | head -0; ls /tmp/g108/ /tmp/g108/after | head -30
+350	110	prove	model	model		2026-11-22T23:42:01Z	5.4	
+350	111	prove	tool	cargo test	bash	2026-11-22T23:42:06Z	5.6	cd /home/ladvien/bevy_gooey_loop && env -u CARGO_INCREMENTAL RUSTC_WRAPPER= timeout 290 cargo nextest run --all-features --lib --tests -E 'test(code_decor::)' >
+350	112	prove	model	model		2026-11-22T23:42:12Z	1.9	
+350	113	prove	tool	read files	read	2026-11-22T23:42:13Z	0.1	/tmp/g108/after/dark_warm_1280x720.png
+350	114	prove	model	model		2026-11-22T23:42:14Z	2.8	
+350	115	prove	tool	read files	read	2026-11-22T23:42:16Z	0.1	/tmp/g108/after/dark_skin_1280x720.png
+350	116	prove	tool	read files	read	2026-11-22T23:42:16Z	0.1	/tmp/g108/after/dark_cool_1280x720.png
+350	117	prove	tool	read files	read	2026-11-22T23:42:16Z	0.1	/tmp/g108/after/parchment_mono_1280x720.png
+350	118	prove	tool	read files	read	2026-11-22T23:42:16Z	0.1	/tmp/g108/after/parchment_separated_1280x720.png
+350	119	prove	model	model		2026-11-22T23:42:16Z	3.8	
+350	120	prove	tool	shell	bash	2026-11-22T23:42:20Z	0.1	cd /tmp/g108/after && python3 -c " import struct,glob for f in sorted(glob.glob('*.png')): d=open(f,'rb').read(24); print(f,struct.unpack('>II',d[16:24]))"
+350	121	prove	model	model		2026-11-22T23:42:20Z	2.8	
+350	122	prove	tool	shell	bash	2026-11-22T23:42:23Z	2.8	cd /home/ladvien/bevy_gooey_loop && B=$CARGO_TARGET_DIR/release/examples/prose; GOOEY_SKIN=dark GOOEY_SYNTAX=warm GOOEY_SIZE=1280x720 GOOEY_FRAMES=100 GOOEY_SHO
+350	123	prove	model	model		2026-11-22T23:42:26Z	1.7	
+350	124	prove	tool	shell	bash	2026-11-22T23:42:28Z	0.1	cd /home/ladvien/bevy_gooey_loop && sed -n 56,75p examples/prose.rs; python3 -c " import struct;print(struct.unpack('>II',open('/tmp/g108/w.png','rb').read(24)[
+350	125	prove	model	model		2026-11-22T23:42:28Z	4.1	
+350	126	prove	tool	shell	bash	2026-11-22T23:42:32Z	11.2	cd /home/ladvien/bevy_gooey_loop && pgrep -a prose; B=$CARGO_TARGET_DIR/release/examples/prose; for sz in 1280x720 1280x720; do GOOEY_SYNTAX=warm GOOEY_SIZE=$sz
+350	127	prove	model	model		2026-11-22T23:42:43Z	3.7	
+350	128	prove	tool	shell	bash	2026-11-22T23:42:47Z	0.2	cd /tmp/g108 && python3 -c " import struct,glob for f in ['t.png','t1.png','t2.png','w.png']: print(f,struct.unpack('>II',open(f,'rb').read(24)[16:24]))"; xdpyi
+350	129	prove	model	model		2026-11-22T23:42:47Z	5.5	
+350	130	prove	tool	git	bash	2026-11-22T23:42:53Z	60.3	[launched bg_4] cd /home/ladvien/bevy_gooey_loop && rm -rf /tmp/g108/after && mkdir -p /tmp/g108/after /tmp/g108/before && B=$CARGO_TARGET_DIR/release/examples/prose && cp $B /
+350	131	prove	model	model		2026-11-22T23:43:53Z	1.7	
+350	132	prove	tool	wait: other	wait	2026-11-22T23:43:55Z	5.1	{}
+350	133	prove	model	model		2026-11-22T23:44:00Z	0.8	
+350	134	prove	tool	wait: other	wait	2026-11-22T23:44:01Z	14.1	{}
+350	135	prove	model	model		2026-11-22T23:44:15Z	2.1	
+350	136	prove	tool	git	bash	2026-11-22T23:44:17Z	0.0	cd /home/ladvien/bevy_gooey_loop && git branch --show-current; git log --oneline -3 main; git log --oneline -3; cd ~/g108_base && git log --oneline -2
+350	137	prove	model	model		2026-11-22T23:44:17Z	3.2	
+350	138	prove	tool	git	bash	2026-11-22T23:44:20Z	0.1	cd /home/ladvien/bevy_gooey_loop && git log --oneline -1 origin/main; git status --short | head
+350	139	prove	model	model		2026-11-22T23:44:20Z	3.4	
+350	140	prove	tool	cargo build	bash	2026-11-22T23:44:23Z	0.0	cd ~/g108_base && (env -u CARGO_INCREMENTAL RUSTC_WRAPPER= timeout 290 cargo build --release --example prose --all-features > /tmp/g108/base_build.log 2>&1; cp 
+350	141	prove	tool	read files	read	2026-11-22T23:44:23Z	0.3	/tmp/g108/after/dark_warm_1280x720.png
+350	142	prove	tool	read files	read	2026-11-22T23:44:23Z	0.3	/tmp/g108/after/dark_cool_1280x720.png
+350	143	prove	tool	read files	read	2026-11-22T23:44:23Z	0.3	/tmp/g108/after/parchment_separated_1280x720.png
+350	144	prove	tool	read files	read	2026-11-22T23:44:23Z	0.3	/tmp/g108/after/dark_mono_1280x720.png
+350	145	prove	model	model		2026-11-22T23:44:24Z	3.1	
+350	146	prove	tool	shell	bash	2026-11-22T23:44:27Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "pub fn mono" -B2 -A22 src/code_syntax.rs
+350	147	prove	model	model		2026-11-22T23:44:27Z	3.7	
+350	148	prove	tool	cargo build	bash	2026-11-22T23:44:31Z	60.0	[launched bg_5] cd /home/ladvien/bevy_gooey_loop && sed -i '217s/chroma(0.07)/chroma(0.11)/' src/code_syntax.rs && env -u CARGO_INCREMENTAL RUSTC_WRAPPER= timeout 280 cargo bui
+350	149	prove	model	model		2026-11-22T23:45:31Z	0.7	
+350	150	prove	tool	wait: other	wait	2026-11-22T23:45:31Z	5.1	{}
+350	151	prove	model	model		2026-11-22T23:45:37Z	1.0	
+350	152	prove	tool	wait: other	wait	2026-11-22T23:45:38Z	212.3	{}
+350	153	prove	model	model		2026-11-22T23:49:10Z	1.9	
+350	154	prove	tool	read files	read	2026-11-22T23:49:12Z	0.1	/tmp/g108/after/dark_mono_1280x720.png
+350	155	prove	tool	shell	bash	2026-11-22T23:49:12Z	0.1	tail -2 /tmp/g108/base_build.log; ls -la /tmp/g108/prose_before
+350	156	prove	model	model		2026-11-22T23:49:12Z	4.3	
+350	157	prove	tool	shell	bash	2026-11-22T23:49:16Z	21.8	cd /tmp/g108 && for i in 1 2 3; do env -u WAYLAND_DISPLAY GOOEY_SYNTAX=warm GOOEY_SIZE=1280x720 GOOEY_FRAMES=100 timeout 100 ./prose_before 2>&1 | grep "gooey: 
+350	158	prove	model	model		2026-11-22T23:49:38Z	4.9	
+350	159	prove	tool	shell	bash	2026-11-22T23:49:43Z	0.2	cd /tmp/g108/after && python3 - <<'EOF' from PIL import Image names=['skin','warm','cool','mono','separated'] ims=[Image.open(f'dark_{n}_1280x720.png').crop((24
+350	160	prove	model	model		2026-11-22T23:49:43Z	1.5	
+350	161	prove	tool	read files	read	2026-11-22T23:49:44Z	0.1	/tmp/g108/syntax-themes.png
+350	162	prove	tool	shell	bash	2026-11-22T23:49:44Z	0.1	cd ~/bevy_gooey_loop && tail -3 docs/media/README.md | cut -c1-400; grep -n "code-editor\|prose" README.md | cut -c1-160
+350	163	prove	model	model		2026-11-22T23:49:45Z	2.2	
+350	164	prove	tool	shell	bash	2026-11-22T23:49:47Z	0.0	cd ~/bevy_gooey_loop && grep -n "high-contrast.png" docs/media/README.md | cut -c1-600; grep -n "CodeMarkdown\|code_editor\|syntax" README.md | cut -c1-120; git
+350	165	prove	model	model		2026-11-22T23:49:47Z	9.4	
+350	166	prove	tool	cargo build	bash	2026-11-22T23:49:56Z	0.0	cd ~/bevy_gooey_loop && cp /tmp/g108/syntax-themes.png docs/media/syntax-themes.png && python3 - <<'EOF' p='docs/media/README.md' L=open(p).read().split('\n') i
+350	167	prove	model	model		2026-11-22T23:49:56Z	3.1	
+350	168	gate	tool	phase mark	bash	2026-11-22T23:49:59Z	0.0	[launched bg_6] cd ~/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark gate; cat > /tmp/g108/gate.sh <<'EOF' #!/bin/bash cd ~/bevy_gooey_loop export RUSTC_WRAPPER=
+350	169	gate	model	model		2026-11-22T23:49:59Z	0.7	
+350	170	gate	tool	wait: other	wait	2026-11-22T23:50:00Z	5.0	{}
+350	171	gate	model	model		2026-11-22T23:50:05Z	0.9	
+350	172	gate	tool	wait: other	wait	2026-11-22T23:50:06Z	240.0	{}
+350	173	gate	model	model		2026-11-22T23:54:06Z	2.1	
+350	174	gate	tool	shell	bash	2026-11-22T23:54:08Z	0.1	cd ~/bevy_gooey_loop && grep -n "8\b\|warm\|mono\|chroma" docs/research/syntax-theme.md | cut -c1-220 | head -30
+350	175	gate	model	model		2026-11-22T23:54:08Z	1.0	
+350	176	gate	tool	shell	bash	2026-11-22T23:54:09Z	0.0	cd ~/bevy_gooey_loop && sed -n 58,64p docs/research/syntax-theme.md
+350	177	gate	model	model		2026-11-22T23:54:09Z	3.9	
+350	178	gate	tool	shell	bash	2026-11-22T23:54:13Z	0.0	cd ~/bevy_gooey_loop && python3 - <<'EOF' p='docs/research/syntax-theme.md' s=open(p).read() s=s.replace("""- the default theme is byte-equal to the old table; 
+350	179	gate	tool	wait: other	wait	2026-11-22T23:54:13Z	154.7	{}
+350	180	gate	model	model		2026-11-22T23:56:48Z	1.4	
+350	181	gate	tool	shell	bash	2026-11-22T23:56:49Z	0.0	grep -E "Summary|tests run|test result" /tmp/g108/gate.log | tail -4; grep -c "^warning" /tmp/g108/gate.log
+350	182	gate	model	model		2026-11-22T23:56:49Z	1.4	
+350	183	gate	tool	eval	eval	2026-11-22T23:56:50Z	0.3	{"language": "py", "code": "d = await commit.draft()\nprint(d)"}
+350	184	gate	model	model		2026-11-22T23:56:51Z	5.3	
+350	185	gate	tool	git	bash	2026-11-22T23:56:56Z	0.0	cd ~/bevy_gooey_loop && git status --short && git add AGENTS.md CHANGELOG.md README.md Cargo.lock docs examples src tests && git commit -q -F - <<'EOF' Syntax t
+350	186	gate	model	model		2026-11-22T23:56:56Z	3.1	
+350	187	gate	tool	git	bash	2026-11-22T23:56:59Z	0.0	cd ~/bevy_gooey_loop && git add AGENTS.md CHANGELOG.md README.md docs examples src tests && git commit -q -F - <<'EOF' Syntax themes: SyntaxTheme, SyntaxInk and
+350	188	gate	model	model		2026-11-22T23:56:59Z	4.9	
+350	189	ship	tool	phase mark	bash	2026-11-22T23:57:04Z	0.0	[launched bg_7] cd ~/bevy_gooey_loop && git checkout -q main && git merge --no-ff -q loop/iter-108-syntax -m "Merge loop/iter-108-syntax: syntax themes (#116)" && git log --one
+350	190	ship	model	model		2026-11-22T23:57:04Z	1.3	
+350	191	ship	tool	wait: other	wait	2026-11-22T23:57:05Z	5.0	{}
+350	192	ship	model	model		2026-11-22T23:57:10Z	0.9	
+350	193	ship	tool	wait: other	wait	2026-11-22T23:57:11Z	240.0	{}
+350	194	ship	model	model		2026-11-23T00:01:11Z	1.0	
+350	195	ship	tool	wait: other	wait	2026-11-23T00:01:12Z	152.4	{}
+350	196	ship	model	model		2026-11-23T00:03:45Z	1.9	
+350	197	release	tool	phase mark	bash	2026-11-23T00:03:47Z	2.3	cd ~/bevy_gooey_loop && git push origin main loop/iter-108-syntax 2>&1 | tail -3; python3 ~/.local/share/wiggum/steps.py mark release | tail -1; (cargo semver-c
+350	198	release	model	model		2026-11-23T00:03:49Z	1.8	
+350	199	release	tool	git	bash	2026-11-23T00:03:51Z	17.3	cd ~/bevy_gooey_loop && git log -1 --format=%cd v0.57.0 2>/dev/null; git tag -l 'v0.5*' | tail -2; env -u CARGO_INCREMENTAL RUSTC_WRAPPER= timeout 280 cargo sem
+350	200	release	model	model		2026-11-23T00:04:08Z	3.9	
+350	201	release	tool	shell	bash	2026-11-23T00:04:12Z	0.1	cd ~/bevy_gooey_loop && sed -n 1,12p CHANGELOG.md | cut -c1-120; grep -n "^version" Cargo.toml; grep -n "0.57" README.md Cargo.toml docs/guide/*.md | head; git 
+350	202	release	model	model		2026-11-23T00:04:12Z	2.8	
+350	203	release	tool	shell	bash	2026-11-23T00:04:15Z	11.7	cd ~/bevy_gooey_loop && env -u CARGO_INCREMENTAL RUSTC_WRAPPER= timeout 280 cargo semver-checks check-release > /tmp/g108/semver.log 2>&1; echo exit $?; grep -n
+350	204	release	model	model		2026-11-23T00:04:26Z	4.3	
+350	205	release	tool	shell	bash	2026-11-23T00:04:31Z	1.1	cd ~/bevy_gooey_loop && python3 - <<'EOF' import re s=open('CHANGELOG.md').read() s=s.replace('## [Unreleased]\n','## [Unreleased]\n\n## [0.58.0] - 2026-11-22\n
+350	206	release	model	model		2026-11-23T00:04:32Z	1.9	
+350	207	release	tool	cargo publish	bash	2026-11-23T00:04:34Z	48.4	cd ~/bevy_gooey_loop && sed -i '121s/0.1 – 0.57.0/0.1 – 0.58.0/' README.md && git commit -qam "release: v0.58.0" && env -u CARGO_INCREMENTAL RUSTC_WRAPPER= time
+350	208	release	model	model		2026-11-23T00:05:22Z	1.6	
+350	209	release	tool	cargo publish	bash	2026-11-23T00:05:24Z	10.0	cd ~/bevy_gooey_loop && env -u CARGO_INCREMENTAL RUSTC_WRAPPER= timeout 200 cargo publish > /tmp/g108/pub.log 2>&1; echo pub $?; tail -4 /tmp/g108/pub.log | cut
+350	210	release	model	model		2026-11-23T00:05:34Z	4.2	
+350	211	log	tool	phase mark	bash	2026-11-23T00:05:38Z	2.8	cd ~/bevy_gooey_loop && git tag -a v0.58.0 -m "bevy_gooey 0.58.0: syntax themes (not on crates.io: publish 403, token)" && git push origin main v0.58.0 2>&1 | t
+350	212	log	model	model		2026-11-23T00:05:41Z	3.3	
+350	213	log	tool	shell	bash	2026-11-23T00:05:44Z	18.6	cd /tmp/g108 && : > perf.txt; for i in 1 2 3; do env -u WAYLAND_DISPLAY GOOEY_SYNTAX=skin GOOEY_SIZE=1280x720 GOOEY_FRAMES=100 timeout 100 ./prose_before 2>&1 |
+350	214	log	model	model		2026-11-23T00:06:03Z	10.6	
+350	215	log	tool	push gate	bash	2026-11-23T00:06:13Z	1.7	cd ~/bevy_gooey_loop && git checkout -q -b loop/iter-108-log 2>&1; cat >> docs/loop-log.md <<'EOF' ## Iteration 108 — 2026-11-22 — syntax themes **What and why.
+350	216	log	model	model		2026-11-23T00:06:15Z	2.1	
+350	217	log	tool	shell	bash	2026-11-23T00:06:17Z	0.1	cd /tmp/g108 && rm -rf after before *.log *.sh perf.txt prose* semver.sum critique.md syntax-themes.png t*.png w.png; ls; df -h . | tail -1; cd ~/bevy_gooey_loo
+350	218	log	model	model		2026-11-23T00:06:17Z	7.4	
