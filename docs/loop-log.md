@@ -3727,7 +3727,7 @@ example 720p, no fixed clock, load ~20: 24.63 dark, 24.86 parchment (a 100-frame
 the same binary that drew nothing before). Demo: `docs/media/minimap-first-frame.png`, the lane and a
 slice of code, both skins, first frame.
 
-**Release.** 6-hour rule now passed (0.58.0 tagged five days ago). This pass releases 0.59.0.
+**Release.** 0.59.0: `Cargo.toml`, README compat row, `CHANGELOG` section, `docs/media/README` version column. `cargo publish --dry-run` clean; `cargo publish` refused with **403 authentication failed**, the same token failure logged since 0.51.9. So 0.59.0 is tagged `v0.59.0` and pushed (as 0.54.0 to 0.58.0 were) and **not on crates.io** until the owner's token works. No retry this pass per the rule.
 
 **Top 5 backlog.** (1) crates.io token still 403 for 0.51.9 to 0.58.0; (2) incremental wrap-map rebuild; (3)
 windowed variable-height table; (4) minimap and indent guides under soft wrap; (5) a `problems()` note for
