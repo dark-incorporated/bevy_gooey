@@ -11,6 +11,9 @@
 //! The ink theme (#116): F3 steps through the `SyntaxPreset`s (skin, warm, cool, mono, separated),
 //! `GOOEY_SYNTAX=warm` (or any other `SyntaxPreset` name, lower case) starts on one. The skin does
 //! the rest: both editors recolour in the frame it changes.
+//!
+//! `GOOEY_MINIMAP=1` puts a long script in the right pane with `CodeMinimap` on it: a file opened
+//! for reading, whose bars and band are drawn on its first frame with no input at all (#117).
 
 use bevy::prelude::*;
 use bevy::render::view::screenshot::{Screenshot, save_to_disk};
@@ -111,27 +114,53 @@ fn pane(title: &'static str, editor: impl Bundle) -> impl Bundle {
     )
 }
 
+/// A file long enough to need the minimap: 300 lines of a level script.
+fn script() -> String {
+    let mut text = String::from("// Orchard level script\n");
+    for row in 0..300 {
+        match row % 4 {
+            0 => text.push_str(&format!("let row{row} = place(\"apple\", {row}, 0);\n")),
+            1 => text.push_str(&format!("if row{row}.ripe {{ orchard.pick(row{row}); }}\n")),
+            2 => text.push_str("\n"),
+            _ => text.push_str(&format!("// the {row}th row is left for the frost\n")),
+        }
+    }
+    text
+}
+
 fn setup(mut commands: Commands) {
     commands.spawn(Camera2d);
-    commands.spawn((
-        screen(),
-        children![(
-            Node {
-                width: Val::Percent(100.0),
-                height: Val::Percent(100.0),
-                padding: UiRect::all(Val::Px(24.0)),
-                column_gap: Val::Px(24.0),
-                ..default()
-            },
-            children![
-                pane(
-                    "Wrapped, as Markdown",
-                    (code_editor("Notes", PAGE), CodeSoftWrap, CodeMarkdown)
-                ),
-                pane("Plain", code_editor("Notes", PAGE)),
-            ],
-        )],
-    ));
+    let wrapped = commands
+        .spawn(pane(
+            "Wrapped, as Markdown",
+            (code_editor("Notes", PAGE), CodeSoftWrap, CodeMarkdown),
+        ))
+        .id();
+    // The right pane is a file opened for reading in the capture mode: no focus, no keystroke, so
+    // its minimap has to be whole on the frame it is first drawn (#117).
+    let right = if std::env::var("GOOEY_MINIMAP").is_ok() {
+        commands
+            .spawn(pane(
+                "Script, with a minimap",
+                (code_editor("Script", script()), CodeMinimap),
+            ))
+            .id()
+    } else {
+        commands
+            .spawn(pane("Plain", code_editor("Notes", PAGE)))
+            .id()
+    };
+    commands
+        .spawn(screen())
+        .insert(Node {
+            width: Val::Percent(100.0),
+            height: Val::Percent(100.0),
+            flex_direction: FlexDirection::Row,
+            padding: UiRect::all(Val::Px(24.0)),
+            column_gap: Val::Px(24.0),
+            ..default()
+        })
+        .add_children(&[wrapped, right]);
 }
 
 /// F3 gives the skin the next ink theme after the one it has (the skin's own after a custom one).
