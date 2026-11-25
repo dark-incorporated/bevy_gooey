@@ -23,8 +23,8 @@ use crate::code_editor::{CODE_MIN_LINES, CODE_SELECTION_ALPHA, CodeMetrics};
 use crate::code_overlay::{
     BRACKET_ALPHA, BRACKET_RADIUS, CODE_COMPLETION_EM, CODE_NOTE_EM, CODE_NOTE_PAD,
     COMPLETION_EDGE_LINES, COMPLETION_ROW_PAD, FIND_BAR_GAP, FIND_BAR_PAD, MARK_DOT, MARK_INSET,
-    MATCH_ALPHA, MATCH_LIT_ALPHA, MINIMAP_BAND_ALPHA, MINIMAP_BAND_EDGE_ALPHA, MINIMAP_BAR_ALPHA,
-    MINIMAP_BAR_PX, MINIMAP_EM, MINIMAP_GROUND_ALPHA, MINIMAP_MARK_PX, SQUIGGLE_HEIGHT,
+    MATCH_ALPHA, MATCH_LIT_ALPHA, MINIMAP_BAND_ALPHA, MINIMAP_BAR_PX, MINIMAP_EM,
+    MINIMAP_GROUND_ALPHA, MINIMAP_MARK_PX, SQUIGGLE_HEIGHT,
 };
 use crate::code_syntax::SyntaxTheme;
 use crate::color_motion::ColorTrack;
@@ -847,6 +847,49 @@ impl GooeySkin {
             Some(fill) => self.ink_on(fill),
             None => self.text,
         }
+    }
+
+    /// A [`crate::CodeMinimap`](crate::code_overlay::CodeMinimap)'s ground: [`GooeySkin::surface_raised`]
+    /// at `MINIMAP_GROUND_ALPHA` over the editor's own ground, so the lane reads as a panel sunk a
+    /// step below the text without a second surface colour to keep in step.
+    pub fn minimap_ground(&self) -> Color {
+        self.surface_raised.with_alpha(MINIMAP_GROUND_ALPHA)
+    }
+
+    /// A minimap line's bar, the overview the lane exists for: [`GooeySkin::text_muted`] lifted
+    /// toward [`GooeySkin::text`] until it reads on the lane's ground at [`NON_TEXT_CONTRAST`], 3:1
+    /// (WCAG 1.4.11 asks it of a graphic that carries information). The skin's own `text_muted` at
+    /// a fixed opacity measured 1.7:1 in parchment, where an overview bar vanished into its lane.
+    pub fn minimap_bar(&self) -> Color {
+        let ground = self.minimap_lane();
+        let [mut r, mut g, mut b] = rgb(self.text_muted);
+        let mut step = 0.0;
+        while contrast_ratio([r, g, b], ground) < NON_TEXT_CONTRAST && step < 1.0 {
+            step += 0.05;
+            [r, g, b] = lift_toward(rgb(self.text_muted), rgb(self.text), step);
+        }
+        Color::srgb(r, g, b)
+    }
+
+    /// The lane's ground as it is drawn: [`GooeySkin::minimap_ground`] composited over the editor's
+    /// [`GooeySkin::solid_surface`], the colour a bar or a band's edge is held against.
+    fn minimap_lane(&self) -> [f32; 3] {
+        let ground = self.minimap_ground();
+        composite(rgb(ground), ground.alpha(), rgb(self.solid_surface()))
+    }
+
+    /// The frame of a minimap's view band: [`GooeySkin::accent`] lifted toward
+    /// [`GooeySkin::text`] until it reads on the lane at [`NON_TEXT_CONTRAST`], 3:1 — the band's
+    /// own fill may stay a wash, but the edge that says where the view ends is a graphic.
+    pub fn minimap_band_edge(&self) -> Color {
+        let ground = self.minimap_lane();
+        let [mut r, mut g, mut b] = rgb(self.accent);
+        let mut step = 0.0;
+        while contrast_ratio([r, g, b], ground) < NON_TEXT_CONTRAST && step < 1.0 {
+            step += 0.05;
+            [r, g, b] = lift_toward(rgb(self.accent), rgb(self.text), step);
+        }
+        Color::srgb(r, g, b)
     }
 
     /// A [`crate::meter`]'s trail: [`GooeySkin::danger`] for a meter with no tone, else the
@@ -3683,8 +3726,8 @@ fn restyle(
         Role::CodeCompletionRowLit => Some(skin.surface_raised),
         Role::CodeCompletionRow => Some(Color::NONE),
         Role::CodeMark(severity) | Role::CodeMinimapMark(severity) => Some(skin.severity(*severity)),
-        Role::CodeMinimap => Some(skin.surface_raised.with_alpha(MINIMAP_GROUND_ALPHA)),
-        Role::CodeMinimapBar => Some(skin.text_muted.with_alpha(MINIMAP_BAR_ALPHA)),
+        Role::CodeMinimap => Some(skin.minimap_ground()),
+        Role::CodeMinimapBar => Some(skin.minimap_bar()),
         Role::CodeMinimapBand => Some(skin.accent.with_alpha(MINIMAP_BAND_ALPHA)),
         Role::CodeGuide => Some(skin.surface_raised),
         Role::CodeBracket => Some(skin.accent.with_alpha(BRACKET_ALPHA)),
@@ -4076,9 +4119,7 @@ fn restyle(
         }),
         Role::CodeCompletionRow => Some(BorderColor::all(Color::NONE)),
         Role::CodeBracket => Some(BorderColor::all(skin.accent)),
-        Role::CodeMinimapBand => Some(BorderColor::all(
-            skin.accent.with_alpha(MINIMAP_BAND_EDGE_ALPHA),
-        )),
+        Role::CodeMinimapBand => Some(BorderColor::all(skin.minimap_band_edge())),
         Role::ColorSwatch | Role::ColorArea | Role::Viewport | Role::CodeEditor => {
             Some(BorderColor::all(if look.focused == Some(entity) {
                 skin.focus_ring
@@ -4951,13 +4992,14 @@ fn restyle(
                 next.height = Val::Px(CodeMetrics::of(skin, scale).line_px);
             }
             Role::CodeMinimap => {
+                // The lane takes room beside the text instead of painting over it: the editor is
+                // a row of gutter, area and lane, so a bar down the code is never drawn on the
+                // code (#117).
                 let code = CodeMetrics::of(skin, scale);
-                next.position_type = PositionType::Absolute;
-                next.top = Val::Px(0.0);
-                next.bottom = Val::Px(0.0);
-                next.right = Val::Px(0.0);
+                next.flex_shrink = 0.0;
                 next.width = Val::Px(code.font_px * MINIMAP_EM);
                 next.overflow = Overflow::clip();
+                next.border = UiRect::left(Val::Px(line));
             }
             Role::CodeMinimapBar => {
                 next.position_type = PositionType::Absolute;
