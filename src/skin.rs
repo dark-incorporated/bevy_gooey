@@ -4951,13 +4951,14 @@ fn restyle(
                 next.height = Val::Px(CodeMetrics::of(skin, scale).line_px);
             }
             Role::CodeMinimap => {
+                // The lane takes room beside the text instead of painting over it: the editor is
+                // a row of gutter, area and lane, so a bar down the code is never drawn on the
+                // code (#117).
                 let code = CodeMetrics::of(skin, scale);
-                next.position_type = PositionType::Absolute;
-                next.top = Val::Px(0.0);
-                next.bottom = Val::Px(0.0);
-                next.right = Val::Px(0.0);
+                next.flex_shrink = 0.0;
                 next.width = Val::Px(code.font_px * MINIMAP_EM);
                 next.overflow = Overflow::clip();
+                next.border = UiRect::left(Val::Px(line));
             }
             Role::CodeMinimapBar => {
                 next.position_type = PositionType::Absolute;

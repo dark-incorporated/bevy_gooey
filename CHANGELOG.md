@@ -4,7 +4,7 @@
 
 ### Fixed
 
-- A `code_editor` with `CodeMinimap` draws its bars and its band on the frame it is first shown, with no input: a part is now spawned with the geometry it is due (the minimap's pools were grown in the same frame their key was recorded, so a file opened for reading drew no bars and put the band at the wrong place until the text changed, #117).
+- A `code_editor` with `CodeMinimap` draws its bars and its band on the frame it is first shown, with no input: a part is now spawned with the geometry it is due (the minimap's pools were grown in the same frame their key was recorded, so a file opened for reading drew no bars and put the band at the wrong place until the text changed, #117). The lane is also a flex item beside the code area rather than an overlay on it, so a bar is never painted over the text it summarizes.
 
 ### Added
 

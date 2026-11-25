@@ -836,3 +836,53 @@ fn an_opened_editor_lays_its_minimap_out_with_no_input_at_all() {
         "the band moved with the scroll and no edit: {band:?} to {moved:?}"
     );
 }
+
+/// #117, found in the capture after the fix: the lane is a flex item beside the code area, never
+/// an overlay on it, so no bar is ever painted over the text it summarizes; and the bars are
+/// scaled to the file's own longest line, so a short file's outline is not a row of stubs at the
+/// left edge of an empty lane.
+#[test]
+fn the_minimap_lane_takes_room_beside_the_code_and_its_bars_scale_to_the_file() {
+    // A short file: every line a third of the editor's width.
+    let text: String = (0..200).map(|i| format!("let x = {i};\n")).collect();
+    let mut short = app();
+    let editor = editor_of(&mut short, &text, CodeMinimap);
+    settle(&mut short);
+    settle(&mut short);
+    let area = rect(&short, shown_by_role(&short, editor, Role::CodeArea)[0]);
+    let map = rect(&short, shown_by_role(&short, editor, Role::CodeMinimap)[0]);
+    assert!(
+        map.min.x >= area.max.x - 1.0,
+        "the lane starts where the text ends: area {area:?} lane {map:?}"
+    );
+    assert!(map.width() > 40.0, "the lane has a lane's width: {map:?}");
+    let bars = shown_by_role(&short, editor, Role::CodeMinimapBar);
+    assert!(!bars.is_empty(), "bars drawn");
+    // Every bar reaches across the lane: a 20-column scale is `MINIMAP_MIN_COLS` and 800 px of
+    // editor give it more than half its own width.
+    let widths: Vec<f32> = bars.iter().map(|&e| rect(&short, e).width()).collect();
+    let widest = widths.iter().cloned().fold(0.0_f32, f32::max);
+    assert!(
+        widest > map.width() * 0.3,
+        "the longest line's bar is a share of the lane: widest {widest} of {}",
+        map.width()
+    );
+    // A long file's bars stay inside the lane too, and the editor's text keeps its own box.
+    let long: String = (0..200)
+        .map(|i| format!("{}\n", "y".repeat(20 + i % 40)))
+        .collect();
+    let mut tall = app();
+    let editor = editor_of(&mut tall, &long, CodeMinimap);
+    settle(&mut tall);
+    settle(&mut tall);
+    let area = rect(&tall, shown_by_role(&tall, editor, Role::CodeArea)[0]);
+    let map = rect(&tall, shown_by_role(&tall, editor, Role::CodeMinimap)[0]);
+    assert!(map.min.x >= area.max.x - 1.0, "still beside the text");
+    for bar in shown_by_role(&tall, editor, Role::CodeMinimapBar) {
+        let bar = rect(&tall, bar);
+        assert!(
+            bar.max.x <= map.max.x + 1.0,
+            "a bar stays inside the lane: bar {bar:?} lane {map:?}"
+        );
+    }
+}
