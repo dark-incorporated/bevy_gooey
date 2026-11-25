@@ -448,6 +448,76 @@ fn the_minimap_draws_a_bar_a_line_a_band_for_the_part_in_view_and_a_drag_scrolls
     );
 }
 
+/// **A file opened for reading draws its minimap on the first frame it is drawn** (#117): bars
+/// at distinct `top`s, none of them nothing wide, and the band at the top of the part in view —
+/// with **no input of any kind between opening it and reading the lane**. The defect this holds
+/// against: the spawn arm returned before laying a bar out, and the layout behind a key that
+/// included the buffer's revision, so a file nobody typed in never got either.
+#[test]
+fn the_minimap_is_laid_out_on_the_frame_a_file_opens_with_no_keystroke() {
+    let mut app = app();
+    // 300 lines of varying length: taller than the window, so the lane has more lines than slots
+    // and every bar stands at a `top` of its own.
+    let text: String = (0..300)
+        .map(|i| format!("{}\n", "x".repeat(1 + i % 24)))
+        .collect();
+    let editor = editor_of(&mut app, &text, CodeMinimap);
+    // **The minimum**: the editor's first laid-out frame and one more, and nothing typed.
+    settle(&mut app);
+    let bars = shown_by_role(&app, editor, Role::CodeMinimapBar);
+    assert!(bars.len() > 20, "bars for the lines: {}", bars.len());
+    let mut tops: Vec<f32> = Vec::with_capacity(bars.len());
+    let mut widths: Vec<f32> = Vec::with_capacity(bars.len());
+    for &bar in &bars {
+        let node = app.world().get::<Node>(bar).expect("a bar has a node");
+        tops.push(match node.top {
+            Val::Px(px) => px,
+            other => panic!("a bar stands at a px `top`, not {other:?}"),
+        });
+        widths.push(match node.width {
+            Val::Px(px) => px,
+            other => panic!("a bar is a px wide, not {other:?}"),
+        });
+    }
+    // A slot's top is its own row's: one pitch each, so equal tops mean one row was drawn twice.
+    tops.sort_by(f32::total_cmp);
+    let distinct = tops.windows(2).filter(|w| (w[1] - w[0]).abs() > 0.5).count() + 1;
+    assert_eq!(
+        distinct,
+        tops.len(),
+        "every bar stands at a `top` of its own, not piled on one row: {tops:?}"
+    );
+    assert!(
+        widths.iter().all(|w| *w > 0.0),
+        "every bar of a non-empty line is wider than nothing: {} of {} bars were 0 px",
+        widths.iter().filter(|w| **w == 0.0).count(),
+        widths.len()
+    );
+    let band = shown_by_role(&app, editor, Role::CodeMinimapBand);
+    assert_eq!(band.len(), 1, "one band over the part in view");
+    let band_rect = rect(&app, band[0]);
+    let lane = rect(&app, shown_by_role(&app, editor, Role::CodeMinimap)[0]);
+    assert!(
+        band_rect.height() > lane.height() * 0.2,
+        "the band is the part in view: {} px of a {} px lane for a 300-line file",
+        band_rect.height(),
+        lane.height()
+    );
+    // **Scrolling by wheel moves the band with no edit**: the band is the view, not the revision.
+    let before = rect(&app, band[0]);
+    app.world_mut()
+        .get_mut::<CodeEditor>(editor)
+        .expect("editor")
+        .scroll_to_line(200);
+    settle(&mut app);
+    settle(&mut app);
+    let after = rect(&app, shown_by_role(&app, editor, Role::CodeMinimapBand)[0]);
+    assert!(
+        after.min.y > before.min.y + 20.0,
+        "the band followed the scroll with nothing typed: {before:?} to {after:?}"
+    );
+}
+
 fn shown_words(app: &App, editor: Entity) -> Vec<String> {
     shown_by_role(app, editor, Role::CodeText)
         .into_iter()

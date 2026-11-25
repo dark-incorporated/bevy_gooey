@@ -172,9 +172,13 @@ pub(crate) struct Overlay {
     pub(crate) minimap_key: Option<MinimapKey>,
 }
 
-/// What the minimap was last drawn for: the first row, the row count, the text's revision, the
-/// lines folded away and the diagnostic marks.
-pub(crate) type MinimapKey = (usize, usize, u64, usize, Vec<(usize, CodeSeverity)>);
+/// What the minimap was last drawn for: the first row, the row count, the lane's width, the text's
+/// revision, the lines folded away and the diagnostic marks.
+///
+/// **The lane's width is part of it** (#117): the frame the lane is spawned its box is not measured,
+/// so the bars are first laid out at the skin's estimate, and the frame the box arrives has to
+/// rewrite them at the width the lane really is.
+pub(crate) type MinimapKey = (usize, usize, i32, u64, usize, Vec<(usize, CodeSeverity)>);
 
 /// What the player asked of a fold.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -1149,6 +1153,9 @@ fn draw_navigation(
         }
         return;
     }
+    // **The root and its band are spawned and the layout carries on in the same pass** (#117): this
+    // used to `return` from the spawn arm, so the one frame that had a minimap to lay out was the
+    // one frame that left every bar and the band unwritten.
     let root = match editor.overlay.minimap_root {
         Some(root) => root,
         None => {
@@ -1161,20 +1168,14 @@ fn draw_navigation(
                     ChildOf(area),
                 ))
                 .id();
-            let band = commands
-                .spawn((
-                    Node::default(),
-                    Role::CodeMinimapBand,
-                    Pickable::IGNORE,
-                    OverlayPart,
-                    ChildOf(root),
-                ))
-                .id();
             editor.overlay.minimap_root = Some(root);
-            editor.overlay.minimap_band = Some(band);
-            return;
+            root
         }
     };
+    // **A bar is as wide as the lane it is drawn in, and the lane's box may not be measured yet**
+    // (#117): the frame the root is spawned it has no size, so the width falls back to the skin's
+    // estimate — and the width goes into the redraw key below, so the frame the box *is* measured
+    // rewrites every bar at the lane's real width instead of keeping the estimate for ever.
     let width = boxes
         .get(root)
         .map_or(view.skin_text * MINIMAP_EM, |(n, _)| {
@@ -1198,27 +1199,53 @@ fn draw_navigation(
     let key = (
         first,
         count,
+        width.round() as i32,
         editor.buffer.revision(),
         fold.hidden_lines(),
         marks.to_vec(),
     );
     let redraw = editor.overlay.minimap_key.as_ref() != Some(&key);
-    grow(
-        commands,
-        &mut editor.overlay.minimap_bars,
-        count,
-        |commands| {
-            commands
-                .spawn((
-                    Node::default(),
-                    Role::CodeMinimapBar,
-                    Pickable::IGNORE,
-                    OverlayPart,
-                    ChildOf(root),
-                ))
-                .id()
-        },
-    );
+    // **Every bar's box is worked out before any bar is spawned** (#117): a node spawned through
+    // `Commands` is not in `items` until the next frame, so a bar spawned without its own `top` and
+    // `width` is a bar nothing ever wrote — which is what a file opened for reading showed, since
+    // the key was committed in the same pass and no later frame asked again.
+    let column = ((width - 4.0) / MINIMAP_COLS as f32).max(0.5);
+    let bar_widths: Vec<f32> = (0..count)
+        .map(|slot| {
+            let row = first + slot;
+            if row < rows {
+                display_width(editor.buffer.line(fold.line_at(row)), tab).min(MINIMAP_COLS) as f32
+            } else {
+                0.0
+            }
+            .max(0.0)
+                * column
+        })
+        .collect();
+    for slot in editor.overlay.minimap_bars.len()..count {
+        let wide = bar_widths.get(slot).copied().unwrap_or(0.0);
+        let mut node = Node {
+            top: Val::Px(slot as f32 * pitch),
+            ..default()
+        };
+        if wide > 0.0 {
+            node.display = Display::Flex;
+            node.left = Val::Px(2.0);
+            node.width = Val::Px(wide);
+        } else {
+            node.display = Display::None;
+        }
+        let bar = commands
+            .spawn((
+                node,
+                Role::CodeMinimapBar,
+                Pickable::IGNORE,
+                OverlayPart,
+                ChildOf(root),
+            ))
+            .id();
+        editor.overlay.minimap_bars.push(bar);
+    }
     let mark_rows: Vec<(usize, CodeSeverity)> = marks
         .iter()
         .filter_map(|&(line, severity)| {
@@ -1226,42 +1253,37 @@ fn draw_navigation(
             (row >= first && row < first + count).then_some((row, severity))
         })
         .collect();
-    grow(
-        commands,
-        &mut editor.overlay.minimap_marks,
-        mark_rows.len(),
-        |commands| {
-            commands
-                .spawn((
-                    Node::default(),
-                    Role::CodeMinimapMark(CodeSeverity::Error),
-                    Pickable::IGNORE,
-                    OverlayPart,
-                    ChildOf(root),
-                ))
-                .id()
-        },
-    );
+    for slot in editor.overlay.minimap_marks.len()..mark_rows.len() {
+        let (row, severity) = mark_rows[slot];
+        let mark = commands
+            .spawn((
+                Node {
+                    display: Display::Flex,
+                    top: Val::Px((row - first) as f32 * pitch),
+                    ..default()
+                },
+                Role::CodeMinimapMark(severity),
+                Pickable::IGNORE,
+                OverlayPart,
+                ChildOf(root),
+            ))
+            .id();
+        editor.overlay.minimap_marks.push(mark);
+    }
     if redraw {
-        let column = ((width - 4.0) / MINIMAP_COLS as f32).max(0.5);
         for (slot, &entity) in editor.overlay.minimap_bars.iter().enumerate() {
             let Ok((mut node, ..)) = items.get_mut(entity) else {
                 continue;
             };
-            let row = first + slot;
-            let cols = if slot < count && row < rows {
-                display_width(editor.buffer.line(fold.line_at(row)), tab).min(MINIMAP_COLS)
-            } else {
-                0
-            };
-            if cols == 0 {
-                set_display(&mut node, Display::None);
-            } else {
+            let wide = bar_widths.get(slot).copied().unwrap_or(0.0);
+            if wide > 0.0 {
                 set_display(&mut node, Display::Flex);
                 set_px(&mut node.left, 2.0);
-                set_px(&mut node.width, cols as f32 * column);
-                set_px(&mut node.top, slot as f32 * pitch);
+                set_px(&mut node.width, wide);
+            } else {
+                set_display(&mut node, Display::None);
             }
+            set_px(&mut node.top, slot as f32 * pitch);
         }
         for (slot, &entity) in editor.overlay.minimap_marks.iter().enumerate() {
             let Ok((mut node, _, mut role, _)) = items.get_mut(entity) else {
@@ -1281,14 +1303,35 @@ fn draw_navigation(
         }
         editor.overlay.minimap_key = Some(key);
     }
-    // The band over the part in view follows the glided scroll.
-    if let Some(band) = editor.overlay.minimap_band
-        && let Ok((mut node, ..)) = items.get_mut(band)
-    {
-        let top = (view.shown.y / view.line_px - first as f32) * pitch;
-        let height = (view.area.y / view.line_px * pitch).min(count as f32 * pitch);
-        set_px(&mut node.top, top);
-        set_px(&mut node.height, height.max(pitch));
+    // The band over the part in view follows the glided scroll, and is spawned with its own place
+    // worked out: a band spawned through `Commands` is not in `items` this pass either (#117).
+    let band_top = (view.shown.y / view.line_px - first as f32) * pitch;
+    let band_height = (view.area.y / view.line_px * pitch)
+        .min(count as f32 * pitch)
+        .max(pitch);
+    let band = match editor.overlay.minimap_band {
+        Some(band) => band,
+        None => {
+            let band = commands
+                .spawn((
+                    Node {
+                        top: Val::Px(band_top),
+                        height: Val::Px(band_height),
+                        ..default()
+                    },
+                    Role::CodeMinimapBand,
+                    Pickable::IGNORE,
+                    OverlayPart,
+                    ChildOf(root),
+                ))
+                .id();
+            editor.overlay.minimap_band = Some(band);
+            band
+        }
+    };
+    if let Ok((mut node, ..)) = items.get_mut(band) {
+        set_px(&mut node.top, band_top);
+        set_px(&mut node.height, band_height);
     }
 }
 
