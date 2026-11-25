@@ -121,7 +121,7 @@ fn script() -> String {
         match row % 4 {
             0 => text.push_str(&format!("let row{row} = place(\"apple\", {row}, 0);\n")),
             1 => text.push_str(&format!("if row{row}.ripe {{ orchard.pick(row{row}); }}\n")),
-            2 => text.push_str("\n"),
+            2 => text.push('\n'),
             _ => text.push_str(&format!("// the {row}th row is left for the frost\n")),
         }
     }

@@ -2,9 +2,11 @@
 
 ## [Unreleased]
 
+## [0.59.0] - 2026-11-25
+
 ### Fixed
 
-- A `code_editor` with `CodeMinimap` draws its bars and its band on the frame it is first shown, with no input: a part is now spawned with the geometry it is due (the minimap's pools were grown in the same frame their key was recorded, so a file opened for reading drew no bars and put the band at the wrong place until the text changed, #117).
+- A `code_editor` with `CodeMinimap` draws its bars and its band on the frame it is first shown, with no input: a part is now spawned with the geometry it is due (the minimap's pools were grown in the same frame their key was recorded, so a file opened for reading drew no bars and put the band at the wrong place until the text changed, #117). The lane is also a flex item beside the code area rather than an overlay on it, so a bar is never painted over the text it summarizes; its bars are scaled to the file's own longest line (20 to 200 columns), `GooeySkin::minimap_bar` lifts each bar until it reads at 3:1 on the lane and `minimap_band_edge` does the same for the view band's frame (parchment measured 1.7:1 and 1.9:1 before).
 
 ### Added
 

@@ -3678,3 +3678,57 @@ branches `wiggum/parked-pass-*` untouched.
 **Top 5 backlog.** (1) release 0.59.0 once 6 h have passed (and the crates.io token for 0.51.9 to 0.58.0); (2) incremental wrap-map rebuild; (3) windowed variable-height table; (4) minimap and indent guides under soft wrap; (5) a `problems()` note for a divider under 24 px. Also: a livelier dark-skin `warning` plate.
 
 **Cleanup.** Removed my own `/tmp/g109*` and `~/g109_base` worktree. `df -h .` before ~119G free, after ~117G at 97% (shared target growth). Left: `~/g17_base`, `~/g17_parked`, `~/g17s_base`; `wiggum/parked-pass-*` untouched.
+
+## Iteration 110 — 2026-11-25 — a drawn part is born with its geometry; the minimap is whole on its first frame (#117)
+
+**What and why.** Issue #117 (a `bug`, filed by `dark-incorporated/bevy_dark_factory` as its #540): a
+`code_editor` with `CodeMinimap` opened for reading shows its lane and its band and **no bars at all**;
+one typed character later the same lane shows 89 bars. The editor's own colour census over the 124 px
+lane at y=240..800 read ground 56,168 px, band 11,036 px, **bar pixels 0**. Cause: `update_code_overlays`
+grew a part's pool with `Commands` and then wrote that part's geometry in the *same* frame from a query
+those commands had not reached, so `RowShown` keys were recorded and the nodes did not exist yet — a
+freshly opened file drew nothing until the text changed. Fix: every overlay part is spawned **with** the
+geometry it is due (`spawn_part_with`), so a part is born complete; the pools still grow on demand and
+a settled editor writes nothing.
+
+Three defects the same screenshots exposed, each measured and fixed:
+
+- **The lane was an `Absolute` overlay on the text.** Bars were painted over the code they summarize.
+  It is now a flex item beside the `Role::CodeArea` with a thin `Role::CodeMinimapDivider` rule between
+  them; `update_code_overlays` reads the area's laid-out width from the lane's own `ComputedNode` box.
+  Held by `tests/code_navigation.rs::the_minimap_lane_takes_room_beside_the_code_and_its_bars_scale_to_the_file`
+  (mutation-checked: an absolute lane fails it).
+- **Bars had one fixed width, so a short file's outline was three stubs.** A bar is now as long as its
+  line scaled to the file's own longest line, clamped to `MINIMAP_BAR_MIN_COLUMNS..MINIMAP_BAR_MAX_COLUMNS`
+  (20..200), so a 8-line script and a 400-line file both read.
+- **The bars and the band's frame were fixed-opacity overlays**: `text_muted` at 55% measured **1.7:1**
+  in parchment and `accent` at 14% measured **1.9:1**; an overview bar that vanishes into its lane is
+  not an overview. `GooeySkin::minimap_bar()` and `GooeySkin::minimap_band_edge()` lift their seeds
+  toward `text` until they read `NON_TEXT_CONTRAST` (3:1; 7:1 on `high_contrast`) on
+  `minimap_ground()` composited over `solid_surface()`, the lane's real ground. Measured after: dark bar
+  5.9:1, parchment bar 4.4:1, band edge 4.9:1 dark and 7.9:1 parchment.
+  Held by `tests/skin.rs::every_presets_minimap_bar_reads_on_its_own_lane`, **mutation-checked twice**:
+  my first version of it ignored the bar's own alpha and passed against the broken 55% colour
+  (`text_muted`'s numbers read 4.35:1 while what is drawn is 2.07:1) — the compositing bug was caught
+  only by mutating `minimap_bar` back and watching the test **pass** when it should fail. Fixed to
+  composite first; now the mutation fails with "Dark's minimap bar is 2.84:1".
+
+**Sources.** `docs/research/minimap-first-frame.md` (Shneiderman's Visual Information-Seeking Mantra —
+overview is the *first* task; `10.1109/vl.1996.545307`; Lightbown ch. 2 on a tool misreporting its state;
+`bevy_ecs-0.20.1/src/system/commands/mod.rs:1250` on deferred commands) plus this crate's
+`docs/research/first-frame-skin.md` (#94), the same shape one component up.
+
+**Assumed decision (owner may override):** the minimap's bar scales to the file's longest line (20..200
+columns) rather than a fixed stub; a fixed stub wastes the lane on short files and clips on long ones.
+
+**Checklist.** fmt, clippy `-D warnings` (two new lints in my own code, fixed), nextest **1709 passed**
+(2 new), doctests, `cargo check --lib`, wasm32, `cargo doc -D warnings` — all green. `mean_ms` prose
+example 720p, no fixed clock, load ~20: 24.63 dark, 24.86 parchment (a 100-frame first-frame capture of
+the same binary that drew nothing before). Demo: `docs/media/minimap-first-frame.png`, the lane and a
+slice of code, both skins, first frame.
+
+**Release.** 6-hour rule now passed (0.58.0 tagged five days ago). This pass releases 0.59.0.
+
+**Top 5 backlog.** (1) crates.io token still 403 for 0.51.9 to 0.58.0; (2) incremental wrap-map rebuild; (3)
+windowed variable-height table; (4) minimap and indent guides under soft wrap; (5) a `problems()` note for
+a divider under 24 px.

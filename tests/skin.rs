@@ -438,3 +438,42 @@ fn every_preset_carries_the_default_motion_palette_and_a_theme_step_leaves_it() 
     let themed = mine.clone().with_colours_of(&GooeySkin::parchment());
     assert_eq!(themed.motion, mine.motion);
 }
+
+/// #117: the minimap's overview bar is a graphic that carries information, so WCAG 1.4.11 asks it
+/// to read at 3:1 on its own lane (and 7:1 on a high-contrast skin). The lane's ground is
+/// `minimap_ground` over the editor's solid surface.
+#[test]
+fn every_presets_minimap_bar_reads_on_its_own_lane() {
+    for preset in SkinPreset::ALL {
+        let skin = preset.skin();
+        let ground = skin.minimap_ground();
+        let backing = composite(rgb(ground), ground.alpha(), rgb(skin.solid_surface()));
+        let bar = skin.minimap_bar();
+        // The bar is drawn on the lane, so its own alpha is composited first: a colour whose
+        // numbers read well and whose 55% of them does not is the defect this holds.
+        let drawn = composite(rgb(bar), Srgba::from(bar).alpha, backing);
+        let ratio = contrast_ratio(drawn, backing);
+        let needed = if preset == SkinPreset::HighContrast {
+            7.0
+        } else {
+            3.0
+        };
+        assert!(
+            ratio >= needed,
+            "{}'s minimap bar is {ratio:.2}:1 on its lane, needs {needed}",
+            preset.name()
+        );
+        // The band's frame is the graphic that says where the view ends.
+        let edge = composite(
+            rgb(skin.minimap_band_edge()),
+            Srgba::from(skin.minimap_band_edge()).alpha,
+            backing,
+        );
+        let edge_ratio = contrast_ratio(edge, backing);
+        assert!(
+            edge_ratio >= 3.0,
+            "{}'s minimap band edge is {edge_ratio:.2}:1 on its lane",
+            preset.name()
+        );
+    }
+}
