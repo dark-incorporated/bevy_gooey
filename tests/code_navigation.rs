@@ -762,3 +762,77 @@ fn a_press_on_the_fold_chevron_toggles_its_fold_and_the_mark_is_a_triangle() {
     press_at(&mut app, chevron.min + Vec2::splat(0.5));
     assert!(folded(&app), "the chevron's corner folds as well");
 }
+
+#[test]
+fn an_opened_editor_lays_its_minimap_out_with_no_input_at_all() {
+    // The bug (#117): a file opened for reading draws the minimap's ground and band and no bars
+    // until the buffer changes, because the frame the bar pool is grown is the frame the key that
+    // gates the layout is recorded, so nothing ever writes the new bars.
+    let mut app = app();
+    let text: String = (0..400)
+        .map(|i| format!("{}\n", "x".repeat(i % 30)))
+        .collect();
+    // Spawned, never focused, and settled: exactly what a host opening a file for reading does.
+    let world = app.world_mut();
+    let editor = world
+        .spawn((code_editor("Script", &text), CodeMinimap))
+        .id();
+    let host = world
+        .spawn(Node {
+            width: Val::Px(800.0),
+            height: Val::Px(480.0),
+            flex_direction: FlexDirection::Column,
+            ..default()
+        })
+        .add_child(editor)
+        .id();
+    world.spawn(screen()).add_child(host);
+    for _ in 0..8 {
+        app.update();
+    }
+    let bars = shown_by_role(&app, editor, Role::CodeMinimapBar);
+    assert!(bars.len() > 20, "bars for the lines: {}", bars.len());
+    let tops: Vec<f32> = bars.iter().map(|&e| rect(&app, e).min.y).collect();
+    let distinct: std::collections::BTreeSet<String> =
+        tops.iter().map(|t| format!("{t:.1}")).collect();
+    assert!(distinct.len() > 20, "bars at distinct places: {distinct:?}");
+    // No bar is zero width: a written bar carries a share of the widest line.
+    let widths: Vec<f32> = bars.iter().map(|&e| rect(&app, e).width()).collect();
+    assert!(
+        widths.iter().any(|&w| w > 1.0),
+        "a bar with width: {widths:?}"
+    );
+    // The band is the part in view: its top is the first visible line and its height the lines
+    // in view, against the ground's own box.
+    let map = rect(&app, shown_by_role(&app, editor, Role::CodeMinimap)[0]);
+    let band = rect(&app, shown_by_role(&app, editor, Role::CodeMinimapBand)[0]);
+    assert!(
+        (band.min.y - map.min.y).abs() < 1.0,
+        "the band starts at the top of an unscrolled editor: band {band:?} map {map:?}"
+    );
+    let tallest = tops.iter().map(|&t| t).fold(f32::MIN, f32::max);
+    assert!(
+        band.height() > 4.0 && band.max.y <= tallest + 2.0,
+        "the band covers part of the bars: band {band:?} last bar {tallest}"
+    );
+    // Scrolling, with no edit at all, moves the band down its lane.
+    app.world_mut()
+        .get_mut::<CodeEditor>(editor)
+        .expect("editor")
+        .scroll_to_line(200);
+    for _ in 0..40 {
+        app.update();
+    }
+    let scrolled = app
+        .world()
+        .get::<CodeEditor>(editor)
+        .expect("editor")
+        .scroll()
+        .y;
+    assert!(scrolled > 2000.0, "the view scrolled: {scrolled}");
+    let moved = rect(&app, shown_by_role(&app, editor, Role::CodeMinimapBand)[0]);
+    assert!(
+        moved.min.y > band.min.y + 2.0,
+        "the band moved with the scroll and no edit: {band:?} to {moved:?}"
+    );
+}
