@@ -52,3 +52,5 @@ pass	at	host	seconds	model	think	build_jobs	test_threads
 349	2026-11-22T15:28Z	big	969	anthropic/claude-sonnet-5-5	high	3	4
 350	2026-11-23T00:06Z	big	2213	anthropic/claude-sonnet-5-5	high	3	4
 351	2026-11-23T00:30Z	big	1382	anthropic/claude-sonnet-5-5	high	3	4
+352	2026-11-23T15:35Z	big	2135	ollama-cloud/deepseek-v4.1-flash:1017	high	3	4
+353	2026-11-25T23:47Z	big	3753	ollama-cloud/deepseek-v4.1-flash:1017	high	3	4
