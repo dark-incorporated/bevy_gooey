@@ -897,8 +897,11 @@ fn the_minimap_lane_takes_room_beside_the_code_and_its_bars_scale_to_the_file() 
 fn under_soft_wrap_the_minimap_draws_one_bar_per_line_not_per_row() {
     // 120 lines, each longer than the last, every one long enough to break into several rows in an
     // 800 px editor. The lengths are the handle: a bar keyed on a line is as wide as that line.
-    let text: String = (0..120)
-        .map(|i| format!("{}\n", "x".repeat(20 + i)))
+    // Every line is 60 to 177 columns, all under the lane's 200-column cap, so each keeps its own
+    // width in the lane, three columns apart so two widths never round to one. A wrapped editor's
+    // row shows a piece of its line, so a bar keyed on a row would be a short segment per line.
+    let text: String = (0..40)
+        .map(|i| format!("{}\n", "x".repeat(60 + i * 3)))
         .collect();
     let mut app = app();
     let editor = editor_of(&mut app, &text, (CodeMinimap, CodeSoftWrap));
@@ -921,15 +924,15 @@ fn under_soft_wrap_the_minimap_draws_one_bar_per_line_not_per_row() {
         })
         .map(|e| rect(&app, e))
         .collect();
-    // All 120 lines fit the lane (a 480 px lane at a 3 px pitch holds 160 slots); a lane keyed on
-    // rows draws the first 160 of 400-odd rows instead, which is the first forty lines.
+    // All 40 lines fit the lane (a 480 px lane at a 3 px pitch holds 160 slots); a lane keyed on
+    // rows draws whatever the first screenful covers, so the lines past it are missing.
     assert!(
-        drawn.len() >= 120,
+        drawn.len() >= 40,
         "a lane of 160 slots draws every line: {} bars",
         drawn.len()
     );
-    // Every line shows at its own width: the shortest (20 columns) is a fraction of the longest
-    // (139), and the last line's bar is the widest in the lane.
+    // Every line shows at its own width: the shortest is a fraction of the longest, and the last
+    // line's bar is the widest in the lane.
     let widths: std::collections::BTreeSet<i64> = drawn
         .iter()
         .map(|bar| (bar.width() * 100.0).round() as i64)
@@ -944,8 +947,8 @@ fn under_soft_wrap_the_minimap_draws_one_bar_per_line_not_per_row() {
     let widest = drawn.iter().map(|bar| bar.width()).fold(0.0_f32, f32::max);
     let narrowest = drawn.iter().map(|bar| bar.width()).fold(f32::MAX, f32::min);
     assert!(
-        widest > narrowest * 4.0,
-        "the line forty characters longer is drawn four times as long: {narrowest} to {widest}"
+        widest > narrowest * 2.5,
+        "the longest line is drawn many times the shortest: {narrowest} to {widest}"
     );
     // Every line has its own place, and every line its own width: four rows of one line would
     // stack four bars of one width on four places.
@@ -954,6 +957,39 @@ fn under_soft_wrap_the_minimap_draws_one_bar_per_line_not_per_row() {
         .map(|bar| (bar.min.y * 100.0).round() as i64)
         .collect();
     assert_eq!(tops.len(), drawn.len(), "one place per bar");
+}
+
+/// The band says how much of the **file** the view holds, in lines. A band keyed on display rows
+/// claimed a lane slot per row, so under soft wrap it was several times taller than the text it
+/// stood for: the same file drew the same band wrapped or not, where a wrapped line shows a
+/// fraction of the lines it does unwrapped.
+#[test]
+fn under_soft_wrap_the_minimap_band_is_as_tall_as_the_lines_in_view() {
+    // Long lines: unwrapped, one line is one row, so the view holds a handful of lines; wrapped,
+    // each line is many rows, so it holds a fraction of one line's worth.
+    let text: String = (0..30)
+        .map(|i| format!("{i} {}", "y".repeat(4000)))
+        .collect::<Vec<_>>()
+        .join("\n");
+    let band_slots = |extra: Option<CodeSoftWrap>| -> f32 {
+        let mut app = app();
+        let editor = match extra {
+            Some(wrap) => editor_of(&mut app, &text, (CodeMinimap, wrap)),
+            None => editor_of(&mut app, &text, CodeMinimap),
+        };
+        settle(&mut app);
+        settle(&mut app);
+        let band = rect(&app, shown_by_role(&app, editor, Role::CodeMinimapBand)[0]);
+        // The lane's pitch is 3 px (MINIMAP_BAR_PX * 2).
+        band.height() / 3.0
+    };
+    let unwrapped = band_slots(None);
+    let wrapped = band_slots(Some(CodeSoftWrap));
+    assert!(
+        wrapped < unwrapped * 0.6,
+        "a wrapped view holds a fraction of the lines it holds unwrapped: {wrapped} slots of \
+         {unwrapped}"
+    );
 }
 
 /// The unwrapped editor is unchanged by the fix above: one bar per line, one place each.
