@@ -54,8 +54,13 @@ lengthens when the window narrows is a lane that lies about the file.
 
 ## Validation targets
 
-- 120 wrapped lines: at least 120 drawn bars, one place each, one width each, the longest four times
-  the shortest (`tests/code_navigation.rs::under_soft_wrap_the_minimap_draws_one_bar_per_line_not_per_row`).
+- 40 wrapped lines of 60 to 177 columns (all under the 200-column cap, three columns apart): at
+  least 40 drawn bars, one place each, one width each, the longest 2.5 times the shortest
+  (`tests/code_navigation.rs::under_soft_wrap_the_minimap_draws_one_bar_per_line_not_per_row`; keyed
+  on rows it drew 41 bars of 18 widths).
+- The band says **lines**, not rows: the same 30 lines of 4000 columns banded wrapped against
+  unwrapped cover under 0.6 of the slots (`under_soft_wrap_the_minimap_band_is_as_tall_as_the_lines_in_view`;
+  keyed on rows the two bands were identical).
 - The unwrapped lane is unchanged: one bar per line, one place each
   (`without_wrap_the_minimap_still_draws_one_bar_per_line`).
 - The band starts at the lane's top on an unscrolled editor and moves down it with the scroll, and a
