@@ -524,3 +524,56 @@ fn a_settled_chip_writes_nothing() {
         "BorderColor written while idle"
     );
 }
+
+/// The contract `dark-incorporated/bevy_dark_factory` asked for (#119): its `chrome::chip` can be
+/// gooey's chip plus a host marker, because the node carries `Role::Chip`, the skin's chip arm
+/// styles its fill and frame, and it is named by its words. Held against three skins, as their
+/// test does, so a skin that stops styling a chip fails here and not in the editor.
+#[test]
+fn a_host_can_spawn_gooeys_chip_and_only_add_its_own_marker() {
+    /// A host's own name for the thing, as `chrome::Chip` is bevy_dark_factory's.
+    #[derive(Component)]
+    struct HostChip;
+
+    for skin in [GooeySkin::dark(), GooeySkin::parchment(), GooeySkin::tool()] {
+        let mut app = app_with(skin.clone());
+        app.world_mut()
+            .spawn(screen())
+            .with_children(|screen| {
+                screen.spawn((chip("armour"), HostChip));
+            });
+        settle(&mut app);
+        app.world_mut()
+            .resource::<bevy::a11y::AccessibilityRequested>()
+            .set(true);
+        settle(&mut app);
+        let found = app
+            .world_mut()
+            .query_filtered::<Entity, With<HostChip>>()
+            .single(app.world())
+            .expect("the host's chip");
+        assert_eq!(
+            app.world().get::<Role>(found),
+            Some(&Role::Chip),
+            "the node a host spawns carries the role the skin styles"
+        );
+        let fill = app.world().get::<BackgroundColor>(found).expect("a fill").0;
+        let edge = app.world().get::<BorderColor>(found).expect("a frame");
+        assert_eq!(
+            fill,
+            skin.surface_raised,
+            "{:?}: a chip off is the raised fill",
+            skin.background
+        );
+        assert_ne!(edge.top, Color::NONE, "a chip is a frame all round");
+        // And it is named by its words, not left to the host.
+        let name = app
+            .world()
+            .get::<bevy::a11y::AccessibilityNode>(found)
+            .expect("a node, once a reader asks")
+            .0
+            .label()
+            .map(str::to_owned);
+        assert_eq!(name.as_deref(), Some("armour"), "the words are its name");
+    }
+}
