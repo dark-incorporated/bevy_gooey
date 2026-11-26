@@ -3857,7 +3857,7 @@ marker was inserted on the **pane** (`commands.spawn(pane(..))` returns the oute
 drew at all, and `pane()` was reshaped to spawn its own contents. The still is
 `docs/media/minimap-wrapped.png` (dark and parchment, cropped and joined).
 
-**Checklist.** fmt, clippy `-D warnings`, nextest **1718 passed** (the two new tests included),
+**Checklist.** fmt, clippy `-D warnings`, nextest **1719 passed** (the two new tests included),
 doctests 359, `cargo check --lib`, wasm32, `cargo doc -D warnings` — the gate below. The lane's
 colours and contrast are untouched (#117 holds `minimap_bar` at 3:1 on its lane in every preset).
 
