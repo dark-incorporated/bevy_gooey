@@ -134,6 +134,13 @@ impl RowMap {
         self.wrap = Some(Arc::new(Wrap::build(buffer, &self.fold, cols.max(1))));
     }
 
+    /// The map counted in **lines that show**, not display rows: what the minimap's lane is an
+    /// outline of. A wrapped line is one line here however many rows it takes; the row methods
+    /// above count the rows.
+    pub(crate) fn lines(&self) -> &FoldMap {
+        &self.fold
+    }
+
     /// Whether lines are wrapped into rows.
     pub(crate) fn wraps(&self) -> bool {
         self.wrap.is_some()

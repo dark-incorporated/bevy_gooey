@@ -886,3 +886,85 @@ fn the_minimap_lane_takes_room_beside_the_code_and_its_bars_scale_to_the_file() 
         );
     }
 }
+
+/// #4 of the backlog, found by reading `cols_at`: the minimap slot is a **display row**, not a
+/// line. Under soft wrap one line is several rows, so a lane of 160 slots drew only the first
+/// forty lines of a 120-line prose file — each line four times, as four short segments — and the
+/// band covered four times the text it should. VS Code's minimap is one bar per line ("each line
+/// gets a certain amount of vertical space", 1.43 release notes), wrapped or not: the map
+/// summarizes the file, not the scroll.
+#[test]
+fn under_soft_wrap_the_minimap_draws_one_bar_per_line_not_per_row() {
+    // 120 lines, each longer than the last, every one long enough to break into several rows in an
+    // 800 px editor. The lengths are the handle: a bar keyed on a line is as wide as that line.
+    let text: String = (0..120).map(|i| format!("{}\n", "x".repeat(20 + i))).collect();
+    let mut app = app();
+    let editor = editor_of(&mut app, &text, (CodeMinimap, CodeSoftWrap));
+    settle(&mut app);
+    settle(&mut app);
+    // Wrapping is on: a line number stands only on a line's first row, so there are more text rows
+    // on screen than numbers, and the shortest line already breaks.
+    let texts = shown_by_role(&app, editor, Role::CodeText).len();
+    let numbers = shown_by_role(&app, editor, Role::CodeNumber).len();
+    assert!(
+        texts > numbers,
+        "the editor is wrapped: {texts} text rows of {numbers} line numbers"
+    );
+    let map = rect(&app, shown_by_role(&app, editor, Role::CodeMinimap)[0]);
+    let drawn: Vec<Rect> = shown_by_role(&app, editor, Role::CodeMinimapBar)
+        .into_iter()
+        .filter(|&e| app.world().get::<Node>(e).is_some_and(|n| n.display != Display::None))
+        .map(|e| rect(&app, e))
+        .collect();
+    // All 120 lines fit the lane (a 480 px lane at a 3 px pitch holds 160 slots); a lane keyed on
+    // rows draws the first 160 of 400-odd rows instead, which is the first forty lines.
+    assert!(
+        drawn.len() >= 120,
+        "a lane of 160 slots draws every line: {} bars",
+        drawn.len()
+    );
+    // Every line shows at its own width: the shortest (20 columns) is a fraction of the longest
+    // (139), and the last line's bar is the widest in the lane.
+    let widths: std::collections::BTreeSet<i64> = drawn
+        .iter()
+        .map(|bar| (bar.width() * 100.0).round() as i64)
+        .collect();
+    assert_eq!(
+        widths.len(),
+        drawn.len(),
+        "one bar per line, each its own line's width: {} bars, {} widths",
+        drawn.len(),
+        widths.len()
+    );
+    let widest = drawn.iter().map(|bar| bar.width()).fold(0.0_f32, f32::max);
+    let narrowest = drawn.iter().map(|bar| bar.width()).fold(f32::MAX, f32::min);
+    assert!(
+        widest > narrowest * 4.0,
+        "the line forty characters longer is drawn four times as long: {narrowest} to {widest}"
+    );
+    // Every line has its own place, and every line its own width: four rows of one line would
+    // stack four bars of one width on four places.
+    let tops: std::collections::BTreeSet<i64> =
+        drawn.iter().map(|bar| (bar.min.y * 100.0).round() as i64).collect();
+    assert_eq!(tops.len(), drawn.len(), "one place per bar");
+}
+
+/// The unwrapped editor is unchanged by the fix above: one bar per line, one place each.
+#[test]
+fn without_wrap_the_minimap_still_draws_one_bar_per_line() {
+    let text: String = (0..200).map(|i| format!("let x = {i};\n")).collect();
+    let mut app = app();
+    let editor = editor_of(&mut app, &text, CodeMinimap);
+    settle(&mut app);
+    settle(&mut app);
+    let drawn: Vec<Entity> = shown_by_role(&app, editor, Role::CodeMinimapBar)
+        .into_iter()
+        .filter(|&e| app.world().get::<Node>(e).is_some_and(|n| n.display != Display::None))
+        .collect();
+    assert!(drawn.len() > 100, "the lane is full: {}", drawn.len());
+    let tops: std::collections::BTreeSet<i64> = drawn
+        .iter()
+        .map(|&e| (rect(&app, e).min.y * 100.0).round() as i64)
+        .collect();
+    assert_eq!(tops.len(), drawn.len(), "one place per bar");
+}
