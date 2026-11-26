@@ -1174,11 +1174,17 @@ fn draw_navigation(
     let shown = lines.rows(editor.buffer.len_lines());
     // Where the view is, in the same units: the first display row drawn, mapped to its line's
     // ordinal among the shown ones.
-    let top_line =
-        lines.row_of(fold.line_at(view.first_row)).min(shown.saturating_sub(1));
+    let top_line = lines
+        .row_of(fold.line_at(view.first_row))
+        .min(shown.saturating_sub(1));
     let travel = (shown as f32 * view.line_px - view.area.y).max(1.0);
-    // The band's height is the text in view, in lines; a row taller than the lane still counts.
-    let in_view = (view.area.y / view.line_px).ceil() as usize;
+    // The band's height is the text in view, in lines: the ordinals of the first and the last
+    // display row drawn, so a wrapped line counts once however many rows of it show.
+    let drawn = (view.first_row + view.needed).min(view.rows).max(1);
+    let bottom_line = lines
+        .row_of(fold.line_at((view.first_row + drawn - 1).min(view.rows - 1)))
+        .min(shown.saturating_sub(1));
+    let in_view = bottom_line.saturating_sub(top_line) + 1;
     let first = if shown <= capacity {
         0
     } else {

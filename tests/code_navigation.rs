@@ -898,7 +898,7 @@ fn under_soft_wrap_the_minimap_draws_one_bar_per_line_not_per_row() {
     // 120 lines, each longer than the last, every one long enough to break into several rows in an
     // 800 px editor. The lengths are the handle: a bar keyed on a line is as wide as that line.
     let text: String = (0..120)
-        .map(|i| format!("{}\n", "x".repeat(20 + i)))
+        .map(|i| format!("{}\n", "x".repeat(60 + i * 6)))
         .collect();
     let mut app = app();
     let editor = editor_of(&mut app, &text, (CodeMinimap, CodeSoftWrap));
@@ -928,8 +928,8 @@ fn under_soft_wrap_the_minimap_draws_one_bar_per_line_not_per_row() {
         "a lane of 160 slots draws every line: {} bars",
         drawn.len()
     );
-    // Every line shows at its own width: the shortest (20 columns) is a fraction of the longest
-    // (139), and the last line's bar is the widest in the lane.
+    // Every line shows at its own width: the shortest is a fraction of the longest, and the last
+    // line's bar is the widest in the lane.
     let widths: std::collections::BTreeSet<i64> = drawn
         .iter()
         .map(|bar| (bar.width() * 100.0).round() as i64)
@@ -945,7 +945,7 @@ fn under_soft_wrap_the_minimap_draws_one_bar_per_line_not_per_row() {
     let narrowest = drawn.iter().map(|bar| bar.width()).fold(f32::MAX, f32::min);
     assert!(
         widest > narrowest * 4.0,
-        "the line forty characters longer is drawn four times as long: {narrowest} to {widest}"
+        "the longest line is drawn many times the shortest: {narrowest} to {widest}"
     );
     // Every line has its own place, and every line its own width: four rows of one line would
     // stack four bars of one width on four places.
@@ -954,6 +954,22 @@ fn under_soft_wrap_the_minimap_draws_one_bar_per_line_not_per_row() {
         .map(|bar| (bar.min.y * 100.0).round() as i64)
         .collect();
     assert_eq!(tops.len(), drawn.len(), "one place per bar");
+    // The band says how much of the file the view holds, in lines: the rows on screen cover fewer
+    // lines than rows, so a band keyed on rows would claim every row's height, and at a 3 px pitch
+    // it would be taller than the text it stands for.
+    let band = rect(&app, shown_by_role(&app, editor, Role::CodeMinimapBand)[0]);
+    let bars_in_band = drawn
+        .iter()
+        .filter(|bar| bar.min.y >= band.min.y - 0.5 && bar.max.y <= band.max.y + 0.5)
+        .count();
+    // Every line is many rows, so the rows on screen are a handful of lines: a band keyed on rows
+    // wraps the whole file and covers a fifth of it.
+    assert!(
+        bars_in_band > 0 && bars_in_band <= numbers + 1,
+        "the band covers {bars_in_band} lines of the {numbers} numbered, not the {texts} rows \
+         on screen (h={})",
+        band.height()
+    );
 }
 
 /// The unwrapped editor is unchanged by the fix above: one bar per line, one place each.

@@ -15,9 +15,9 @@
 //! `GOOEY_MINIMAP=1` puts a long script in the right pane with `CodeMinimap` on it: a file opened
 //! for reading, whose bars and band are drawn on its first frame with no input at all (#117).
 //!
-//! `GOOEY_WRAPPED_MINIMAP=1` turns on both `CodeSoftWrap` and `CodeMinimap` in the left pane: the
-//! lane draws one bar per line rather than one per display row, so the wrapped page's outline is
-//! not four times the file's length.
+//! `GOOEY_WRAPPED_MINIMAP=1` turns on both `CodeSoftWrap` and `CodeMinimap` in the left pane, over
+//! the long script, so the lane can be seen drawing **one bar per line** where the pane draws
+//! thousands of rows: the file's outline does not lengthen when the window narrows.
 
 use bevy::prelude::*;
 use bevy::render::view::screenshot::{Screenshot, save_to_disk};
@@ -99,23 +99,15 @@ fn main() {
 const PAGE: &str = "# Orchard notes\n\nFrost took the early blossom on the **north rows**, but the late varieties are untouched, and the hives came through the cold snap with `three` colonies lost out of forty.\n\n- Prune the *Bramley* before the sap rises\n- Order grafting wax from [the supplier](https://example.com/wax)\n\n> Wrap what you read, not what you write.\n\n```toml\nrows = 12\n```\nSee [the plan](plan.md) for the rest.";
 
 /// One half of the screen: a titled panel around an editor.
-fn pane(title: &'static str, editor: impl Bundle) -> impl Bundle {
-    (
-        Node {
-            width: Val::Percent(50.0),
-            height: Val::Percent(100.0),
-            flex_direction: FlexDirection::Column,
-            ..default()
-        },
-        children![(
-            panel(),
-            Sizing {
-                height: Some(Extent::Percent(100.0)),
-                ..default()
-            },
-            children![heading(title), editor]
-        )],
-    )
+/// A pane's outer column; its contents are spawned by the caller, so an editor's own markers can
+/// go on the editor and not on the column around it.
+fn pane() -> impl Bundle {
+    (Node {
+        width: Val::Percent(50.0),
+        height: Val::Percent(100.0),
+        flex_direction: FlexDirection::Column,
+        ..default()
+    },)
 }
 
 /// A file long enough to need the minimap: 300 lines of a level script.
@@ -137,32 +129,55 @@ fn setup(mut commands: Commands) {
     // A wrapped pane can carry the lane too: it is an outline of the file, so its length does not
     // follow the wrap (one bar per line, `docs/research/minimap-wrap.md`).
     let wrapped_lane = std::env::var("GOOEY_WRAPPED_MINIMAP").is_ok();
-    let mut wrapped = commands.spawn(pane(
-        if wrapped_lane {
-            "Wrapped, as Markdown, with a minimap"
-        } else {
-            "Wrapped, as Markdown"
-        },
-        (code_editor("Notes", PAGE), CodeSoftWrap, CodeMarkdown),
-    ));
-    if wrapped_lane {
-        wrapped.insert(CodeMinimap);
-    }
-    let wrapped = wrapped.id();
+    let wrapped_title = if wrapped_lane {
+        "Wrapped script, with a minimap"
+    } else {
+        "Wrapped, as Markdown"
+    };
+    let wrapped = commands.spawn(pane()).id();
+    commands.entity(wrapped).with_children(|pane| {
+        pane.spawn((
+            panel(),
+            Sizing {
+                height: Some(Extent::Percent(100.0)),
+                ..default()
+            },
+        ))
+        .with_children(|body| {
+            body.spawn(heading(wrapped_title));
+            if wrapped_lane {
+                body.spawn((code_editor("Script", script()), CodeSoftWrap, CodeMinimap));
+            } else {
+                body.spawn((code_editor("Notes", PAGE), CodeSoftWrap, CodeMarkdown));
+            }
+        });
+    });
     // The right pane is a file opened for reading in the capture mode: no focus, no keystroke, so
     // its minimap has to be whole on the frame it is first drawn (#117).
-    let right = if std::env::var("GOOEY_MINIMAP").is_ok() {
-        commands
-            .spawn(pane(
-                "Script, with a minimap",
-                (code_editor("Script", script()), CodeMinimap),
-            ))
-            .id()
+    let right_lane = std::env::var("GOOEY_MINIMAP").is_ok();
+    let right_title: &str = if right_lane {
+        "Script, with a minimap"
     } else {
-        commands
-            .spawn(pane("Plain", code_editor("Notes", PAGE)))
-            .id()
+        "Plain"
     };
+    let right = commands.spawn(pane()).id();
+    commands.entity(right).with_children(|pane| {
+        pane.spawn((
+            panel(),
+            Sizing {
+                height: Some(Extent::Percent(100.0)),
+                ..default()
+            },
+        ))
+        .with_children(|body| {
+            body.spawn(heading(right_title));
+            if right_lane {
+                body.spawn((code_editor("Script", script()), CodeMinimap));
+            } else {
+                body.spawn(code_editor("Notes", PAGE));
+            }
+        });
+    });
     commands
         .spawn(screen())
         .insert(Node {
