@@ -3857,6 +3857,12 @@ marker was inserted on the **pane** (`commands.spawn(pane(..))` returns the oute
 drew at all, and `pane()` was reshaped to spawn its own contents. The still is
 `docs/media/minimap-wrapped.png` (dark and parchment, cropped and joined).
 
+**Release.** 0.61.0: `Cargo.toml`, a `CHANGELOG` section, the README compat row, and the version
+column of the new media row. `cargo publish --dry-run` clean (it needs `CARGO_INCREMENTAL=0` and
+`RUSTC_WRAPPER=` or sccache refuses). `cargo publish` **403 Forbidden, authentication failed** — the
+same as every release since 0.51.9, so 0.51.9 through 0.61.0 are pending the owner's new token. Not
+retried; the next pass's audit says so.
+
 **Checklist.** fmt, clippy `-D warnings`, nextest **1719 passed** (the two new tests included),
 doctests 359, `cargo check --lib`, wasm32, `cargo doc -D warnings` — the gate below. The lane's
 colours and contrast are untouched (#117 holds `minimap_bar` at 3:1 on its lane in every preset).
