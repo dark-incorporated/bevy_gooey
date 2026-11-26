@@ -20809,3 +20809,204 @@ pass	seq	phase	kind	category	tool	start	seconds	detail
 353	726	research	model	model		2026-11-25T23:46:58Z	1.2	
 353	727	research	tool	shell	bash	2026-11-25T23:46:59Z	0.0	cd /home/ladvien/bevy_gooey_loop && rm -rf /tmp/g110 && df -h . | tail -1 && git worktree list && git status --short && echo CLEAN
 353	728	research	model	model		2026-11-25T23:46:59Z	2.6	
+354	1	orient	model	model		2026-11-25T23:47:27Z	2.0	
+354	2	orient	tool	phase mark	bash	2026-11-25T23:47:29Z	0.2	python3 ~/.local/share/wiggum/steps.py mark orient; echo ---; git status --short | head -20; echo ---BRANCH; git branch --show-current; echo ---HEAD; git log --
+354	3	orient	tool	git	bash	2026-11-25T23:47:29Z	0.7	cd /home/ladvien/bevy_gooey_loop && git fetch -q origin loop-stats 2>&1 | head -3; git show origin/loop-stats:steps/bevy_gooey_loop-audit.tsv 2>/dev/null | tail
+354	4	orient	model	model		2026-11-25T23:47:30Z	1.8	
+354	5	orient	tool	shell	bash	2026-11-25T23:47:32Z	0.0	cd /home/ladvien/bevy_gooey_loop && tail -120 docs/loop-log.md
+354	6	orient	tool	github	bash	2026-11-25T23:47:32Z	0.6	cd /home/ladvien/bevy_gooey_loop && gh issue list --repo bevy-coven/bevy_gooey --state open --limit 100 --json number,title,labels,createdAt --jq '.[] | "#\(.nu
+354	7	orient	model	model		2026-11-25T23:47:33Z	2.0	
+354	8	orient	tool	github	bash	2026-11-25T23:47:35Z	1.5	cd /home/ladvien/bevy_gooey_loop && for n in 118 119 120; do echo "=== #$n"; gh issue view $n --repo bevy-coven/bevy_gooey --json number,title,body,labels,creat
+354	9	orient	tool	github	bash	2026-11-25T23:47:35Z	1.5	cd /home/ladvien/bevy_gooey_loop && git branch --list 'wiggum/parked-*' | tail; git log --all --oneline -n 5 --grep='parked'; echo ---; gh issue list -R bevy-co
+354	10	orient	model	model		2026-11-25T23:47:36Z	2.9	
+354	11	orient	tool	shell	bash	2026-11-25T23:47:39Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "Role::Chip\|ToggleChip\|fn chip\b\|fn toggle_chip" src/widgets.rs src/skin.rs src/access.rs | head -30; echo ===; g
+354	12	orient	tool	shell	bash	2026-11-25T23:47:39Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -rn "GooeyFonts::body\|fonts.body\|look.fonts" src/skin.rs | head -20; echo ===; sed -n '1600,1640p' src/skin.rs
+354	13	orient	model	model		2026-11-25T23:47:39Z	4.6	
+354	14	orient	tool	shell	bash	2026-11-25T23:47:44Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '5770,5850p' src/skin.rs
+354	15	orient	tool	shell	bash	2026-11-25T23:47:44Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -rn "list_row\|quiet_list_row" src/ tests/ --include=*.rs | head -20; echo ===FONTS; grep -n "pub struct GooeyFonts" -A
+354	16	orient	model	model		2026-11-25T23:47:44Z	3.1	
+354	17	orient	tool	shell	bash	2026-11-25T23:47:47Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '4340,4460p' src/widgets.rs
+354	18	orient	tool	git	bash	2026-11-25T23:47:47Z	0.1	cd /home/ladvien/bevy_gooey_loop && git log --oneline -3 8647648 -- src/widgets.rs; echo ===; git show 8647648:src/widgets.rs | grep -n "Role::Chip\b\|pub fn ch
+354	19	orient	model	model		2026-11-25T23:47:47Z	1.7	
+354	20	orient	tool	shell	bash	2026-11-25T23:47:49Z	0.1	cd /home/ladvien/bevy_gooey_loop && for c in 3cdf4a4 3f1703e; do echo -n "$c ancestor-of-8647648: "; git merge-base --is-ancestor $c 8647648 && echo yes || echo
+354	21	orient	tool	shell	bash	2026-11-25T23:47:49Z	0.1	cd /home/ladvien/bevy_gooey_loop && sed -n '4480,4560p' src/widgets.rs; echo ===SKINROW; sed -n '2260,2280p' src/skin.rs; echo ===TESTS; sed -n '1080,1145p' tes
+354	22	orient	model	model		2026-11-25T23:47:49Z	6.8	
+354	23	orient	tool	shell	bash	2026-11-25T23:47:55Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '5840,5880p' src/skin.rs; echo ===BUTTONTEXT; grep -n "Role::ButtonText" -A 25 src/skin.rs | sed -n '1,60p'
+354	24	orient	tool	shell	bash	2026-11-25T23:47:55Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '3400,3430p' src/skin.rs; echo ===FILL; sed -n '4445,4475p' src/skin.rs
+354	25	orient	model	model		2026-11-25T23:47:55Z	3.4	
+354	26	orient	tool	shell	bash	2026-11-25T23:47:59Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '460,500p' src/lib.rs; echo ===CHIP_EXPORT; grep -n "chip" src/lib.rs
+354	27	orient	tool	shell	bash	2026-11-25T23:47:59Z	0.1	cd /home/ladvien/bevy_gooey_loop && grep -rn "chip(" docs/guide/*.md README.md | head -20; echo ===; ls docs/guide/ | head -40
+354	28	orient	model	model		2026-11-25T23:47:59Z	9.4	
+354	29	orient	tool	shell	bash	2026-11-25T23:48:08Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "TextFont\|\.font\b\|font =" src/skin.rs | head -30; echo ===; grep -n "struct Styled\|type StateQuery\|struct State
+354	30	orient	tool	git	bash	2026-11-25T23:48:08Z	0.0	cd /home/ladvien/bevy_gooey_loop && git show 8647648:src/lib.rs | grep -n "list_row\|chip" ; echo ===8647648-chip-role; git show 8647648:src/skin.rs | grep -n "
+354	31	orient	model	model		2026-11-25T23:48:08Z	8.0	
+354	32	orient	tool	shell	bash	2026-11-25T23:48:16Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '5960,6060p' src/skin.rs
+354	33	orient	tool	shell	bash	2026-11-25T23:48:16Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '2300,2360p' src/skin.rs; echo ===STATEQ; sed -n '2580,2680p' src/skin.rs
+354	34	orient	model	model		2026-11-25T23:48:16Z	27.7	
+354	35	orient	tool	shell	bash	2026-11-25T23:48:44Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "pub enum FontSource\|pub struct FontSource" -A 30 src/skin.rs | head -50; echo ===REMOVALS; grep -n "type Removals"
+354	36	orient	tool	shell	bash	2026-11-25T23:48:44Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '2680,2800p' src/skin.rs
+354	37	orient	model	model		2026-11-25T23:48:44Z	16.1	
+354	38	orient	tool	shell	bash	2026-11-25T23:49:00Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -rn "FontSource" src/*.rs | head -10; echo ===; grep -rn "pub struct FontSource\|impl FontSource\|enum FontSource" -A 2
+354	39	orient	tool	shell	bash	2026-11-25T23:49:00Z	0.0	cd /home/ladvien/bevy_gooey_loop && head -60 docs/research/corpus.md; echo ...; grep -n "typograph\|font\|face\|typeface" docs/research/corpus.md
+354	40	orient	model	model		2026-11-25T23:49:00Z	3.0	
+354	41	orient	tool	git	bash	2026-11-25T23:49:03Z	0.0	cd /home/ladvien/bevy_gooey_loop && git tag --list 'v0.5*' | sort -V | tail -12; echo ===; grep -n "chip\|list_row" CHANGELOG.md | head -20
+354	42	orient	tool	shell	bash	2026-11-25T23:49:03Z	0.0	cd /home/ladvien/bevy_gooey_loop && for t in v0.51.8 v0.54.0 v0.59.0; do echo "=== $t"; git show $t:src/widgets.rs 2>/dev/null | grep -c "pub fn chip\b\|pub fn 
+354	43	orient	model	model		2026-11-25T23:49:03Z	19.8	
+354	44	orient	tool	shell	bash	2026-11-25T23:49:23Z	0.0	cd /home/ladvien/bevy_gooey_loop && echo "=== Role::Chip in enum at 8647648:"; git show 8647648:src/skin.rs | grep -n " Chip,\|ChipText," | head; echo "=== acce
+354	45	orient	tool	shell	bash	2026-11-25T23:49:23Z	0.0	ls ~/.cargo/registry/src/index.crates.io-*/bevy_text-0.20.0/src/ 2>/dev/null | head; echo ===; grep -rn "pub enum FontSource" -A 20 ~/.cargo/registry/src/index.
+354	46	orient	model	model		2026-11-25T23:49:23Z	18.1	
+354	47	orient	tool	shell	bash	2026-11-25T23:49:41Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -rn "\.font = \|font: font\|fonts.body\|fonts.mono\|fonts.heading" src/*.rs | grep -v "^src/skin.rs" | head -20; echo =
+354	48	orient	tool	shell	bash	2026-11-25T23:49:41Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '2403,2470p' src/skin.rs
+354	49	orient	model	model		2026-11-25T23:49:41Z	22.2	
+354	50	orient	tool	shell	bash	2026-11-25T23:50:03Z	0.1	cd /home/ladvien/bevy_gooey_loop && grep -n "fn font_of" -A 30 src/markdown.rs src/markdown_view.rs 2>/dev/null | head -60; echo ===; grep -rn "font_of" src/*.r
+354	51	orient	tool	shell	bash	2026-11-25T23:50:03Z	0.1	cd /home/ladvien/bevy_gooey_loop && grep -n "for (entity" -B 5 -A 40 src/skin.rs | sed -n '1,80p'
+354	52	orient	model	model		2026-11-25T23:50:04Z	15.7	
+354	53	orient	tool	shell	bash	2026-11-25T23:50:19Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '284,300p' ~/.cargo/registry/src/index.crates.io-*/bevy_text-0.20.0/src/text.rs; echo ===DERIVE; sed -n '270,290p' ~/
+354	54	orient	tool	shell	bash	2026-11-25T23:50:19Z	11.5	cd /home/ladvien/bevy_gooey_loop && (hs status 2>&1 | head -20); echo ===; which hs hs-mcp 2>/dev/null
+354	55	orient	model	model		2026-11-25T23:50:31Z	20.4	
+354	56	orient	tool	shell	bash	2026-11-25T23:50:51Z	0.3	cd /home/ladvien/bevy_gooey_loop && ls assets/ 2>/dev/null | head; find . -name '*.ttf' -o -name '*.otf' | grep -v target | head; echo ===GFONTS; grep -rn "Gooe
+354	57	orient	tool	homestill	bash	2026-11-25T23:50:51Z	2.2	cd /home/ladvien/bevy_gooey_loop && hs distill search "game UI typography typeface legibility interface font choice" --output json 2>&1 | head -60
+354	58	orient	model	model		2026-11-25T23:50:53Z	25.7	
+354	59	orient	tool	shell	bash	2026-11-25T23:51:19Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '1,60p' Cargo.toml; echo ===; grep -n "parley" ~/.cargo/registry/src/index.crates.io-*/bevy_text-0.20.0/Cargo.toml -A
+354	60	orient	tool	homestill	bash	2026-11-25T23:51:19Z	1.3	cd /home/ladvien/bevy_gooey_loop && hs distill search "interface typography: distinguishing code from prose, monospace for identifiers, typeface hierarchy in UI
+354	61	orient	model	model		2026-11-25T23:51:20Z	22.9	
+354	62	orient	tool	shell	bash	2026-11-25T23:51:43Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '2856,3010p' src/skin.rs
+354	63	orient	model	model		2026-11-25T23:51:43Z	19.3	
+354	64	orient	tool	shell	bash	2026-11-25T23:52:03Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '300,340p' ~/.cargo/registry/src/index.crates.io-*/bevy_text-0.20.0/src/text.rs; echo ===BEVY_EXPORTS; grep -n "FontS
+354	65	orient	tool	shell	bash	2026-11-25T23:52:03Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "fn problems" -A 80 src/skin.rs | grep -n "text on\|Contrast\|pairs\|surface_raised" | head -20; echo ===PAIRS; grep
+354	66	orient	model	model		2026-11-25T23:52:03Z	12.1	
+354	67	orient	tool	shell	bash	2026-11-25T23:52:15Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "styled.get\|styled.iter\|for (entity" src/skin.rs | sed -n '1,20p'; echo ===; sed -n '3060,3140p' src/skin.rs
+354	68	orient	tool	shell	bash	2026-11-25T23:52:15Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '3140,3260p' src/skin.rs
+354	69	orient	model	model		2026-11-25T23:52:15Z	7.7	
+354	70	orient	tool	shell	bash	2026-11-25T23:52:22Z	0.0	cd /home/ladvien/bevy_gooey_loop && ls docs/research/ | tr '\n' ' '; echo; echo ===VERSIONS; for c in 3cdf4a4 3f1703e; do echo -n "$c first tag: "; git tag --co
+354	71	orient	tool	shell	bash	2026-11-25T23:52:22Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -rn "face\|typeface\|monospace" docs/research/gooey.md docs/guide/host-api.md | head -20; echo ===README; grep -n "Gooe
+354	72	orient	model	model		2026-11-25T23:52:22Z	18.1	
+354	73	orient	tool	git	bash	2026-11-25T23:52:40Z	0.1	cd /home/ladvien/bevy_gooey_loop && git show --stat b0008a7 | head -20; echo ===TESTS; grep -n "^fn \|^#\[test\]" tests/chip.rs | head -30; echo ===LISTROWCOMMI
+354	74	orient	tool	shell	bash	2026-11-25T23:52:40Z	0.1	cd /home/ladvien/bevy_gooey_loop && grep -rn "GooeyFonts" examples/*.rs | head; echo ===ASSETS; ls examples/ | head -40; echo ===; grep -rn "asset_server\|load(
+354	75	orient	model	model		2026-11-25T23:52:41Z	17.3	
+354	76	orient	tool	shell	bash	2026-11-25T23:52:58Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -rn "GooeyFonts" tests/*.rs | head -10; echo ===FROM; sed -n '340,420p' ~/.cargo/registry/src/index.crates.io-*/bevy_te
+354	77	orient	tool	shell	bash	2026-11-25T23:52:58Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -rn "impl.*From.*FontSource\|From<Handle<Font>>" ~/.cargo/registry/src/index.crates.io-*/bevy_text-0.20.0/src/text.rs |
+354	78	orient	model	model		2026-11-25T23:52:58Z	12.5	
+354	79	orient	tool	shell	bash	2026-11-25T23:53:10Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "pub struct Handle<" -B 12 -A 6 ~/.cargo/registry/src/index.crates.io-*/bevy_asset-0.20.0/src/handle.rs | head -40; 
+354	80	orient	tool	shell	bash	2026-11-25T23:53:10Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "fn restyle" -A 30 src/skin.rs | head -45; echo ===USES; grep -n "state\.\|state_of(" src/skin.rs | wc -l
+354	81	orient	model	model		2026-11-25T23:53:11Z	20.9	
+354	82	orient	tool	shell	bash	2026-11-25T23:53:31Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "impl Default for GooeyFonts" -A 15 src/skin.rs; echo ===HANDLEAPI; grep -n "pub fn weak_from_uuid\|pub fn default\|
+354	83	orient	tool	shell	bash	2026-11-25T23:53:31Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -rn "Handle::<Font>\|Handle<Font>" tests/*.rs examples/*.rs | head -10
+354	84	orient	model	model		2026-11-25T23:53:31Z	1.2	
+354	85	orient	tool	shell	bash	2026-11-25T23:53:33Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '1660,1700p' src/skin.rs; echo ===; grep -n "GooeyFonts" -A 6 src/skin.rs | sed -n '1,40p'
+354	86	orient	model	model		2026-11-25T23:53:33Z	47.8	
+354	87	orient	tool	shell	bash	2026-11-25T23:54:20Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '/\[dev-dependencies\]/,/^\[/p' Cargo.toml; echo ===FONTS; ls /usr/share/fonts/TTF/ 2>/dev/null | head -20; fc-list 2
+354	88	orient	tool	shell	bash	2026-11-25T23:54:20Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -rn "Role::Markdown" src/markdown_view.rs | head -20; echo ===MEDIA; head -30 docs/media/README.md
+354	89	orient	model	model		2026-11-25T23:54:20Z	14.3	
+354	90	orient	tool	shell	bash	2026-11-25T23:54:35Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -rn "all_tuples" ~/.cargo/registry/src/index.crates.io-*/bevy_ecs-0.20.1/src/query/fetch.rs | head -5; grep -rn "macro_
+354	91	orient	tool	shell	bash	2026-11-25T23:54:35Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "impl_tuple_query_data\|trait QueryData" -A 6 ~/.cargo/registry/src/index.crates.io-*/bevy_ecs-0.20.1/src/query/fetc
+354	92	orient	model	model		2026-11-25T23:54:35Z	19.3	
+354	93	orient	tool	shell	bash	2026-11-25T23:54:54Z	0.0	date -u; cd /home/ladvien/bevy_gooey_loop && git diff main b0008a7 --stat; git diff main b0008a7 -- src/skin.rs src/code_overlay.rs examples/prose.rs | head -80
+354	94	orient	tool	shell	bash	2026-11-25T23:54:54Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '1,60p' examples/kit.rs
+354	95	orient	model	model		2026-11-25T23:54:54Z	22.0	
+354	96	orient	tool	shell	bash	2026-11-25T23:55:16Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "struct State {" -B 4 src/skin.rs; echo ===TESTS_HELPER; grep -rn "weak_from_uuid\|Handle::<Font>" tests/ | head; gr
+354	97	orient	tool	shell	bash	2026-11-25T23:55:16Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -rn "fn headless" -A 25 tests/chip.rs | head -40
+354	98	orient	model	model		2026-11-25T23:55:16Z	1.0	
+354	99	orient	tool	shell	bash	2026-11-25T23:55:17Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '1,80p' tests/chip.rs
+354	100	orient	model	model		2026-11-25T23:55:17Z	19.8	
+354	101	research	tool	phase mark	bash	2026-11-25T23:55:37Z	0.1	cd /home/ladvien/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark research; grep -n "system_font_discovery\|default_font" ~/.cargo/registry/src/in
+354	102	research	tool	homestill	bash	2026-11-25T23:55:37Z	0.9	cd /home/ladvien/bevy_gooey_loop && hs distill search "monospaced typeface code identifiers proportional text interface typography hierarchy" --output json 2>/d
+354	103	research	model	model		2026-11-25T23:55:38Z	16.5	
+354	104	research	tool	homestill	bash	2026-11-25T23:55:54Z	0.4	cd /home/ladvien/bevy_gooey_loop && hs distill search "choose the font readability letter spacing prioritizing readability interface" --output json 2>/dev/null 
+354	105	research	tool	homestill	bash	2026-11-25T23:55:54Z	0.4	cd /home/ladvien/bevy_gooey_loop && hs distill search "games user interface fonts monospace proportional identifiers code reader scanning" --output json 2>/dev/
+354	106	research	model	model		2026-11-25T23:55:55Z	10.6	
+354	107	research	tool	shell	bash	2026-11-25T23:56:05Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "pub fn \|impl<A: Asset> Handle<A>" ~/.cargo/registry/src/index.crates.io-*/bevy_asset-0.20.0/src/handle.rs | head -
+354	108	research	tool	shell	bash	2026-11-25T23:56:05Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -rn "Role::MarkdownCode\b" -A 4 src/markdown_view.rs | head -20; echo ===CODEWORD; sed -n '500,540p' src/markdown_view.
+354	109	research	model	model		2026-11-25T23:56:05Z	29.4	
+354	110	research	tool	shell	bash	2026-11-25T23:56:35Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '1,60p' tests/skin.rs; echo ===; grep -n "^fn \|^#\[test\]" tests/skin.rs | tail -25
+354	111	research	tool	shell	bash	2026-11-25T23:56:35Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -rn "Role::CodeText\|PromptKey" tests/*.rs | head -8; echo ===TESTS_LIB; sed -n '1,80p' tests/all.rs
+354	112	research	model	model		2026-11-25T23:56:35Z	21.1	
+354	113	research	tool	homestill	bash	2026-11-25T23:56:56Z	0.4	cd /home/ladvien/bevy_gooey_loop && hs distill search "letter spacing readability choosing the font clear direct simple" --output json 2>/dev/null | jq -r '.[0:
+354	114	research	tool	homestill	bash	2026-11-25T23:56:56Z	0.5	cd /home/ladvien/bevy_gooey_loop && hs distill search "GDC talk UI text rendering font choice shipped game interface scale legibility" --output json 2>/dev/null
+354	115	research	model	model		2026-11-25T23:56:56Z	1.5	
+354	116	research	tool	homestill	bash	2026-11-25T23:56:58Z	0.3	cd /home/ladvien/bevy_gooey_loop && hs distill search "font family serif sans-serif monospace recommendation interface text" --output json 2>/dev/null | jq -r '
+354	117	research	tool	homestill	bash	2026-11-25T23:56:58Z	0.3	cd /home/ladvien/bevy_gooey_loop && hs distill search "code editor monospace font reading code comments strings syntax colors typography" --output json 2>/dev/n
+354	118	research	model	model		2026-11-25T23:56:58Z	29.0	
+354	119	research	tool	shell	bash	2026-11-25T23:57:27Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '2870,2900p' ~/.cargo/registry/src/index.crates.io-*/bevy-0.20.0/Cargo.toml; echo ===OR; grep -n "pub struct Or" -B 6
+354	120	research	tool	shell	bash	2026-11-25T23:57:27Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "impl_tuple_system_param\|all_tuples!" -A 6 ~/.cargo/registry/src/index.crates.io-*/bevy_ecs-0.20.1/src/system/syste
+354	121	research	model	model		2026-11-25T23:57:27Z	18.3	
+354	122	research	tool	shell	bash	2026-11-25T23:57:46Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '1,80p' examples/prose.rs; echo ===; grep -n "mono\|CodeText\|TextFace\|GooeyFonts" examples/prose.rs | head
+354	123	research	tool	shell	bash	2026-11-25T23:57:46Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "CodeSpan\|Role::CodeText\|Face::Code" src/markdown_view.rs | head -20; echo ===INLINES; sed -n '860,960p' src/markd
+354	124	research	model	model		2026-11-25T23:57:46Z	24.1	
+354	125	research	tool	shell	bash	2026-11-25T23:58:10Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "fn weak_from_uuid\|weak_from_uuid" -A 6 ~/.cargo/registry/src/index.crates.io-*/bevy_asset-0.20.0/src/handle.rs | h
+354	126	research	tool	shell	bash	2026-11-25T23:58:10Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "## " README.md | head -20; echo ===; sed -n '1,40p' README.md
+354	127	research	model	model		2026-11-25T23:58:10Z	18.4	
+354	128	research	tool	shell	bash	2026-11-25T23:58:28Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '/^\[features\]/,/^\[/p' ~/.cargo/registry/src/index.crates.io-*/bevy-0.20.0/Cargo.toml | head -80
+354	129	research	model	model		2026-11-25T23:58:28Z	31.4	
+354	130	research	tool	homestill	bash	2026-11-25T23:59:00Z	0.4	cd /home/ladvien/bevy_gooey_loop && hs distill search "letter spacing choose the font readability educational game HUD buttons" --output json 2>/dev/null | jq -
+354	131	research	tool	shell	bash	2026-11-25T23:59:00Z	1.1	cd /tmp && uv run --no-project --with fonttools python -c "import fontTools; print(fontTools.version)" 2>&1 | tail -2; fc-list 2>/dev/null | grep -iE "noto sans
+354	132	research	model	model		2026-11-25T23:59:01Z	19.4	
+354	133	research	tool	shell	bash	2026-11-25T23:59:20Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "icon_size\|presence\b\|tone\b" src/skin.rs | sed -n '1,40p'
+354	134	research	tool	shell	bash	2026-11-25T23:59:20Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '3284,3340p' src/skin.rs; echo ...; grep -n " tone\b\| icon_size\| presence\|icon_size\.\|presence\." src/skin.rs | h
+354	135	research	model	model		2026-11-25T23:59:20Z	23.4	
+354	136	research	tool	homestill	bash	2026-11-25T23:59:43Z	0.4	cd /home/ladvien/bevy_gooey_loop && hs distill search "HUD legibility font choice shipped game interface readability player testing studio" --output json 2>/dev
+354	137	research	tool	homestill	bash	2026-11-25T23:59:43Z	0.4	cd /home/ladvien/bevy_gooey_loop && ls docs/research/ | grep -i "face\|font\|typograph\|text"; echo ===; hs distill search "sans-serif versus monospace for user
+354	138	research	model	model		2026-11-25T23:59:44Z	16.6	
+354	139	research	tool	shell	bash	2026-11-26T00:00:01Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '160,230p' ~/.cargo/registry/src/index.crates.io-*/bevy_asset-0.20.0/src/handle.rs; echo ===FROMBYTES; grep -n "pub f
+354	140	research	tool	shell	bash	2026-11-26T00:00:01Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -rn "pub struct WeakHandle\|impl<A: Asset> Handle<A>" -A 4 ~/.cargo/registry/src/index.crates.io-*/bevy_asset-0.20.0/sr
+354	141	research	model	model		2026-11-26T00:00:01Z	21.1	
+354	142	research	tool	shell	bash	2026-11-26T00:00:22Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "fn names\|const names" -A 20 src/access.rs | head -40; echo ===NAMES; grep -n "FillText\|CountText" src/access.rs
+354	143	research	tool	shell	bash	2026-11-26T00:00:22Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '120,168p' ~/.cargo/registry/src/index.crates.io-*/bevy_asset-0.20.0/src/handle.rs; echo ===HOSTKNOBS; sed -n '1,50p'
+354	144	research	model	model		2026-11-26T00:00:22Z	23.4	
+354	145	research	tool	shell	bash	2026-11-26T00:00:45Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '288,340p' tests/chip.rs; echo ===RAILTAG; git tag --contains b2ec63f | sort -V | head -2; git tag --contains 3cdf4a4
+354	146	research	tool	shell	bash	2026-11-26T00:00:45Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "icon_size\|tone\b" src/skin.rs | sed -n '20,60p'; echo ===; sed -n '5380,5470p' src/skin.rs
+354	147	research	model	model		2026-11-26T00:00:45Z	19.2	
+354	148	research	tool	shell	bash	2026-11-26T00:01:04Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "is_changed()" src/skin.rs | head; echo ===ALLOW; sed -n '3276,3286p' src/skin.rs; echo ===ACCESSCHIP; sed -n '630,6
+354	149	research	tool	shell	bash	2026-11-26T00:01:04Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "fonts" src/skin.rs | sed -n '1,25p'; echo ===LOOKOF; grep -n "fn look_of" -A 25 src/skin.rs | head -40
+354	150	research	model	model		2026-11-26T00:01:04Z	21.1	
+354	151	research	tool	shell	bash	2026-11-26T00:01:25Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '50,200p' examples/host_knobs.rs; echo ===MEDIA; grep -n "host_knobs\|host-knobs" docs/media/README.md docs/guide/*.m
+354	152	research	tool	shell	bash	2026-11-26T00:01:25Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "file_path" ~/.cargo/registry/src/index.crates.io-*/bevy_asset-0.20.0/src/lib.rs | head -5; ls -la /usr/share/fonts/
+354	153	research	model	model		2026-11-26T00:01:25Z	18.9	
+354	154	research	tool	github	bash	2026-11-26T00:01:44Z	0.6	cd /home/ladvien/bevy_gooey_loop && gh issue list -R bevy-coven/bevy_grimoire --label ui --state open --limit 100 --json number,title,body 2>/dev/null | jq -r '
+354	155	research	tool	homestill	bash	2026-11-26T00:01:44Z	0.6	cd /home/ladvien/bevy_gooey_loop && hs distill search "GDC talk user interface text legibility shipped game menu font" --output json 2>/dev/null | jq -r '.[0:6]
+354	156	research	model	model		2026-11-26T00:01:45Z	9.5	
+354	157	research	tool	shell	bash	2026-11-26T00:01:54Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "text_font" src/skin.rs
+354	158	research	tool	shell	bash	2026-11-26T00:01:54Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "TextFont" src/skin.rs | head -20; echo ===CHIPSTART; grep -n "ChipStartsOn" -A 10 src/widgets.rs | head -20
+354	159	research	model	model		2026-11-26T00:01:54Z	15.7	
+354	160	research	tool	shell	bash	2026-11-26T00:02:10Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '2320,2345p' src/skin.rs; echo ===; sed -n '6012,6032p' src/skin.rs
+354	161	research	tool	shell	bash	2026-11-26T00:02:10Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '2690,2700p' src/skin.rs; echo ===; awk 'NR>=2690 && NR<=2705' src/skin.rs | cat -n
+354	162	research	model	model		2026-11-26T00:02:10Z	3.7	
+354	163	research	model	model		2026-11-26T00:02:14Z	29.6	
+354	164	research	tool	shell	bash	2026-11-26T00:02:43Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '1,80p' src/icon.rs; echo ===USES; grep -n "tone\b\|icon_size\b" src/skin.rs | sed -n '1,12p'; sed -n '5755,5790p' sr
+354	165	research	tool	shell	bash	2026-11-26T00:02:43Z	0.0	cd /home/ladvien/bevy_gooey_loop && cat .gitignore; echo ===ASSETS; ls assets 2>&1 | head -3; echo ===LICENSEFILES; ls LICENSE*
+354	166	research	model	model		2026-11-26T00:02:43Z	2.3	
+354	167	orient	tool	phase mark	bash	2026-11-26T00:02:46Z	0.7	cd /home/ladvien/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark orient; git fetch -q origin loop-stats 2>/dev/null; git show origin/loop-stats:s
+354	168	orient	tool	shell	bash	2026-11-26T00:02:46Z	0.7	cd /home/ladvien/bevy_gooey_loop && tail -60 docs/loop-log.md
+354	169	orient	model	model		2026-11-26T00:02:46Z	2.8	
+354	170	orient	tool	github	bash	2026-11-26T00:02:49Z	1.2	cd /home/ladvien/bevy_gooey_loop && gh issue list -R dark-incorporated/bevy_grimoire --search "gooey face font TextFace" --state all --limit 10 --json number,ti
+354	171	orient	model	model		2026-11-26T00:02:50Z	1.0	
+354	172	orient	tool	github	bash	2026-11-26T00:02:51Z	0.4	cd /home/ladvien/bevy_gooey_loop && gh issue view 118 -R dark-incorporated/bevy_gooey --json number,title,body,labels --jq '(.title, .body)' 2>/dev/null
+354	173	orient	model	model		2026-11-26T00:02:52Z	5.1	
+354	174	orient	tool	shell	bash	2026-11-26T00:02:57Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -rn "TextFace" src/ tests/ examples/ | head; echo ===VERSION; grep -n "^version" Cargo.toml; head -12 CHANGELOG.md; ech
+354	175	orient	tool	shell	bash	2026-11-26T00:02:57Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '2795,2870p' src/skin.rs
+354	176	orient	model	model		2026-11-26T00:02:57Z	2.9	
+354	177	orient	tool	shell	bash	2026-11-26T00:03:00Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '2470,2620p' src/skin.rs
+354	178	orient	tool	shell	bash	2026-11-26T00:03:00Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -rn "enum FontSource" -A 12 ~/.cargo/registry/src/index.crates.io-*/bevy_text-0.20.0/src/font.rs | head -30; echo ===FR
+354	179	orient	model	model		2026-11-26T00:03:00Z	1.0	
+354	180	orient	tool	shell	bash	2026-11-26T00:03:01Z	0.0	grep -rn "pub enum FontSource" -A 20 ~/.cargo/registry/src/index.crates.io-*/bevy_text-0.20.0/src/*.rs | head -40; echo ===FROMHANDLE; grep -rn "FontSource>" ~/
+354	181	orient	model	model		2026-11-26T00:03:01Z	3.5	
+354	182	orient	tool	shell	bash	2026-11-26T00:03:04Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '2604,2680p' src/skin.rs
+354	183	orient	tool	shell	bash	2026-11-26T00:03:04Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '2870,3060p' src/skin.rs
+354	184	orient	model	model		2026-11-26T00:03:04Z	1.3	
+354	185	orient	tool	shell	bash	2026-11-26T00:03:06Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "type Removals" -A 40 src/skin.rs | head -60
+354	186	orient	tool	shell	bash	2026-11-26T00:03:06Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '3060,3200p' src/skin.rs
+354	187	orient	model	model		2026-11-26T00:03:06Z	8.0	
+354	188	orient	tool	shell	bash	2026-11-26T00:03:14Z	0.0	cd /home/ladvien/bevy_gooey_loop && ls docs/guide/; echo ===CORPUS; grep -n -i "typo\|font\|legib" docs/research/corpus.md | head -20; echo ===README; wc -l REA
+354	189	orient	tool	shell	bash	2026-11-26T00:03:14Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '2330,2360p' src/skin.rs; echo ===TAILSTYLED; sed -n '2345,2370p' src/skin.rs
+354	190	orient	model	model		2026-11-26T00:03:14Z	7.5	
+354	191	orient	tool	shell	bash	2026-11-26T00:03:21Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "struct State" -B 4 src/skin.rs; grep -n "State::default()\|: State\b\|State>" src/skin.rs | head -30; echo ===COPYU
+354	192	orient	tool	shell	bash	2026-11-26T00:03:21Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -rn "fn restyle" -A 30 src/skin.rs | sed -n '1,45p'
+354	193	orient	model	model		2026-11-26T00:03:21Z	10.9	
+354	194	orient	tool	shell	bash	2026-11-26T00:03:32Z	0.0	grep -rn "fontdb\|GenericFontFamily::" ~/.cargo/registry/src/index.crates.io-*/bevy_text-0.20.0/src/*.rs ~/.cargo/registry/src/index.crates.io-*/bevy_text-0.20.
+354	195	orient	model	model		2026-11-26T00:03:32Z	25.4	
+354	196	orient	tool	shell	bash	2026-11-26T00:03:58Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '5896,5975p' src/skin.rs; echo ===MONO; grep -n "fonts.mono" src/*.rs | head; echo ===LIBEXPORT; grep -n "pub use ski
+354	197	orient	tool	shell	bash	2026-11-26T00:03:58Z	0.0	cd /home/ladvien/bevy_gooey_loop && ls -S /usr/share/fonts/TTF/*.ttf 2>/dev/null | tail -6; echo ===; ls /usr/share/fonts/; fc-list 2>/dev/null | head -3
+354	198	orient	model	model		2026-11-26T00:03:58Z	9.9	
+354	199	orient	tool	github	bash	2026-11-26T00:04:08Z	0.8	cd /home/ladvien/bevy_gooey_loop && gh issue view 120 -R dark-incorporated/bevy_gooey --json body --jq .body; echo =====119; gh issue view 119 -R dark-incorpora
+354	200	orient	tool	shell	bash	2026-11-26T00:04:08Z	0.8	cd /home/ladvien/bevy_gooey_loop && sed -n '2636,2730p' src/skin.rs
+354	201	orient	model	model		2026-11-26T00:04:08Z	18.5	
