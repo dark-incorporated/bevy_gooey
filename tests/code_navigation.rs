@@ -76,6 +76,39 @@ fn editor_of(app: &mut App, text: &str, extra: impl Bundle) -> Entity {
     editor
 }
 
+/// [`editor_of`] at 150 px wide, so a 60 to 177 column line breaks into five to fifteen rows.
+/// `min_width: 0` is what lets the host's width bind: a flex item's automatic minimum is its
+/// content's, so an editor holding one 400-column line would otherwise be as wide as that line.
+fn narrow_editor_of(app: &mut App, text: &str, extra: impl Bundle) -> Entity {
+    let world = app.world_mut();
+    let editor = world
+        .spawn((
+            code_editor("Script", text),
+            extra,
+            Node {
+                min_width: Val::Px(0.0),
+                ..default()
+            },
+        ))
+        .id();
+    let host = world
+        .spawn(Node {
+            width: Val::Px(150.0),
+            height: Val::Px(480.0),
+            flex_direction: FlexDirection::Column,
+            ..default()
+        })
+        .add_child(editor)
+        .id();
+    world.spawn(screen()).add_child(host);
+    settle(app);
+    app.world_mut()
+        .resource_mut::<InputFocus>()
+        .set(editor, FocusCause::Navigated);
+    settle(app);
+    editor
+}
+
 fn window(app: &mut App) -> Entity {
     app.world_mut()
         .query_filtered::<Entity, With<PrimaryWindow>>()
@@ -897,11 +930,13 @@ fn the_minimap_lane_takes_room_beside_the_code_and_its_bars_scale_to_the_file() 
 fn under_soft_wrap_the_minimap_draws_one_bar_per_line_not_per_row() {
     // 120 lines, each longer than the last, every one long enough to break into several rows in an
     // 800 px editor. The lengths are the handle: a bar keyed on a line is as wide as that line.
-    let text: String = (0..120)
-        .map(|i| format!("{}\n", "x".repeat(20 + i)))
+    // Every line is 60 to 177 columns, all under the lane's 200-column cap, so each keeps its own
+    // width in the lane, three columns apart so two widths never round to one.
+    let text: String = (0..40)
+        .map(|i| format!("{}\n", "x".repeat(60 + i * 3)))
         .collect();
     let mut app = app();
-    let editor = editor_of(&mut app, &text, (CodeMinimap, CodeSoftWrap));
+    let editor = narrow_editor_of(&mut app, &text, (CodeMinimap, CodeSoftWrap));
     settle(&mut app);
     settle(&mut app);
     // Wrapping is on: a line number stands only on a line's first row, so there are more text rows
@@ -921,15 +956,15 @@ fn under_soft_wrap_the_minimap_draws_one_bar_per_line_not_per_row() {
         })
         .map(|e| rect(&app, e))
         .collect();
-    // All 120 lines fit the lane (a 480 px lane at a 3 px pitch holds 160 slots); a lane keyed on
-    // rows draws the first 160 of 400-odd rows instead, which is the first forty lines.
+    // All 40 lines fit the lane (a 480 px lane at a 3 px pitch holds 160 slots); a lane keyed on
+    // rows draws whatever the first screenful covers, so the lines past it are missing.
     assert!(
-        drawn.len() >= 120,
+        drawn.len() >= 40,
         "a lane of 160 slots draws every line: {} bars",
         drawn.len()
     );
-    // Every line shows at its own width: the shortest (20 columns) is a fraction of the longest
-    // (139), and the last line's bar is the widest in the lane.
+    // Every line shows at its own width: the shortest is a fraction of the longest, and the last
+    // line's bar is the widest in the lane.
     let widths: std::collections::BTreeSet<i64> = drawn
         .iter()
         .map(|bar| (bar.width() * 100.0).round() as i64)
@@ -944,8 +979,8 @@ fn under_soft_wrap_the_minimap_draws_one_bar_per_line_not_per_row() {
     let widest = drawn.iter().map(|bar| bar.width()).fold(0.0_f32, f32::max);
     let narrowest = drawn.iter().map(|bar| bar.width()).fold(f32::MAX, f32::min);
     assert!(
-        widest > narrowest * 4.0,
-        "the line forty characters longer is drawn four times as long: {narrowest} to {widest}"
+        widest > narrowest * 2.5,
+        "the longest line is drawn many times the shortest: {narrowest} to {widest}"
     );
     // Every line has its own place, and every line its own width: four rows of one line would
     // stack four bars of one width on four places.
@@ -954,6 +989,49 @@ fn under_soft_wrap_the_minimap_draws_one_bar_per_line_not_per_row() {
         .map(|bar| (bar.min.y * 100.0).round() as i64)
         .collect();
     assert_eq!(tops.len(), drawn.len(), "one place per bar");
+}
+
+/// The band says how much of the **file** the view holds, in lines. A band keyed on display rows
+/// claimed a lane slot per row, so under soft wrap it was several times taller than the text it
+/// stood for: 20 wrapped lines filled a fifth of a 160-slot lane.
+#[test]
+fn under_soft_wrap_the_minimap_band_is_as_tall_as_the_lines_in_view() {
+    // Thirty identical lines of 400 columns: at this width each is many rows, so the rows on
+    // screen are a handful of lines. Identical lengths keep the bars' widths out of it.
+    let text: String = (0..30).map(|_| format!("{}\n", "y".repeat(400))).collect();
+    let mut app = app();
+    let editor = narrow_editor_of(&mut app, &text, (CodeMinimap, CodeSoftWrap));
+    settle(&mut app);
+    settle(&mut app);
+    let cn = app.world().get::<ComputedNode>(editor).unwrap();
+    let area = rect(&app, shown_by_role(&app, editor, Role::CodeArea)[0]);
+    eprintln!("DEBUG editor={:?} area={:?}", cn.size(), (area.width(), area.height()));
+    let texts = shown_by_role(&app, editor, Role::CodeText).len();
+    let numbers = shown_by_role(&app, editor, Role::CodeNumber).len();
+    assert!(
+        texts >= numbers * 3,
+        "each line is several rows: {texts} rows of {numbers} line numbers"
+    );
+    let drawn: Vec<Rect> = shown_by_role(&app, editor, Role::CodeMinimapBar)
+        .into_iter()
+        .filter(|&e| {
+            app.world()
+                .get::<Node>(e)
+                .is_some_and(|n| n.display != Display::None)
+        })
+        .map(|e| rect(&app, e))
+        .collect();
+    let band = rect(&app, shown_by_role(&app, editor, Role::CodeMinimapBand)[0]);
+    let bars_in_band = drawn
+        .iter()
+        .filter(|bar| bar.min.y >= band.min.y - 0.5 && bar.max.y <= band.max.y + 0.5)
+        .count();
+    assert!(
+        bars_in_band > 0 && bars_in_band <= numbers + 1,
+        "the band covers {bars_in_band} lines of the {numbers} numbered, not the {texts} rows on \
+         screen (h={})",
+        band.height()
+    );
 }
 
 /// The unwrapped editor is unchanged by the fix above: one bar per line, one place each.
