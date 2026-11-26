@@ -21800,3 +21800,856 @@ pass	seq	phase	kind	category	tool	start	seconds	detail
 355	788	log	model	model		2026-11-26T01:04:56Z	2.2	
 355	789	log	tool	push gate	bash	2026-11-26T01:04:58Z	4.2	cd /home/ladvien/bevy_gooey_loop; cat >> docs/loop-log.md <<'EOF' **Top 5 backlog.** (1) crates.io token still 403 for 0.51.9 to 0.60.0 (owner must reissue); (2
 355	790	log	model	model		2026-11-26T01:05:03Z	2.4	
+356	1	orient	model	model		2026-11-26T01:05:34Z	2.7	
+356	2	orient	tool	phase mark	bash	2026-11-26T01:05:36Z	1.5	python3 ~/.local/share/wiggum/steps.py mark orient; cd /home/ladvien/bevy_gooey_loop && git status --short | head -20; echo "---BRANCH---"; git branch --show-cu
+356	3	orient	tool	git	bash	2026-11-26T01:05:36Z	1.6	cd /home/ladvien/bevy_gooey_loop && git fetch -q origin loop-stats 2>&1 | head -3; git show origin/loop-stats:steps/bevy_gooey_loop-audit.tsv 2>/dev/null | tail
+356	4	orient	model	model		2026-11-26T01:05:38Z	1.7	
+356	5	orient	tool	shell	bash	2026-11-26T01:05:40Z	0.0	cd /home/ladvien/bevy_gooey_loop && tail -120 docs/loop-log.md
+356	6	orient	tool	github	bash	2026-11-26T01:05:40Z	0.5	cd /home/ladvien/bevy_gooey_loop && gh issue list --repo bevy-coven/bevy_gooey --state open --limit 100 --json number,title,labels,createdAt --jq '.[] | "#\(.nu
+356	7	orient	model	model		2026-11-26T01:05:40Z	1.5	
+356	8	orient	tool	github	bash	2026-11-26T01:05:42Z	0.8	cd /home/ladvien/bevy_gooey_loop && gh issue view 119 --repo bevy-coven/bevy_gooey 2>&1 | head -80
+356	9	orient	tool	github	bash	2026-11-26T01:05:42Z	0.8	cd /home/ladvien/bevy_gooey_loop && gh issue view 120 --repo bevy-coven/bevy_gooey 2>&1 | head -100
+356	10	orient	model	model		2026-11-26T01:05:42Z	4.9	
+356	11	orient	tool	shell	bash	2026-11-26T01:05:47Z	0.2	cd /home/ladvien/bevy_gooey_loop && grep -n "Chip\|ListRow" src/skin.rs | head -40; echo "=== widgets ==="; grep -n "pub fn chip\|pub fn toggle_chip\|pub fn lis
+356	12	orient	tool	github	bash	2026-11-26T01:05:47Z	0.8	cd /home/ladvien/bevy_gooey_loop && git log --oneline -3 --format='%h %ad %s' --date=short --all --grep='chip' ; echo "=== when was rev 8647648 ==="; git log -1
+356	13	orient	model	model		2026-11-26T01:05:48Z	2.3	
+356	14	orient	tool	git	bash	2026-11-26T01:05:50Z	0.0	cd /home/ladvien/bevy_gooey_loop && git log --format='%h %ad %s' --date=iso -3 8647648; echo "=== chip at 0.58.0? ==="; git show 8647648:src/skin.rs | grep -n "
+356	15	orient	tool	git	bash	2026-11-26T01:05:50Z	0.0	cd /home/ladvien/bevy_gooey_loop && git show 678b008 --stat | head -20; echo "=== body ==="; git log -1 --format='%B' 678b008 | head -40
+356	16	orient	model	model		2026-11-26T01:05:50Z	2.7	
+356	17	orient	tool	shell	bash	2026-11-26T01:05:53Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '4380,4560p' src/widgets.rs
+356	18	orient	tool	shell	bash	2026-11-26T01:05:53Z	0.1	cd /home/ladvien/bevy_gooey_loop && grep -n "Chip" src/access.rs | head -20; echo "=== chip tests ==="; ls tests/ | tr '\n' ' '; echo; grep -rn "chip" tests/all
+356	19	orient	model	model		2026-11-26T01:05:53Z	3.4	
+356	20	orient	tool	github	bash	2026-11-26T01:05:57Z	25.2	cd /tmp && rm -rf df_probe && gh repo clone dark-incorporated/bevy_dark_factory /tmp/df_probe -- --depth 1 -q 2>&1 | tail -2; ls /tmp/df_probe 2>/dev/null | hea
+356	21	orient	tool	shell	bash	2026-11-26T01:05:57Z	25.2	cd /home/ladvien/bevy_gooey_loop && sed -n '1,80p' tests/chip.rs
+356	22	orient	model	model		2026-11-26T01:06:22Z	1.1	
+356	23	orient	tool	shell	bash	2026-11-26T01:06:23Z	0.0	cd /tmp/df_probe && grep -rn "fn chip\|fn toggle_chip\|fn row_shape\|held_box" crates/bevy_dark_factory/src/chrome.rs 2>/dev/null | head -20; echo "=== files ==
+356	24	orient	tool	shell	bash	2026-11-26T01:06:23Z	0.0	cd /tmp/df_probe && ls; echo "=== chips ==="; grep -rln "chip" --include=*.rs . | head -10
+356	25	orient	model	model		2026-11-26T01:06:23Z	0.7	
+356	26	orient	tool	shell	bash	2026-11-26T01:06:24Z	0.0	cd /tmp/df_probe && sed -n '3060,3280p' crates/bevy_dark_factory/src/chrome.rs
+356	27	orient	model	model		2026-11-26T01:06:24Z	5.6	
+356	28	orient	tool	git	bash	2026-11-26T01:06:29Z	0.1	cd /home/ladvien/bevy_gooey_loop && git show 8647648:src/widgets.rs | sed -n '4403,4470p'
+356	29	orient	tool	github	bash	2026-11-26T01:06:29Z	1.1	cd /home/ladvien/bevy_gooey_loop && gh issue view 118 --repo bevy-coven/bevy_gooey --json state,comments --jq '.state, (.comments|length)'; echo "=== git log gr
+356	30	orient	model	model		2026-11-26T01:06:30Z	3.4	
+356	31	orient	tool	github	bash	2026-11-26T01:06:34Z	0.9	cd /tmp/df_probe && gh issue view 551 --repo dark-incorporated/bevy_dark_factory 2>&1 | head -60
+356	32	orient	tool	github	bash	2026-11-26T01:06:34Z	1.2	cd /tmp/df_probe && gh issue view 552 --repo dark-incorporated/bevy_dark_factory 2>&1 | head -80
+356	33	orient	model	model		2026-11-26T01:06:35Z	11.6	
+356	34	orient	tool	shell	bash	2026-11-26T01:06:46Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "pub struct StyleDecl" -A 60 src/style_sheet.rs | head -80
+356	35	orient	tool	shell	bash	2026-11-26T01:06:46Z	0.1	cd /home/ladvien/bevy_gooey_loop && grep -n "pub struct Shape" -A 30 src/box_model.rs; echo "=== Ink ==="; grep -n "pub enum Ink" -A 25 src/*.rs | head -40
+356	36	orient	model	model		2026-11-26T01:06:47Z	4.6	
+356	37	orient	tool	github	bash	2026-11-26T01:06:51Z	0.9	cd /home/ladvien/bevy_gooey_loop && gh issue view 118 --repo bevy-coven/bevy_gooey 2>&1 | head -90
+356	38	orient	tool	shell	bash	2026-11-26T01:06:51Z	0.9	cd /home/ladvien/bevy_gooey_loop && ls docs/research/ | tr '\n' ' '; echo; echo "=== text-face note head ==="; head -40 docs/research/text-face.md
+356	39	orient	model	model		2026-11-26T01:06:52Z	15.7	
+356	40	orient	tool	shell	bash	2026-11-26T01:07:08Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '3430,3480p' src/skin.rs; echo "=== border arm ==="; sed -n '3995,4030p' src/skin.rs; echo "=== role node arm ==="; s
+356	41	orient	tool	shell	bash	2026-11-26T01:07:08Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '5840,5900p' src/skin.rs
+356	42	orient	model	model		2026-11-26T01:07:08Z	5.2	
+356	43	orient	tool	shell	bash	2026-11-26T01:07:13Z	0.2	cd /home/ladvien/bevy_gooey_loop && grep -rn "TextFace" src/*.rs | head -40
+356	44	orient	tool	shell	bash	2026-11-26T01:07:13Z	0.2	cd /home/ladvien/bevy_gooey_loop && grep -rn "text_face" tests/all.rs; sed -n '1,120p' tests/text_face.rs
+356	45	orient	model	model		2026-11-26T01:07:13Z	5.7	
+356	46	orient	tool	github	bash	2026-11-26T01:07:19Z	0.9	cd /tmp/df_probe && gh issue view 551 --repo dark-incorporated/bevy_dark_factory --json comments --jq '.comments[] | "--- \(.author.login) \(.createdAt)\n\(.bod
+356	47	orient	tool	github	bash	2026-11-26T01:07:19Z	0.9	cd /tmp/df_probe && gh issue view 552 --repo dark-incorporated/bevy_dark_factory --json comments --jq '.comments[] | "--- \(.author.login) \(.createdAt)\n\(.bod
+356	48	orient	model	model		2026-11-26T01:07:20Z	13.9	
+356	49	orient	tool	shell	bash	2026-11-26T01:07:34Z	0.1	cd /home/ladvien/bevy_gooey_loop && awk '/^## Iteration 105/,/^## Iteration 106/' docs/loop-log.md | head -70
+356	50	orient	tool	shell	bash	2026-11-26T01:07:34Z	0.1	cd /home/ladvien/bevy_gooey_loop && sed -n '600,700p' src/access.rs
+356	51	orient	model	model		2026-11-26T01:07:34Z	7.9	
+356	52	orient	tool	shell	bash	2026-11-26T01:07:42Z	0.1	cd /home/ladvien/bevy_gooey_loop && sed -n '2700,2810p' src/skin.rs
+356	53	orient	tool	shell	bash	2026-11-26T01:07:42Z	0.1	cd /home/ladvien/bevy_gooey_loop && grep -n "struct State\b" -A 80 src/skin.rs | head -100
+356	54	orient	model	model		2026-11-26T01:07:42Z	7.3	
+356	55	orient	tool	shell	bash	2026-11-26T01:07:49Z	0.1	cd /home/ladvien/bevy_gooey_loop && grep -n "fn names\|const names\|names:" src/access.rs | head; echo "=== names body ==="; sed -n '/fn words/,/^ }/p' src/acce
+356	56	orient	tool	shell	bash	2026-11-26T01:07:49Z	0.1	cd /home/ladvien/bevy_gooey_loop && grep -n "Role::ChipText\|Role::TabText" src/access.rs | head -10; echo "=== names helper ==="; grep -n "^fn names\|^ fn name
+356	57	orient	model	model		2026-11-26T01:07:49Z	4.2	
+356	58	orient	tool	shell	bash	2026-11-26T01:07:54Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "pub use widgets" -A 20 src/lib.rs | head -30; echo "=== chip/list_row in lib ==="; grep -n "chip\b\|list_row\|quiet
+356	59	orient	tool	git	bash	2026-11-26T01:07:54Z	0.2	cd /home/ladvien/bevy_gooey_loop && git show 8647648:src/lib.rs | grep -n "chip\|list_row" | head -20; echo "=== exports at HEAD ==="; grep -n "pub use crate::w
+356	60	orient	model	model		2026-11-26T01:07:54Z	4.1	
+356	61	orient	tool	shell	bash	2026-11-26T01:07:58Z	0.0	cd /tmp/df_probe && grep -rn "bevy_gooey" Cargo.toml crates/*/Cargo.toml 2>/dev/null | head -10; echo "=== lock ==="; grep -n "name = \"bevy_gooey\"" -A 4 Cargo
+356	62	orient	tool	shell	bash	2026-11-26T01:07:58Z	0.1	cd /home/ladvien/bevy_gooey_loop && sed -n '1,60p' docs/research/chip.md
+356	63	orient	model	model		2026-11-26T01:07:58Z	14.0	
+356	64	choose	tool	phase mark	bash	2026-11-26T01:08:12Z	0.6	cd /home/ladvien/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark choose >/dev/null; grep -rn "list_row\|quiet_list_row" tests/*.rs | grep -v "^te
+356	65	choose	tool	cargo build	bash	2026-11-26T01:08:12Z	0.6	[launched bg_14] cd /home/ladvien/bevy_gooey_loop && cargo build --release --examples 2>&1 | tail -5
+356	66	choose	bg	cargo build	bash	2026-11-26T01:08:12Z	0.3	bg_14 completed: cargo build --release --examples 2>&1 | tail -5
+356	67	choose	model	model		2026-11-26T01:08:13Z	8.5	
+356	68	choose	tool	shell	bash	2026-11-26T01:08:21Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "BorderColor\|BackgroundColor\|Role::Chip" tests/chip.rs | head -20; echo "=== list_row tests ==="; sed -n '1080,117
+356	69	choose	tool	cargo build	bash	2026-11-26T01:08:21Z	0.0	[launched bg_16] cd /home/ladvien/bevy_gooey_loop && CARGO_INCREMENTAL=0 CARGO_BUILD_JOBS=4 timeout 1500 cargo build --release --examples 2>&1 | tail -4
+356	70	choose	model	model		2026-11-26T01:08:21Z	5.0	
+356	71	choose	tool	shell	bash	2026-11-26T01:08:26Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '5896,5960p' src/skin.rs
+356	72	choose	tool	shell	bash	2026-11-26T01:08:26Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "fn selected\|selected:" src/skin.rs | sed -n '1,40p'; echo "=== State::selected read ==="; grep -n "state.selected\
+356	73	choose	bg	cargo build	bash	2026-11-26T01:08:26Z	0.1	bg_16 completed: CARGO_INCREMENTAL=0 CARGO_BUILD_JOBS=4 timeout 1500 cargo build --release --examples 2>&1 | tail -4
+356	74	choose	model	model		2026-11-26T01:08:26Z	11.5	
+356	75	choose	tool	shell	bash	2026-11-26T01:08:38Z	0.3	cd /home/ladvien/bevy_gooey_loop && cat .cargo/config.toml 2>/dev/null; echo "=== env ==="; env | grep -i "CARGO_INCREMENTAL\|SCCACHE\|RUSTC_WRAPPER"; echo "===
+356	76	choose	tool	shell	bash	2026-11-26T01:08:38Z	0.3	cd /home/ladvien/bevy_gooey_loop && grep -n "pub enum Paint" -A 20 src/style_sheet.rs; echo "=== host paints doc ==="; grep -n "HostPaints" -B2 -A 12 src/style_
+356	77	choose	model	model		2026-11-26T01:08:38Z	6.5	
+356	78	choose	tool	shell	bash	2026-11-26T01:08:45Z	0.1	cd /home/ladvien/bevy_gooey_loop && grep -n "focus_ring" src/skin.rs | head -20; echo "=== State.focused ==="; grep -n "focused:" src/skin.rs | head -10; echo "
+356	79	choose	tool	cargo build	bash	2026-11-26T01:08:45Z	0.1	[launched bg_19] cd /home/ladvien/bevy_gooey_loop && env -u CARGO_INCREMENTAL bash -c 'cd /home/ladvien/bevy_gooey_loop && cargo build --release --examples 2>&1 | tail -3'
+356	80	choose	model	model		2026-11-26T01:08:45Z	6.6	
+356	81	choose	tool	shell	bash	2026-11-26T01:08:51Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '1000,1130p' src/skin.rs
+356	82	choose	bg	cargo build	bash	2026-11-26T01:08:51Z	0.3	bg_19 completed: env -u CARGO_INCREMENTAL bash -c 'cd /home/ladvien/bevy_gooey_loop && cargo build --release --examples 2>&1 | tail -3'
+356	83	choose	model	model		2026-11-26T01:08:51Z	1.6	
+356	84	choose	tool	shell	bash	2026-11-26T01:08:53Z	0.1	grep -rn "incremental" ~/.cargo/config.toml ~/.cargo/config 2>/dev/null; echo "---"; cd /home/ladvien/bevy_gooey_loop && grep -rn "incremental\|CARGO_INCREMENTA
+356	85	choose	model	model		2026-11-26T01:08:53Z	2.1	
+356	86	choose	tool	shell	bash	2026-11-26T01:08:55Z	0.2	cd /home/ladvien/bevy_gooey_loop && env -u CARGO_INCREMENTAL bash -c 'env | grep -i "CARGO_INCREMENTAL\|RUSTC_WRAP" ; echo "exit=$?"'; echo "=== try 0 ==="; CAR
+356	87	choose	model	model		2026-11-26T01:08:55Z	2.4	
+356	88	choose	tool	cargo build	bash	2026-11-26T01:08:57Z	0.1	cd /home/ladvien/bevy_gooey_loop && cargo --version; echo "=== rustc probe via cargo ==="; CARGO_INCREMENTAL=0 cargo build --release --lib 2>&1 | tail -5
+356	89	choose	model	model		2026-11-26T01:08:58Z	1.8	
+356	90	choose	tool	cargo build	bash	2026-11-26T01:08:59Z	60.0	[launched bg_20] cd /home/ladvien/bevy_gooey_loop && CARGO_INCREMENTAL=0 RUSTC_WRAPPER= cargo build --release --lib 2>&1 | tail -4
+356	91	choose	model	model		2026-11-26T01:09:59Z	10.3	
+356	92	choose	tool	sleep	bash	2026-11-26T01:10:10Z	45.4	sleep 45; echo waited
+356	93	choose	model	model		2026-11-26T01:10:55Z	9.7	
+356	94	choose	tool	shell	bash	2026-11-26T01:11:05Z	0.3	cd /home/ladvien/bevy_gooey_loop && grep -n "focus ring\|ring\b" src/skin.rs | sed -n '1,40p'; echo "=== ring fn ==="; sed -n '/fn ring/,/^}/p' src/skin.rs | he
+356	95	choose	tool	shell	bash	2026-11-26T01:11:05Z	0.4	cd /home/ladvien/bevy_gooey_loop && grep -n "InkOverride" -A 12 src/box_model.rs | sed -n '1,60p'
+356	96	choose	model	model		2026-11-26T01:11:05Z	5.7	
+356	97	choose	tool	shell	bash	2026-11-26T01:11:11Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '4440,4480p' src/skin.rs
+356	98	choose	tool	shell	bash	2026-11-26T01:11:11Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '80,140p' tests/chip.rs
+356	99	choose	model	model		2026-11-26T01:11:11Z	3.6	
+356	100	choose	tool	shell	bash	2026-11-26T01:11:15Z	0.2	cd /home/ladvien/bevy_gooey_loop && grep -n "state.focused\|\.focused\b" src/skin.rs | sed -n '1,40p'; echo "=== ring writes ==="; sed -n '4100,4200p' src/skin.
+356	101	choose	model	model		2026-11-26T01:11:15Z	13.5	
+356	102	choose	tool	shell	bash	2026-11-26T01:11:28Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '4196,4290p' src/skin.rs
+356	103	choose	tool	shell	bash	2026-11-26T01:11:28Z	0.1	cd /home/ladvien/bevy_gooey_loop && ls -la /home/ladvien/target/gooey-loop/release/libbevy_gooey.rlib 2>/dev/null; ls -la /home/ladvien/target/gooey-loop/releas
+356	104	choose	model	model		2026-11-26T01:11:29Z	14.6	
+356	105	choose	tool	cargo build	bash	2026-11-26T01:11:43Z	60.0	[launched bg_23] cd /home/ladvien/bevy_gooey_loop && CARGO_INCREMENTAL=0 RUSTC_WRAPPER= timeout 240 cargo build --release --lib 2>&1 | tail -3; echo "EXIT=$?"
+356	106	choose	tool	shell	bash	2026-11-26T01:11:43Z	60.1	cd /home/ladvien/bevy_gooey_loop && grep -n "pub fn update_tags" -B 20 src/widgets.rs | head -30; echo "=== Tag marker doc ==="; grep -n "pub struct Tag\b" -A 8
+356	107	choose	model	model		2026-11-26T01:12:43Z	10.4	
+356	108	choose	tool	shell	bash	2026-11-26T01:12:54Z	0.1	cd /home/ladvien/bevy_gooey_loop && sed -n '2330,2440p' src/skin.rs
+356	109	choose	tool	shell	bash	2026-11-26T01:12:54Z	0.2	cd /home/ladvien/bevy_gooey_loop && grep -rn "InkOverride" src/*.rs tests/*.rs | grep -v "^src/box_model.rs\|^src/style_sheet.rs" | head -30
+356	110	choose	model	model		2026-11-26T01:12:54Z	5.9	
+356	111	choose	tool	shell	bash	2026-11-26T01:13:00Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -rn "ListRow" src/skin.rs; echo "=== focus ring tests for list rows ==="; grep -rn "ListRow\|list_row" tests/list.rs te
+356	112	choose	tool	shell	bash	2026-11-26T01:13:00Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -rn "KeepsSideways\|fn hides\|spatial" src/nav.rs | head -20; echo "=== does a quiet row get focus in nav ==="; grep -n
+356	113	choose	model	model		2026-11-26T01:13:00Z	2.8	
+356	114	choose	tool	shell	bash	2026-11-26T01:13:03Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "focus_ring" src/skin.rs | sed -n '1,60p' | tail -30; echo "=== the edge focus pass ==="; sed -n '4290,4420p' src/sk
+356	115	choose	tool	shell	bash	2026-11-26T01:13:03Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -rn "focus_ring" src/skin.rs | awk -F: '$1>4400'; echo "=== search whole file for ring assignment ==="; grep -n "skin.f
+356	116	choose	model	model		2026-11-26T01:13:03Z	1.6	
+356	117	choose	tool	shell	bash	2026-11-26T01:13:04Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '3900,4000p' src/skin.rs
+356	118	choose	model	model		2026-11-26T01:13:04Z	7.7	
+356	119	choose	tool	shell	bash	2026-11-26T01:13:12Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "^fn \|^#\[test\]" tests/chip.rs | grep -A1 "test" | grep "^fn\|^[0-9]*:fn" | head -30; echo "=== presets loop in ch
+356	120	choose	tool	shell	bash	2026-11-26T01:13:12Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '1,80p' docs/research/code-soft-wrap.md
+356	121	choose	model	model		2026-11-26T01:13:12Z	15.9	
+356	122	choose	tool	git	bash	2026-11-26T01:13:28Z	0.1	cd /home/ladvien/bevy_gooey_loop && git show origin/loop-stats:steps/bevy_gooey_loop-audit.tsv 2>/dev/null | head -2; echo "=== md ==="; git show origin/loop-st
+356	123	choose	tool	shell	bash	2026-11-26T01:13:28Z	0.1	cd /home/ladvien/bevy_gooey_loop && wc -l src/code_wrap.rs src/code_fold.rs; echo "=== Wrap struct ==="; grep -n "pub struct Wrap" -A 40 src/code_wrap.rs
+356	124	choose	model	model		2026-11-26T01:13:28Z	1.1	
+356	125	choose	tool	shell	bash	2026-11-26T01:13:29Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "struct Wrap\|pub fn \|pub(crate) fn " src/code_wrap.rs | head -40
+356	126	choose	tool	shell	bash	2026-11-26T01:13:29Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "take_line_edits\|LineEdit\|RowMap\|fn rebuild" src/code_wrap.rs src/code_buffer.rs | head -30
+356	127	choose	model	model		2026-11-26T01:13:29Z	1.4	
+356	128	choose	tool	shell	bash	2026-11-26T01:13:30Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '47,140p' src/code_wrap.rs
+356	129	choose	model	model		2026-11-26T01:13:30Z	11.5	
+356	130	choose	tool	shell	bash	2026-11-26T01:13:42Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "chip" tests/access.rs | head; echo "=== access chip test ==="; grep -n "fn a_chip\|fn chips" -A 30 tests/access.rs 
+356	131	choose	tool	shell	bash	2026-11-26T01:13:42Z	0.1	cd /home/ladvien/bevy_gooey_loop && sed -n '255,300p' src/code_buffer.rs; echo "=== take_line_edits ==="; sed -n '355,395p' src/code_buffer.rs
+356	132	choose	model	model		2026-11-26T01:13:42Z	9.3	
+356	133	choose	tool	shell	bash	2026-11-26T01:13:51Z	0.1	cd /home/ladvien/bevy_gooey_loop && ls -la /home/ladvien/target/gooey-loop/release/deps/libbevy_gooey*.rlib 2>/dev/null | head -3; echo "=== which tests referen
+356	134	choose	model	model		2026-11-26T01:13:52Z	16.7	
+356	135	choose	tool	shell	bash	2026-11-26T01:14:08Z	0.1	cd /home/ladvien/bevy_gooey_loop && grep -n "\.sync(\|take_line_edits\|fold.sync\|RowMap" src/code_editor.rs src/code_fold.rs src/code_decor.rs src/code_overlay
+356	136	choose	tool	shell	bash	2026-11-26T01:14:08Z	0.1	cd /home/ladvien/bevy_gooey_loop && grep -n "fn update_code_folds" -A 60 src/code_fold.rs
+356	137	choose	bg	cargo build	bash	2026-11-26T01:09:08Z	300.1	bg_20 failed: CARGO_INCREMENTAL=0 RUSTC_WRAPPER= cargo build --release --lib 2>&1 | tail -4
+356	138	choose	model	model		2026-11-26T01:14:08Z	6.8	
+356	139	choose	tool	shell	bash	2026-11-26T01:14:15Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '5960,6010p' src/skin.rs
+356	140	choose	tool	shell	bash	2026-11-26T01:14:15Z	0.1	cd /home/ladvien/bevy_gooey_loop && grep -n "accent_text\|fn accent_text" src/skin.rs | head -5; python3 - <<'EOF' def lum(c): def f(x): x/=255.0 return x/12.92
+356	141	choose	model	model		2026-11-26T01:14:15Z	18.2	
+356	142	choose	tool	cargo test	bash	2026-11-26T01:14:33Z	0.0	[launched bg_28] cd /home/ladvien/bevy_gooey_loop && CARGO_INCREMENTAL=0 RUSTC_WRAPPER= CARGO_BUILD_JOBS=4 cargo nextest run --all-features --lib --tests -E 'test(chip::)' 2>&1 
+356	143	choose	tool	shell	bash	2026-11-26T01:14:33Z	0.1	cd /home/ladvien/bevy_gooey_loop && grep -n "pub mod model\|pub use model\|mod model" src/lib.rs | head; echo "=== contrast_ratio pub ==="; grep -n "pub fn cont
+356	144	choose	model	model		2026-11-26T01:14:33Z	8.4	
+356	145	choose	tool	shell	bash	2026-11-26T01:14:42Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "fn headless" -A 30 tests/layout_more.rs | head -40
+356	146	choose	model	model		2026-11-26T01:14:42Z	12.9	
+356	147	choose	tool	shell	bash	2026-11-26T01:14:55Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '340,441p' src/code_wrap.rs
+356	148	choose	model	model		2026-11-26T01:14:55Z	6.1	
+356	149	choose	tool	shell	bash	2026-11-26T01:15:01Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "indent\|Indent\|guide\|Guide" src/code_overlay.rs | head -30
+356	150	choose	tool	shell	bash	2026-11-26T01:15:01Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "minimap\|Minimap" src/code_overlay.rs | head -40
+356	151	choose	model	model		2026-11-26T01:15:01Z	1.1	
+356	152	choose	tool	shell	bash	2026-11-26T01:15:02Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '1010,1080p' src/code_overlay.rs
+356	153	choose	model	model		2026-11-26T01:15:02Z	9.4	
+356	154	choose	tool	shell	bash	2026-11-26T01:15:11Z	0.1	cd /home/ladvien/bevy_gooey_loop && grep -n "pub fn display_col" -A 25 src/code_buffer.rs; echo "=== break_columns ==="; sed -n '1,46p' src/code_wrap.rs
+356	155	choose	model	model		2026-11-26T01:15:11Z	13.9	
+356	156	choose	tool	shell	bash	2026-11-26T01:15:25Z	0.2	cd /home/ladvien/bevy_gooey_loop && sed -n '1068,1145p' src/code_overlay.rs
+356	157	choose	tool	shell	bash	2026-11-26T01:15:25Z	0.2	cd /home/ladvien/bevy_gooey_loop && sed -n '1240,1330p' src/code_overlay.rs
+356	158	choose	model	model		2026-11-26T01:15:26Z	4.6	
+356	159	choose	tool	shell	bash	2026-11-26T01:15:30Z	0.1	cd /home/ladvien/bevy_gooey_loop && grep -n "fn cols_at" -A 20 src/code_overlay.rs; echo "=== visible ==="; grep -n "let visible" -B3 -A8 src/code_overlay.rs | 
+356	160	choose	model	model		2026-11-26T01:15:30Z	2.2	
+356	161	choose	tool	shell	bash	2026-11-26T01:15:32Z	0.1	cd /home/ladvien/bevy_gooey_loop && grep -rn "cols_at" src/ | head; echo "=== def ==="; grep -rn "cols_at" -A 18 src/code_overlay.rs | sed -n '1,40p'
+356	162	choose	model	model		2026-11-26T01:15:33Z	9.9	
+356	163	choose	tool	shell	bash	2026-11-26T01:15:43Z	0.5	cd /home/ladvien/bevy_gooey_loop && grep -n "minimap" tests/code_navigation.rs | head -30
+356	164	choose	tool	shell	bash	2026-11-26T01:15:43Z	0.5	cd /home/ladvien/bevy_gooey_loop && grep -n "fn display_width" -A 12 src/code_buffer.rs; echo "=== minimap consts ==="; sed -n '45,70p' src/code_overlay.rs
+356	165	choose	model	model		2026-11-26T01:15:43Z	3.6	
+356	166	choose	tool	shell	bash	2026-11-26T01:15:47Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '1145,1212p' src/code_overlay.rs
+356	167	choose	bg	cargo build	bash	2026-11-26T01:11:47Z	240.3	bg_23 completed: CARGO_INCREMENTAL=0 RUSTC_WRAPPER= timeout 240 cargo build --release --lib 2>&1 | tail -3; echo "EXIT=$?"
+356	168	choose	model	model		2026-11-26T01:15:47Z	13.4	
+356	169	choose	tool	shell	bash	2026-11-26T01:16:00Z	0.1	cd /home/ladvien/bevy_gooey_loop && sed -n '100,200p' src/nav.rs
+356	170	choose	model	model		2026-11-26T01:16:01Z	5.1	
+356	171	choose	tool	shell	bash	2026-11-26T01:16:06Z	0.1	cd /home/ladvien/bevy_gooey_loop && sed -n '2650,2705p' src/skin.rs
+356	172	choose	model	model		2026-11-26T01:16:06Z	5.3	
+356	173	choose	tool	shell	bash	2026-11-26T01:16:11Z	0.2	cd /home/ladvien/bevy_gooey_loop && sed -n '180,230p' src/code_overlay.rs
+356	174	choose	tool	shell	bash	2026-11-26T01:16:11Z	0.8	cd /home/ladvien/bevy_gooey_loop && grep -rn "take_line_edits\|fn update_code_folds\|fn follow_line_edits" src/*.rs
+356	175	choose	model	model		2026-11-26T01:16:12Z	10.7	
+356	176	choose	tool	shell	bash	2026-11-26T01:16:23Z	0.1	cd /home/ladvien/bevy_gooey_loop && sed -n '1,40p' tests/all.rs; echo "..."; sed -n '110,135p' tests/all.rs
+356	177	choose	model	model		2026-11-26T01:16:23Z	13.4	
+356	178	choose	tool	homestill	bash	2026-11-26T01:16:36Z	17.0	cd /home/ladvien/bevy_gooey_loop && (hs status 2>&1 | head -20) || true; echo "=== mcp ==="; ls ~/.config/home-still 2>/dev/null | head -3
+356	179	choose	tool	shell	bash	2026-11-26T01:16:36Z	17.0	cd /home/ladvien/bevy_gooey_loop && cat /tmp/g111/measure_wrap.rs 2>/dev/null | head -5; grep -rn "9.7 ms\|20000\|20,000" docs/loop-log.md | head -5
+356	180	choose	model	model		2026-11-26T01:16:53Z	5.5	
+356	181	choose	tool	shell	bash	2026-11-26T01:16:59Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '186,232p' src/code_wrap.rs
+356	182	choose	tool	shell	bash	2026-11-26T01:16:59Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '760,860p' tests/code_navigation.rs
+356	183	choose	model	model		2026-11-26T01:16:59Z	13.8	
+356	184	choose	tool	shell	bash	2026-11-26T01:17:13Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '1,90p' tests/code_navigation.rs
+356	185	choose	model	model		2026-11-26T01:17:13Z	1.3	
+356	186	choose	tool	shell	bash	2026-11-26T01:17:14Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "fn shown_by_role\|fn rect\|fn role_of" -A 20 tests/code_navigation.rs | head -50
+356	187	choose	tool	shell	bash	2026-11-26T01:17:14Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '860,960p' tests/code_navigation.rs
+356	188	choose	model	model		2026-11-26T01:17:14Z	2.3	
+356	189	research	tool	phase mark	bash	2026-11-26T01:17:16Z	2.3	cd /home/ladvien/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark research; hs distill search "text editor minimap overview scrollbar readability 
+356	190	research	tool	homestill	bash	2026-11-26T01:17:16Z	2.4	cd /home/ladvien/bevy_gooey_loop && hs distill search "code editor soft wrap visual row line number gutter" --output json 2>&1 | python3 -c "import json,sys; d=
+356	191	research	model	model		2026-11-26T01:17:19Z	4.4	
+356	192	research	tool	shell	bash	2026-11-26T01:17:23Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '955,1012p' src/code_overlay.rs; echo "=== view fields ==="; sed -n '930,955p' src/code_overlay.rs
+356	193	research	model	model		2026-11-26T01:17:23Z	6.9	
+356	194	research	tool	read files	read	2026-11-26T01:17:30Z	0.3	https://code.visualstudio.com/docs/getstarted/minimap
+356	195	research	tool	read files	read	2026-11-26T01:17:30Z	0.3	https://xi-editor.io/docs/rope_science_05.html
+356	196	research	model	model		2026-11-26T01:17:30Z	1.2	
+356	197	research	tool	web	web_search	2026-11-26T01:17:31Z	11.8	VS Code minimap shows wrapped lines once per line rather than per visual row documentation
+356	198	research	tool	read files	read	2026-11-26T01:17:31Z	11.8	https://code.visualstudio.com/docs/editing/codebasics
+356	199	research	model	model		2026-11-26T01:17:43Z	1.5	
+356	200	research	tool	shell	bash	2026-11-26T01:17:45Z	0.4	cd /tmp && curl -sl "https://code.visualstudio.com/docs/editing/codebasics.md" -o cb.md && grep -n -i "minimap\|word wrap\|wrapped" cb.md | head -30
+356	201	research	tool	shell	bash	2026-11-26T01:17:45Z	0.4	cd /tmp && curl -sl "https://code.visualstudio.com/docs/reference/default-settings.md" -o ds.md && grep -n -i "minimap" ds.md | head -40
+356	202	research	model	model		2026-11-26T01:17:45Z	2.5	
+356	203	research	tool	shell	bash	2026-11-26T01:17:48Z	0.8	cd /tmp && curl -sl "https://code.visualstudio.com/updates/v1_43" | sd -s '<[^>]*>' ' ' | tr -s ' \n' ' \n' | grep -i -n "minimap" | head -20
+356	204	research	model	model		2026-11-26T01:17:48Z	2.0	
+356	205	research	tool	shell	bash	2026-11-26T01:17:50Z	0.9	cd /tmp && curl -sl "https://www.gnu.org/software/emacs/manual/html_node/emacs/Visual-Line-Mode.html" | sd -s '<[^>]*>' ' ' | tr -s ' \n' ' \n' | grep -v '^\s*$
+356	206	research	tool	shell	bash	2026-11-26T01:17:50Z	1.0	cd /tmp && curl -sl "https://www.gnu.org/software/emacs/manual/html_node/emacs/Line-Numbers.html" | sd -s '<[^>]*>' ' ' | tr -s ' \n' ' \n' | grep -v '^\s*$' | 
+356	207	research	model	model		2026-11-26T01:17:51Z	1.8	
+356	208	research	tool	shell	bash	2026-11-26T01:17:53Z	0.2	cd /tmp && curl -sl "https://www.gnu.org/software/emacs/manual/html_node/emacs/Visual-Line-Mode.html" | perl -pe 's/<[^>]*>//g' | grep -v '^\s*$' | sed -n '1,60
+356	209	research	model	model		2026-11-26T01:17:53Z	1.1	
+356	210	research	tool	shell	bash	2026-11-26T01:17:54Z	0.1	cd /tmp && curl -sl "https://www.gnu.org/software/emacs/manual/html_node/emacs/Visual-Line-Mode.html" -o vlm.html; wc -c vlm.html; perl -pe 's/<[^>]*>//g' vlm.h
+356	211	research	model	model		2026-11-26T01:17:55Z	1.6	
+356	212	research	tool	shell	bash	2026-11-26T01:17:56Z	0.0	cd /home/ladvien/bevy_gooey_loop && cat docs/research/code-soft-wrap.md | head -80; echo "..."; grep -n "minimap\|indent guide" docs/research/code-soft-wrap.md
+356	213	research	bg	cargo test	bash	2026-11-26T01:14:35Z	201.4	bg_28 completed: CARGO_INCREMENTAL=0 RUSTC_WRAPPER= CARGO_BUILD_JOBS=4 cargo nextest run --all-features --lib --tests -E 'test(chip::)...
+356	214	research	model	model		2026-11-26T01:17:56Z	1.8	
+356	215	research	tool	git	bash	2026-11-26T01:17:58Z	0.0	cd /home/ladvien/bevy_gooey_loop && git status --short && git log --oneline -6 && echo "=== branch ===" && git branch --show-current && echo "=== log tail ===" 
+356	216	research	model	model		2026-11-26T01:17:58Z	2.1	
+356	217	research	tool	github	bash	2026-11-26T01:18:00Z	0.4	cd /home/ladvien/bevy_gooey_loop && grep -n '^version' Cargo.toml && grep -c '^## Iteration' docs/loop-log.md; grep -n '^## Iteration' docs/loop-log.md | tail -
+356	218	research	model	model		2026-11-26T01:18:00Z	4.7	
+356	219	research	tool	git	bash	2026-11-26T01:18:05Z	0.7	cd /home/ladvien/bevy_gooey_loop && git fetch -q origin loop-stats 2>&1 | head -3; git show origin/loop-stats:steps/bevy_gooey_loop-audit.tsv 2>&1 | tail -3; ec
+356	220	research	tool	github	bash	2026-11-26T01:18:05Z	1.5	cd /home/ladvien/bevy_gooey_loop && for n in 118 119 120; do echo "=========== #$n ==========="; gh issue view $n -R dark-incorporated/bevy_gooey --json title,b
+356	221	research	model	model		2026-11-26T01:18:07Z	4.4	
+356	222	research	tool	shell	bash	2026-11-26T01:18:11Z	0.0	cd /home/ladvien/bevy_gooey_loop && echo "=== TextFace tests ==="; grep -rn "fn .*text_face\|TextFace" --include=*.rs tests/ | head -20; echo "=== chip Role tes
+356	223	research	model	model		2026-11-26T01:18:11Z	2.7	
+356	224	research	tool	shell	bash	2026-11-26T01:18:14Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "Role::ListRow" src/skin.rs | head; echo '---'; sed -n "$(grep -n 'Role::ListRow =>' src/skin.rs | head -1 | cut -d:
+356	225	research	model	model		2026-11-26T01:18:14Z	3.9	
+356	226	research	tool	git	bash	2026-11-26T01:18:18Z	0.2	cd /home/ladvien/bevy_gooey_loop && git tag --points-at 8647648 2>&1; git log --oneline -1 8647648 2>&1; echo '=== chip/list_row shipped when ==='; git log --on
+356	227	research	model	model		2026-11-26T01:18:18Z	5.0	
+356	228	research	tool	shell	bash	2026-11-26T01:18:23Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n "$(grep -n 'The indent guides' src/code_overlay.rs | head -1 | cut -d: -f1),+95p" src/code_overlay.rs
+356	229	research	model	model		2026-11-26T01:18:23Z	0.9	
+356	230	research	tool	shell	bash	2026-11-26T01:18:24Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "indent\|Guide\|minimap" src/code_overlay.rs | head -40
+356	231	research	model	model		2026-11-26T01:18:24Z	0.9	
+356	232	research	tool	shell	bash	2026-11-26T01:18:25Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '1012,1145p' src/code_overlay.rs
+356	233	research	model	model		2026-11-26T01:18:25Z	2.1	
+356	234	research	tool	shell	bash	2026-11-26T01:18:27Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '1145,1340p' src/code_overlay.rs
+356	235	research	model	model		2026-11-26T01:18:27Z	6.4	
+356	236	research	tool	shell	bash	2026-11-26T01:18:33Z	0.1	cd /home/ladvien/bevy_gooey_loop && grep -n "pub(crate) fn\|pub fn\|pub(crate) struct\|pub struct" src/code_fold.rs | head -40; echo '=== rowmap ==='; grep -n "
+356	237	research	model	model		2026-11-26T01:18:33Z	2.5	
+356	238	research	tool	shell	bash	2026-11-26T01:18:36Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '20,130p' src/code_fold.rs
+356	239	research	model	model		2026-11-26T01:18:36Z	6.2	
+356	240	research	tool	shell	bash	2026-11-26T01:18:42Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "soft wrap\|minimap" docs/loop-log.md | tail -20
+356	241	research	model	model		2026-11-26T01:18:42Z	18.5	
+356	242	research	tool	shell	bash	2026-11-26T01:19:00Z	0.1	cd /home/ladvien/bevy_gooey_loop && grep -n "struct View" -A 40 src/code_editor.rs | head -50; echo '=== lines count ==='; grep -n "fn lines\|fn line_count\|fn 
+356	243	research	model	model		2026-11-26T01:19:00Z	20.0	
+356	244	research	tool	shell	bash	2026-11-26T01:19:20Z	0.1	cd /home/ladvien/bevy_gooey_loop && sed -n '100,200p' src/code_wrap.rs
+356	245	research	model	model		2026-11-26T01:19:20Z	8.5	
+356	246	research	tool	shell	bash	2026-11-26T01:19:29Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "pub fn lines\|pub fn line_count\|pub fn len" src/code_buffer.rs | head; echo '=== minimap test ==='; sed -n '840,87
+356	247	research	model	model		2026-11-26T01:19:29Z	19.7	
+356	248	research	tool	shell	bash	2026-11-26T01:19:49Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '45,62p' src/code_overlay.rs; echo '=== editor_of ==='; sed -n "$(grep -n 'fn editor_of' tests/code_navigation.rs | c
+356	249	research	model	model		2026-11-26T01:19:49Z	1.2	
+356	250	research	tool	shell	bash	2026-11-26T01:19:50Z	0.0	cd /home/ladvien/bevy_gooey_loop && tail -30 tests/code_navigation.rs; echo '=== module decl ==='; grep -n "code_navigation" tests/all.rs
+356	251	research	model	model		2026-11-26T01:19:50Z	3.8	
+356	252	research	tool	cargo test	bash	2026-11-26T01:19:54Z	14.1	cd /home/ladvien/bevy_gooey_loop && cat >> tests/code_navigation.rs <<'EOF' /// #4 of the backlog, found by reading `cols_at`: the minimap draws **display rows*
+356	253	research	model	model		2026-11-26T01:20:08Z	1.3	
+356	254	research	tool	shell	bash	2026-11-26T01:20:09Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "pub fn buffer\|pub fn scroll\b\|pub fn scroll(\|pub fn fold\|pub(crate) fold\|pub fold\|pub(crate) buffer\|pub buff
+356	255	research	model	model		2026-11-26T01:20:09Z	4.5	
+356	256	research	tool	cargo test	bash	2026-11-26T01:20:14Z	52.5	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' import re p='tests/code_navigation.rs' s=open(p).read() i=s.index("/// #4 of the backlog, found by reading 
+356	257	research	model	model		2026-11-26T01:21:06Z	1.3	
+356	258	research	tool	cargo test	bash	2026-11-26T01:21:07Z	3.0	cd /home/ladvien/bevy_gooey_loop && CARGO_INCREMENTAL=0 RUSTC_WRAPPER= CARGO_BUILD_JOBS=4 cargo nextest run --all-features --lib --tests -E 'test(code_navigatio
+356	259	research	model	model		2026-11-26T01:21:10Z	5.8	
+356	260	research	tool	cargo test	bash	2026-11-26T01:21:16Z	57.3	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='tests/code_navigation.rs' s=open(p).read() s=s.replace(''' assert!( texts > numbers * 2, "the editor is 
+356	261	research	model	model		2026-11-26T01:22:13Z	1.2	
+356	262	research	tool	cargo test	bash	2026-11-26T01:22:15Z	2.9	cd /home/ladvien/bevy_gooey_loop && CARGO_INCREMENTAL=0 RUSTC_WRAPPER= CARGO_BUILD_JOBS=4 cargo nextest run --all-features --lib --tests -E 'test(code_navigatio
+356	263	research	model	model		2026-11-26T01:22:18Z	8.3	
+356	264	research	tool	cargo test	bash	2026-11-26T01:22:26Z	58.9	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='tests/code_navigation.rs' s=open(p).read() i=s.index("/// #4 of the backlog, found by reading `cols_at`"
+356	265	research	model	model		2026-11-26T01:23:25Z	5.0	
+356	266	research	tool	cargo test	bash	2026-11-26T01:23:30Z	52.5	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='tests/code_navigation.rs' s=open(p).read() s=s.replace(''' let widest = drawn.iter().map(|bar| bar.width
+356	267	research	model	model		2026-11-26T01:24:22Z	6.4	
+356	268	research	tool	shell	bash	2026-11-26T01:24:29Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "fn longest_cols" -A 12 src/code_buffer.rs; echo '=== display_width ==='; grep -rn "fn display_width" src/
+356	269	research	model	model		2026-11-26T01:24:29Z	3.7	
+356	270	research	tool	shell	bash	2026-11-26T01:24:32Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '170,200p' src/code_wrap.rs
+356	271	research	model	model		2026-11-26T01:24:32Z	4.2	
+356	272	research	tool	read files	read	2026-11-26T01:24:37Z	0.0	src/code_overlay.rs:1159-1200
+356	273	research	model	model		2026-11-26T01:24:37Z	2.2	
+356	274	research	tool	edit files	edit	2026-11-26T01:24:39Z	0.0	src/code_overlay.rs
+356	275	research	model	model		2026-11-26T01:24:39Z	0.9	
+356	276	research	tool	read files	read	2026-11-26T01:24:40Z	0.0	src/code_overlay.rs:1196-1250
+356	277	research	model	model		2026-11-26T01:24:40Z	1.6	
+356	278	research	tool	edit files	edit	2026-11-26T01:24:41Z	0.0	src/code_overlay.rs
+356	279	research	model	model		2026-11-26T01:24:41Z	1.0	
+356	280	research	tool	shell	bash	2026-11-26T01:24:42Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -rn "minimap" src/code_editor.rs | head -20
+356	281	research	model	model		2026-11-26T01:24:42Z	0.9	
+356	282	research	tool	read files	read	2026-11-26T01:24:43Z	0.0	src/code_editor.rs:1395-1475
+356	283	research	model	model		2026-11-26T01:24:43Z	1.8	
+356	284	research	tool	edit files	edit	2026-11-26T01:24:45Z	0.0	src/code_editor.rs
+356	285	research	model	model		2026-11-26T01:24:45Z	3.8	
+356	286	research	tool	edit files	edit	2026-11-26T01:24:49Z	0.0	src/code_editor.rs
+356	287	research	model	model		2026-11-26T01:24:49Z	1.1	
+356	288	research	tool	shell	bash	2026-11-26T01:24:50Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "mark_rows" -A 12 src/code_overlay.rs | sed -n '1,20p'; echo '=== struct doc ==='; sed -n '940,950p' src/code_overla
+356	289	research	model	model		2026-11-26T01:24:50Z	1.4	
+356	290	research	tool	shell	bash	2026-11-26T01:24:52Z	0.0	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='src/code_overlay.rs' s=open(p).read() s=s.replace('''/// The part of the minimap in view: the first disp
+356	291	research	model	model		2026-11-26T01:24:52Z	1.2	
+356	292	research	tool	cargo test	bash	2026-11-26T01:24:53Z	60.0	[launched bg_35] cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='tests/code_navigation.rs' s=open(p).read() i=s.index(" eprintln!(\n \"DEBUG bars") j=s.index(" );", i)+l
+356	293	research	model	model		2026-11-26T01:25:53Z	1.2	
+356	294	research	tool	shell	bash	2026-11-26T01:25:54Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "fn " tests/text_face.rs | head -12
+356	295	research	model	model		2026-11-26T01:25:54Z	1.1	
+356	296	research	tool	shell	bash	2026-11-26T01:25:55Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "^fn \|^#\[test\]" -A1 tests/text_face.rs | grep "^[0-9]*:fn" | head -20
+356	297	research	model	model		2026-11-26T01:25:55Z	2.9	
+356	298	research	tool	shell	bash	2026-11-26T01:25:58Z	0.0	cd /home/ladvien/bevy_gooey_loop && echo "=== chip in v0.58.0? ==="; git merge-base --is-ancestor 3cdf4a4 v0.58.0 && echo yes; echo "=== list_row in v0.58.0? ==
+356	299	research	tool	shell	bash	2026-11-26T01:25:58Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n "$(grep -n 'pub fn list_row' src/widgets.rs | head -1 | cut -d: -f1),+22p" src/widgets.rs; echo '=== rail test ==='; 
+356	300	research	model	model		2026-11-26T01:25:58Z	2.0	
+356	301	research	tool	shell	bash	2026-11-26T01:26:00Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "Role::Chip" src/access.rs; echo '=== chip fill test ==='; grep -n "BackgroundColor\|BorderColor" tests/chip.rs | he
+356	302	research	model	model		2026-11-26T01:26:00Z	1.5	
+356	303	research	tool	shell	bash	2026-11-26T01:26:01Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '630,660p' src/access.rs; echo '=== chip test head ==='; sed -n '1,60p' tests/chip.rs
+356	304	research	model	model		2026-11-26T01:26:01Z	2.5	
+356	305	research	tool	shell	bash	2026-11-26T01:26:04Z	0.0	cd /home/ladvien/bevy_gooey_loop && cat >> tests/chip.rs <<'EOF' /// The contract `dark-incorporated/bevy_dark_factory` asked for (#119): its `chrome::chip` can
+356	306	research	model	model		2026-11-26T01:26:04Z	1.0	
+356	307	research	tool	shell	bash	2026-11-26T01:26:05Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "pub fn name\b\|fn name(" ~/.cargo/registry/src/*/accesskit-*/src/lib.rs 2>/dev/null | head -5; grep -rn "Accessibil
+356	308	research	model	model		2026-11-26T01:26:05Z	1.0	
+356	309	research	tool	shell	bash	2026-11-26T01:26:06Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '85,110p' tests/access.rs; echo '=== access app setup ==='; grep -n "AccessibilityRequested" tests/access.rs | head -
+356	310	research	model	model		2026-11-26T01:26:06Z	1.5	
+356	311	research	tool	shell	bash	2026-11-26T01:26:07Z	0.0	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='tests/chip.rs' s=open(p).read() s=s.replace(''' settle(&mut app); let found = app .world_mut()''',''' se
+356	312	research	model	model		2026-11-26T01:26:07Z	1.4	
+356	313	research	tool	cargo test	bash	2026-11-26T01:26:09Z	60.0	[launched bg_36] cd /home/ladvien/bevy_gooey_loop && CARGO_INCREMENTAL=0 RUSTC_WRAPPER= CARGO_BUILD_JOBS=4 cargo nextest run --all-features --lib --tests -E 'test(chip::a_host_c
+356	314	research	bg	shell	bash	2026-11-26T01:25:27Z	101.6	bg_35 completed: python3 - <<'PY' p='tests/code_navigation.rs' s=open(p).read() i=s.index(" eprintln!(\n \"DEBUG bars") j=s.index(" );...
+356	315	research	model	model		2026-11-26T01:27:09Z	1.1	
+356	316	research	tool	cargo test	bash	2026-11-26T01:27:10Z	2.2	cd /home/ladvien/bevy_gooey_loop && CARGO_INCREMENTAL=0 RUSTC_WRAPPER= CARGO_BUILD_JOBS=4 cargo nextest run --all-features --lib --tests -E 'test(code_navigatio
+356	317	research	bg	cargo test	bash	2026-11-26T01:26:11Z	61.0	bg_36 completed: CARGO_INCREMENTAL=0 RUSTC_WRAPPER= CARGO_BUILD_JOBS=4 cargo nextest run --all-features --lib --tests -E 'test(chip::a...
+356	318	research	model	model		2026-11-26T01:27:12Z	2.5	
+356	319	research	tool	shell	bash	2026-11-26T01:27:15Z	0.0	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='tests/code_navigation.rs' s=open(p).read() s=s.replace(''' // The longest line's bar reaches across the 
+356	320	research	model	model		2026-11-26T01:27:15Z	1.1	
+356	321	research	tool	cargo test	bash	2026-11-26T01:27:16Z	52.4	cd /home/ladvien/bevy_gooey_loop && CARGO_INCREMENTAL=0 RUSTC_WRAPPER= CARGO_BUILD_JOBS=4 cargo nextest run --all-features --lib --tests -E 'test(code_navigatio
+356	322	research	model	model		2026-11-26T01:28:08Z	1.0	
+356	323	research	tool	cargo test	bash	2026-11-26T01:28:09Z	2.7	cd /home/ladvien/bevy_gooey_loop && CARGO_INCREMENTAL=0 RUSTC_WRAPPER= CARGO_BUILD_JOBS=4 cargo nextest run --all-features --lib --tests -E 'test(code_navigatio
+356	324	research	model	model		2026-11-26T01:28:12Z	4.0	
+356	325	research	tool	shell	bash	2026-11-26T01:28:16Z	0.0	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='src/code_overlay.rs' s=open(p).read() old=''' let shown = fold.rows(editor.buffer.len_lines()); // Where
+356	326	research	model	model		2026-11-26T01:28:16Z	1.1	
+356	327	research	tool	cargo test	bash	2026-11-26T01:28:17Z	60.0	[launched bg_37] cd /home/ladvien/bevy_gooey_loop && CARGO_INCREMENTAL=0 RUSTC_WRAPPER= CARGO_BUILD_JOBS=4 cargo nextest run --all-features --lib --tests -E 'test(code_navigatio
+356	328	research	model	model		2026-11-26T01:29:17Z	1.6	
+356	329	research	tool	shell	bash	2026-11-26T01:29:19Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "fn rows\b" -A 8 src/code_wrap.rs | head -12; echo '=== wrap struct ==='; sed -n '60,100p' src/code_wrap.rs
+356	330	research	model	model		2026-11-26T01:29:19Z	1.7	
+356	331	research	tool	shell	bash	2026-11-26T01:29:20Z	0.1	cd /home/ladvien/bevy_gooey_loop && sed -n '1,40p' docs/research/code-soft-wrap.md > /tmp/g112-note-head.txt; grep -n "Minimap\|minimap" docs/research/*.md | he
+356	332	research	model	model		2026-11-26T01:29:21Z	1.1	
+356	333	research	tool	shell	bash	2026-11-26T01:29:22Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '1,45p' docs/research/minimap-first-frame.md
+356	334	research	model	model		2026-11-26T01:29:22Z	5.6	
+356	335	research	tool	edit files	write	2026-11-26T01:29:27Z	0.0	docs/research/minimap-wrap.md
+356	336	research	model	model		2026-11-26T01:29:27Z	1.0	
+356	337	research	tool	cargo test	bash	2026-11-26T01:29:28Z	46.6	cd /home/ladvien/bevy_gooey_loop && CARGO_INCREMENTAL=0 RUSTC_WRAPPER= CARGO_BUILD_JOBS=4 cargo nextest run --all-features --lib --tests -E 'test(code_navigatio
+356	338	research	bg	cargo test	bash	2026-11-26T01:28:17Z	117.4	bg_37 completed: CARGO_INCREMENTAL=0 RUSTC_WRAPPER= CARGO_BUILD_JOBS=4 cargo nextest run --all-features --lib --tests -E 'test(code_na...
+356	339	research	model	model		2026-11-26T01:30:15Z	1.9	
+356	340	research	tool	cargo test	bash	2026-11-26T01:30:17Z	60.0	[launched bg_38] cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='src/code_wrap.rs' s=open(p).read() old=''' /// Whether lines are wrapped into rows. pub(crate) fn wraps(
+356	341	research	model	model		2026-11-26T01:31:17Z	2.7	
+356	342	research	tool	github	bash	2026-11-26T01:31:20Z	1.2	cd /home/ladvien/bevy_gooey_loop && gh issue comment 118 -R dark-incorporated/bevy_gooey --body 'Verified shipped: `TextFace` landed in `678b008` and released a
+356	343	research	model	model		2026-11-26T01:31:21Z	2.3	
+356	344	research	tool	github	bash	2026-11-26T01:31:23Z	2.8	cd /home/ladvien/bevy_gooey_loop && gh issue close 118 -R dark-incorporated/bevy_gooey --reason completed 2>&1 | tail -2; echo '---119---'; gh issue comment 119
+356	345	research	model	model		2026-11-26T01:31:26Z	3.0	
+356	346	research	tool	github	bash	2026-11-26T01:31:29Z	3.4	cd /home/ladvien/bevy_gooey_loop && gh issue close 119 -R dark-incorporated/bevy_gooey --reason completed 2>&1 | tail -1; echo '---120---'; gh issue comment 120
+356	347	research	model	model		2026-11-26T01:31:32Z	1.2	
+356	348	research	tool	github	bash	2026-11-26T01:31:33Z	3.5	cd /home/ladvien/bevy_gooey_loop && gh issue close 120 -R dark-incorporated/bevy_gooey --reason completed 2>&1 | tail -1; gh issue list -R dark-incorporated/bev
+356	349	research	model	model		2026-11-26T01:31:37Z	1.7	
+356	350	research	tool	git	bash	2026-11-26T01:31:39Z	0.1	cd /home/ladvien/bevy_gooey_loop && git checkout -b loop/iter-112 2>&1 | tail -1 && git add docs/research/minimap-wrap.md && git commit -q -m 'Research: a minim
+356	351	research	model	model		2026-11-26T01:31:39Z	2.2	
+356	352	research	tool	git	bash	2026-11-26T01:31:41Z	0.2	cd /home/ladvien/bevy_gooey_loop && git diff --stat && git add src/code_overlay.rs src/code_wrap.rs src/code_editor.rs tests/code_navigation.rs && git commit -q
+356	353	research	model	model		2026-11-26T01:31:41Z	1.5	
+356	354	research	tool	git	bash	2026-11-26T01:31:43Z	0.0	cd /home/ladvien/bevy_gooey_loop && git add tests/chip.rs && git commit -q -m 'A host can spawn gooey'"'"'s chip and add only its marker (#119) The contract bev
+356	355	research	model	model		2026-11-26T01:31:43Z	1.0	
+356	356	research	tool	shell	bash	2026-11-26T01:31:44Z	0.1	cd /home/ladvien/bevy_gooey_loop && grep -n "minimap" docs/guide/code-editor.md | head -12
+356	357	research	model	model		2026-11-26T01:31:44Z	1.0	
+356	358	research	tool	shell	bash	2026-11-26T01:31:45Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "CodeMinimap\|CodeSoftWrap" docs/guide/code-editor.md | head
+356	359	research	model	model		2026-11-26T01:31:45Z	1.4	
+356	360	research	tool	shell	bash	2026-11-26T01:31:46Z	0.1	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='docs/guide/code-editor.md' s=open(p).read() old="""a short file's outline still reads across the lane.""
+356	361	research	model	model		2026-11-26T01:31:46Z	1.0	
+356	362	research	tool	git	bash	2026-11-26T01:31:47Z	0.2	cd /home/ladvien/bevy_gooey_loop && git log --oneline -1; git status --short
+356	363	research	model	model		2026-11-26T01:31:48Z	1.5	
+356	364	research	tool	cargo test	bash	2026-11-26T01:31:49Z	2.0	cd /home/ladvien/bevy_gooey_loop && cat > /tmp/g112/gate.sh 2>/dev/null || mkdir -p /tmp/g112 && cat > /tmp/g112/gate.sh <<'EOF' #!/bin/bash cd /home/ladvien/be
+356	365	research	model	model		2026-11-26T01:31:51Z	0.9	
+356	366	research	tool	shell	bash	2026-11-26T01:31:52Z	0.0	ls -la /tmp/g112/ 2>&1; head -5 /tmp/g112/gate.log 2>&1
+356	367	research	model	model		2026-11-26T01:31:52Z	1.2	
+356	368	research	tool	shell	bash	2026-11-26T01:31:53Z	2.0	cd /home/ladvien/bevy_gooey_loop && cargo fmt 2>&1 | tail -2; git diff --stat; git add -u && git commit -q -m 'fmt: the wrapped-minimap test' 2>&1 | tail -1; gi
+356	369	research	model	model		2026-11-26T01:31:55Z	1.0	
+356	370	research	tool	shell	bash	2026-11-26T01:31:56Z	3.1	cd /home/ladvien/bevy_gooey_loop && rm -f /tmp/g112/gate.log && setsid nohup /tmp/g112/gate.sh > /tmp/g112/gate.log 2>&1 < /dev/null & disown; sleep 3; tail -3 
+356	371	research	model	model		2026-11-26T01:31:59Z	1.2	
+356	372	research	tool	shell	bash	2026-11-26T01:32:01Z	0.1	cd /home/ladvien/bevy_gooey_loop && head -30 CHANGELOG.md
+356	373	research	model	model		2026-11-26T01:32:01Z	1.6	
+356	374	research	tool	shell	bash	2026-11-26T01:32:02Z	0.2	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='CHANGELOG.md' s=open(p).read() s=s.replace('''## [Unreleased] ''','''## [Unreleased] ### Fixed - A `code
+356	375	research	model	model		2026-11-26T01:32:03Z	1.7	
+356	376	research	tool	shell	bash	2026-11-26T01:32:05Z	0.3	cd /home/ladvien/bevy_gooey_loop && grep -n "minimap\|prose" README.md | head -8; echo '=== media list tail ==='; tail -6 docs/media/README.md
+356	377	research	model	model		2026-11-26T01:32:05Z	1.8	
+356	378	research	tool	shell	bash	2026-11-26T01:32:07Z	0.1	cd /home/ladvien/bevy_gooey_loop && grep -n "CodeMinimap\|GOOEY_SHOT\|CodeSoftWrap\|fn main" examples/prose.rs | head -12; echo '=== gate ==='; tail -3 /tmp/g11
+356	379	research	model	model		2026-11-26T01:32:07Z	1.2	
+356	380	research	tool	shell	bash	2026-11-26T01:32:08Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '120,165p' examples/prose.rs
+356	381	research	model	model		2026-11-26T01:32:08Z	1.6	
+356	382	research	tool	shell	bash	2026-11-26T01:32:10Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '1,30p' examples/prose.rs
+356	383	research	model	model		2026-11-26T01:32:10Z	2.1	
+356	384	research	tool	shell	bash	2026-11-26T01:32:12Z	0.1	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='examples/prose.rs' s=open(p).read() s=s.replace('''//! `GOOEY_MINIMAP=1` puts a long script in the right
+356	385	research	model	model		2026-11-26T01:32:12Z	1.8	
+356	386	research	tool	cargo build	bash	2026-11-26T01:32:14Z	54.0	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='examples/prose.rs' s=open(p).read() s=s.replace(''' let wrapped = commands .spawn(pane( if wrapped_lane 
+356	387	research	bg	shell	bash	2026-11-26T01:31:09Z	118.4	bg_38 completed: python3 - <<'PY' p='src/code_wrap.rs' s=open(p).read() old=''' /// Whether lines are wrapped into rows. pub(crate) fn...
+356	388	research	model	model		2026-11-26T01:33:08Z	1.2	
+356	389	research	tool	shell	bash	2026-11-26T01:33:09Z	0.0	tail -6 /tmp/g112/gate.log; echo '=== display ==='; ls /tmp/.X11-unix/ 2>/dev/null; echo "DISPLAY=$DISPLAY"; xdpyinfo -display :99 2>&1 | head -2
+356	390	research	model	model		2026-11-26T01:33:09Z	1.3	
+356	391	research	tool	shell	bash	2026-11-26T01:33:10Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -B12 "unused-variables.*implied" /tmp/g112/gate.log | head -20
+356	392	research	model	model		2026-11-26T01:33:10Z	1.5	
+356	393	research	tool	shell	bash	2026-11-26T01:33:12Z	1.7	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='tests/code_navigation.rs' s=open(p).read() s=s.replace(''' let map = rect(&app, shown_by_role(&app, edit
+356	394	research	model	model		2026-11-26T01:33:13Z	1.1	
+356	395	research	tool	shell	bash	2026-11-26T01:33:15Z	0.0	cd /home/ladvien/bevy_gooey_loop && rm -f /tmp/g112/gate.log && setsid nohup /tmp/g112/gate.sh > /tmp/g112/gate.log 2>&1 < /dev/null & disown; mkdir -p /tmp/g11
+356	396	research	model	model		2026-11-26T01:33:15Z	1.0	
+356	397	research	tool	shell	bash	2026-11-26T01:33:16Z	0.0	cd /home/ladvien/bevy_gooey_loop && ls -la "$CARGO_TARGET_DIR/release/examples/prose" 2>&1 | head -2; echo "TARGET=$CARGO_TARGET_DIR"
+356	398	research	model	model		2026-11-26T01:33:16Z	1.1	
+356	399	research	tool	shell	bash	2026-11-26T01:33:17Z	60.0	[launched bg_39] cd /home/ladvien/bevy_gooey_loop && timeout 1700 bash -c 'until grep -qE "GATE DONE|GATE FAIL" /tmp/g112/gate.log; do sleep 20; done'; tail -14 /tmp/g112/gate.l
+356	400	research	model	model		2026-11-26T01:34:17Z	8.2	
+356	401	research	tool	cargo build	bash	2026-11-26T01:34:25Z	0.1	cd /home/ladvien/bevy_gooey_loop && cat >> docs/loop-log.md <<'EOF' ## Iteration 112 — 2026-11-26 — the minimap draws one bar per line, wrapped or not (#4) **Wh
+356	402	research	model	model		2026-11-26T01:34:25Z	1.0	
+356	403	research	tool	shell	bash	2026-11-26T01:34:26Z	0.0	tail -5 /tmp/g112/gate.log
+356	404	research	model	model		2026-11-26T01:34:26Z	1.0	
+356	405	research	tool	wait: other	wait	2026-11-26T01:34:27Z	5.0	{}
+356	406	research	model	model		2026-11-26T01:34:32Z	0.9	
+356	407	research	tool	wait: other	wait	2026-11-26T01:34:33Z	223.8	{}
+356	408	research	model	model		2026-11-26T01:38:17Z	3.3	
+356	409	research	tool	shell	bash	2026-11-26T01:38:20Z	0.1	tail -6 /tmp/g112/gate.log
+356	410	research	model	model		2026-11-26T01:38:20Z	1.3	
+356	411	research	tool	shell	bash	2026-11-26T01:38:21Z	60.0	[launched bg_40] cd /home/ladvien/bevy_gooey_loop && timeout 1750 bash -c 'until grep -qE "GATE DONE|GATE FAIL" /tmp/g112/gate.log; do sleep 15; done' ; tail -20 /tmp/g112/gate.
+356	412	research	model	model		2026-11-26T01:39:22Z	1.2	
+356	413	research	tool	wait: other	wait	2026-11-26T01:39:23Z	5.0	{}
+356	414	research	model	model		2026-11-26T01:39:28Z	1.0	
+356	415	research	tool	wait: other	wait	2026-11-26T01:39:29Z	240.4	{}
+356	416	research	model	model		2026-11-26T01:43:29Z	13.6	
+356	417	research	tool	git	bash	2026-11-26T01:43:43Z	0.0	cd /home/ladvien/bevy_gooey_loop && git diff main -- src/ | head -90
+356	418	research	model	model		2026-11-26T01:43:43Z	1.8	
+356	419	research	tool	shell	bash	2026-11-26T01:43:45Z	0.0	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='src/code_overlay.rs' s=open(p).read() s=s.replace(''' let top_line = lines.row_of(fold.line_at(view.firs
+356	420	research	model	model		2026-11-26T01:43:45Z	1.0	
+356	421	research	tool	git	bash	2026-11-26T01:43:46Z	0.0	cd /home/ladvien/bevy_gooey_loop && git diff main -- src/code_overlay.rs | sed -n '95,150p'
+356	422	research	model	model		2026-11-26T01:43:46Z	1.0	
+356	423	research	tool	git	bash	2026-11-26T01:43:47Z	0.0	cd /home/ladvien/bevy_gooey_loop && git diff main -- src/code_overlay.rs | tail -45
+356	424	research	model	model		2026-11-26T01:43:47Z	1.1	
+356	425	research	tool	shell	bash	2026-11-26T01:43:48Z	0.0	tail -8 /tmp/g112/gate.log; echo '--- time ---'; date -u
+356	426	research	model	model		2026-11-26T01:43:48Z	1.8	
+356	427	research	tool	git	bash	2026-11-26T01:43:49Z	0.1	cd /home/ladvien/bevy_gooey_loop && git add -u && git commit -q -m 'The band keeps its place when the view is scrolled past the last line' 2>&1|tail -1; git log
+356	428	research	model	model		2026-11-26T01:43:50Z	1.1	
+356	429	research	tool	cargo build	bash	2026-11-26T01:43:51Z	60.0	[launched bg_41] cd /home/ladvien/bevy_gooey_loop && CARGO_INCREMENTAL=0 RUSTC_WRAPPER= CARGO_BUILD_JOBS=2 timeout 900 cargo build --release --example prose 2>&1 | tail -3
+356	430	research	model	model		2026-11-26T01:44:51Z	1.0	
+356	431	research	tool	wait: other	wait	2026-11-26T01:44:52Z	5.0	{}
+356	432	research	model	model		2026-11-26T01:44:57Z	1.0	
+356	433	research	tool	wait: other	wait	2026-11-26T01:44:58Z	246.6	{}
+356	434	research	model	model		2026-11-26T01:49:04Z	593.8	
+356	435	research	tool	shell	bash	2026-11-26T01:58:58Z	0.0	tail -3 /tmp/g112/gate.log; echo '=== docs/media README, where images are listed ==='; cd /home/ladvien/bevy_gooey_loop && grep -n "minimap-first-frame\|prose" 
+356	436	research	bg	cargo build	bash	2026-11-26T01:43:54Z	904.0	bg_41 completed: CARGO_INCREMENTAL=0 RUSTC_WRAPPER= CARGO_BUILD_JOBS=2 timeout 900 cargo build --release --example prose 2>&1 | tail -3
+356	437	research	model	model		2026-11-26T01:58:58Z	1.4	
+356	438	research	tool	shell	bash	2026-11-26T01:58:59Z	0.0	tail -4 /tmp/g112/gate.log
+356	439	research	model	model		2026-11-26T01:58:59Z	1.0	
+356	440	research	tool	wait: other	wait	2026-11-26T01:59:00Z	5.0	{}
+356	441	research	model	model		2026-11-26T01:59:05Z	0.9	
+356	442	research	tool	wait: other	wait	2026-11-26T01:59:06Z	33.5	{}
+356	443	research	model	model		2026-11-26T01:59:40Z	1.5	
+356	444	research	tool	cargo test	bash	2026-11-26T01:59:41Z	60.0	[launched bg_42] cd /home/ladvien/bevy_gooey_loop && git status --short; git log --oneline -3; echo '=== rerun minimap + band ==='; CARGO_INCREMENTAL=0 RUSTC_WRAPPER= CARGO_BUIL
+356	445	research	model	model		2026-11-26T02:00:41Z	8.4	
+356	446	research	tool	wait: other	wait	2026-11-26T02:00:50Z	5.0	{}
+356	447	research	model	model		2026-11-26T02:00:55Z	1.0	
+356	448	research	tool	wait: other	wait	2026-11-26T02:00:56Z	13.5	{}
+356	449	research	model	model		2026-11-26T02:01:09Z	1.2	
+356	450	research	tool	cargo build	bash	2026-11-26T02:01:11Z	60.0	[launched bg_43] cd /home/ladvien/bevy_gooey_loop && CARGO_INCREMENTAL=0 RUSTC_WRAPPER= CARGO_BUILD_JOBS=4 timeout 1500 cargo build --release --example prose 2>&1 | tail -3
+356	451	research	model	model		2026-11-26T02:02:11Z	10.2	
+356	452	research	tool	wait: other	wait	2026-11-26T02:02:21Z	5.0	{}
+356	453	research	model	model		2026-11-26T02:02:26Z	1.0	
+356	454	research	tool	wait: other	wait	2026-11-26T02:02:27Z	13.3	{}
+356	455	research	model	model		2026-11-26T02:02:40Z	1.3	
+356	456	research	tool	shell	bash	2026-11-26T02:02:41Z	7.2	cd /home/ladvien/bevy_gooey_loop && P="$CARGO_TARGET_DIR/release/examples/prose"; mkdir -p /tmp/g112/shots; for skin in dark parchment; do env -u WAYLAND_DISPLA
+356	457	research	model	model		2026-11-26T02:02:49Z	1.1	
+356	458	research	tool	read files	read	2026-11-26T02:02:50Z	0.1	/tmp/g112/shots/dark.png
+356	459	research	model	model		2026-11-26T02:02:50Z	1.5	
+356	460	research	tool	shell	bash	2026-11-26T02:02:51Z	0.1	cd /tmp/g112 && magick shots/dark.png -crop 160x360+460+120 +repage -filter point -resize 300% zoom-dark.png && echo ok
+356	461	research	model	model		2026-11-26T02:02:51Z	1.1	
+356	462	research	tool	read files	read	2026-11-26T02:02:52Z	0.0	/tmp/g112/zoom-dark.png
+356	463	research	model	model		2026-11-26T02:02:52Z	2.4	
+356	464	research	tool	shell	bash	2026-11-26T02:02:55Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "fn pane" -A 22 examples/prose.rs
+356	465	research	model	model		2026-11-26T02:02:55Z	1.9	
+356	466	research	tool	cargo build	bash	2026-11-26T02:02:57Z	11.8	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='examples/prose.rs' s=open(p).read() old=''' let mut wrapped = commands.spawn(pane( if wrapped_lane { "Wr
+356	467	research	model	model		2026-11-26T02:03:08Z	2.4	
+356	468	research	tool	shell	bash	2026-11-26T02:03:11Z	0.1	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='examples/prose.rs' s=open(p).read() old=s[s.index(" // The pane is the outer column, so a marker inserte
+356	469	research	model	model		2026-11-26T02:03:11Z	1.3	
+356	470	research	tool	shell	bash	2026-11-26T02:03:12Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '130,185p' examples/prose.rs
+356	471	research	model	model		2026-11-26T02:03:12Z	2.0	
+356	472	research	tool	cargo build	bash	2026-11-26T02:03:14Z	1.6	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='examples/prose.rs' s=open(p).read() s=s.replace(''' let wrapped = commands.spawn(pane(wrapped_title)).id
+356	473	research	model	model		2026-11-26T02:03:16Z	2.0	
+356	474	research	tool	cargo build	bash	2026-11-26T02:03:18Z	2.2	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='examples/prose.rs' s=open(p).read() s=s.replace(''' code_editor("Script", script()), true,''',''' code_e
+356	475	research	model	model		2026-11-26T02:03:20Z	1.8	
+356	476	research	tool	cargo build	bash	2026-11-26T02:03:22Z	0.9	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='examples/prose.rs' s=open(p).read() s=s.replace(''' let (right_title, right_editor, right_lane) = if std
+356	477	research	model	model		2026-11-26T02:03:23Z	2.3	
+356	478	research	tool	cargo build	bash	2026-11-26T02:03:25Z	60.0	[launched bg_44] cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='examples/prose.rs' s=open(p).read() s=s.replace(''' let mut editor = if right_lane { body.spawn((code_ed
+356	479	research	model	model		2026-11-26T02:04:25Z	1.1	
+356	480	research	tool	wait: other	wait	2026-11-26T02:04:26Z	5.0	{}
+356	481	research	model	model		2026-11-26T02:04:31Z	3.1	
+356	482	research	tool	wait: other	wait	2026-11-26T02:04:34Z	10.3	{}
+356	483	research	model	model		2026-11-26T02:04:45Z	3.5	
+356	484	research	tool	shell	bash	2026-11-26T02:04:48Z	6.2	cd /home/ladvien/bevy_gooey_loop && P="$CARGO_TARGET_DIR/release/examples/prose"; for skin in dark parchment; do env -u WAYLAND_DISPLAY ${skin:+GOOEY_SKIN=$skin
+356	485	research	model	model		2026-11-26T02:04:54Z	1.1	
+356	486	research	tool	read files	read	2026-11-26T02:04:55Z	0.1	/tmp/g112/shots/dark.png
+356	487	research	model	model		2026-11-26T02:04:55Z	3.3	
+356	488	research	tool	cargo build	bash	2026-11-26T02:04:59Z	5.4	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='examples/prose.rs' s=open(p).read() s=s.replace('''//! `GOOEY_WRAPPED_MINIMAP=1` turns on both `CodeSoft
+356	489	research	model	model		2026-11-26T02:05:04Z	1.4	
+356	490	research	tool	shell	bash	2026-11-26T02:05:05Z	6.3	cd /home/ladvien/bevy_gooey_loop && P="$CARGO_TARGET_DIR/release/examples/prose"; for skin in dark parchment; do env -u WAYLAND_DISPLAY ${skin:+GOOEY_SKIN=$skin
+356	491	research	model	model		2026-11-26T02:05:12Z	1.2	
+356	492	research	tool	read files	read	2026-11-26T02:05:13Z	0.1	/tmp/g112/shots/dark.png
+356	493	research	model	model		2026-11-26T02:05:13Z	2.3	
+356	494	research	tool	shell	bash	2026-11-26T02:05:15Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '138,175p' examples/prose.rs
+356	495	research	model	model		2026-11-26T02:05:15Z	1.7	
+356	496	research	tool	edit files	edit	2026-11-26T02:05:17Z	0.0	examples/prose.rs
+356	497	research	model	model		2026-11-26T02:05:17Z	1.3	
+356	498	research	tool	cargo build	bash	2026-11-26T02:05:18Z	11.3	cd /home/ladvien/bevy_gooey_loop && cargo fmt && CARGO_INCREMENTAL=0 RUSTC_WRAPPER= CARGO_BUILD_JOBS=4 cargo build --release --example prose 2>&1 | tail -2 && P
+356	499	research	model	model		2026-11-26T02:05:30Z	1.0	
+356	500	research	tool	read files	read	2026-11-26T02:05:31Z	0.1	/tmp/g112/shots/dark.png
+356	501	research	model	model		2026-11-26T02:05:31Z	1.6	
+356	502	research	tool	read files	read	2026-11-26T02:05:32Z	0.1	/tmp/g112/shots/parchment.png
+356	503	research	model	model		2026-11-26T02:05:32Z	2.9	
+356	504	research	tool	git	bash	2026-11-26T02:05:35Z	0.0	cd /home/ladvien/bevy_gooey_loop && git status --short; echo '=== log ==='; git log --oneline main..HEAD; echo '=== CHANGELOG head ==='; sed -n '1,26p' CHANGELO
+356	505	research	model	model		2026-11-26T02:05:35Z	1.7	
+356	506	research	tool	git	bash	2026-11-26T02:05:37Z	0.0	cd /home/ladvien/bevy_gooey_loop && git log --oneline origin/main..HEAD; echo '=== branch/status vs origin ==='; git rev-parse --abbrev-ref --symbolic-full-name
+356	507	research	model	model		2026-11-26T02:05:37Z	2.0	
+356	508	research	tool	git	bash	2026-11-26T02:05:39Z	0.0	cd /home/ladvien/bevy_gooey_loop && git show --stat 6e507a4; echo '=== media README mentions wrap ==='; grep -n "wrap" docs/media/README.md | head; echo '=== gu
+356	509	research	model	model		2026-11-26T02:05:39Z	1.4	
+356	510	research	tool	shell	bash	2026-11-26T02:05:40Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "CodeMinimap\|minimap" docs/guide/code-editor.md | head -30; echo '=== README minimap ==='; grep -n "minimap" README
+356	511	research	model	model		2026-11-26T02:05:40Z	1.2	
+356	512	research	tool	shell	bash	2026-11-26T02:05:42Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "code editor\|code_editor\|CodeSoftWrap\|prose" README.md | head -20; echo '=== lines total ==='; wc -l README.md
+356	513	research	model	model		2026-11-26T02:05:42Z	1.4	
+356	514	research	tool	shell	bash	2026-11-26T02:05:43Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '135,145p' docs/guide/code-editor.md | cat; echo '=== images in guide ==='; grep -n "minimap-first-frame\|!\[" docs/g
+356	515	research	model	model		2026-11-26T02:05:43Z	2.2	
+356	516	research	tool	shell	bash	2026-11-26T02:05:45Z	0.3	cd /tmp/g112 && uv run --no-project --with pillow python - <<'PY' from PIL import Image box=(24,80,628,620) a=Image.open('shots/dark.png').crop(box) b=Image.ope
+356	517	research	model	model		2026-11-26T02:05:46Z	0.9	
+356	518	research	tool	read files	read	2026-11-26T02:05:46Z	0.0	/home/ladvien/bevy_gooey_loop/docs/media/minimap-wrapped.png
+356	519	research	model	model		2026-11-26T02:05:46Z	2.5	
+356	520	research	tool	shell	bash	2026-11-26T02:05:49Z	0.1	cd /tmp/g112 && uv run --no-project --with pillow python - <<'PY' from PIL import Image box=(24,24,628,620) a=Image.open('shots/dark.png').crop(box) b=Image.ope
+356	521	research	model	model		2026-11-26T02:05:49Z	1.0	
+356	522	research	tool	read files	read	2026-11-26T02:05:50Z	0.0	/tmp/g112/lane-zoom.png
+356	523	research	model	model		2026-11-26T02:05:50Z	1.9	
+356	524	research	tool	shell	bash	2026-11-26T02:05:52Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '1160,1200p' src/code_overlay.rs
+356	525	research	model	model		2026-11-26T02:05:52Z	1.6	
+356	526	research	tool	shell	bash	2026-11-26T02:05:54Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "in_view" src/code_overlay.rs
+356	527	research	model	model		2026-11-26T02:05:54Z	1.5	
+356	528	research	tool	shell	bash	2026-11-26T02:05:55Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "first_row\|struct View\|let view" src/code_overlay.rs | head -20
+356	529	research	model	model		2026-11-26T02:05:55Z	1.1	
+356	530	research	tool	shell	bash	2026-11-26T02:05:56Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "struct View" -A 20 src/code_editor.rs | head -30
+356	531	research	model	model		2026-11-26T02:05:56Z	1.9	
+356	532	research	tool	shell	bash	2026-11-26T02:05:58Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '1174,1190p' src/code_overlay.rs
+356	533	research	model	model		2026-11-26T02:05:58Z	1.8	
+356	534	research	tool	edit files	edit	2026-11-26T02:06:00Z	0.0	src/code_overlay.rs
+356	535	research	model	model		2026-11-26T02:06:00Z	2.9	
+356	536	research	tool	cargo test	bash	2026-11-26T02:06:03Z	60.0	[launched bg_45] cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='src/code_overlay.rs' s=open(p).read() s=s.replace(''' let last_row = (view.first_row + view.needed.min(v
+356	537	research	model	model		2026-11-26T02:07:03Z	1.3	
+356	538	research	tool	shell	bash	2026-11-26T02:07:04Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "under_soft_wrap_the_minimap_draws_one_bar_per_line_not_per_row" -A 60 tests/code_navigation.rs | head -70
+356	539	research	model	model		2026-11-26T02:07:04Z	1.6	
+356	540	research	tool	wait: other	wait	2026-11-26T02:07:06Z	5.0	{}
+356	541	research	model	model		2026-11-26T02:07:11Z	1.0	
+356	542	research	tool	wait: other	wait	2026-11-26T02:07:12Z	16.0	{}
+356	543	research	model	model		2026-11-26T02:07:28Z	1.9	
+356	544	research	tool	shell	bash	2026-11-26T02:07:30Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "CodeMinimapBand" tests/code_navigation.rs | head
+356	545	research	model	model		2026-11-26T02:07:30Z	2.0	
+356	546	research	tool	cargo test	bash	2026-11-26T02:07:32Z	39.6	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='tests/code_navigation.rs' s=open(p).read() old=''' let tops: std::collections::BTreeSet<i64> = drawn .it
+356	547	research	model	model		2026-11-26T02:08:12Z	2.0	
+356	548	research	tool	cargo test	bash	2026-11-26T02:08:14Z	60.0	[launched bg_46] cd /home/ladvien/bevy_gooey_loop && cp src/code_overlay.rs /tmp/g112/overlay.bak && python3 - <<'PY' p='src/code_overlay.rs' s=open(p).read() s=s.replace(''' le
+356	549	research	model	model		2026-11-26T02:09:14Z	1.1	
+356	550	research	tool	wait: other	wait	2026-11-26T02:09:15Z	5.0	{}
+356	551	research	model	model		2026-11-26T02:09:20Z	1.0	
+356	552	research	tool	wait: other	wait	2026-11-26T02:09:21Z	31.3	{}
+356	553	research	model	model		2026-11-26T02:09:52Z	2.5	
+356	554	research	tool	shell	bash	2026-11-26T02:09:55Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '1176,1192p' src/code_overlay.rs; echo '=== does mutation target still match? ==='; python3 - <<'PY' s=open('src/code
+356	555	research	model	model		2026-11-26T02:09:55Z	3.2	
+356	556	research	tool	cargo test	bash	2026-11-26T02:09:58Z	60.0	[launched bg_47] cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='tests/code_navigation.rs' s=open(p).read() s=s.replace(''' assert!( bars_in_band > 0 && bars_in_band < t
+356	557	research	model	model		2026-11-26T02:10:58Z	1.2	
+356	558	research	tool	wait: other	wait	2026-11-26T02:10:59Z	5.0	{}
+356	559	research	model	model		2026-11-26T02:11:04Z	1.4	
+356	560	research	tool	wait: other	wait	2026-11-26T02:11:05Z	57.3	{}
+356	561	research	model	model		2026-11-26T02:12:03Z	6.9	
+356	562	research	tool	cargo test	bash	2026-11-26T02:12:10Z	60.5	[launched bg_48] cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='tests/code_navigation.rs' s=open(p).read() s=s.replace(''' eprintln!( "DEBUG band h={} bars_in_band={bar
+356	563	research	model	model		2026-11-26T02:13:10Z	1.8	
+356	564	research	tool	wait: other	wait	2026-11-26T02:13:12Z	5.1	{}
+356	565	research	model	model		2026-11-26T02:13:17Z	1.3	
+356	566	research	tool	wait: other	wait	2026-11-26T02:13:18Z	68.4	{}
+356	567	research	model	model		2026-11-26T02:14:27Z	7.4	
+356	568	research	tool	cargo test	bash	2026-11-26T02:14:34Z	44.1	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='tests/code_navigation.rs' s=open(p).read() s=s.replace(''' assert!( bars_in_band > 0 && bars_in_band < t
+356	569	research	model	model		2026-11-26T02:15:18Z	7.1	
+356	570	research	tool	shell	bash	2026-11-26T02:15:25Z	0.0	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='tests/code_navigation.rs' s=open(p).read() s=s.replace(''' let text: String = (0..120) .map(|i| format!(
+356	571	research	model	model		2026-11-26T02:15:25Z	1.3	
+356	572	research	tool	shell	bash	2026-11-26T02:15:27Z	0.0	cd /home/ladvien/bevy_gooey_loop && cp /tmp/g112/overlay.bak src/code_overlay.rs && grep -n "let in_view" src/code_overlay.rs && grep -c bottom_line src/code_ov
+356	573	research	model	model		2026-11-26T02:15:27Z	1.6	
+356	574	research	tool	cargo test	bash	2026-11-26T02:15:28Z	60.0	[launched bg_49] cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='tests/code_navigation.rs' s=open(p).read() s=s.replace(''' // Every line shows at its own width: the sho
+356	575	research	model	model		2026-11-26T02:16:28Z	1.1	
+356	576	research	tool	wait: other	wait	2026-11-26T02:16:30Z	5.0	{}
+356	577	research	model	model		2026-11-26T02:16:35Z	1.1	
+356	578	research	tool	wait: other	wait	2026-11-26T02:16:36Z	68.2	{}
+356	579	research	model	model		2026-11-26T02:17:44Z	1.3	
+356	580	research	tool	cargo test	bash	2026-11-26T02:17:45Z	3.4	cd /home/ladvien/bevy_gooey_loop && CARGO_INCREMENTAL=0 RUSTC_WRAPPER= CARGO_BUILD_JOBS=2 cargo nextest run --all-features --lib --tests -E 'test(code_navigatio
+356	581	research	model	model		2026-11-26T02:17:48Z	2.3	
+356	582	research	tool	shell	bash	2026-11-26T02:17:51Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "fn editor_of" -A 30 tests/code_navigation.rs | head -40; echo '=== app/window ==='; grep -n "fn app\b" -A 25 tests/
+356	583	research	model	model		2026-11-26T02:17:51Z	3.4	
+356	584	research	tool	cargo test	bash	2026-11-26T02:17:54Z	60.0	[launched bg_50] cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='tests/code_navigation.rs' s=open(p).read() s=s.replace(''' let text: String = (0..120) .map(|i| format!(
+356	585	research	model	model		2026-11-26T02:18:54Z	1.3	
+356	586	research	tool	wait: other	wait	2026-11-26T02:18:55Z	5.1	{}
+356	587	research	model	model		2026-11-26T02:19:01Z	1.2	
+356	588	research	tool	wait: other	wait	2026-11-26T02:19:02Z	16.1	{}
+356	589	research	model	model		2026-11-26T02:19:18Z	2.2	
+356	590	research	tool	cargo test	bash	2026-11-26T02:19:20Z	60.0	[launched bg_51] cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='tests/code_navigation.rs' s=open(p).read() s=s.replace(''' // Every line is 60 to 179 columns (all under
+356	591	research	model	model		2026-11-26T02:20:20Z	8.6	
+356	592	research	tool	wait: other	wait	2026-11-26T02:20:29Z	1.1	{}
+356	593	research	model	model		2026-11-26T02:20:30Z	4.9	
+356	594	research	tool	shell	bash	2026-11-26T02:20:35Z	0.2	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='tests/code_navigation.rs' s=open(p).read() s=s.replace(''' // Every line is 60 to 179 columns (all under
+356	595	research	model	model		2026-11-26T02:20:35Z	1.3	
+356	596	research	tool	cargo test	bash	2026-11-26T02:20:36Z	60.0	[launched bg_52] cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='tests/code_navigation.rs' s=open(p).read() s=s.replace(''' widest > narrowest * 4.0,''',''' widest > nar
+356	597	research	model	model		2026-11-26T02:21:36Z	1.7	
+356	598	research	tool	wait: other	wait	2026-11-26T02:21:38Z	5.1	{}
+356	599	research	model	model		2026-11-26T02:21:43Z	1.3	
+356	600	research	tool	wait: other	wait	2026-11-26T02:21:44Z	11.1	{}
+356	601	research	model	model		2026-11-26T02:21:56Z	1.8	
+356	602	research	tool	cargo test	bash	2026-11-26T02:21:57Z	60.0	[launched bg_53] cd /home/ladvien/bevy_gooey_loop && cp src/code_overlay.rs /tmp/g112/overlay.good && python3 - <<'PY' p='src/code_overlay.rs' s=open(p).read() old=''' // The ba
+356	603	research	model	model		2026-11-26T02:22:57Z	3.4	
+356	604	research	tool	wait: other	wait	2026-11-26T02:23:01Z	5.2	{}
+356	605	research	model	model		2026-11-26T02:23:06Z	1.4	
+356	606	research	tool	wait: other	wait	2026-11-26T02:23:07Z	98.1	{}
+356	607	research	model	model		2026-11-26T02:24:45Z	3.1	
+356	608	research	tool	cargo test	bash	2026-11-26T02:24:48Z	60.0	[launched bg_54] cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='tests/code_navigation.rs' s=open(p).read() s=s.replace(''' // Every line is many rows, so the rows on sc
+356	609	research	model	model		2026-11-26T02:25:48Z	1.3	
+356	610	research	tool	wait: other	wait	2026-11-26T02:25:50Z	5.0	{}
+356	611	research	model	model		2026-11-26T02:25:55Z	1.2	
+356	612	research	tool	wait: other	wait	2026-11-26T02:25:56Z	18.4	{}
+356	613	research	model	model		2026-11-26T02:26:14Z	6.9	
+356	614	research	tool	shell	bash	2026-11-26T02:26:21Z	0.3	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='tests/code_navigation.rs' s=open(p).read() s=s.replace(''' eprintln!("DEBUG h={} inband={bars_in_band} n
+356	615	research	model	model		2026-11-26T02:26:22Z	1.9	
+356	616	research	tool	cargo test	bash	2026-11-26T02:26:24Z	60.0	[launched bg_55] cd /home/ladvien/bevy_gooey_loop && cargo fmt && CARGO_INCREMENTAL=0 RUSTC_WRAPPER= CARGO_BUILD_JOBS=2 cargo nextest run --all-features --lib --tests -E 'test(c
+356	617	research	model	model		2026-11-26T02:27:24Z	1.3	
+356	618	research	tool	wait: other	wait	2026-11-26T02:27:25Z	5.0	{}
+356	619	research	model	model		2026-11-26T02:27:30Z	1.0	
+356	620	research	tool	wait: other	wait	2026-11-26T02:27:31Z	79.9	{}
+356	621	research	model	model		2026-11-26T02:28:51Z	5.4	
+356	622	research	tool	cargo test	bash	2026-11-26T02:28:56Z	60.0	[launched bg_56] cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='src/code_overlay.rs' s=open(p).read() old=''' // The band's height is the text in view, in lines: the or
+356	623	research	model	model		2026-11-26T02:29:56Z	1.1	
+356	624	research	tool	wait: other	wait	2026-11-26T02:29:58Z	5.0	{}
+356	625	research	model	model		2026-11-26T02:30:03Z	1.6	
+356	626	research	tool	wait: other	wait	2026-11-26T02:30:04Z	60.3	{}
+356	627	research	model	model		2026-11-26T02:31:04Z	5.5	
+356	628	research	tool	cargo test	bash	2026-11-26T02:31:10Z	60.0	[launched bg_57] cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='tests/code_navigation.rs' s=open(p).read() s=s.replace(''' // Every line is many rows, so the rows on sc
+356	629	research	model	model		2026-11-26T02:32:10Z	1.2	
+356	630	research	tool	wait: other	wait	2026-11-26T02:32:11Z	5.0	{}
+356	631	research	model	model		2026-11-26T02:32:16Z	1.5	
+356	632	research	tool	wait: other	wait	2026-11-26T02:32:18Z	46.5	{}
+356	633	research	model	model		2026-11-26T02:33:04Z	11.5	
+356	634	research	tool	shell	bash	2026-11-26T02:33:16Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "pub fn code_editor" -A 45 src/code_editor.rs | grep -n "Node\|width\|min_width\|flex_"
+356	635	research	model	model		2026-11-26T02:33:16Z	4.0	
+356	636	research	tool	cargo test	bash	2026-11-26T02:33:20Z	45.3	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='tests/code_navigation.rs' s=open(p).read() s=s.replace(''' eprintln!("DEBUG h={} inband={bars_in_band} n
+356	637	research	model	model		2026-11-26T02:34:05Z	5.2	
+356	638	research	tool	cargo test	bash	2026-11-26T02:34:10Z	11.1	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='tests/code_navigation.rs' s=open(p).read() s=s.replace(''' let cn = app.world().get::<ComputedNode>(edit
+356	639	research	model	model		2026-11-26T02:34:21Z	8.8	
+356	640	research	tool	shell	bash	2026-11-26T02:34:30Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '895,1000p' tests/code_navigation.rs
+356	641	research	model	model		2026-11-26T02:34:30Z	4.1	
+356	642	research	tool	shell	bash	2026-11-26T02:34:34Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "Wrap::build\|cols =\|wrap_cols\|soft_wrap" src/code_editor.rs | head -20
+356	643	research	model	model		2026-11-26T02:34:34Z	1.3	
+356	644	research	tool	shell	bash	2026-11-26T02:34:36Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '1355,1380p' src/code_editor.rs
+356	645	research	model	model		2026-11-26T02:34:36Z	5.6	
+356	646	research	tool	shell	bash	2026-11-26T02:34:41Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '1000,1020p' tests/code_navigation.rs
+356	647	research	model	model		2026-11-26T02:34:41Z	6.9	
+356	648	research	tool	shell	bash	2026-11-26T02:34:48Z	1.4	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='tests/code_navigation.rs' s=open(p).read() old=s[s.index(''' // Every line has its own place, and every 
+356	649	research	model	model		2026-11-26T02:34:49Z	1.4	
+356	650	research	tool	cargo test	bash	2026-11-26T02:34:51Z	46.2	cd /home/ladvien/bevy_gooey_loop && CARGO_INCREMENTAL=0 RUSTC_WRAPPER= CARGO_BUILD_JOBS=2 cargo nextest run --all-features --lib --tests -E 'test(code_navigatio
+356	651	research	model	model		2026-11-26T02:35:37Z	3.9	
+356	652	research	tool	shell	bash	2026-11-26T02:35:41Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '1320,1372p' src/code_editor.rs
+356	653	research	model	model		2026-11-26T02:35:41Z	5.5	
+356	654	research	tool	shell	bash	2026-11-26T02:35:46Z	0.0	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='tests/code_navigation.rs' s=open(p).read() s=s.replace('''/// [`editor_of`] at 150 px wide, so a 60 to 1
+356	655	research	model	model		2026-11-26T02:35:47Z	2.7	
+356	656	research	tool	shell	bash	2026-11-26T02:35:49Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "Role::CodeEditor" src/skin.rs | head
+356	657	research	model	model		2026-11-26T02:35:49Z	1.1	
+356	658	research	tool	shell	bash	2026-11-26T02:35:50Z	0.0	cd /home/ladvien/bevy_gooey_loop && sedan=1; sed -n '4930,4960p' src/skin.rs
+356	659	research	model	model		2026-11-26T02:35:50Z	5.0	
+356	660	research	tool	cargo test	bash	2026-11-26T02:35:55Z	50.3	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='tests/code_navigation.rs' s=open(p).read() s=s.replace(''' let texts = shown_by_role(&app, editor, Role:
+356	661	research	model	model		2026-11-26T02:36:46Z	2.3	
+356	662	research	tool	cargo test	bash	2026-11-26T02:36:48Z	45.6	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='tests/code_navigation.rs' s=open(p).read() s=s.replace(''' let editor = world .spawn(( code_editor("Scri
+356	663	research	model	model		2026-11-26T02:37:33Z	3.3	
+356	664	research	tool	shell	bash	2026-11-26T02:37:37Z	0.0	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='tests/code_navigation.rs' s=open(p).read() s=s.replace(''' // Thirty identical lines of 400 columns: at 
+356	665	research	model	model		2026-11-26T02:37:37Z	1.3	
+356	666	research	tool	cargo test	bash	2026-11-26T02:37:38Z	44.6	cd /home/ladvien/bevy_gooey_loop && CARGO_INCREMENTAL=0 RUSTC_WRAPPER= CARGO_BUILD_JOBS=2 cargo nextest run --all-features --lib --tests -E 'test(code_navigatio
+356	667	research	model	model		2026-11-26T02:38:23Z	2.2	
+356	668	research	tool	shell	bash	2026-11-26T02:38:25Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '1255,1275p' src/code_editor.rs; grep -n "CodeSoftWrap" src/code_editor.rs | head
+356	669	research	model	model		2026-11-26T02:38:25Z	4.7	
+356	670	research	tool	cargo test	bash	2026-11-26T02:38:30Z	46.5	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='tests/code_navigation.rs' s=open(p).read() s=s.replace(''' let texts = shown_by_role(&app, editor, Role:
+356	671	research	model	model		2026-11-26T02:39:16Z	2.8	
+356	672	research	tool	shell	bash	2026-11-26T02:39:19Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "pub fn sync" -A 30 src/code_wrap.rs | head -45
+356	673	research	model	model		2026-11-26T02:39:19Z	1.1	
+356	674	research	tool	shell	bash	2026-11-26T02:39:20Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -rn "fn sync" src/code_wrap.rs src/code_fold.rs | head; grep -n "impl RowMap" -A 40 src/code_wrap.rs | head -50
+356	675	research	model	model		2026-11-26T02:39:20Z	1.2	
+356	676	research	tool	shell	bash	2026-11-26T02:39:21Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "fn build" -A 45 src/code_wrap.rs | head -55
+356	677	research	model	model		2026-11-26T02:39:21Z	3.1	
+356	678	research	tool	shell	bash	2026-11-26T02:39:24Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "impl CodeEditor" -A 40 src/code_editor.rs | grep "pub fn" | head -12
+356	679	research	model	model		2026-11-26T02:39:24Z	2.7	
+356	680	research	tool	shell	bash	2026-11-26T02:39:27Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "CodeSoftWrap" tests/code_editor.rs | head -10; echo '=== one setup ==='; grep -n "fn wrapped\b\|CodeSoftWrap,)" -B1
+356	681	research	model	model		2026-11-26T02:39:27Z	1.2	
+356	682	research	tool	shell	bash	2026-11-26T02:39:28Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '890,975p' tests/code_editor.rs
+356	683	research	model	model		2026-11-26T02:39:28Z	5.0	
+356	684	research	tool	shell	bash	2026-11-26T02:39:33Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "const WIDTH\|const HEIGHT" tests/code_editor.rs tests/code_navigation.rs | head
+356	685	research	model	model		2026-11-26T02:39:33Z	4.8	
+356	686	research	tool	cargo test	bash	2026-11-26T02:39:38Z	54.0	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='tests/code_navigation.rs' s=open(p).read() s=s.replace(''' // Thirty identical lines of 400 columns: eac
+356	687	research	model	model		2026-11-26T02:40:32Z	5.2	
+356	688	research	tool	shell	bash	2026-11-26T02:40:37Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '22,56p' tests/code_navigation.rs; echo '=== code_editor app ==='; sed -n '/^fn app() -> App/,/^}/p' tests/code_edito
+356	689	research	model	model		2026-11-26T02:40:37Z	1.2	
+356	690	research	tool	shell	bash	2026-11-26T02:40:38Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '/^fn app_with/,/^}/p' tests/code_editor.rs | head -40; echo '=== advance helper ==='; grep -n "fn advance" -A 10 tes
+356	691	research	model	model		2026-11-26T02:40:38Z	4.0	
+356	692	research	tool	shell	bash	2026-11-26T02:40:42Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "pub fn" src/code_editor.rs | sed -n '1,40p'
+356	693	research	model	model		2026-11-26T02:40:42Z	1.7	
+356	694	research	tool	shell	bash	2026-11-26T02:40:44Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '469,480p' src/code_editor.rs; grep -n "fn settles_at_800\|wrapped_editor_of" tests/code_editor.rs | head -4
+356	695	research	model	model		2026-11-26T02:40:44Z	2.6	
+356	696	research	tool	shell	bash	2026-11-26T02:40:47Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "fn shown_by_role" -A 15 tests/code_navigation.rs
+356	697	research	model	model		2026-11-26T02:40:47Z	6.8	
+356	698	research	tool	cargo test	bash	2026-11-26T02:40:53Z	50.0	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='tests/code_navigation.rs' s=open(p).read() s=s.replace(''' let texts = shown_by_role(&app, editor, Role:
+356	699	research	model	model		2026-11-26T02:41:43Z	3.7	
+356	700	research	tool	shell	bash	2026-11-26T02:41:47Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "pub(crate) fn break_columns" -A 40 src/code_wrap.rs | head -50
+356	701	research	model	model		2026-11-26T02:41:47Z	6.6	
+356	702	research	tool	cargo test	bash	2026-11-26T02:41:54Z	44.0	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='tests/code_navigation.rs' s=open(p).read() s=s.replace(''' let ed = app.world().get::<CodeEditor>(editor
+356	703	research	model	model		2026-11-26T02:42:38Z	5.7	
+356	704	research	tool	cargo test	bash	2026-11-26T02:42:43Z	48.1	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='tests/code_navigation.rs' s=open(p).read() start=s.index('''/// The band says how much of the **file** t
+356	705	research	model	model		2026-11-26T02:43:32Z	2.5	
+356	706	research	tool	cargo test	bash	2026-11-26T02:43:34Z	60.0	[launched bg_58] cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='src/code_overlay.rs' s=open(p).read() old=''' // The band's height is the text in view, in lines: the or
+356	707	research	model	model		2026-11-26T02:44:34Z	1.2	
+356	708	research	tool	wait: other	wait	2026-11-26T02:44:35Z	5.1	{}
+356	709	research	model	model		2026-11-26T02:44:40Z	1.2	
+356	710	research	tool	wait: other	wait	2026-11-26T02:44:41Z	21.4	{}
+356	711	research	model	model		2026-11-26T02:45:03Z	1.7	
+356	712	research	tool	cargo clippy	bash	2026-11-26T02:45:05Z	23.1	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='tests/code_navigation.rs' s=open(p).read() # drop the now-unused narrow helper start=s.index('''/// [`ed
+356	713	research	model	model		2026-11-26T02:45:28Z	1.8	
+356	714	research	tool	cargo test	bash	2026-11-26T02:45:30Z	60.0	[launched bg_59] cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='tests/code_navigation.rs' s=open(p).read() s=s.replace(' let editor = narrow_editor_of(&mut app, &text, 
+356	715	research	model	model		2026-11-26T02:46:30Z	8.3	
+356	716	research	tool	wait: other	wait	2026-11-26T02:46:38Z	5.0	{}
+356	717	research	model	model		2026-11-26T02:46:43Z	1.2	
+356	718	research	tool	wait: other	wait	2026-11-26T02:46:44Z	16.4	{}
+356	719	research	model	model		2026-11-26T02:47:01Z	2.5	
+356	720	research	tool	cargo test	bash	2026-11-26T02:47:03Z	60.0	[launched bg_60] cd /home/ladvien/bevy_gooey_loop && cp src/code_overlay.rs /tmp/g112/overlay.good2 && python3 - <<'PY' p='src/code_overlay.rs' s=open(p).read() old=''' let line
+356	721	research	model	model		2026-11-26T02:48:03Z	1.5	
+356	722	research	tool	wait: other	wait	2026-11-26T02:48:05Z	5.0	{}
+356	723	research	model	model		2026-11-26T02:48:10Z	1.2	
+356	724	research	tool	wait: other	wait	2026-11-26T02:48:11Z	22.7	{}
+356	725	research	model	model		2026-11-26T02:48:33Z	2.1	
+356	726	research	tool	shell	bash	2026-11-26T02:48:36Z	1.4	cd /home/ladvien/bevy_gooey_loop && cargo fmt && git add -A && git commit -q -m 'The minimap band is as tall as the lines in view, wrapped or not (#4) Under Cod
+356	727	research	model	model		2026-11-26T02:48:37Z	1.4	
+356	728	research	tool	shell	bash	2026-11-26T02:48:38Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '78,79p' docs/media/README.md | cat; echo '=== guide line 139 raw ==='; sed -n '139p' docs/guide/code-editor.md
+356	729	research	model	model		2026-11-26T02:48:38Z	1.4	
+356	730	research	tool	shell	bash	2026-11-26T02:48:40Z	0.0	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' import re p='docs/guide/code-editor.md' s=open(p).read() old_tail = "With `CodeSoftWrap` on, the lane still
+356	731	research	model	model		2026-11-26T02:48:40Z	2.5	
+356	732	research	tool	edit files	edit	2026-11-26T02:48:42Z	0.0	docs/media/README.md
+356	733	research	model	model		2026-11-26T02:48:42Z	2.3	
+356	734	research	tool	shell	bash	2026-11-26T02:48:45Z	0.0	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='CHANGELOG.md' s=open(p).read() s=s.replace(''' again, the band starts at the line the view starts on and
+356	735	research	model	model		2026-11-26T02:48:45Z	1.9	
+356	736	research	tool	cargo test	bash	2026-11-26T02:48:47Z	0.0	cd /home/ladvien/bevy_gooey_loop && cat > /tmp/g112/gate2.sh <<'EOF' set -x cd /home/ladvien/bevy_gooey_loop export CARGO_INCREMENTAL=0 RUSTC_WRAPPER= CARGO_BUI
+356	737	research	model	model		2026-11-26T02:48:47Z	3.1	
+356	738	research	tool	git	bash	2026-11-26T02:48:50Z	0.0	cd /home/ladvien/bevy_gooey_loop && git show --stat 65888eb; echo '=== diff ==='; git show 65888eb -- src/ | head -60
+356	739	research	model	model		2026-11-26T02:48:50Z	1.4	
+356	740	research	tool	git	bash	2026-11-26T02:48:51Z	0.7	cd /home/ladvien/bevy_gooey_loop && git tag --list 'v0.6*' | tail -5; echo '=== last audit tail ==='; git fetch -q origin loop-stats 2>&1 | tail -1; git show or
+356	741	research	model	model		2026-11-26T02:48:52Z	4.1	
+356	742	research	tool	shell	bash	2026-11-26T02:48:56Z	0.0	cd /home/ladvien/bevy_gooey_loop && tail -6 /tmp/g112/gate2.log; echo '=== README compat row ==='; sed -n '129,133p' README.md
+356	743	research	model	model		2026-11-26T02:48:56Z	2.1	
+356	744	research	tool	shell	bash	2026-11-26T02:48:58Z	0.3	curl -s -H 'User-Agent: loop-check' https://crates.io/api/v1/crates/bevy_gooey | python3 -c "import json,sys; d=json.load(sys.stdin); print('max', d['crate']['m
+356	745	research	model	model		2026-11-26T02:48:58Z	1.7	
+356	746	research	tool	cargo publish	bash	2026-11-26T02:49:00Z	1.4	cd /home/ladvien/bevy_gooey_loop && ls ~/.cargo/credentials* 2>/dev/null; timeout 180 cargo publish --dry-run 2>&1 | tail -12
+356	747	research	model	model		2026-11-26T02:49:01Z	1.2	
+356	748	research	tool	cargo publish	bash	2026-11-26T02:49:03Z	0.4	cd /home/ladvien/bevy_gooey_loop && CARGO_INCREMENTAL=0 timeout 300 cargo publish --dry-run 2>&1 | tail -6
+356	749	research	model	model		2026-11-26T02:49:03Z	1.9	
+356	750	research	tool	cargo publish	bash	2026-11-26T02:49:05Z	43.7	cd /home/ladvien/bevy_gooey_loop && env -u CARGO_INCREMENTAL CARGO_INCREMENTAL=0 RUSTC_WRAPPER= timeout 400 cargo publish --dry-run 2>&1 | tail -6
+356	751	research	model	model		2026-11-26T02:49:49Z	1.7	
+356	752	research	tool	shell	bash	2026-11-26T02:49:50Z	0.0	cd /home/ladvien/bevy_gooey_loop && tail -8 /tmp/g112/gate2.log
+356	753	research	model	model		2026-11-26T02:49:50Z	4.1	
+356	754	research	tool	git	bash	2026-11-26T02:49:54Z	0.0	cd /home/ladvien/bevy_gooey_loop && git tag --list 'v0.5*' | tail -3; echo '=== does tag v0.60.0 exist and where ==='; git log --oneline -1 v0.60.0 2>&1; echo '
+356	755	research	model	model		2026-11-26T02:49:54Z	1.5	
+356	756	research	tool	wait: other	wait	2026-11-26T02:49:56Z	0.0	{}
+356	757	research	model	model		2026-11-26T02:49:56Z	1.2	
+356	758	research	tool	shell	bash	2026-11-26T02:49:57Z	0.1	cd /home/ladvien/bevy_gooey_loop && tail -6 /tmp/g112/gate2.log; echo '--- pids ---'; pgrep -af "gate2.sh" | head -2
+356	759	research	model	model		2026-11-26T02:49:57Z	1.3	
+356	760	research	tool	shell	bash	2026-11-26T02:49:58Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "iteration 111" -A 30 docs/loop-log.md | head -45
+356	761	research	model	model		2026-11-26T02:49:58Z	1.1	
+356	762	research	tool	shell	bash	2026-11-26T02:50:00Z	0.0	cd /home/ladvien/bevy_gooey_loop && head -40 docs/loop-log.md
+356	763	research	model	model		2026-11-26T02:50:00Z	1.2	
+356	764	research	tool	shell	bash	2026-11-26T02:50:01Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "^## Iteration 11[01]" docs/loop-log.md; wc -l docs/loop-log.md
+356	765	research	model	model		2026-11-26T02:50:01Z	2.3	
+356	766	research	tool	shell	bash	2026-11-26T02:50:03Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '3736,3852p' docs/loop-log.md
+356	767	research	model	model		2026-11-26T02:50:03Z	2.1	
+356	768	research	tool	shell	bash	2026-11-26T02:50:05Z	0.0	cd /home/ladvien/bevy_gooey_loop && tail -4 /tmp/g112/gate2.log
+356	769	research	model	model		2026-11-26T02:50:05Z	2.5	
+356	770	research	tool	shell	bash	2026-11-26T02:50:08Z	0.0	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='docs/loop-log.md' s=open(p).read() old='''**The fix.** `draw_navigation`'s lane: length `lines().rows(le
+356	771	research	model	model		2026-11-26T02:50:08Z	2.9	
+356	772	research	tool	shell	bash	2026-11-26T02:50:11Z	0.0	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='docs/loop-log.md' s=open(p).read() s=s.replace('''**Failing test first.** `tests/code_navigation.rs::und
+356	773	research	model	model		2026-11-26T02:50:11Z	2.7	
+356	774	research	tool	shell	bash	2026-11-26T02:50:13Z	0.1	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='docs/loop-log.md' s=open(p).read() s=s.replace('''**Demo.** `examples/prose.rs` gained `GOOEY_WRAPPED_MI
+356	775	research	model	model		2026-11-26T02:50:13Z	2.4	
+356	776	research	tool	cargo build	bash	2026-11-26T02:50:16Z	0.0	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='docs/loop-log.md' s=open(p).read() s=s.replace('''**Checklist.** fmt, clippy `-D warnings`, nextest **17
+356	777	research	model	model		2026-11-26T02:50:16Z	3.4	
+356	778	research	tool	shell	bash	2026-11-26T02:50:19Z	0.0	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='docs/loop-log.md' s=open(p).read() s=s.replace('''**Top 5 backlog.** (1) crates.io token still 403 from 
+356	779	research	model	model		2026-11-26T02:50:19Z	1.4	
+356	780	research	tool	shell	bash	2026-11-26T02:50:21Z	60.0	[launched bg_61] cd /home/ladvien/bevy_gooey_loop && sleep 120; tail -20 /tmp/g112/gate2.log
+356	781	research	model	model		2026-11-26T02:51:21Z	1.4	
+356	782	research	tool	wait: other	wait	2026-11-26T02:51:22Z	5.1	{}
+356	783	research	model	model		2026-11-26T02:51:27Z	1.5	
+356	784	research	tool	wait: other	wait	2026-11-26T02:51:29Z	52.1	{}
+356	785	research	model	model		2026-11-26T02:52:21Z	1.9	
+356	786	research	tool	shell	bash	2026-11-26T02:52:23Z	0.0	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='CHANGELOG.md' s=open(p).read() s=s.replace('''## [Unreleased] ### Fixed - A `code_editor` with `CodeMini
+356	787	research	model	model		2026-11-26T02:52:23Z	3.4	
+356	788	research	tool	shell	bash	2026-11-26T02:52:26Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -rn "0.60.0" --include="*.md" --include="*.toml" . 2>/dev/null | grep -v CHANGELOG | grep -v target/ | head -10
+356	789	research	model	model		2026-11-26T02:52:26Z	1.4	
+356	790	research	tool	shell	bash	2026-11-26T02:52:28Z	0.1	cd /home/ladvien/bevy_gooey_loop && tail -6 /tmp/g112/gate2.log; echo '---'; pgrep -af gate2.sh | head -1
+356	791	research	model	model		2026-11-26T02:52:28Z	2.5	
+356	792	research	tool	git	bash	2026-11-26T02:52:30Z	0.2	cd /home/ladvien/bevy_gooey_loop && git add docs/loop-log.md docs/media/README.md CHANGELOG.md Cargo.toml README.md docs/media/minimap-wrapped.png examples/pros
+356	793	research	model	model		2026-11-26T02:52:30Z	1.3	
+356	794	research	tool	shell	bash	2026-11-26T02:52:31Z	0.0	cd /home/ladvien/bevy_gooey_loop && tail -4 /tmp/g112/gate2.log
+356	795	research	model	model		2026-11-26T02:52:31Z	1.3	
+356	796	research	tool	wait: other	wait	2026-11-26T02:52:33Z	0.0	{}
+356	797	research	model	model		2026-11-26T02:52:33Z	1.4	
+356	798	research	tool	cargo test	bash	2026-11-26T02:52:34Z	0.1	cd /home/ladvien/bevy_gooey_loop && ps -o pid,etime,cmd -p 2119980 2>/dev/null | tail -2; pgrep -af "cargo nextest" | head -2; ls -la /tmp/g112/gate2.log; date 
+356	799	research	model	model		2026-11-26T02:52:34Z	2.6	
+356	800	research	tool	shell	bash	2026-11-26T02:52:37Z	0.1	cd /home/ladvien/bevy_gooey_loop && ps --ppid 2119980 -o pid,etime,cmd | head -5; echo '--- rustc? ---'; pgrep -af rustc | head -3
+356	801	research	model	model		2026-11-26T02:52:37Z	1.3	
+356	802	research	tool	shell	bash	2026-11-26T02:52:38Z	60.0	[launched bg_62] cd /home/ladvien/bevy_gooey_loop && timeout 300 bash -c 'until grep -qE "GATE DONE" /tmp/g112/gate2.log; do sleep 20; done'; tail -22 /tmp/g112/gate2.log
+356	803	research	model	model		2026-11-26T02:53:38Z	1.2	
+356	804	research	tool	wait: other	wait	2026-11-26T02:53:40Z	5.0	{}
+356	805	research	model	model		2026-11-26T02:53:45Z	1.2	
+356	806	research	tool	wait: other	wait	2026-11-26T02:53:46Z	232.5	{}
+356	807	research	model	model		2026-11-26T02:57:38Z	9.0	
+356	808	research	tool	shell	bash	2026-11-26T02:57:47Z	60.0	[launched bg_63] cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='docs/loop-log.md' s=open(p).read() s=s.replace('nextest **1718 passed** (the two new tests included),','
+356	809	research	model	model		2026-11-26T02:58:47Z	1.4	
+356	810	research	tool	wait: other	wait	2026-11-26T02:58:49Z	0.0	{}
+356	811	research	model	model		2026-11-26T02:58:49Z	1.2	
+356	812	research	tool	shell	bash	2026-11-26T02:58:50Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -E "=== (doctests|check|wasm)|test result:|Summary" /tmp/g112/gate2.log | head -12
+356	813	research	model	model		2026-11-26T02:58:50Z	1.6	
+356	814	research	tool	shell	bash	2026-11-26T02:58:52Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "=== exit" /tmp/g112/gate2.log; echo '--- check/wasm/doc tails ---'; grep -A3 "=== check ===" /tmp/g112/gate2.log | 
+356	815	research	model	model		2026-11-26T02:58:52Z	1.5	
+356	816	research	tool	push gate	bash	2026-11-26T02:58:53Z	2.0	cd /home/ladvien/bevy_gooey_loop && git add -A && git commit -q -m 'Log: 1719 tests on the shipped tree' && git status --short && git log --oneline origin/main.
+356	817	research	model	model		2026-11-26T02:58:55Z	1.3	
+356	818	research	tool	cargo publish	bash	2026-11-26T02:58:57Z	29.1	cd /home/ladvien/bevy_gooey_loop && env -u CARGO_INCREMENTAL CARGO_INCREMENTAL=0 RUSTC_WRAPPER= timeout 600 cargo publish 2>&1 | tail -8
+356	819	research	model	model		2026-11-26T02:59:26Z	2.2	
+356	820	research	tool	push gate	bash	2026-11-26T02:59:28Z	1.8	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='docs/loop-log.md' s=open(p).read() s=s.replace('''**Checklist.** fmt, clippy `-D warnings`, nextest **17
+356	821	research	model	model		2026-11-26T02:59:30Z	1.5	
+356	822	research	tool	push gate	bash	2026-11-26T02:59:31Z	2.0	cd /home/ladvien/bevy_gooey_loop && git tag v0.61.0 && git push -q origin v0.61.0 && git status --short; echo '=== audit check ==='; git fetch -q origin loop-st
+356	823	research	model	model		2026-11-26T02:59:33Z	2.0	
+356	824	research	tool	git	bash	2026-11-26T02:59:35Z	0.7	cd /home/ladvien/bevy_gooey_loop && git tag --list v0.61.0; git ls-remote --tags origin v0.61.0; sed -n '139p' docs/guide/code-editor.md | tail -c 300
+356	825	research	model	model		2026-11-26T02:59:36Z	2.1	
+356	826	research	tool	shell	bash	2026-11-26T02:59:38Z	0.0	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='docs/guide/code-editor.md' s=open(p).read() old="The band is the lines in view, and a press maps a slot 
+356	827	research	model	model		2026-11-26T02:59:38Z	1.5	
+356	828	research	tool	push gate	bash	2026-11-26T02:59:40Z	2.8	cd /home/ladvien/bevy_gooey_loop && grep -c "" docs/guide/code-editor.md; RUSTDOCFLAGS="" cargo fmt --check && echo fmt-ok; git add -A && git commit -q -m 'Guid
+356	829	research	model	model		2026-11-26T02:59:42Z	2.6	
+356	830	research	tool	shell	bash	2026-11-26T02:59:45Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '104p' README.md | head -c 700
+356	831	research	model	model		2026-11-26T02:59:45Z	1.7	
+356	832	research	tool	push gate	bash	2026-11-26T02:59:47Z	1.5	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='README.md' s=open(p).read() old="`code_editor` (`CodeSoftWrap` wraps it at its edge, `CodeMarkdown` draw
+356	833	research	model	model		2026-11-26T02:59:48Z	1.9	
+356	834	research	tool	shell	bash	2026-11-26T02:59:50Z	0.0	cd /home/ladvien/bevy_gooey_loop && tail -20 docs/research/minimap-wrap.md
+356	835	research	model	model		2026-11-26T02:59:50Z	1.2	
+356	836	research	tool	shell	bash	2026-11-26T02:59:51Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "^## " docs/research/minimap-wrap.md
+356	837	research	model	model		2026-11-26T02:59:51Z	1.2	
+356	838	research	tool	shell	bash	2026-11-26T02:59:53Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n '55,75p' docs/research/minimap-wrap.md
+356	839	research	model	model		2026-11-26T02:59:53Z	2.4	
+356	840	research	tool	push gate	bash	2026-11-26T02:59:55Z	0.0	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='docs/research/minimap-wrap.md' s=open(p).read() s=s.replace('''- 120 wrapped lines: at least 120 drawn b
+356	841	research	model	model		2026-11-26T02:59:55Z	1.5	
+356	842	research	tool	push gate	bash	2026-11-26T02:59:57Z	1.5	cd /home/ladvien/bevy_gooey_loop && git add -A && git commit -q -F - <<'MSG' Research: the band validation target, and the bar fixture after the cap The note cl
+356	843	research	model	model		2026-11-26T02:59:58Z	1.8	
+356	844	research	tool	git	bash	2026-11-26T03:00:00Z	0.0	cd /home/ladvien/bevy_gooey_loop && git log --oneline -4; echo '=== origin ==='; git log --oneline -3 origin/main; echo '=== status ==='; git status --short; gi
+356	845	research	model	model		2026-11-26T03:00:00Z	1.9	
+356	846	research	tool	git	bash	2026-11-26T03:00:02Z	0.0	cd /home/ladvien/bevy_gooey_loop && git log --oneline -1 v0.61.0; echo '=== what tag lacks ==='; git diff --stat v0.61.0 HEAD
+356	847	research	model	model		2026-11-26T03:00:02Z	2.9	
+356	848	research	tool	cargo build	bash	2026-11-26T03:00:05Z	8.7	cd /home/ladvien/bevy_gooey_loop && CARGO_INCREMENTAL=0 RUSTC_WRAPPER= RUSTDOCFLAGS="-D warnings" cargo doc --no-deps 2>&1 | tail -2; cargo fmt --check && echo 
+356	849	research	model	model		2026-11-26T03:00:13Z	2.8	
+356	850	research	tool	push gate	bash	2026-11-26T03:00:16Z	1.6	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='docs/loop-log.md' s=open(p).read() s=s.replace('''**Checklist.** fmt, clippy `-D warnings`, nextest **17
+356	851	research	model	model		2026-11-26T03:00:18Z	1.6	
+356	852	research	tool	shell	bash	2026-11-26T03:00:19Z	0.7	cd /home/ladvien/bevy_gooey_loop && echo '=== pushed? ==='; git status --short; git rev-parse HEAD origin/main; echo '=== media file present and referenced ==='
+356	853	research	model	model		2026-11-26T03:00:20Z	2.4	
