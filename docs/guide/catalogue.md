@@ -2,6 +2,10 @@
 
 The README names a handful of things; this page is the whole list, one section per job, with the names a host uses and a link to the page that goes into it. [What a host touches](host-api.md) is the same list by kind (resources, components, systems) and [the widgets](widgets.md) is every widget in one table. The first seven sections are widgets and screens; the rest are the layout parts for a tool's own panels, which arrived with G-82 to G-90 and are newest.
 
+## Draw one text in your own face
+
+`TextFace::new(handle)` on a text pins the face — a page of prose in a reading serif, a name in the game's display face — where `GooeyFonts` gives labels and headings theirs. The role still writes the ink and the size and your weight and slant are kept; it is per node, so a panel's face reaches no Markdown span or code glyph, and taking it off gives the role's face back in the same frame ([text face](text-face.md), `cargo run --example text_face`).
+
 ## Skin the whole interface from one value
 
 `GooeySkin` is plain data with four presets (dark, parchment, a high-contrast one held to 7:1 and a compact `Tool` one), a `problems()` check against the WCAG 2.2 contrast and target-size rules, `density: Density::Compact` for a desktop tool's rows (half the padding, a 24 px least target), design tokens (`spacing`, `radii`, `type_scale` and a `surfaces` ladder of five fills whose every step `problems()` holds to at least ΔL\* 2, drawn by `surface(n)`; your own named colours go in `tones`, drawn by `Role::Tone` and checked pair by pair with `tone_problems`; `hover`, `pressed`, `held`, `card` and friends are the states your own controls draw by `Role::Pressed` and the like), and a `SkinScope(skin)` on any node restyles just that subtree (a preview of a theme, an editor's own chrome next to a game's skin): `GooeySkin::from_seed(PaletteSeed { background, text, accent })` derives a whole checked skin from three colours, `GooeySkin::desk()` is a desktop tool's neutral look built that way, and `elevation` holds its shadows as CSS-style data: [skins and checks](skins.md).

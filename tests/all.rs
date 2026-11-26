@@ -117,6 +117,7 @@ mod testing;
 mod text;
 mod text_area;
 mod text_area_fill;
+mod text_face;
 mod text_grid;
 mod toast;
 mod toast_actions;

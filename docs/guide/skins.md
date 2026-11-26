@@ -16,7 +16,7 @@
 - a meter too thin to show a fill inside its frame and gap (`meter_height × text_scale` at most 4 × `border`);
 - a size that is not finite, or not positive where it must be.
 
-Fonts are yours: set `GooeyFonts { body, heading }`. The default draws Bevy's built-in font when Bevy's `default_font` feature is on.
+Fonts are yours: set `GooeyFonts { body, heading, mono }`. The default draws Bevy's built-in font when Bevy's `default_font` feature is on. One *kind* of text — a page of prose, a plate count — takes its own face from a `TextFace` on it, and the skin still writes its ink and its size ([one text, its own face](text-face.md)).
 
 ## Every field
 

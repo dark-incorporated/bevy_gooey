@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- `TextFace::new(handle)` on a text pins the face that text draws in, where `apply_skin` gives it `GooeyFonts::body` or `heading` from its role (#118, `docs/research/text-face.md`, `docs/guide/text-face.md`, `examples/text_face.rs`). A game that wants a page of prose in a reading serif beside a panel in the skin's face sets one component and runs no system of its own; before, a `TextFont` a host set on a widget was written over at the next restyle, so a host re-applied its face to every prose text every frame. The role still writes the ink and the size, the host's weight and slant are kept, and the face is per node with no cascade, so it reaches no Markdown span and no code editor glyph. `Changed<TextFace>` and its removal are restyle triggers, so inserting it changes the face in that frame and removing it gives the role's face back.
+
 ## [0.59.0] - 2026-11-25
 
 ### Fixed
