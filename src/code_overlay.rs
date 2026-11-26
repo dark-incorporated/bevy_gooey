@@ -937,7 +937,8 @@ pub(crate) fn update_code_overlays(
     }
 }
 
-/// The part of the minimap in view: the first display row it draws, the height of a row and its width.
+/// The part of the minimap in view: the first line that shows it draws, the pitch between lines and
+/// the lane's width. Its unit is a line, not a display row: a soft-wrapped line is one bar.
 #[derive(Clone, Copy, Debug)]
 pub(crate) struct MinimapView {
     pub(crate) first: usize,
@@ -1163,14 +1164,23 @@ fn draw_navigation(
         });
     let pitch = MINIMAP_BAR_PX * 2.0;
     let capacity = ((view.area.y / pitch).floor() as usize).max(1);
-    let rows = view.rows;
-    let travel = (rows as f32 * view.line_px - view.area.y).max(1.0);
-    let first = if rows <= capacity {
+    // The lane is an outline of the **file**, not of the scroll: one bar per line that shows, so a
+    // soft-wrapped line is one bar (`FoldMap::line_at` numbers those lines) however many display
+    // rows it takes. Keyed on rows it drew 158 bars of 84 different widths for 120 lines — the
+    // first forty lines four segments each, and the band covered four times the text it should.
+    let shown = fold.rows(editor.buffer.len_lines());
+    // Where the view is, in the same units: the first display row drawn, mapped to its line's
+    // ordinal among the shown ones.
+    let top_line = fold.row_of(fold.line_at(view.first_row));
+    let travel = (shown as f32 * view.line_px - view.area.y).max(1.0);
+    // The band's height is the text in view, in lines; a row taller than the lane still counts.
+    let in_view = (view.area.y / view.line_px).ceil() as usize;
+    let first = if shown <= capacity {
         0
     } else {
-        (((rows - capacity) as f32) * (view.shown.y / travel).clamp(0.0, 1.0)).round() as usize
+        (((shown - capacity) as f32) * (view.shown.y / travel).clamp(0.0, 1.0)).round() as usize
     };
-    let count = capacity.min(rows.saturating_sub(first));
+    let count = capacity.min(shown.saturating_sub(first));
     editor.overlay.minimap = Some(MinimapView {
         first,
         pitch,
@@ -1209,15 +1219,18 @@ fn draw_navigation(
     .clamp(MINIMAP_MIN_COLS, MINIMAP_MAX_COLS);
     let column = ((width - 4.0) / scale_cols as f32).max(0.5);
     let cols_at = |editor: &CodeEditor, slot: usize| -> usize {
-        let row = first + slot;
-        if slot < count && row < rows {
-            display_width(editor.buffer.line(fold.line_at(row)), tab).min(scale_cols)
+        let ordinal = first + slot;
+        if slot < count && ordinal < shown {
+            let line = fold.line_at(ordinal);
+            display_width(editor.buffer.line(line), tab).min(scale_cols)
         } else {
             0
         }
     };
-    let band_top = (view.shown.y / view.line_px - first as f32) * pitch;
-    let band_height = (view.area.y / view.line_px * pitch)
+    // The band says where the text in view stands in the file, in lines: it starts where the view
+    // does and is as tall as the lines it shows.
+    let band_top = top_line.saturating_sub(first) as f32 * pitch;
+    let band_height = (in_view as f32 * pitch)
         .min(count as f32 * pitch)
         .max(pitch);
     if editor.overlay.minimap_band.is_none() {
@@ -1270,11 +1283,15 @@ fn draw_navigation(
             .id();
         editor.overlay.minimap_bars.push(bar);
     }
+    // A mark stands on its line's own bar, in the lane's units.
     let mark_rows: Vec<(usize, CodeSeverity)> = marks
         .iter()
         .filter_map(|&(line, severity)| {
-            let row = fold.row_of(line);
-            (row >= first && row < first + count).then_some((row, severity))
+            if fold.is_hidden(line) {
+                return None;
+            }
+            let ordinal = fold.row_of(line);
+            (ordinal >= first && ordinal < first + count).then_some((ordinal, severity))
         })
         .collect();
     let held_marks = editor.overlay.minimap_marks.len();
