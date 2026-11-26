@@ -1685,6 +1685,40 @@ pub struct GooeyFonts {
     pub mono: FontSource,
 }
 
+/// The face one text draws in, where its role would give it [`GooeyFonts`]' body or heading face.
+///
+/// [`apply_skin`] is the one writer of a widget's look, and it writes the face from [`GooeyFonts`],
+/// so a `TextFont` a host sets on a widget is written over at the next restyle (a state change, a
+/// move, a skin change). A `TextFace` is the host's own choice, pinned on the text it belongs to:
+/// the role still gives the text its ink and its size, and the face comes from here.
+///
+/// It is **per node and does not cascade** (like [`InkOverride`](crate::InkOverride)): a panel's
+/// face does not reach a Markdown page's words or a code editor's glyphs. The host's weight and
+/// slant are kept, so a bold run in a custom face stays bold.
+///
+/// ```
+/// # use bevy::prelude::*;
+/// # use bevy_gooey::*;
+/// # fn ui(mut commands: Commands, assets: Res<AssetServer>) {
+/// // A page of prose in the host's reading face; a keycap beside it keeps the skin's.
+/// commands.spawn((row(1.0), children![
+///     (label("The lantern is out."), TextFace::new(assets.load("fonts/reading.ttf"))),
+///     tag("E"),
+/// ]));
+/// # }
+/// ```
+#[derive(Component, Clone, Debug, PartialEq, Reflect)]
+#[reflect(Component, Debug, PartialEq, Clone)]
+pub struct TextFace(pub FontSource);
+
+impl TextFace {
+    /// A face from anything a [`FontSource`] is made of: a `Handle<Font>`, a family name
+    /// ([`FontSource::family`]) or a CSS list ([`FontSource::families`]).
+    pub fn new(face: impl Into<FontSource>) -> Self {
+        Self(face.into())
+    }
+}
+
 /// What a widget is, which decides how [`apply_skin`] styles it. Every widget function puts one on
 /// its root (and on the parts it spawns); put one on your own node to have it styled the same way.
 #[derive(Component, Clone, Copy, Debug, PartialEq, Eq, Reflect)]
