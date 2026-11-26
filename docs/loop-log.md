@@ -3778,3 +3778,7 @@ change this makes, and `TextFace` adds no system (`apply_skin` reads one more op
 **Release.** 0.60.0: `Cargo.toml`, `CHANGELOG` section, README compat row, `docs/media/README` version
 column. `cargo publish --dry-run` clean; `cargo publish` 403 as every release since 0.51.9 (owner's
 token), not retried.
+
+**Top 5 backlog.** (1) crates.io token still 403 for 0.51.9 to 0.60.0 (owner must reissue); (2)
+incremental wrap-map rebuild from `take_line_edits`; (3) windowed variable-height table; (4) minimap and
+indent guides under soft wrap; (5) a `problems()` note for a divider under 24 px.
