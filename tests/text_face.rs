@@ -288,9 +288,10 @@ fn a_code_editor_follows_its_own_font_and_not_a_face_pinned_beside_it() {
     // neighbour's: a `TextFace` on the prose beside it moves neither glyph of the code.
     let mut app = app();
     let serif = serif(&mut app);
-    let mut fonts = GooeyFonts::default();
-    fonts.mono = serif.clone();
-    app.insert_resource(fonts);
+    app.insert_resource(GooeyFonts {
+        mono: serif.clone(),
+        ..Default::default()
+    });
     let world = app.world_mut();
     let editor = world.spawn(code_editor("Script", "let x = 1;")).id();
     let prose = world
