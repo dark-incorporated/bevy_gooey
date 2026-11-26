@@ -1685,6 +1685,41 @@ pub struct GooeyFonts {
     pub mono: FontSource,
 }
 
+/// The face one text draws in, where its role would give it [`GooeyFonts`]' body or heading face.
+///
+/// [`apply_skin`] is the one writer of a widget's look, and it writes the face from [`GooeyFonts`],
+/// so a `TextFont` a host sets on a widget is written over at the next restyle (a state change, a
+/// move, a skin change). A `TextFace` is the host's own choice, pinned on the text it belongs to:
+/// the role still gives the text its ink and its size, and the face comes from here.
+///
+/// It is **per node and does not cascade** (like [`InkOverride`](crate::InkOverride)): a panel's
+/// face does not reach a Markdown page's words or a code editor's glyphs. The host's weight and
+/// slant are kept, so a bold run in a custom face stays bold.
+///
+/// ```
+/// # use bevy::prelude::*;
+/// # use bevy_gooey::*;
+/// # fn ui(mut commands: Commands, assets: Res<AssetServer>) {
+/// // A page of prose in the host's reading face; a keycap beside it keeps the skin's.
+/// commands.spawn((row(1.0), children![
+///     (label("The lantern is out."), TextFace::new(assets.load("fonts/reading.ttf"))),
+///     tag("E"),
+/// ]));
+/// # }
+/// ```
+#[derive(Component, Clone, Debug, PartialEq, Reflect)]
+#[reflect(Component, Debug, PartialEq, Clone)]
+pub struct TextFace(pub FontSource);
+
+impl TextFace {
+    /// A face from anything a [`FontSource`] is made of: a `Handle<Font>` a host loaded, or a CSS
+    /// font-family list as a string (`"'Fira Sans', sans-serif"`, which Bevy reads one character at
+    /// a time, so a glyph the first face lacks comes from the next).
+    pub fn new(face: impl Into<FontSource>) -> Self {
+        Self(face.into())
+    }
+}
+
 /// What a widget is, which decides how [`apply_skin`] styles it. Every widget function puts one on
 /// its root (and on the parts it spawns); put one on your own node to have it styled the same way.
 #[derive(Component, Clone, Copy, Debug, PartialEq, Eq, Reflect)]
@@ -2347,7 +2382,8 @@ type Styled = (
     Option<&'static mut ImageNode>,
     Option<&'static IconTone>,
     Option<&'static IconSize>,
-    Option<&'static PresenceAlpha>,
+    // The fade, and the host's own face for this text: a nested pair so the query stays at 15.
+    (Option<&'static PresenceAlpha>, Option<&'static TextFace>),
 );
 
 /// Every input a widget's look depends on, read once per run of [`apply_skin`], except the skin,
@@ -2705,6 +2741,7 @@ type Restyle = (
                     Changed<LedSize>,
                     Changed<MeterTone>,
                     Changed<TagTone>,
+                    Changed<TextFace>,
                 )>,
             )>,
         )>,
@@ -2752,6 +2789,7 @@ type Removals<'w, 's> = (
         RemovedComponents<'w, 's, LedSize>,
         RemovedComponents<'w, 's, MeterTone>,
         RemovedComponents<'w, 's, TagTone>,
+        RemovedComponents<'w, 's, TextFace>,
     ),
 );
 
@@ -2844,7 +2882,7 @@ pub fn apply_skin(
         unprimed,
         unsized_controls,
         unvaried,
-        (unheld, unstacked, uninked, unled, untoned, untagged),
+        (unheld, unstacked, uninked, unled, untoned, untagged, untextface),
     ) = &mut removed;
     let any_scope = !scopes.is_empty();
     let look = Look {
@@ -3125,6 +3163,7 @@ pub fn apply_skin(
     dirty.extend(unled.read());
     dirty.extend(untoned.read());
     dirty.extend(untagged.read());
+    dirty.extend(untextface.read());
     if focus.is_changed() || visible.is_changed() {
         dirty.extend(
             styled
@@ -3328,7 +3367,9 @@ fn restyle(
     };
     let scale = placed.map_or(1.0, |(scale, _)| scale);
     // How opaque this node is drawn: the product of every `Opacity` at and above it (a fade), and
-    // whole for a node outside one.
+    // whole for a node outside one. The host's own face for this text, if it pinned one: the role
+    // below still gives the ink and the size, and a text drawn by the host in its own face keeps it.
+    let (presence, face) = presence;
     let alpha = presence.map_or(1.0, |alpha| alpha.0);
     // Every text size on whole device pixels at the node's scale (the window's times `UiScale`),
     // rounded up, so glyphs are set at a whole pixel size and are not softened between two.
@@ -6023,7 +6064,12 @@ fn restyle(
         }
         if let Some(mut text_font) = text_font {
             let mut next = text_font.clone();
-            next.font = font.clone();
+            // The host's face wins over the role's; its weight and slant are kept, so a bold run in
+            // a custom face stays bold. Nothing is written when the face is the one it has.
+            let wanted = face.map_or(font, |face| &face.0);
+            if &next.font != wanted {
+                next.font = wanted.clone();
+            }
             next.font_size = scaled(size);
             text_font.set_if_neq(next);
         }
