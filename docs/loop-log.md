@@ -3732,3 +3732,49 @@ slice of code, both skins, first frame.
 **Top 5 backlog.** (1) crates.io token still 403 for 0.51.9 to 0.58.0; (2) incremental wrap-map rebuild; (3)
 windowed variable-height table; (4) minimap and indent guides under soft wrap; (5) a `problems()` note for
 a divider under 24 px.
+
+## Iteration 111 — 2026-11-26 — one text keeps its own face (#118)
+
+**What and why.** Issue #118 (`grimoire-ui`, filed by `dark-incorporated/bevy_dark_factory` as its #551
+follow-up): a host that sets a `TextFont` of its own on a text has it written over on the next restyle,
+because `apply_skin` is the one writer of a text's look and writes the face from `GooeyFonts` with the
+ink and the size — and a restyle happens on a skin change, a scope change, a parent move, an owner's
+state change and the first frame's real target. The consumer's workaround was a system after
+`GooeySystems::Style` re-applying the prose face to every prose text **every frame**: a second writer of
+one component, the defect this crate's own guide names for `SplitThickness` and the LED's glow.
+
+`TextFace::new(handle)` (a `FontSource`, so a `Handle<Font>` or a CSS family list) pins the face on one
+text. The role still writes the ink and the size, the host's weight and slant are kept, it is per node
+with no cascade, and inserting, changing or removing it restyles that text in the same frame
+(`Changed<TextFace>` and `RemovedComponents<TextFace>` are restyle triggers).
+
+**Assumed decision (owner may override):** a component on the text rather than a `GooeySkin` field (the
+skin is one look per screen, and the crate cannot know which label is prose), and no cascade (a panel's
+face must not reach a Markdown span or a code editor's glyph, which are exactly the texts that must not
+take it). Recorded in `docs/research/text-face.md` and the commit body.
+
+**Sources.** `docs/research/text-face.md`: Mertz, *Down to the Letter* (one to three typefaces, each with
+its own consistent purpose); Xbox Accessibility Guideline 101 "Font style" (a player must be able to ask
+for a plainer face, so the face belongs to a kind of text, not to the screen); CSS `font-family`
+(inherited, a prioritised list). The home-still preflight was not run this pass; its `Pending index`
+list stands.
+
+**The demo, and two things it caught.** `examples/text_face.rs` beside `docs/media/text-face.png`
+(dark and parchment, halved and joined). Writing it exposed two layout defects in my own example, not in
+the crate: a `Node` spawned beside `screen()` panicked on a duplicate component (`screen()` already
+carries one — insert it over), and the widget panel's `Extent::Percent(42)` could not shrink, so at 150%
+text the choice ran past its panel's edge; a `sized_panel(CardWidth::Text(25.0))` keeps every row fitting
+at every text size. The `binding` row was dropped from the demo: its keycap is 17 body text sizes wide by
+design, which at 150% pushed its panel.
+
+**Checklist.** fmt, clippy `-D warnings` (one lint in my own test, fixed), nextest **1715 passed**
+(`--no-fail-fast`; 6 new in `text_face`, measuring the glyphs Bevy shaped rather than the field), doctests
+359, `cargo check --lib`, wasm32, `cargo doc -D warnings` — all green on the tree that shipped.
+Contrast from the pixels: the serif prose reads 14.4:1 dark and 8.7:1 parchment on its panel; the
+heading keeps the skin's face in both. `mean_ms` gallery 720p, no fixed clock, eight alternating pairs at
+load 36-61: before 39.9-69.1, after 32.4-51.8 — the noise of a host at load 40 is far wider than any
+change this makes, and `TextFace` adds no system (`apply_skin` reads one more optional component).
+
+**Release.** 0.60.0: `Cargo.toml`, `CHANGELOG` section, README compat row, `docs/media/README` version
+column. `cargo publish --dry-run` clean; `cargo publish` 403 as every release since 0.51.9 (owner's
+token), not retried.
