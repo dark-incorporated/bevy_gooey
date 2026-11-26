@@ -3863,6 +3863,12 @@ column of the new media row. `cargo publish --dry-run` clean (it needs `CARGO_IN
 same as every release since 0.51.9, so 0.51.9 through 0.61.0 are pending the owner's new token. Not
 retried; the next pass's audit says so.
 
+**Tag.** `v0.61.0` is `175a883`, the tree the gate ran on and the tree the dry run packaged (the
+version, the CHANGELOG section and the media row are all inside it). Four docs-only commits follow it
+on `main` (the guide's still, the README's `CodeMinimap` mention, the research note's correction), so
+the published package would want one more `cargo publish` of that tree if the owner wants the guide
+image reference shipped — the crate's code and its numbers are identical either way.
+
 **Checklist.** fmt, clippy `-D warnings`, nextest **1719 passed** (the two new tests included),
 doctests 359, `cargo check --lib`, wasm32, `cargo doc -D warnings` — the gate below. The lane's
 colours and contrast are untouched (#117 holds `minimap_bar` at 3:1 on its lane in every preset).
