@@ -7,7 +7,7 @@ This page is the list a game needs: which resource, component and system of the 
 | type | what it holds | where it lives |
 |---|---|---|
 | `GooeySkin` | every colour and size, `density` (`Density::Compact` for a tool: half the padding, a 24 px least target) and the player's `text_scale` (the `text_size` row edits it); `high_contrast()` and `tool()` are presets, `skin_preset` the row that picks one (`SkinPreset`, `with_colours_of`) | a resource, read by `apply_skin` |
-| `GooeyFonts` | the handles of the host's body and heading fonts | a resource |
+| `GooeyFonts` | the handles of the host's body, heading and monospace fonts | a resource |
 | `UiScaleSettings` | `reference_short_side` and the player's `scale` (the `interface_size` row edits it) | a resource, read by `scale_with_window` |
 | `ToastSettings` | `anchor`, `max_visible`, `base_seconds`, `chars_per_second`, `duration_scale`, `fade_seconds` | a resource, read by `update_toasts` |
 | `BindingSettings` | `key_prompt`, `pad_prompt`, `chord_prompt`, `pad_style` (the `pad_style` row edits it), `cancel_key`, `cancel_button` | a resource, read by `update_bindings` and `bind_by_input` |
@@ -34,6 +34,7 @@ This page is the list a game needs: which resource, component and system of the 
 - `NumberValue(f32)`, `NumberStep(f32)`, `NumberRange { min, max }` — a `number_field`'s number, how far a pixel of drag or a key moves it, and the ends the player is held to. Write the value to change the field from code (no `ValueChange<f32>` comes back for that); `MixedValue` on the row shows `MIXED_HINT` for a multi-selection that differs. A `vec_field` has `VecValue(Vec<f32>)` and `VecMixed(Vec<bool>)` and sends `VecChange`; a typed word it would not take is a `NumberRefused` with its `NumberError`. See [numbers](numbers.md).
 - `Prompt { keyboard, pad }` — a `prompt`'s two inputs, `Prompt::SELECT` and `Prompt::BACK` for the ones the crate acts on. Set it on the prompt's entity to keep the hint true after a rebind (the keycap follows in the same frame). See [prompts](prompts.md).
 - `TabsValue(usize)` and `TabsCount(usize)` — a `tabs`' selected index and its number of labels. Write a `TabsValue` to turn the page from code (no `ValueChange` comes back for that); read it to know the page.
+- `TextFace(FontSource)` — on a text: the face that text draws in, where `GooeyFonts` gives its role's (a page of prose in a reading serif). Per node, no cascade; insert, change or remove it and the text changes face in the same frame. `TextFace::new(handle)` takes a loaded `Handle<Font>` or a CSS family list. See [one text, its own face](text-face.md).
 - `Tooltip { text, shortcut }` — the hint on any widget, built `Tooltip::new("Save")` and, for a command with a keyboard shortcut, `.with_shortcut(Shortcut::primary(KeyCode::KeyS))` (a keycap beside the line). Insert, remove or edit it and the open box follows. See [shortcuts](shortcuts.md).
 - `Shortcut { modifiers, key }`, `Modifiers` and `Platform` — a key chord, its platform's words (`label`, `label_on`) and the one rule for "went down this frame" (`just_pressed`). A `Shortcut` is also a component: on a widget it is what `ShortcutBadges` shows while the player holds a modifier.
 - `Toast { .. }` — the component `toast()` and `toast_alert()` return; despawn the entity to take one back sooner.

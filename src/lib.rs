@@ -424,7 +424,7 @@ pub use shortcut::{ChordText, Modifiers, Platform, Shortcut, update_chord_texts}
 pub use size_motion::{SectionGlide, SplitGlide, update_section_glides, update_split_glides};
 pub use skin::{
     Density, GooeyFonts, GooeySkin, PrimaryButton, Role, SkinPreset, SkinProblem, SkinScope,
-    apply_skin,
+    TextFace, apply_skin,
 };
 pub use slots::{
     Slot, SlotCursor, SlotGrid, SlotItems, SlotMoved, SlotRef, SlotRefused, SlotRules,
@@ -553,6 +553,7 @@ impl Plugin for GooeyStylePlugin {
             .add_message::<UiFeedback>()
             .register_type::<GooeySkin>()
             .register_type::<SkinScope>()
+            .register_type::<TextFace>()
             .register_type::<PrimaryButton>()
             .register_type::<ButtonVariant>()
             .register_type::<Loading>()
