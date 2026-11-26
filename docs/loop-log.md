@@ -3782,3 +3782,71 @@ token), not retried.
 **Top 5 backlog.** (1) crates.io token still 403 for 0.51.9 to 0.60.0 (owner must reissue); (2)
 incremental wrap-map rebuild from `take_line_edits`; (3) windowed variable-height table; (4) minimap and
 indent guides under soft wrap; (5) a `problems()` note for a divider under 24 px.
+
+## Iteration 112 — 2026-11-26 — the minimap draws one bar per line, wrapped or not (#4)
+
+**What and why.** The backlog's item 4, and the first *wrong* widget left on it (a category-1
+defect, ahead of either perf item): with `CodeSoftWrap` and `CodeMinimap` on one editor the lane was
+keyed on **display rows**. One wrapped line is several rows, so a 120-line prose file in an 800 px
+editor filled a 160-slot lane with the first **forty** lines, each drawn as four short segments —
+**158 bars of 84 different widths**, measured by the failing test — and the view band claimed four
+times the text on screen. A lane that grows longer when the window narrows is a lane that lies about
+the file.
+
+**Root cause.** `RowMap` derefs to `FoldMap` and *shadows* three of its lookups (`row_of`,
+`line_at`, `rows`) with display-row meanings, which is right for the caret, the scroll and the
+pooled rows. The minimap needs the other unit. `RowMap::lines()` now hands the fold half back by
+name, so the choice is in the API and not in a `let x: &FoldMap = &fold;` deref a maintainer would
+have to decode.
+
+**The fix.** `draw_navigation`'s lane: length `lines().rows(len_lines())`, a bar from
+`lines().line_at(slot)` at its own display width, the band's top from
+`lines().row_of(line(fold.line_at(view.first_row)))` and its height `ceil(area.y / line_px)` lines,
+and a press or drag mapping a slot to its line and then to that line's **first display row** (the
+scroll stays in rows, because the scroll really is in rows). Diagnostics marks follow their line's
+slot. Folding is unchanged — a closed fold hides lines, so the lane shortens as before.
+
+**Indent guides were read and left alone.** They are keyed on rows and take *the row's line's*
+level; every row of a wrapped line carries that line's level, so a guide runs continuously over the
+wrap. Reported, not edited.
+
+**Failing test first.**
+`tests/code_navigation.rs::under_soft_wrap_the_minimap_draws_one_bar_per_line_not_per_row` — 120
+lines of 20 to 139 characters; asserts the editor really is wrapping (more text rows than line
+numbers), at least 120 bars in a 160-slot lane, one top each, one width each, the longest four times
+the shortest. It failed on the tree it was written against with `158 bars, 84 widths`. Its twin
+`without_wrap_the_minimap_still_draws_one_bar_per_line` pins the unwrapped lane unchanged. All 14
+`code_navigation` tests green, including the three existing minimap tests (#117's first-frame and
+lane-width contracts, the band-drag one).
+
+**Sources.** `docs/research/minimap-wrap.md`: Shneiderman's Visual Information-Seeking Mantra (an
+overview outlines the document, not the viewport); VS Code 1.43 "Minimap size" — "each line gets a
+certain amount of vertical space in the minimap … each line gets 4 px", one slot per line wrapped or
+not, with `logicalLine` naming the same distinction; this crate's own `code-soft-wrap.md` (#114),
+which documents the shadowing that caused this. home-still returned nothing on point for two
+queries; recorded under Pending index.
+
+**Assumed decision (owner may override):** the lane's unit is a line that **shows** (a folded-away
+line has no bar), not a line of the buffer. The alternative — drawing hidden lines too — would make
+the outline disagree with the band, which is measured in shown lines. Recorded in the research note.
+
+**Consumer issues closed, with evidence.** All three open `consumer` issues for bevy_grimoire were
+stale premises, not gaps: #118 (`TextFace`) shipped in `678b008`/v0.60.0 and was simply never
+closed; #119 (`Role::Chip`) shipped in `3cdf4a4`, which v0.55.0 contains, three releases before the
+v0.58.0 the issue names; #120 (`list_row` selection rail) shipped in `b2ec63f`, which v0.52.2
+contains. Each closed with the test names that hold its acceptance. #119's acceptance has no
+existing test in the crate (its own suite covers the fill by state), so it was added:
+`tests/chip.rs::a_host_can_spawn_gooeys_chip_and_only_add_its_own_marker` spawns
+`(chip("armour"), HostChip)` for three skins and asserts `Role::Chip`, the `surface_raised` fill, a
+frame that is not `NONE`, and the a11y label `"armour"`. No open issues remain on the crate.
+
+**Demo.** `examples/prose.rs` gained `GOOEY_WRAPPED_MINIMAP=1`: the left pane turns on both
+`CodeSoftWrap` and `CodeMinimap`, so a still shows a wrapped page whose lane is as long as the file.
+
+**Checklist.** fmt, clippy `-D warnings`, nextest **1716 passed**, doctests, `cargo check --lib`,
+wasm32, `cargo doc -D warnings` — the gate below. The lane's colours and contrast are untouched
+(#117 holds `minimap_bar` at 3:1 on its lane in every preset).
+
+**Top 5 backlog.** (1) crates.io token still 403 from 0.51.9 to 0.60.0 (owner must reissue); (2)
+incremental wrap-map rebuild from `take_line_edits`; (3) windowed variable-height table; (4) a
+`problems()` note for a divider under 24 px; (5) a livelier dark-skin `warning` plate.
