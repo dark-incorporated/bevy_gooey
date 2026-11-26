@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [0.61.0] - 2026-11-26
 
 ### Fixed
 
@@ -9,8 +9,11 @@
   forty lines of its 160-slot lane as four short segments each (158 bars of 84 different widths,
   measured), and the view band claimed four times the text in view. The lane is an outline of the
   file, and the file does not change length when the window narrows. A bar is its line's own width
-  again, the band starts at the line the view starts on and is as tall as the lines in view, and a
-  press or drag on the lane maps a slot to its line and then to that line's first display row.
+  again, the band starts at the line the view starts on and **ends at the line its last drawn row is
+  on**, so it is as tall as the lines in view and not as the rows they take (a wrapped view's band
+  covered the same share as an unwrapped one, and now covers a fraction where every line is many
+  rows), and a press or drag on the lane maps a slot to its line and then to that line's first
+  display row.
   Unwrapped editors and the indent guides are unchanged. `docs/research/minimap-wrap.md`.
 
 ## [0.60.0] - 2026-11-26

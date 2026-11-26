@@ -3801,20 +3801,30 @@ have to decode.
 
 **The fix.** `draw_navigation`'s lane: length `lines().rows(len_lines())`, a bar from
 `lines().line_at(slot)` at its own display width, the band's top from
-`lines().row_of(line(fold.line_at(view.first_row)))` and its height `ceil(area.y / line_px)` lines,
-and a press or drag mapping a slot to its line and then to that line's **first display row** (the
-scroll stays in rows, because the scroll really is in rows). Diagnostics marks follow their line's
-slot. Folding is unchanged — a closed fold hides lines, so the lane shortens as before.
+`lines().row_of(line(fold.line_at(view.first_row)))`, and a press or drag mapping a slot to its
+line and then to that line's **first display row** (the scroll stays in rows, because the scroll
+really is in rows). Diagnostics marks follow their line's slot. Folding is unchanged — a closed
+fold hides lines, so the lane shortens as before.
+
+**The band was still in rows, caught by the same defect.** The first fix left its height as
+`ceil(area.y / line_px)` — a count of display rows — so the band still claimed more of the file than
+the view held, and the same file banded identically wrapped or unwrapped. It now runs from
+`top_line` to the line the **last drawn row** is on: `bottom_line = lines.row_of(fold.line_at(
+(view.first_row + view.needed).min(view.rows) - 1))`, height `bottom_line - top_line + 1`. Pinned by
+`under_soft_wrap_the_minimap_band_is_as_tall_as_the_lines_in_view`, which bands the same 30 lines of
+4000 columns wrapped and unwrapped and requires the wrapped band under 0.6 of the unwrapped one (it
+drew the same share when keyed on rows). Mutation-checked: restoring the row count fails it.
 
 **Indent guides were read and left alone.** They are keyed on rows and take *the row's line's*
 level; every row of a wrapped line carries that line's level, so a guide runs continuously over the
 wrap. Reported, not edited.
 
 **Failing test first.**
-`tests/code_navigation.rs::under_soft_wrap_the_minimap_draws_one_bar_per_line_not_per_row` — 120
-lines of 20 to 139 characters; asserts the editor really is wrapping (more text rows than line
-numbers), at least 120 bars in a 160-slot lane, one top each, one width each, the longest four times
-the shortest. It failed on the tree it was written against with `158 bars, 84 widths`. Its twin
+`tests/code_navigation.rs::under_soft_wrap_the_minimap_draws_one_bar_per_line_not_per_row` — 40
+lines of 60 to 177 characters (every one under the lane's 200-column cap, three columns apart so two
+widths never round to one); asserts the editor really is wrapping (more text rows than line numbers),
+at least 40 bars in a 160-slot lane, one top each, one width each, the longest 2.5 times the
+shortest. Keyed on rows it failed with `41 bars, 18 widths`. Its twin
 `without_wrap_the_minimap_still_draws_one_bar_per_line` pins the unwrapped lane unchanged. All 14
 `code_navigation` tests green, including the three existing minimap tests (#117's first-frame and
 lane-width contracts, the band-drag one).
@@ -3840,13 +3850,19 @@ existing test in the crate (its own suite covers the fill by state), so it was a
 `(chip("armour"), HostChip)` for three skins and asserts `Role::Chip`, the `surface_raised` fill, a
 frame that is not `NONE`, and the a11y label `"armour"`. No open issues remain on the crate.
 
-**Demo.** `examples/prose.rs` gained `GOOEY_WRAPPED_MINIMAP=1`: the left pane turns on both
-`CodeSoftWrap` and `CodeMinimap`, so a still shows a wrapped page whose lane is as long as the file.
+**Demo.** `examples/prose.rs` gained `GOOEY_WRAPPED_MINIMAP=1`: the left pane spawns the level script
+with both `CodeSoftWrap` and `CodeMinimap`, so a still shows a wrapped file whose lane draws one bar
+per line where the pane draws thousands of rows. Writing it caught a bug in my first draft: the
+marker was inserted on the **pane** (`commands.spawn(pane(..))` returns the outer column), so no lane
+drew at all, and `pane()` was reshaped to spawn its own contents. The still is
+`docs/media/minimap-wrapped.png` (dark and parchment, cropped and joined).
 
-**Checklist.** fmt, clippy `-D warnings`, nextest **1716 passed**, doctests, `cargo check --lib`,
-wasm32, `cargo doc -D warnings` — the gate below. The lane's colours and contrast are untouched
-(#117 holds `minimap_bar` at 3:1 on its lane in every preset).
+**Checklist.** fmt, clippy `-D warnings`, nextest **1718 passed** (the two new tests included),
+doctests 359, `cargo check --lib`, wasm32, `cargo doc -D warnings` — the gate below. The lane's
+colours and contrast are untouched (#117 holds `minimap_bar` at 3:1 on its lane in every preset).
 
 **Top 5 backlog.** (1) crates.io token still 403 from 0.51.9 to 0.60.0 (owner must reissue); (2)
-incremental wrap-map rebuild from `take_line_edits`; (3) windowed variable-height table; (4) a
-`problems()` note for a divider under 24 px; (5) a livelier dark-skin `warning` plate.
+incremental wrap-map rebuild from `take_line_edits` (a prose pane rebuilds its whole wrap on one
+keystroke, median 9.7 ms at 20,000 lines); (3) windowed variable-height table; (4) a `problems()`
+note for a divider under 24 px; (5) a livelier dark-skin `warning` plate. The indent guides under
+soft wrap were read and reported, not edited (see above).
