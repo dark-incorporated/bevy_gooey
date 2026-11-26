@@ -1442,8 +1442,7 @@ pub(crate) fn update_code_editors(
                     // row rather than a fraction of the way through it.
                     let under = (map.first as f32 + local.y / map.pitch).floor().max(0.0);
                     let shown_lines = fold.rows(editor.buffer.len_lines());
-                    let line =
-                        fold.line_at((under as usize).min(shown_lines.saturating_sub(1)));
+                    let line = fold.line_at((under as usize).min(shown_lines.saturating_sub(1)));
                     let row = fold.row_of(line) as f32;
                     let visible = size.y / m.line_px;
                     editor.goal.y = ((row - visible / 2.0) * m.line_px).max(0.0);

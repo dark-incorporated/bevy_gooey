@@ -897,7 +897,9 @@ fn the_minimap_lane_takes_room_beside_the_code_and_its_bars_scale_to_the_file() 
 fn under_soft_wrap_the_minimap_draws_one_bar_per_line_not_per_row() {
     // 120 lines, each longer than the last, every one long enough to break into several rows in an
     // 800 px editor. The lengths are the handle: a bar keyed on a line is as wide as that line.
-    let text: String = (0..120).map(|i| format!("{}\n", "x".repeat(20 + i))).collect();
+    let text: String = (0..120)
+        .map(|i| format!("{}\n", "x".repeat(20 + i)))
+        .collect();
     let mut app = app();
     let editor = editor_of(&mut app, &text, (CodeMinimap, CodeSoftWrap));
     settle(&mut app);
@@ -913,7 +915,11 @@ fn under_soft_wrap_the_minimap_draws_one_bar_per_line_not_per_row() {
     let map = rect(&app, shown_by_role(&app, editor, Role::CodeMinimap)[0]);
     let drawn: Vec<Rect> = shown_by_role(&app, editor, Role::CodeMinimapBar)
         .into_iter()
-        .filter(|&e| app.world().get::<Node>(e).is_some_and(|n| n.display != Display::None))
+        .filter(|&e| {
+            app.world()
+                .get::<Node>(e)
+                .is_some_and(|n| n.display != Display::None)
+        })
         .map(|e| rect(&app, e))
         .collect();
     // All 120 lines fit the lane (a 480 px lane at a 3 px pitch holds 160 slots); a lane keyed on
@@ -944,8 +950,10 @@ fn under_soft_wrap_the_minimap_draws_one_bar_per_line_not_per_row() {
     );
     // Every line has its own place, and every line its own width: four rows of one line would
     // stack four bars of one width on four places.
-    let tops: std::collections::BTreeSet<i64> =
-        drawn.iter().map(|bar| (bar.min.y * 100.0).round() as i64).collect();
+    let tops: std::collections::BTreeSet<i64> = drawn
+        .iter()
+        .map(|bar| (bar.min.y * 100.0).round() as i64)
+        .collect();
     assert_eq!(tops.len(), drawn.len(), "one place per bar");
 }
 
@@ -959,7 +967,11 @@ fn without_wrap_the_minimap_still_draws_one_bar_per_line() {
     settle(&mut app);
     let drawn: Vec<Entity> = shown_by_role(&app, editor, Role::CodeMinimapBar)
         .into_iter()
-        .filter(|&e| app.world().get::<Node>(e).is_some_and(|n| n.display != Display::None))
+        .filter(|&e| {
+            app.world()
+                .get::<Node>(e)
+                .is_some_and(|n| n.display != Display::None)
+        })
         .collect();
     assert!(drawn.len() > 100, "the lane is full: {}", drawn.len());
     let tops: std::collections::BTreeSet<i64> = drawn

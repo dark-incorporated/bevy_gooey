@@ -537,11 +537,9 @@ fn a_host_can_spawn_gooeys_chip_and_only_add_its_own_marker() {
 
     for skin in [GooeySkin::dark(), GooeySkin::parchment(), GooeySkin::tool()] {
         let mut app = app_with(skin.clone());
-        app.world_mut()
-            .spawn(screen())
-            .with_children(|screen| {
-                screen.spawn((chip("armour"), HostChip));
-            });
+        app.world_mut().spawn(screen()).with_children(|screen| {
+            screen.spawn((chip("armour"), HostChip));
+        });
         settle(&mut app);
         app.world_mut()
             .resource::<bevy::a11y::AccessibilityRequested>()
@@ -560,8 +558,7 @@ fn a_host_can_spawn_gooeys_chip_and_only_add_its_own_marker() {
         let fill = app.world().get::<BackgroundColor>(found).expect("a fill").0;
         let edge = app.world().get::<BorderColor>(found).expect("a frame");
         assert_eq!(
-            fill,
-            skin.surface_raised,
+            fill, skin.surface_raised,
             "{:?}: a chip off is the raised fill",
             skin.background
         );
