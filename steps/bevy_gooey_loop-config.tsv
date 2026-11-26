@@ -55,3 +55,4 @@ pass	at	host	seconds	model	think	build_jobs	test_threads
 352	2026-11-23T15:35Z	big	2135	ollama-cloud/deepseek-v4.1-flash:1017	high	3	4
 353	2026-11-25T23:47Z	big	3753	ollama-cloud/deepseek-v4.1-flash:1017	high	3	4
 354	2026-11-26T00:04Z	big	1022	ollama-cloud/deepseek-v4.1-flash:1017	high	3	4
+355	2026-11-26T01:05Z	big	3621	ollama-cloud/deepseek-v4.1-flash:1017	high	3	4
