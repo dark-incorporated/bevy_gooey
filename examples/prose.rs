@@ -14,6 +14,10 @@
 //!
 //! `GOOEY_MINIMAP=1` puts a long script in the right pane with `CodeMinimap` on it: a file opened
 //! for reading, whose bars and band are drawn on its first frame with no input at all (#117).
+//!
+//! `GOOEY_WRAPPED_MINIMAP=1` turns on both `CodeSoftWrap` and `CodeMinimap` in the left pane: the
+//! lane draws one bar per line rather than one per display row, so the wrapped page's outline is
+//! not four times the file's length.
 
 use bevy::prelude::*;
 use bevy::render::view::screenshot::{Screenshot, save_to_disk};
@@ -130,12 +134,21 @@ fn script() -> String {
 
 fn setup(mut commands: Commands) {
     commands.spawn(Camera2d);
-    let wrapped = commands
-        .spawn(pane(
-            "Wrapped, as Markdown",
-            (code_editor("Notes", PAGE), CodeSoftWrap, CodeMarkdown),
-        ))
-        .id();
+    // A wrapped pane can carry the lane too: it is an outline of the file, so its length does not
+    // follow the wrap (one bar per line, `docs/research/minimap-wrap.md`).
+    let wrapped_lane = std::env::var("GOOEY_WRAPPED_MINIMAP").is_ok();
+    let mut wrapped = commands.spawn(pane(
+        if wrapped_lane {
+            "Wrapped, as Markdown, with a minimap"
+        } else {
+            "Wrapped, as Markdown"
+        },
+        (code_editor("Notes", PAGE), CodeSoftWrap, CodeMarkdown),
+    ));
+    if wrapped_lane {
+        wrapped.insert(CodeMinimap);
+    }
+    let wrapped = wrapped.id();
     // The right pane is a file opened for reading in the capture mode: no focus, no keystroke, so
     // its minimap has to be whole on the frame it is first drawn (#117).
     let right = if std::env::var("GOOEY_MINIMAP").is_ok() {

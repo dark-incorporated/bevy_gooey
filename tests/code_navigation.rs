@@ -912,7 +912,6 @@ fn under_soft_wrap_the_minimap_draws_one_bar_per_line_not_per_row() {
         texts > numbers,
         "the editor is wrapped: {texts} text rows of {numbers} line numbers"
     );
-    let map = rect(&app, shown_by_role(&app, editor, Role::CodeMinimap)[0]);
     let drawn: Vec<Rect> = shown_by_role(&app, editor, Role::CodeMinimapBar)
         .into_iter()
         .filter(|&e| {

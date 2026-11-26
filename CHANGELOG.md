@@ -2,6 +2,17 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- A `code_editor` with `CodeMinimap` and `CodeSoftWrap` draws **one bar per line**, not one per
+  display row: the lane's slot was a row, so a 120-line prose file in a 800 px editor drew the first
+  forty lines of its 160-slot lane as four short segments each (158 bars of 84 different widths,
+  measured), and the view band claimed four times the text in view. The lane is an outline of the
+  file, and the file does not change length when the window narrows. A bar is its line's own width
+  again, the band starts at the line the view starts on and is as tall as the lines in view, and a
+  press or drag on the lane maps a slot to its line and then to that line's first display row.
+  Unwrapped editors and the indent guides are unchanged. `docs/research/minimap-wrap.md`.
+
 ## [0.60.0] - 2026-11-26
 
 ### Added
