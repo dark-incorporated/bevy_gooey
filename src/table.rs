@@ -44,7 +44,7 @@ use crate::motion::MotionSettings;
 use crate::nav::show_focus;
 use crate::scroll_glide::{ScrollGlide, glide_spring, step_glide};
 use crate::skin::{GooeySkin, Role, SkinScope};
-use crate::tree::{Lead, Tree, TreeView, bind_lead, spawn_lead};
+use crate::tree::{Lead, Tree, TreeView, TreeWrap, bind_lead, spawn_lead};
 use crate::type_select::{TypedPrefix, plain, starts_with_ignore_case, typed_characters};
 use crate::widgets::{ONE_LINE, list_rail};
 
@@ -1070,6 +1070,7 @@ type Laid = (
     Mut<'static, TableCursor>,
     Mut<'static, TableCache>,
     &'static TableParts,
+    Has<TreeWrap>,
 );
 
 /// The skin a table is drawn in: the nearest [`SkinScope`] at or above it, else the resource.
@@ -1124,8 +1125,18 @@ pub fn update_tables(
     laid_out: Query<&ComputedNode>,
     mut commands: Commands,
 ) {
-    for (entity, table, sort, widths, rows_tall, mut selection, mut cursor, mut cache, parts) in
-        &mut tables
+    for (
+        entity,
+        table,
+        sort,
+        widths,
+        rows_tall,
+        mut selection,
+        mut cursor,
+        mut cache,
+        parts,
+        tree_wrap,
+    ) in &mut tables
     {
         let skin = skin_of(entity, &skin, &scopes, &parents);
         let text_px = (skin.text_size * skin.text_scale).max(1.0);
@@ -1136,19 +1147,22 @@ pub fn update_tables(
         // a table does not hold: such a table windows on its rows' **measured** heights, a row
         // the layout has not answered for yet counting as one pitch (which is what it is until its
         // words are laid out, so the first frame is the pitch window it always was).
-        let wraps = table.columns.iter().any(|c| c.wrap);
-        if !cache
-            .wrapped
-            .iter()
-            .copied()
-            .eq(table.columns.iter().map(|c| c.wrap))
+        // A tree's one column is the crate's own, so a host has no `Column` to call `.wrap()` on:
+        // `TreeWrap` on the tree's root is that call (#124), read here as "every column wraps".
+        let tree = table.source::<Tree>();
+        let every_wraps = tree.is_some() && tree_wrap;
+        let wraps_column = |c: usize| {
+            every_wraps || table.columns.get(c).is_some_and(|column| column.wrap)
+        };
+        let wraps = (0..columns).any(wraps_column);
+        if cache.wrapped.len() != columns
+            || !(0..columns).all(|c| cache.wrapped[c] == wraps_column(c))
         {
             for gone in cache.pool.drain(..) {
                 commands.entity(gone.row).despawn();
             }
-            cache.wrapped = table.columns.iter().map(|c| c.wrap).collect();
+            cache.wrapped = (0..columns).map(wraps_column).collect();
         }
-        let tree = table.source::<Tree>();
         let indent = tree_indent(text_px);
         let cache = &mut *cache;
         let fresh = !cache.built;
@@ -1491,7 +1505,7 @@ pub fn update_tables(
                             indent,
                         ));
                     }
-                    let wrapped = table.columns.get(c).is_some_and(|column| column.wrap);
+                    let wrapped = wraps_column(c);
                     let text = commands
                         .spawn((
                             Text::new(table.source.cell(source, c).into_owned()),
