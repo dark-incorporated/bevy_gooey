@@ -24280,3 +24280,92 @@ pass	seq	phase	kind	category	tool	start	seconds	detail
 359	731	log	tool	shell	bash	2026-11-27T16:07:45Z	0.1	cd ~/bevy_gooey_loop; rm -rf /tmp/g115; git status --short; git log --oneline -4; ls ~/g115_base 2>/dev/null; df -h /home | tail -1
 359	732	log	model	model		2026-11-27T16:07:45Z	1.9	
 359	733	log	model	model		2026-11-27T16:07:47Z	1.6	
+360	1	orient	model	model		2026-11-27T16:33:51Z	1.0	
+360	2	orient	tool	phase mark	bash	2026-11-27T16:33:52Z	0.6	python3 ~/.local/share/wiggum/steps.py mark orient; echo ---; cd /home/ladvien/bevy_gooey_loop && git status --short && echo "--- branch:" && git branch --show-
+360	3	orient	tool	shell	bash	2026-11-27T16:33:52Z	0.6	cd /home/ladvien/bevy_gooey_loop && wc -l docs/loop-log.md && tail -160 docs/loop-log.md
+360	4	orient	model	model		2026-11-27T16:33:53Z	2.0	
+360	5	orient	tool	git	bash	2026-11-27T16:33:55Z	0.7	cd /home/ladvien/bevy_gooey_loop && git fetch -q origin loop-stats 2>/dev/null; git show origin/loop-stats:steps/bevy_gooey_loop-audit.tsv 2>/dev/null | tail -3
+360	6	orient	tool	github	bash	2026-11-27T16:33:55Z	1.7	cd /home/ladvien/bevy_gooey_loop && gh issue view 123 --repo bevy-coven/bevy_gooey 2>&1 | head -80; echo "=== 122:"; gh issue view 122 --repo bevy-coven/bevy_go
+360	7	orient	tool	shell	bash	2026-11-27T16:33:55Z	1.7	cd /home/ladvien/bevy_gooey_loop && grep -n "first_row" src/*.rs | head -60
+360	8	orient	model	model		2026-11-27T16:33:56Z	2.6	
+360	9	orient	tool	shell	bash	2026-11-27T16:33:59Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 1090,1290p src/code_overlay.rs
+360	10	orient	tool	github	bash	2026-11-27T16:33:59Z	0.4	cd /home/ladvien/bevy_gooey_loop && gh issue view 122 --repo bevy-coven/bevy_gooey --json state,closedAt --jq '.state, .closedAt'; git log --oneline -3 --grep='
+360	11	orient	model	model		2026-11-27T16:33:59Z	1.3	
+360	12	orient	tool	git	bash	2026-11-27T16:34:01Z	0.0	cd /home/ladvien/bevy_gooey_loop && git show --stat --format='%H%n%B' 89180fd | head -40; echo "=== does 122 close?"; git log --oneline -1 --grep='Fixes #122'; 
+360	13	orient	tool	shell	bash	2026-11-27T16:34:01Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -rn "minimap" tests/code_navigation.rs | head -40; echo === ; grep -rn "MinimapView\|minimap_band\|MinimapBand" src/*.r
+360	14	orient	model	model		2026-11-27T16:34:01Z	4.0	
+360	15	orient	tool	shell	bash	2026-11-27T16:34:05Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 880,1030p tests/code_navigation.rs
+360	16	orient	tool	shell	bash	2026-11-27T16:34:05Z	0.0	cd /home/ladvien/bevy_gooey_loop && ls docs/research | head -50; echo ===; grep -rln "minimap" docs/research docs/guide | head
+360	17	orient	model	model		2026-11-27T16:34:05Z	4.6	
+360	18	orient	tool	shell	bash	2026-11-27T16:34:09Z	0.0	cd /home/ladvien/bevy_gooey_loop && cat docs/research/minimap-wrap.md; echo "=====FIRST FRAME"; cat docs/research/minimap-first-frame.md
+360	19	orient	tool	shell	bash	2026-11-27T16:34:09Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 380,440p tests/code_navigation.rs; echo "=== helper app/editor_of/settle:"; sed -n 1,120p tests/code_navigation.rs
+360	20	orient	model	model		2026-11-27T16:34:09Z	2.8	
+360	21	orient	tool	shell	bash	2026-11-27T16:34:12Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 280,340p src/code_editor.rs; echo === ; sed -n 900,1000p src/code_overlay.rs; echo === band write; sed -n 1350,1420p 
+360	22	orient	tool	shell	bash	2026-11-27T16:34:12Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 1630,1700p src/code_editor.rs; echo "=== MINIMAP consts"; grep -n "MINIMAP" src/code_overlay.rs | head -20
+360	23	orient	model	model		2026-11-27T16:34:12Z	3.9	
+360	24	orient	tool	shell	bash	2026-11-27T16:34:16Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "POOL_SPARE_ROWS\|fn measure\|let size =\|m.line_px =\|line_px" src/code_editor.rs | head -30
+360	25	orient	tool	shell	bash	2026-11-27T16:34:16Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 1480,1560p src/code_editor.rs
+360	26	orient	model	model		2026-11-27T16:34:16Z	6.1	
+360	27	research	tool	phase mark	bash	2026-11-27T16:34:22Z	13.5	cd /home/ladvien/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark research; hs status 2>&1 | head -20; echo "=== scribe:"; hs scribe_health 2>&1 |
+360	28	research	tool	shell	bash	2026-11-27T16:34:22Z	13.5	cd /home/ladvien/bevy_gooey_loop && grep -n "CodeMinimAP\|CodeMinimap\|GOOEY_" examples/prose.rs | head -30; echo ===; grep -n "minimap" docs/guide/code-editor.
+360	29	research	model	model		2026-11-27T16:34:36Z	1.9	
+360	30	research	tool	shell	bash	2026-11-27T16:34:38Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 280,360p src/code_wrap.rs
+360	31	research	tool	homestill	bash	2026-11-27T16:34:38Z	4.9	cd /home/ladvien/bevy_gooey_loop && hs distill search "minimap viewport slider height lines visible code editor" --output json 2>&1 | head -c 2000
+360	32	research	model	model		2026-11-27T16:34:43Z	7.1	
+360	33	research	tool	shell	bash	2026-11-27T16:34:50Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 440,520p tests/code_navigation.rs; echo "=== drag test:"; sed -n 620,700p tests/code_navigation.rs; echo "=== wheel h
+360	34	research	tool	shell	bash	2026-11-27T16:34:50Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "fn shown_by_role\|fn rect\|fn area_of\|Role::CodeArea" tests/code_navigation.rs | head; sed -n 120,240p tests/code_
+360	35	research	model	model		2026-11-27T16:34:50Z	3.1	
+360	36	research	tool	shell	bash	2026-11-27T16:34:53Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "PageDown\|PageUp\|pub fn scroll" src/code_editor.rs src/code_find.rs | head -20; sed -n 440,500p src/code_editor.rs
+360	37	research	model	model		2026-11-27T16:34:53Z	2.0	
+360	38	research	tool	homestill	bash	2026-11-27T16:34:55Z	4.6	cd /home/ladvien/bevy_gooey_loop && hs distill search "minimap slider shows the portion of the file currently visible overview scrollbar proportion" --output js
+360	39	research	tool	read files	read	2026-11-27T16:34:55Z	4.6	https://code.visualstudio.com/docs/getstarted/userinterface
+360	40	research	model	model		2026-11-27T16:34:59Z	3.2	
+360	41	research	tool	shell	bash	2026-11-27T16:35:03Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 1,80p docs/research/corpus.md
+360	42	research	tool	homestill	bash	2026-11-27T16:35:03Z	5.3	cd /home/ladvien/bevy_gooey_loop && hs distill search "scrollbar thumb size proportion of content visible" --output json 2>&1 | python3 -c " import json,sys try
+360	43	research	model	model		2026-11-27T16:35:08Z	5.7	
+360	44	research	tool	shell	bash	2026-11-27T16:35:14Z	0.1	cd /home/ladvien/bevy_gooey_loop && sed -n 1,40p examples/prose.rs; echo ...; sed -n 80,220p examples/prose.rs
+360	45	research	tool	shell	bash	2026-11-27T16:35:14Z	0.1	cd /home/ladvien/bevy_gooey_loop && grep -n "minimap\|prose" docs/media/README.md | head -20; echo ===; ls -la docs/media | grep -i "minimap\|prose"
+360	46	research	model	model		2026-11-27T16:35:14Z	3.8	
+360	47	research	tool	shell	bash	2026-11-27T16:35:17Z	0.0	cd /home/ladvien/bevy_gooey_loop && head -40 docs/research/table-variable-height.md; echo ...; grep -n "Craft principle" -A 12 docs/research/table-variable-heig
+360	48	research	model	model		2026-11-27T16:35:17Z	12.3	
+360	49	research	tool	shell	bash	2026-11-27T16:35:30Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "pub(crate) fn line_at\|pub(crate) fn row_of\|pub(crate) fn rows(" -A 14 src/code_fold.rs | head -60
+360	50	research	tool	shell	bash	2026-11-27T16:35:30Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "minimap\|Minimap" README.md | head; echo === ; sed -n 130,150p docs/guide/code-editor.md
+360	51	research	model	model		2026-11-27T16:35:30Z	33.2	
+360	52	research	tool	shell	bash	2026-11-27T16:36:03Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 1320,1372p src/code_editor.rs; echo "=== set_px/set_display:"; grep -n "fn set_px\|fn set_display" -A 10 src/code_ove
+360	53	research	tool	shell	bash	2026-11-27T16:36:03Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 760,860p tests/code_navigation.rs
+360	54	research	model	model		2026-11-27T16:36:03Z	6.9	
+360	55	research	tool	shell	bash	2026-11-27T16:36:10Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 1930,2010p src/code_editor.rs
+360	56	research	model	model		2026-11-27T16:36:10Z	14.9	
+360	57	research	tool	shell	bash	2026-11-27T16:36:25Z	0.1	cd /home/ladvien/bevy_gooey_loop && grep -n "minimap" src/code_editor.rs | head -40; echo ===; grep -rn "overlay.minimap\b\|minimap\.first\|map.first" src/*.rs 
+360	58	research	tool	shell	bash	2026-11-27T16:36:25Z	0.1	cd /home/ladvien/bevy_gooey_loop && grep -n "fn scroll_to_reveal\|fn page_target\|fn snap_to_row\|fn table_anchor" -A 6 src/model.rs | head -60; echo "=== model
+360	59	research	model	model		2026-11-27T16:36:25Z	15.2	
+360	60	research	tool	shell	bash	2026-11-27T16:36:40Z	0.1	cd /home/ladvien/bevy_gooey_loop && grep -rn "thumb" src/list.rs | head -20; echo "=== vendor scrollbar:"; ls ~/.cargo/registry/src/*/ | grep bevy_ui_widgets; g
+360	61	research	tool	shell	bash	2026-11-27T16:36:40Z	0.1	cd /home/ladvien/bevy_gooey_loop && grep -rn "visible share\|visible fraction\|share of the" src/list.rs src/model.rs src/widgets.rs | head -20
+360	62	research	model	model		2026-11-27T16:36:40Z	14.2	
+360	63	research	tool	shell	bash	2026-11-27T16:36:54Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "Scrollbar\|ScrollbarThumb\|list_rail" -A 12 src/widgets.rs | sed -n 1,60p; echo "=== bevy thumb sizing:"; sed -n 24
+360	64	research	tool	shell	bash	2026-11-27T16:36:54Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "fn update_scroll_thumb" -A 40 ~/.cargo/registry/src/*/bevy_ui_widgets-0.20.0/src/scrollbar.rs | head -60
+360	65	research	model	model		2026-11-27T16:36:54Z	4.2	
+360	66	research	tool	homestill	bash	2026-11-27T16:36:58Z	3.4	cd /home/ladvien/bevy_gooey_loop && hs distill search "minimap viewport rectangle shows the area currently on screen" --output json 2>&1 | python3 -c " import j
+360	67	research	tool	shell	bash	2026-11-27T16:36:58Z	3.4	cd /home/ladvien/bevy_gooey_loop && grep -n "minimap" -B3 -A10 docs/research/gooey.md | head -40
+360	68	research	model	model		2026-11-27T16:37:02Z	13.5	
+360	69	research	tool	shell	bash	2026-11-27T16:37:15Z	0.1	cd /home/ladvien/bevy_gooey_loop && sed -n 1,60p src/code_overlay.rs; echo "=== POOL consts:"; sed -n 70,95p src/code_editor.rs
+360	70	research	tool	shell	bash	2026-11-27T16:37:15Z	0.1	cd /home/ladvien/bevy_gooey_loop && grep -n "minimap-wrapped\|minimap-first-frame" -A 3 docs/media/README.md | head -20; echo === ; sed -n 60,100p docs/media/RE
+360	71	research	model	model		2026-11-27T16:37:15Z	22.5	
+360	72	research	tool	shell	bash	2026-11-27T16:37:38Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 55,115p ~/.cargo/registry/src/*/bevy_ui_widgets-0.20.0/src/scrollbar.rs; echo "=== v0.61 band:"; git show v0.61.0:src
+360	73	bugs	tool	phase mark	bash	2026-11-27T16:37:38Z	0.1	cd /home/ladvien/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark bugs; git show v0.61.0:src/code_overlay.rs | sed -n '/The band says where/,+30p'
+360	74	bugs	model	model		2026-11-27T16:37:38Z	16.0	
+360	75	bugs	tool	shell	bash	2026-11-27T16:37:54Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "pub(crate) fn row_of\|pub(crate) fn line_at\|pub(crate) fn rows\|pub(crate) fn lines\|fn hidden_lines\|fn header_of
+360	76	bugs	tool	git	bash	2026-11-27T16:37:54Z	0.0	cd /home/ladvien/bevy_gooey_loop && git show origin/loop-stats:steps/bevy_gooey_loop-audit.tsv | head -3; echo "=== model windows:"; grep -n "pub fn .*window\|p
+360	77	bugs	model	model		2026-11-27T16:37:54Z	17.0	
+360	78	bugs	tool	homestill	bash	2026-11-27T16:38:11Z	3.7	cd /home/ladvien/bevy_gooey_loop && hs distill search "real-time strategy minimap viewport rectangle camera shows visible portion of the map" --output json 2>&1
+360	79	bugs	tool	shell	bash	2026-11-27T16:38:11Z	3.7	cd /home/ladvien/bevy_gooey_loop && grep -rn "minimap" docs/research/code-editor.md | head; echo ===; grep -n "shaded area\|overview" docs/research/*.md | head
+360	80	bugs	model	model		2026-11-27T16:38:15Z	7.9	
+360	81	bugs	tool	homestill	bash	2026-11-27T16:38:23Z	2.5	cd /home/ladvien/bevy_gooey_loop && hs distill search "minimap camera viewport rectangle real-time strategy players navigate map" --output json 2>&1 | python3 -
+360	82	bugs	model	model		2026-11-27T16:38:25Z	20.4	
+360	83	bugs	tool	shell	bash	2026-11-27T16:38:46Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "pub(crate) fn lines\|pub fn rows\|pub(crate) fn row_of\|pub(crate) fn line_at\|pub(crate) fn rows_of" -A 12 src/cod
+360	84	bugs	tool	shell	bash	2026-11-27T16:38:46Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "fn lines" -A 6 src/code_wrap.rs; echo "=== map first/needed usage in code_editor 1425-1460:"; sed -n 1420,1465p src
+360	85	bugs	model	model		2026-11-27T16:38:46Z	25.7	
+360	86	bugs	tool	shell	bash	2026-11-27T16:39:11Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 1155,1200p src/code_overlay.rs
+360	87	bugs	tool	web	web_search	2026-11-27T16:39:11Z	7.9	RTS minimap camera viewport rectangle shows visible portion designers guide "minimap"
+360	88	bugs	model	model		2026-11-27T16:39:19Z	28.0	
+360	89	bugs	model	model		2026-11-27T16:39:47Z	88.9	
