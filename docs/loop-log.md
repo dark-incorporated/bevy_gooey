@@ -4311,3 +4311,72 @@ and the origin guard are behaviour). `cargo publish --dry-run` packaged and veri
 real `cargo publish` was refused **403 Forbidden (authentication failed)** - the same broken token
 every release since 0.51.9 has hit, so 0.51.9 through 0.64.2 are pending the owner's new token. Logged
 once, not retried; `v0.64.2` is tagged and pushed so the history is right when the token lands.
+
+## Iteration 118 — 2026-11-27 — a tree's long label wraps: `TreeWrap` (#124)
+
+**Backlog item.** #124, filed from the table's own `.wrap()`: a tree builds its single column in
+`table_bundle` and `Table::columns` has no setter, so a host had **no way** to say "this tree's
+labels wrap". A Files tree or a history list in a narrow pane drew every long name past the pane's
+edge on one line, with no horizontal scroll — the same failure `Column::wrap` had fixed for a custom
+table.
+
+**What changed.** `TreeWrap` (public marker, `src/tree.rs`, re-exported and reflected) read by
+`update_tables` as "every column of this table wraps". It is not a second layout: `wraps_column` gains
+`|| every_wraps`, so the tree gets the measured-height window, `row_sizing(pitch)` on every pool row
+and `WRAPPED` cell text that a `Column::wrap` gets. `TableCache::wrapped` now records the **effective**
+per-column flags and the rebuild test compares against those, so adding or removing the marker on a
+live tree respawns the pool exactly as a wrap change on a column does (`Has<TreeWrap>` joined
+`update_tables`' query). The chevron's twisty is a sibling of the label inside the cell and is
+`AlignSelf::Stretch`, so its click target is the whole taller row while continuation lines start under
+`indent × depth` — WCAG 2.2 G224, the indent is what carries the hierarchy. Nothing else changed: a
+tree without the marker draws byte-for-byte as before (one pitch rows, `ONE_LINE` text).
+
+**Tests (written first).** `tests/tree.rs::a_tree_with_tree_wrap_breaks_a_long_label_inside_its_cell`
+(the row taller than 1.5 pitch, glyph line starts at the cell's left inset and every line inside it,
+the twisty taller than 1.5 pitch and no taller than the row, a short label still one pitch),
+`...::a_tree_without_tree_wrap_cuts_its_label_on_one_line_and_keeps_one_pitch_rows`,
+`...::tree_wrap_added_after_spawn_rewraps_the_rows_it_holds`. Mutation-checked twice, each restored
+from a copy and verified by `grep`: (1) comparing `cache.wrapped` against `table.columns[c].wrap`
+instead of the effective flags fails only the add-after-spawn test; (2) `every_wraps && false` fails
+the wrap and add-after-spawn tests.
+The first test also caught a real geometry trap: `Rect { min: (17,17) … max: (207,167) }` is the row
+box and `(41,20) … (71,164)` the twisty, so the assertion is "taller than 1.5 pitch and no taller than
+row + 0.5", not "equal to the row" — a row's frame is drawn inside it.
+
+**Measured, not assumed.** The demo build (release, `GOOEY_WRAP=1`, 1280×720) read `mean_ms 26.242`
+at load ~25-46, unchanged from the same host's other examples; wrapping 31 rows of a 9.5-row window
+costs nothing extra because the window is on measured heights, not on a per-row pass.
+
+**The checklist, from the stills.** Dark: `meshes`/`textures` and the panel's `assets` are
+`(237,240,245)` on `(35,37,44)` = **13.4:1**; parchment: `(51,36,23)` on `(227,212,180)` =
+**10.2:1** — both well past the 4.5:1 body floor. One line of a wrapped name is broken only at a word
+or a character boundary inside the cell (verified at 2x and at 2560×1440 with `GOOEY_TEXT_SCALE=1.5`,
+`GOOEY_SKIN=tool`): no glyph leaves its cell, the chevron stays centred on its two-line row, the rail
+keeps its own column and every `meshes` row between the two long ones is still exactly one pitch, so
+the wrapped rows do not drift the grid. Both panes stand on the same skin tokens (same panel fill,
+same quiet band, same ink), which is the crate's own look unchanged.
+
+**Demo.** `docs/media/tree-wrap.png` (620×470, a crop of the 1280×720 `examples/tree` with
+`GOOEY_WRAP=1`): the same asset library in two 300 px panes, `Cut` on the left and `TreeWrap` on the
+right, so a reader sees the failure and the fix in one picture. Recipe in `docs/media/README.md`; shown
+in the README's data line and in `docs/guide/trees.md`.
+
+**Docs.** CHANGELOG 0.65.0, README's table/tree line, `docs/guide/trees.md` (a new bullet with the
+picture and a three-line snippet, and "Where it stops" now says one line *unless* the tree carries
+`TreeWrap`), AGENTS.md's `src/tree.rs` line, `src/tree.rs`'s rustdoc with a doctest.
+
+**The gate.** After the last edit: `fmt --check`, `clippy --all-targets --all-features -D warnings`
+(one `let`-binding lint in a test helper, fixed), `nextest --all-features --lib --tests` (**1743
+passed, 0 skipped**, 334 s), `test --all-features --doc` (362), `check --lib`, `check --lib --target
+wasm32-unknown-unknown`, `doc -D warnings` — all green.
+
+**Cleanup.** `/tmp/g118` holds this pass's stills and crops; `docs/media/tree-wrap.png` is the one kept
+artifact. No baseline worktree was needed (the failure is a layout fact the "Cut" pane shows), so none
+was left behind.
+
+**Top 5 backlog.** (1) crates.io token still 403 from 0.51.9 through 0.65.0 (owner must reissue);
+(2) indent guides under soft wrap (per row, not per line); (3) an incremental wrap map (`Wrap` rebuilds
+on every keystroke in a prose pane); (4) an incremental fold map; (5) `SplitThickness` under 24 px is
+not reported by `problems()`.
+
+**Release.** 0.65.0 — minor pre-1.0: one new public marker, no signature changed.

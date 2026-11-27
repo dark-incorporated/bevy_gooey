@@ -1,4 +1,19 @@
 # Changelog
+## [0.65.0] - 2026-11-27
+### Added
+- **A tree's long label wraps: `TreeWrap`.** A tree builds its one column itself and `Table::columns`
+  has no setter, so a host had no way to make a tree's labels break inside its pane: a Files tree or
+  a history list in a narrow panel drew every long name past the edge on one line, with no
+  horizontal scroll. `TreeWrap` on the tree's root is that call — `update_tables` reads it as "every
+  column of this table wraps" and gives the tree exactly what `Column::wrap` gives a table: the
+  measured-height window, `row_sizing(pitch)`, `WRAPPED` cell text — and the chevron's box is a
+  sibling of the label inside the cell, so its click target is the whole taller row and continuation
+  lines start under the node's indent (WCAG 2.2 G224: the indent carries the hierarchy). Adding or
+  removing the marker rewraps the rows the tree already holds. Tests:
+  `tests/tree.rs::a_tree_with_tree_wrap_breaks_a_long_label_inside_its_cell`,
+  `...::a_tree_without_tree_wrap_cuts_its_label_on_one_line_and_keeps_one_pitch_rows`,
+  `...::tree_wrap_added_after_spawn_rewraps_the_rows_it_holds`.
+
 
 ## [0.64.2] - 2026-11-27
 

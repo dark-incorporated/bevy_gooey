@@ -1151,9 +1151,8 @@ pub fn update_tables(
         // `TreeWrap` on the tree's root is that call (#124), read here as "every column wraps".
         let tree = table.source::<Tree>();
         let every_wraps = tree.is_some() && tree_wrap;
-        let wraps_column = |c: usize| {
-            every_wraps || table.columns.get(c).is_some_and(|column| column.wrap)
-        };
+        let wraps_column =
+            |c: usize| every_wraps || table.columns.get(c).is_some_and(|column| column.wrap);
         let wraps = (0..columns).any(wraps_column);
         if cache.wrapped.len() != columns
             || !(0..columns).all(|c| cache.wrapped[c] == wraps_column(c))

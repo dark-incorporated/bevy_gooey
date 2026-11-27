@@ -11,9 +11,10 @@
 //! later; `GOOEY_SHOT_DIR=<dir>` also keeps every `GOOEY_SHOT_EVERY`th frame from `GOOEY_SHOT_FROM`
 //! (default 30) there as `f_%04d.png` (the directory must exist). `GOOEY_SKIN=parchment`,
 //! `high_contrast` or `tool`, `GOOEY_TEXT_SCALE=<f>` and `GOOEY_SIZE=<w>x<h>` set the start;
-//! `GOOEY_MULTI=1` lets the player select any number of nodes, and `GOOEY_WRAP=1` puts `TreeWrap`
-//! on the tree in a 260 px pane, so its labels break inside the pane instead of being cut (the
-//! crate's own asset library: names too long for a narrow outliner, the case of #124).
+//! `GOOEY_MULTI=1` lets the player select any number of nodes, and `GOOEY_WRAP=1` shows the same
+//! asset library twice in 300 px panes, the first cut at the pane's edge and the second carrying
+//! `TreeWrap`, so its labels break inside the pane (names too long for a narrow outliner, the case
+//! of #124).
 //! `GOOEY_KEYS=tab,down,…` stages one step every `GOOEY_KEY_EVERY` (default 10) frames from frame
 //! 30: `tab`, `up`, `down`, `left`, `right`, `home`, `end`, `pageup`, `pagedown`, `space`, `enter`
 //! and `star` as real keyboard input, `type:<text>` the characters one by one, `row:<n>` a click on
@@ -242,25 +243,39 @@ fn setup(mut commands: Commands) {
         SelectMode::Single
     };
     if std::env::var("GOOEY_WRAP").is_ok() {
-        // A Files tree of hundreds of nodes with names a 260 px pane cannot hold, which is the
-        // reason `TreeWrap` exists (#124).
-        let library = vec![TreeNode::new(1, "assets").expanded().children(
-            ASSETS.iter().enumerate().map(|(i, name)| {
-                TreeNode::new(i as u64 + 2, *name).expanded().children([
-                    TreeNode::new(100 + i as u64, "meshes"),
-                    TreeNode::new(200 + i as u64, "textures"),
-                ])
-            }),
-        )];
+        // The same asset library in two panes 260 px wide: a name a pane cannot hold is cut on one
+        // line in the first and breaks inside the pane in the second, which is the case of `TreeWrap`
+        // (#124).
+        let library = || {
+            vec![
+                TreeNode::new(1, "assets")
+                    .expanded()
+                    .children(ASSETS.iter().enumerate().map(|(i, name)| {
+                        TreeNode::new(i as u64 + 2, *name).expanded().children([
+                            TreeNode::new(100 + i as u64, "meshes"),
+                            TreeNode::new(200 + i as u64, "textures"),
+                        ])
+                    })),
+            ]
+        };
         commands.spawn((
             screen(),
             children![(
-                panel(),
-                CardWidth::Px(260.0),
+                row(1.0),
                 children![
-                    heading("Files"),
-                    (tree(library), mode, TableRows(9.5), TreeWrap),
-                    (label("assets"), Readout),
+                    (
+                        panel(),
+                        CardWidth::Px(300.0),
+                        children![heading("Cut"), (tree(library()), mode, TableRows(9.5))],
+                    ),
+                    (
+                        panel(),
+                        CardWidth::Px(300.0),
+                        children![
+                            heading("TreeWrap"),
+                            (tree(library()), mode, TableRows(9.5), TreeWrap)
+                        ],
+                    ),
                 ],
             )],
         ));
