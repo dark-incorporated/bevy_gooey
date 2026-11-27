@@ -4008,3 +4008,55 @@ the technical sources above were read directly.
 (2) windowed variable-height table; (3) a `problems()` note for a divider under 24 px; (4) the
 indent guides under soft wrap; (5) an incremental fold map (`FoldMap::set_fold` still relinks every
 range, and a 20,000-line tree's fold toggle pays it).
+
+## Iteration 115 — 2026-11-27 — a wrapping table windows on what its rows measured (#123)
+
+**Item.** The backlog's second: "windowed variable-height table", the open gap iteration 109 recorded
+when `.wrap()` shipped. A table with a wrapping column set `pool := len` and let the viewport scroll
+the laid-out rows, because rows no longer shared a height — so ten thousand wrapped rows meant ten
+thousand row entities, forty thousand cells and forty thousand `Text` layouts, which is a table that
+cannot be used for what a table is for. The research note is
+`docs/research/table-variable-height.md` (Lightbown's Nielsen limits, WCAG 1.4.10, Unity's
+`FixedHeight`/`DynamicHeight`, TanStack Virtual's measurement cache), committed alone as `43a0370`
+before any code.
+
+**What changed.** `model::rows_in_view(scroll, view, tops)` and `model::row_tops(tops, heights, from,
+pitch)`: the engine-free window ("the last row whose top is at or above the scroll", plus the cut row
+that says there is more) and the prefix sum, filled from the earliest row whose height moved.
+`TableCache` gains `heights` (a display row's measured height, `0.0` unknown), `tops`, `tops_dirty`
+and `max`. `update_tables` reads the pool's laid-out heights **at the display row the cache drew them
+at**, marks a row dirty only when the reading is more than half a pixel off what it stored (layout
+rounds to device pixels), re-sums from there, and takes the window from `rows_in_view`. The rows
+column's padding above and below is the measured room, so the scroll's length is the measured content.
+A rebuilt order (sort, insertion, removal) makes every height unknown and re-sums from the top, because
+row *i* is no longer the row measured at *i*. The anchor (the row at the top when rows come and go) and
+the cursor's reveal read the row's own top from `tops` instead of summing the pool's heights. A plain
+table's path is unchanged, line for line.
+
+**The bug the tests found.** Scrolled to the end, a table whose rows below it then measured taller
+left the player short of the last row: `max` grew but `y` stayed where the shorter content had put it,
+so the data's last row could never be shown. The fix keeps "at the end" as where the player put it:
+`was_at_end` (from the previous frame's `max`) makes the scroll follow the grown content. Both are
+pinned by `a_wrapping_table_scrolls_to_a_tall_row_and_to_the_last_one` and
+`the_last_row_of_a_wrapping_table_is_reachable_and_the_cursor_row_stays_in_view`.
+
+**Tests.** `table::ten_thousand_wrapping_rows_spawn_a_viewport_of_entities` (at 1x, at 200% text, at
+four scroll offsets, and the whole world's entity count equal to a 20-row table's — mutation check:
+`pool := len` fails it in 36 s), `table::a_wrapping_table_scrolls_to_a_tall_row_and_to_the_last_one`
+(a tall row among the first, End lands the data's last row on the viewport's bottom edge, 40 Down
+presses keep the whole cursor row in view), `table::a_wrapping_tables_scroll_does_not_drift_as_its_rows_are_measured`
+(a scroll away and back returns every row to its pixel; 30 idle frames write nothing), and the two
+older wrapping tests retargeted from "every row is bound" to "the rows in view are bound and the first
+stands at the top" (an assumption the issue's own acceptance reverses). `model`'s
+`row_window_tests` (4) hold the window and the sum: an unmeasured table answers exactly what
+`table_window` answers, a measured row moves only the rows after it, a row any of which is in view is
+drawn, and a bad scroll or view draws nothing. The `table` suite is **30/30**.
+
+**Docs.** The CHANGELOG's 0.64.0 section, `docs/guide/tables.md` (the Virtualized bullet now says
+"a plain table's rows", and a new bullet "A wrapped column still windows" gives the measurement rule
+and the end-of-scroll rule), and `Column::wrap`'s rustdoc (which said "binds every row… keep it for a
+few hundred rows", the opposite of what the crate now does).
+
+**Demo.** `examples/table` gained `GOOEY_WRAP=1`: a fifth Note column of one-to-three-line sentences,
+`.unsortable().wrap()`, so the rows differ in height. The capture shows the wrapping table scrolled
+and walked, which is the same feature the new window draws.
