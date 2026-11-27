@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.63.0] - 2026-11-27
+
+### Fixed
+
+- **Typing in a soft-wrapped pane costs what the pane draws, not the file.** Every keystroke rebuilt
+  the whole wrap map — one character walk per line of the document — so in the debug build the gate
+  runs, one character typed into a 20,000-line, 100-column note took **66.0 ms** a frame against
+  **16.9 ms** for the same gesture in a 20-line note, and 49 ms of that was the rebuild. The map now
+  keeps each line's break columns and a prefix sum of rows, and an edit re-wraps **only the lines it
+  replaced** and shifts the rows after them by an integer; a fold opening or closing moves the row
+  sums alone. Measured after: **21.0 ms to 17.4 ms (1.21×)**, under the editor's own `PERF_BUDGET`
+  (2×). A frame that made several edits (a replace-all, an undo group, an edit from the host) and a
+  width or tab change still rebuild, and answer exactly what a fresh build does — a test applies 400
+  random edits of every kind and compares every row lookup against a fresh map.
+  `CodeBuffer::longest_cols`, which walked every line once a revision for the editor's sideways
+  scroll and the minimap's bar scale, is now exact from a width→count map updated per edit, so a
+  replace-all stays linear (`docs/research/code-wrap-incremental.md`).
+
 ## [0.62.0] - 2026-11-27
 
 ### Added

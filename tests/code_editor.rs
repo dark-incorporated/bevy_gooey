@@ -100,6 +100,15 @@ fn editor_of(app: &mut App, text: &str) -> Entity {
     editor
 }
 
+fn set_window(app: &mut App, width: f32, height: f32) {
+    app.world_mut()
+        .query_filtered::<&mut Window, With<PrimaryWindow>>()
+        .single_mut(app.world_mut())
+        .expect("one primary window")
+        .resolution
+        .set(width, height);
+}
+
 fn window(app: &mut App) -> Entity {
     app.world_mut()
         .query_filtered::<Entity, With<PrimaryWindow>>()
@@ -1156,4 +1165,128 @@ fn a_settled_wrapped_editor_writes_nothing() {
         app.update();
     }
     assert_eq!(node_ticks(&app, editor), before);
+}
+
+// -- #122: a keystroke in a wrapped pane costs what the pane draws, not the file --
+
+/// The time of one frame in which one character was typed, median of `rounds`, after two warm-up
+/// rounds. The caret sits where it was when the helper was entered, so the typing grows the text
+/// it is in.
+fn typed_frame_ms(app: &mut App, rounds: usize) -> f64 {
+    let mut times = Vec::new();
+    for round in 0..rounds + 2 {
+        let window = window(app);
+        let text = ((b'a' + (round % 26) as u8) as char).to_string();
+        app.world_mut().write_message(KeyboardInput {
+            key_code: KeyCode::KeyA,
+            logical_key: Key::Character(text.as_str().into()),
+            state: ButtonState::Pressed,
+            text: Some(text.clone().into()),
+            repeat: false,
+            window,
+        });
+        let began = Instant::now();
+        app.update();
+        let spent = began.elapsed().as_secs_f64() * 1000.0;
+        app.world_mut().write_message(KeyboardInput {
+            key_code: KeyCode::KeyA,
+            logical_key: Key::Character(text.as_str().into()),
+            state: ButtonState::Released,
+            text: None,
+            repeat: false,
+            window,
+        });
+        app.update();
+        if round >= 2 {
+            times.push(spent);
+        }
+    }
+    times.sort_by(|a, b| a.total_cmp(b));
+    times[times.len() / 2]
+}
+
+/// `n` lines, each about `width` characters of prose.
+fn prose_lines(n: usize, width: usize) -> String {
+    let mut text = String::new();
+    for i in 0..n {
+        let mut line = String::new();
+        while line.len() < width {
+            line.push_str(&format!("w{i} "));
+        }
+        line.push('\n');
+        text.push_str(&line);
+    }
+    text
+}
+
+#[test]
+fn typing_in_a_wrapped_20000_line_file_costs_what_typing_in_a_20_line_one_does() {
+    let mut small = app();
+    wrapped_editor_of(&mut small, &prose_lines(20, 100));
+    let mut big = app();
+    wrapped_editor_of(&mut big, &prose_lines(20_000, 100));
+    let small_ms = typed_frame_ms(&mut small, 5);
+    let big_ms = typed_frame_ms(&mut big, 5);
+    assert!(
+        big_ms <= small_ms * f64::from(PERF_BUDGET),
+        "a keystroke in 20,000 wrapped lines took {big_ms:.2} ms to 20 lines' {small_ms:.2} ms"
+    );
+}
+
+/// Resizing and scrolling a settled 20,000-line wrapped pane: the width change re-wraps the file
+/// once, and the frames after it are the pane's, not the file's.
+/// The settled frames of a wrapped pane after one re-wrap of the new width, and the wheel moving
+/// its view: median ms a frame, against the same gesture in a 20-line pane.
+#[test]
+fn a_20000_line_wrapped_pane_costs_its_frames_after_one_rewrap_of_the_new_width() {
+    let steady = |lines: usize| {
+        let mut app = app();
+        let editor = wrapped_editor_of(&mut app, &prose_lines(lines, 100));
+        let frame = |app: &mut App| {
+            let began = Instant::now();
+            app.update();
+            began.elapsed().as_secs_f64() * 1000.0
+        };
+        // Two widths, so each change is a re-wrap: the first frame at a new width is the walk of
+        // the text, and the frames after it are the pane's.
+        let mut settled = Vec::new();
+        for (i, width) in [1280.0f32, 1200.0, 1280.0, 1200.0, 1280.0, 1200.0]
+            .into_iter()
+            .enumerate()
+        {
+            set_window(&mut app, width, 720.0);
+            frame(&mut app);
+            if i >= 2 {
+                settled.push(frame(&mut app));
+            }
+        }
+        let before = app.world().entity(editor).get::<CodeEditor>().map(CodeEditor::scroll);
+        let at = {
+            let node = app.world().get::<ComputedNode>(editor).expect("laid out");
+            node.size() * 0.5 / node.inverse_scale_factor()
+        };
+        pointer(&mut app, at, PointerAction::Move { delta: Vec2::ZERO });
+        let handle = window(&mut app);
+        for _ in 0..6 {
+            app.world_mut().write_message(MouseWheel {
+                unit: MouseScrollUnit::Line,
+                x: 0.0,
+                y: -3.0,
+                window: handle,
+                phase: bevy::input::touch::TouchPhase::Moved,
+            });
+            settled.push(frame(&mut app));
+        }
+        let after = app.world().entity(editor).get::<CodeEditor>().map(CodeEditor::scroll);
+        assert_ne!(before, after, "the wheel never moved the view");
+        settled.sort_by(|a, b| a.total_cmp(b));
+        settled[settled.len() / 2]
+    };
+    let small_ms = steady(20);
+    let big_ms = steady(20_000);
+    assert!(
+        big_ms <= small_ms * f64::from(PERF_BUDGET),
+        "a settled 20,000-line wrapped pane took {big_ms:.2} ms a frame to 20 lines' \
+         {small_ms:.2} ms"
+    );
 }

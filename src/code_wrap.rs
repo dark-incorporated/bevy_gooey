@@ -10,7 +10,7 @@
 
 use std::sync::Arc;
 
-use crate::code_buffer::CodeBuffer;
+use crate::code_buffer::{CodeBuffer, LINE_EDIT_LOG, LineEdit};
 use crate::code_fold::FoldMap;
 
 /// The display columns where a line of text starts a new row, ascending, each past the one before
@@ -43,13 +43,21 @@ pub(crate) fn break_columns(line: &str, cols: usize, tab: usize) -> Vec<usize> {
 }
 
 /// Where every line breaks, and the row each line starts on.
-#[derive(Debug, PartialEq, Eq)]
+///
+/// The expensive half — the character walk that decides a line's break columns — is kept per line,
+/// so an edit re-walks only the lines it replaced and the lines after them only move by an integer
+/// (`docs/research/code-wrap-incremental.md`).
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub(crate) struct Wrap {
-    /// What this was built for: the buffer's revision, the row width and the tab width.
-    key: (u64, usize, usize),
+    /// The row width this was built for.
+    cols: usize,
+    /// The tab width this was built for.
+    tab: usize,
+    /// The buffer revision whose text these breaks are for.
+    revision: u64,
     /// The first row of each line, and the row count at the end; a line a fold hides has none.
     first_row: Vec<usize>,
-    /// The columns each line breaks at.
+    /// The columns each line breaks at, empty for a line that fits one row.
     breaks: Vec<Box<[usize]>>,
 }
 
@@ -57,28 +65,23 @@ impl Wrap {
     fn build(buffer: &CodeBuffer, fold: &FoldMap, cols: usize) -> Self {
         let tab = buffer.tab_width();
         let lines = buffer.len_lines();
-        let mut first_row = Vec::with_capacity(lines + 1);
         let mut breaks = Vec::with_capacity(lines);
-        let mut rows = 0;
         for line in 0..lines {
+            breaks.push(breaks_of(buffer.line(line), cols, tab));
+        }
+        let mut first_row = Vec::with_capacity(lines + 1);
+        let mut rows = 0;
+        for (line, cuts) in breaks.iter().enumerate() {
             first_row.push(rows);
-            if fold.is_hidden(line) {
-                breaks.push(Box::default());
-                continue;
+            if !fold.is_hidden(line) {
+                rows += 1 + cuts.len();
             }
-            let text = buffer.line(line);
-            // A line that is shorter than a row cannot break: skip the walk over it.
-            let cuts = if text.len() <= cols {
-                Vec::new()
-            } else {
-                break_columns(text, cols, tab)
-            };
-            rows += 1 + cuts.len();
-            breaks.push(cuts.into_boxed_slice());
         }
         first_row.push(rows);
         Self {
-            key: (buffer.revision(), cols, tab),
+            cols,
+            tab,
+            revision: buffer.revision(),
             first_row,
             breaks,
         }
@@ -87,6 +90,83 @@ impl Wrap {
     fn rows(&self) -> usize {
         self.first_row.last().copied().unwrap_or(0)
     }
+
+    /// Lays the row sums out again from the breaks this holds: the folds moved under the text, so
+    /// a line that now shows takes rows it did not, and one that a fold took away takes none. An
+    /// integer add per line, with no character walked.
+    fn relay(&mut self, fold: &FoldMap) {
+        let mut rows = 0;
+        let mut first_row = Vec::with_capacity(self.breaks.len() + 1);
+        for (line, cuts) in self.breaks.iter().enumerate() {
+            first_row.push(rows);
+            if !fold.is_hidden(line) {
+                rows += 1 + cuts.len();
+            }
+        }
+        first_row.push(rows);
+        self.first_row = first_row;
+    }
+
+    /// Follows what `edits` did to the text: the lines an edit replaced are wrapped again, and the
+    /// rows after them move by what their count became. Returns whether the map is a map of
+    /// `buffer` now; `false` means it could not follow (a whole-text load or replace-all, a line
+    /// count that does not add up) and the caller builds afresh.
+    fn follow(&mut self, edits: &[LineEdit], buffer: &CodeBuffer, fold: &FoldMap) -> bool {
+        for edit in edits {
+            match *edit {
+                LineEdit::Reset => return false,
+                LineEdit::Splice {
+                    first,
+                    removed,
+                    inserted,
+                } => {
+                    let lines = self.breaks.len();
+                    if first > lines || first.checked_add(removed).is_none_or(|end| end > lines) {
+                        return false;
+                    }
+                    let fresh: Vec<Box<[usize]>> = (first..first + inserted)
+                        .map(|line| breaks_of(buffer.line(line), self.cols, self.tab))
+                        .collect();
+                    let mut rows = vec![self.first_row[first]];
+                    for (at, cuts) in (first..first + inserted).zip(fresh.iter()) {
+                        let last = *rows.last().unwrap_or(&0);
+                        rows.push(last + self.rows_at_or(at, cuts, fold));
+                    }
+                    let old_end = first + removed;
+                    let new_end = first + inserted;
+                    let old_rows = self.first_row[old_end];
+                    let new_rows = *rows.last().unwrap_or(&old_rows);
+                    self.breaks.splice(first..old_end, fresh);
+                    self.first_row.splice(first + 1..=old_end, rows.into_iter().skip(1));
+                    let delta = new_rows as i64 - old_rows as i64;
+                    if delta != 0 {
+                        for row in &mut self.first_row[new_end + 1..] {
+                            *row = (*row as i64 + delta).max(0) as usize;
+                        }
+                    }
+                }
+            }
+        }
+        self.revision = buffer.revision();
+        self.breaks.len() == buffer.len_lines() && self.first_row.len() == self.breaks.len() + 1
+    }
+
+    /// The rows a line the map does not hold yet takes: the `cuts` being spliced in, or 0 hidden.
+    fn rows_at_or(&self, line: usize, cuts: &[usize], fold: &FoldMap) -> usize {
+        if fold.is_hidden(line) {
+            0
+        } else {
+            1 + cuts.len()
+        }
+    }
+}
+
+/// The columns `line` breaks at: none when it fits, so a short line never walks its characters.
+fn breaks_of(line: &str, cols: usize, tab: usize) -> Box<[usize]> {
+    if line.len() <= cols {
+        return Box::default();
+    }
+    break_columns(line, cols, tab).into_boxed_slice()
 }
 
 /// The map between the editor's rows and the buffer's lines: a closed fold takes lines away and a
@@ -100,6 +180,11 @@ impl Wrap {
 pub(crate) struct RowMap {
     fold: FoldMap,
     wrap: Option<Arc<Wrap>>,
+    /// What the text did since the map was last synced, so the next `sync` can re-wrap only the
+    /// lines an edit replaced.
+    edits: Vec<LineEdit>,
+    /// Whether the folds moved since the wrap was laid out.
+    folds_moved: bool,
 }
 
 impl std::ops::Deref for RowMap {
@@ -111,27 +196,79 @@ impl std::ops::Deref for RowMap {
 }
 
 impl RowMap {
-    /// Takes the folds a host or the player closed; the wrapping is rebuilt on the next `sync`.
+    /// Takes the folds a host or the player closed. The map itself catches up in `sync`, which
+    /// only has to move the row sums, not walk the text again.
     pub(crate) fn set_fold(&mut self, fold: FoldMap) {
         if self.fold != fold {
             self.fold = fold;
-            self.wrap = None;
+            self.folds_moved = true;
+        }
+    }
+
+    /// Takes what an edit did to the line numbers, so the next `sync` re-wraps the lines it
+    /// replaced and shifts the rows after them instead of walking the whole file. A log too long
+    /// to keep is given up for the rebuild it implies.
+    pub(crate) fn follow_edits(&mut self, edits: &[LineEdit]) {
+        self.edits.extend_from_slice(edits);
+        if self.edits.len() > LINE_EDIT_LOG {
+            self.edits.clear();
+            self.edits.push(LineEdit::Reset);
         }
     }
 
     /// Makes the map answer for `buffer` in rows `cols` wide, or without wrapping at `None`.
-    /// Rebuilds only when the text, the width, the tab or the folds are not what it was built for;
-    /// the cost is one pass over the text then.
+    ///
+    /// The character walk is paid only for lines the text replaced since the last `sync`; the
+    /// lines after them move by an integer, and a fold that opened or closed moves the row sums
+    /// alone. Anything the deltas cannot describe (a whole-text load, a width change) rebuilds.
     pub(crate) fn sync(&mut self, cols: Option<usize>, buffer: &CodeBuffer) {
-        let Some(cols) = cols else {
+        let Some(cols) = cols.map(|cols| cols.max(1)) else {
             self.wrap = None;
+            self.edits.clear();
+            self.folds_moved = false;
             return;
         };
-        let key = (buffer.revision(), cols.max(1), buffer.tab_width());
-        if self.wrap.as_ref().is_some_and(|wrap| wrap.key == key) {
+        let edits = std::mem::take(&mut self.edits);
+        let folds_moved = std::mem::take(&mut self.folds_moved);
+        let tab = buffer.tab_width();
+        let settled = !folds_moved
+            && edits.is_empty()
+            && self.wrap.as_ref().is_some_and(|wrap| {
+                wrap.cols == cols && wrap.tab == tab && wrap.revision == buffer.revision()
+            });
+        if settled {
             return;
         }
-        self.wrap = Some(Arc::new(Wrap::build(buffer, &self.fold, cols.max(1))));
+        let reusable = self
+            .wrap
+            .take()
+            .filter(|wrap| wrap.cols == cols && wrap.tab == tab)
+            .map(Arc::unwrap_or_clone);
+        self.wrap = Some(Arc::new(match reusable {
+            Some(mut wrap) => {
+                // The lines an edit replaced are wrapped again; a fold that opened or closed
+                // moves the row sums, which is an add per line and no character walked. One
+                // splice is what a keystroke, a paste or a delete makes; a frame that made
+                // several (a replace-all, an undo group, an edit from the host) is rebuilt,
+                // because each of their line numbers is the one it saw before the next.
+                let followed = match edits.as_slice() {
+                    [] => true,
+                    [LineEdit::Splice { .. }] => wrap.follow(&edits, buffer, &self.fold),
+                    // Even a load of the same number of lines is not the same breaks.
+                    _ => false,
+                };
+                if !followed || wrap.breaks.len() != buffer.len_lines() {
+                    Wrap::build(buffer, &self.fold, cols)
+                } else {
+                    if folds_moved {
+                        wrap.relay(&self.fold);
+                    }
+                    wrap.revision = buffer.revision();
+                    wrap
+                }
+            }
+            None => Wrap::build(buffer, &self.fold, cols),
+        }));
     }
 
     /// The map counted in **lines that show**, not display rows: what the minimap's lane is an
@@ -434,6 +571,89 @@ mod tests {
             first.as_ref().unwrap(),
             map.wrap.as_ref().unwrap()
         ));
+    }
+
+    /// A map that followed a stream of edits answers exactly what a map built from the text
+    /// afterwards answers: same breaks per line, same first row per line, same line per row.
+    #[test]
+    fn an_incremental_rebuild_answers_exactly_what_a_fresh_one_does() {
+        use crate::code_buffer::CodePos;
+        let mut buffer = buffer("alpha beta gamma delta\nepsilon\n\nzeta eta theta\niota");
+        let mut map = RowMap::default();
+        map.sync(Some(8), &buffer);
+        let mut seed: u64 = 0x5eed_1234_abcd_0001;
+        let mut next = move |n: usize| {
+            seed = seed
+                .wrapping_mul(6_364_136_223_846_793_005)
+                .wrapping_add(1_442_695_040_888_963_407);
+            ((seed >> 33) % n as u64) as usize
+        };
+        let words = ["x", "long-word-here", "a b c d e f g", "", "tab\there"];
+        for step in 0..400 {
+            match next(5) {
+                0 => {
+                    let line = next(buffer.len_lines());
+                    let col = {
+                        let text = buffer.line(line);
+                        let mut col = next(text.len() + 1);
+                        while !text.is_char_boundary(col) {
+                            col -= 1;
+                        }
+                        col
+                    };
+                    buffer.select(CodePos::new(line, col), CodePos::new(line, col));
+                    buffer.insert(words[next(words.len())], 0.0);
+                }
+                1 => {
+                    let line = next(buffer.len_lines());
+                    buffer.select(
+                        CodePos::new(line, 0),
+                        CodePos::new(line, buffer.line(line).len()),
+                    );
+                    buffer.delete_forward(false, 0.0);
+                }
+                2 => {
+                    let line = next(buffer.len_lines());
+                    let mut col = next(buffer.line(line).len() + 1);
+                    while !buffer.line(line).is_char_boundary(col) {
+                        col -= 1;
+                    }
+                    buffer.select(CodePos::new(line, col), CodePos::new(line, col));
+                    buffer.insert("\n", 0.0);
+                }
+                3 => {
+                    buffer.undo();
+                }
+                _ => {
+                    let from = next(buffer.len_lines());
+                    let to = next(buffer.len_lines());
+                    let (from, to) = (from.min(to), from.max(to));
+                    let end = buffer.line(to).len();
+                    buffer.select(CodePos::new(from, 0), CodePos::new(to, end));
+                    buffer.indent_here(0.0);
+                }
+            }
+            map.follow_edits(&buffer.take_line_edits());
+            map.sync(Some(8), &buffer);
+            let fresh = Wrap::build(&buffer, &map.fold, 8);
+            let held = map.wrap.as_ref().unwrap();
+            assert_eq!(
+                held.breaks,
+                fresh.breaks,
+                "step {step} ({} lines): the breaks disagreed with a fresh build",
+                buffer.len_lines()
+            );
+            assert_eq!(
+                held.first_row,
+                fresh.first_row,
+                "step {step} ({} lines): the row sums disagreed with a fresh build",
+                buffer.len_lines()
+            );
+            let line_on = |wrap: &Wrap, row: usize| wrap.first_row.partition_point(|&r| r <= row) - 1;
+            for row in 0..map.rows(buffer.len_lines()) {
+                assert_eq!(map.line_at(row), line_on(&fresh, row), "step {step} row {row}");
+            }
+        }
     }
 
     #[test]

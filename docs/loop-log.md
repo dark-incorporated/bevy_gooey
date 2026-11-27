@@ -3946,3 +3946,51 @@ reported, not edited).
 only this pass's files. No baseline worktree was made: the only visual change is one chip in a row,
 and it was judged by eye. Left overs from earlier passes, listed not removed: worktrees `~/g17_base`,
 `~/g17_parked`, `~/g17s_base`; parked branches `wiggum/parked-pass-90-…` (stale).
+
+## Iteration 114 — 2026-11-27 — a keystroke in a wrapped pane costs what the pane draws (#122)
+
+**Item.** Chosen from the backlog at (2): iteration 112's own recorded open gap, "an incremental
+rebuild from `take_line_edits`". Measured first, in the debug build the gate runs: typing one
+character at the end of a 20,000-line, 100-column file cost **66.0 ms** a frame against **16.9 ms**
+for the same gesture in a 20-line file — 3.90×, 49 ms of work per keystroke that grew with the file,
+in a widget whose own guide claims "20,000 lines cost what 20 do".
+
+**What changed.** `Wrap` (`src/code_wrap.rs`) now holds each line's break columns and the first row
+of each line; `RowMap::follow_edits` takes the buffer's own `LineEdit` log — the one
+`update_code_folds` already drains — and a splice re-wraps only the lines it replaced and shifts
+every later first row by the row-count delta, an integer add per line and no character walked. A
+fold that opens or closes moves the row sums alone (`relay`). A frame that made more than one splice
+(a replace-all, an undo group, an edit from the host), a `Reset`, a width or tab change, and any
+splice whose arithmetic does not land on the buffer's line count all rebuild — one path, the same
+answer either way. `CodeBuffer::longest_cols` (walked every line once a revision, for the editor's
+sideways scroll and the minimap's bar scale) is now exact from a width→count `BTreeMap` updated per
+edit, so a replace-all of `n` single-line edits stays linear (the `replace_all_costs_…` test pins
+the shape and caught my first cut, which kept a parallel `Vec` and made the splice quadratic).
+
+**Measured after.** **21.0 ms to 17.4 ms (1.21×)**, the keystroke test tightened from a placeholder
+8× to the editor's own `PERF_BUDGET` (2×). Mutation check: forcing the rebuild path back for a
+splice reads **71.5 ms to 16.6 ms (4.31×)** and fails the test.
+
+**Tests.** `code_editor::typing_in_a_wrapped_20000_line_file_costs_what_typing_in_a_20_line_one_does`
+(the issue's acceptance, at `PERF_BUDGET`);
+`code_editor::a_20000_line_wrapped_pane_costs_its_frames_after_one_rewrap_of_the_new_width` (two
+widths so each change re-wraps, then the wheel: settled frames of 20,000 lines against 20, at
+`PERF_BUDGET`); `code_wrap::an_incremental_rebuild_answers_exactly_what_a_fresh_one_does` (400
+random typed characters, newlines, deletes, undos and indents, every row lookup and both maps
+compared against a fresh `Wrap::build` — the property that makes this one path);
+`code_buffer::the_widest_line_is_exact_after_every_kind_of_edit` (300 random edits, loads and tab
+width changes against a walk of the lines). The `code_editor`, `code_wrap`, `code_buffer` and
+`code_decor` suites are green: **81/81**.
+
+**Docs.** The CHANGELOG's 0.63.0 section, the guide's soft-wrap bullet (`docs/guide/code-editor.md`,
+with the before and after numbers), and `docs/research/code-wrap-incremental.md` (Nielsen's 0.1 s
+limit, xi's incremental wrapping, VS Code's text buffer, Roblox Studio's editor; the line-granular
+model and its equivalence rule; the tail-shift-vs-balance-tree deviation).
+
+**Pending index.** home-still holds no text-editor sources (`code-soft-wrap.md` recorded the same);
+the technical sources above were read directly.
+
+**Top 5 backlog.** (1) crates.io token still 403 from 0.51.9 through 0.63.0 (owner must reissue);
+(2) windowed variable-height table; (3) a `problems()` note for a divider under 24 px; (4) the
+indent guides under soft wrap; (5) an incremental fold map (`FoldMap::set_fold` still relinks every
+range, and a 20,000-line tree's fold toggle pays it).
