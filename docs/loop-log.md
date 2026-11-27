@@ -4117,3 +4117,108 @@ incremental fold map (`FoldMap::set_fold` relinks every range, and a 20,000-line
 pays it); (5) a wrapping code pane rebuilds its whole wrap map on every keystroke (`Wrap` is keyed on
 the revision; `take_line_edits` is already there to feed an incremental rebuild, and a 20,000-line
 prose pane measured 9.7 ms a change).
+
+## Iteration 116 - 2026-11-27 - a minimap's view band is as tall as the text in view (#123)
+
+**Triage.** The last audit (`git show origin/loop-stats:steps/bevy_gooey_loop-audit.tsv | tail -3`)
+shows pass 391 at 14:27Z with `demo?` missing; pass 392 (16:07Z) is clean. The `demo?` belongs to
+iteration 115's table work, which shipped `docs/media/table-wrap.gif` in `89180fd` - the audit read the
+tree before that commit. No push, release, docs or demo gap to finish first.
+
+**Item.** #123, filed today by `dark-incorporated/bevy_dark_factory` as its #540
+(`consumer:bevy_grimoire`): the minimap's view band is right at the top of a file and grows as the view
+scrolls. A `bug` outranks the backlog, and it is the one thing a code pane draws wrong every frame a
+player reads down a file. Research note `docs/research/minimap-band.md` (Craft's *Visibility of system
+status*, Lightbown ch. 5 on feedback, VS Code's `minimap.ts` slider rule), committed at `67f5f71`
+before any code.
+
+**Parked work.** `origin/wiggum/parked-pass-390-20261127-132615` and `b868564` (parked pass 391) both
+carry a partial cut of this same issue: the band's height changed to `view.rows_in_view` with the
+`first_row` added once, plus a 55-line test and `GOOEY_SCROLL` in `examples/prose`. Adopted by
+cherry-picking the paths onto `loop/iter-116` and finished here; neither branch was merged or deleted.
+
+**The bug.** `drawn` was already an absolute row index (one past the last row drawn) and the next line
+added `first_row` to it again, so the band's bottom was `2 · first_row + needed - 1`: at
+`first_row = 0` the two agree, which is why a file opened at the top looked right. Measured on the
+running example: a 20-line view scrolled to line 200 of 300 drew a band **209 px** tall (about 70
+slots).
+
+**What changed** (`320d1df`). The band ends on the line of the last row the **viewport** holds, and
+its first row is added once:
+
+```rust
+let last_row = (view.first_row + view.rows_in_view.saturating_sub(1)).min(view.rows.saturating_sub(1));
+let bottom_line = lines.row_of(fold.line_at(last_row)).min(shown.saturating_sub(1));
+```
+
+`View::rows_in_view` replaced `needed` (the pool's count, which carries `POOL_SPARE_ROWS` past the
+viewport): two spare rows are not text in view, and at the end of a file they would claim lines that
+are not on screen. Under soft wrap the band counts **lines**, not rows, because both ends go through
+`fold.row_of` - a wrapped line's rows are one line for the band.
+
+**Tests.** `code_navigation::the_minimap_band_is_as_tall_as_the_lines_in_view_wherever_the_view_stands`
+(a 400-line file, the band's height in 3 px slots read at the top, at line 30, line 200 and line 380,
+each within one slot of the view's own `visible_lines()`), plus the parked pass's
+`under_soft_wrap_the_minimap_band_is_as_tall_as_the_lines_in_view`. Mutation-checked: restoring the
+double `first_row` fails the first test at stand 1 (the band is 2x too tall); taking `needed` back
+instead of `rows_in_view` fails it at the end of the file.
+
+**Checklist, before -> after** (`/tmp/g116/before` vs `after`, the lane cropped from the same
+1280x720 dark frame each time, band measured from its frame in the PNG):
+
+- band height, line 1 of 300: 66 -> 60 px; line 200: **209 -> 58 px**; end (line 290): 58 -> 58 px.
+- band top at line 200 sits at 467 of the 600 px lane, matching 200/300 = 67% of the scroll.
+- frame contrast of the band against the lane's ground: 3.23:1 (WCAG 1.4.11 asks 3:1 of a non-text
+  indicator). Fill is `accent` at `MINIMAP_BAND_ALPHA`, unchanged.
+- every bar one place, no overlap; the lane's width and the code pane's text unchanged.
+- `GooeySkin::problems()` empty for dark and parchment (unchanged by this pass; the band's colours are
+  the ones `tests/skin.rs` already holds).
+
+**Demo.** `docs/media/minimap-band.png` (1827x615): the lane pane of `examples/prose` at three stands
+of the same 300-line script - line 1, line 200, and the end - joined side by side, each cropped to
+`655,85,1260,700`. It is the picture of the bug: the band is the same height at all three stands, and
+in the "before" cut it was three times longer in the middle. `examples/prose` gained
+`GOOEY_SCROLL=<line>` (the view is put at that line once its rows are laid out, then the resource is
+spent). Listed in `docs/media/README.md` with its recipe; embedded in `docs/guide/code-editor.md`'s
+`CodeMinimap` section; the CHANGELOG's bullet names the test.
+
+**Docs.** CHANGELOG under 0.64.1, `docs/guide/code-editor.md`'s band paragraph (the rule and the three
+measured heights, corrected from "one slot shorter than `visible_lines()`" to the viewport's own
+`rows_in_view`), and the research note gained the before/after measurement.
+
+**Release.** 0.64.1 - patch: `View` is `pub(crate)` and the band's height was never a documented
+number, so no public API changed. `cargo publish --dry-run` packaged 100 files (680.4 KiB compressed)
+and verified the tarball. The real `cargo publish` was refused **403 Forbidden (authentication
+failed)**: the same broken token every release since 0.51.9 has hit, so 0.51.9 through 0.64.1 are
+pending the owner's new token. Logged once, not retried; `v0.64.1` is tagged and pushed so the history
+is right when the token lands.
+
+**The gate.** After the last edit: `fmt --check`, `clippy --all-targets --all-features -D warnings`,
+`nextest --all-features --lib --tests` (**1737 passed, 0 skipped**, 273 s), `test --all-features --doc`
+(361), `check --lib`, `check --lib --target wasm32-unknown-unknown`, `doc -D warnings` - all green.
+
+**Performance.** No change expected (this pass touches how one node's `top`/`height` are computed, not
+how often). Measured on the loop's own host with the lane drawn (`GOOEY_MINIMAP=1 GOOEY_SCROLL=200`),
+two runs back to back: **16.672 ms** each at load 4.6 falling from 9.2; vsync-bound, so the number is
+the frame budget and not a measurement of this change - no before run was taken and none is claimed.
+
+**Issues.** #123 closed with the fix's evidence (the measured heights and the test names). #122 (a
+wrapping table binding every row) was fixed by iteration 115 in `89180fd` but left open: that commit's
+message wrote `(#123)`, a typo - #123 did not exist yet - so the link closed nothing. Verified against
+its acceptance here (the 10,000-row entity count at 1x and 200%, `End`, the scroll's stack, a sort
+from the top, thirty idle frames), commented with the evidence and closed. No other open issues.
+
+**Pending index.** home-still was not queried this pass; the note's three sources were read directly
+(NN/g, home-still's Lightbown stem, VS Code's `minimap.ts`) and `corpus.md` lists no editor literature
+to add. Nothing new to file.
+
+**Cleanup.** Removed this pass's captures from `/tmp/g116` (stills, the lane crops, the gate script);
+`docs/media/minimap-band.png` is the one kept artifact. No baseline worktree was made: the "before"
+heights came from a build with the old line restored by mutation and reverted with
+`git checkout -- src/code_overlay.rs`. `df -h /home`: 573 GB free.
+
+**Top 5 backlog.** (1) crates.io token still 403 from 0.51.9 through 0.64.1 (owner must reissue);
+(2) indent guides under soft wrap (they stand per row, not per line, so a wrapped block's guides
+restart); (3) an incremental wrap map (`Wrap` is keyed on the revision, so every keystroke in a prose
+pane rebuilds it: 9.7 ms for 20,000 lines); (4) an incremental fold map (`FoldMap::set_fold` relinks
+every range); (5) `SplitThickness` under 24 px is not reported by `problems()`.
