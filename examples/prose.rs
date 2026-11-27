@@ -212,6 +212,11 @@ fn scroll_lane(
         return;
     };
     for mut editor in &mut lane {
+        // A line's height is known only once the editor has been laid out; before that
+        // `scroll_to_line` would set the goal to 0 px and the resource would be spent.
+        if editor.visible_lines().is_empty() {
+            return;
+        }
         editor.scroll_to_line(scroll.line);
     }
     commands.remove_resource::<LaneScroll>();
