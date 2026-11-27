@@ -21,7 +21,13 @@
 //!
 //! `GOOEY_SCROLL=<line>` puts the minimap pane's view at that line before the capture, so a still can
 //! show the band where a bug was: it is as tall at line 200 as at line 0 (#123).
+//!
+//! `GOOEY_FIND=<query>` opens the find bar on the notes pane with that query and presses Enter
+//! `GOOEY_FIND_STEPS` times (default 2) before the shot: the bar's count walks its matches and the
+//! text is untouched (#128).
 
+use bevy::input::ButtonState;
+use bevy::input::keyboard::{Key, KeyboardInput};
 use bevy::prelude::*;
 use bevy::render::view::screenshot::{Screenshot, save_to_disk};
 use bevy::window::WindowResolution;
@@ -87,8 +93,23 @@ fn main() {
     .add_systems(Startup, setup)
     .add_systems(
         Update,
-        (follow_background, step_syntax_theme, scroll_lane, capture),
+        (
+            follow_background,
+            step_syntax_theme,
+            scroll_lane,
+            find_stage,
+            capture,
+        ),
     );
+    if let Ok(query) = std::env::var("GOOEY_FIND") {
+        app.insert_resource(FindStage {
+            query,
+            steps: env("GOOEY_FIND_STEPS").unwrap_or(2),
+            sent: 0,
+            frame: 0,
+            opened: false,
+        });
+    }
     if let Some(line) = env("GOOEY_SCROLL") {
         app.insert_resource(LaneScroll { line });
     }
@@ -230,6 +251,61 @@ fn scroll_lane(
 struct LaneScroll {
     line: usize,
 }
+
+/// `GOOEY_FIND`: the query, how many Enters to press in the bar, and where the staging stands.
+#[derive(Resource)]
+struct FindStage {
+    query: String,
+    steps: u32,
+    sent: u32,
+    frame: u32,
+    opened: bool,
+}
+
+/// `GOOEY_FIND`'s staging: open the bar on the notes pane with the query, then press Enter in it
+/// once every [`FIND_BEAT`] frames, as the player would, until the count has stepped `steps` times.
+fn find_stage(
+    stage: Option<ResMut<FindStage>>,
+    mut editors: Query<&mut CodeFind, With<CodeMarkdown>>,
+    window: Query<Entity, With<bevy::window::PrimaryWindow>>,
+    mut keys: MessageWriter<KeyboardInput>,
+) {
+    let Some(mut stage) = stage else {
+        return;
+    };
+    stage.frame += 1;
+    if !stage.opened && stage.frame > 20 {
+        for mut find in &mut editors {
+            find.open = true;
+            find.query.clone_from(&stage.query);
+            stage.opened = true;
+        }
+        return;
+    }
+    if !stage.opened || stage.sent >= stage.steps {
+        return;
+    }
+    if stage.frame < 40 || (stage.frame - 40) % FIND_BEAT != 0 {
+        return;
+    }
+    let Ok(window) = window.single() else {
+        return;
+    };
+    for state in [ButtonState::Pressed, ButtonState::Released] {
+        keys.write(KeyboardInput {
+            key_code: KeyCode::Enter,
+            logical_key: Key::Enter,
+            state,
+            text: None,
+            repeat: false,
+            window,
+        });
+    }
+    stage.sent += 1;
+}
+
+/// Frames between two staged Enters.
+const FIND_BEAT: u32 = 12;
 
 /// F3 gives the skin the next ink theme after the one it has (the skin's own after a custom one).
 fn step_syntax_theme(keys: Res<ButtonInput<KeyCode>>, mut skin: ResMut<GooeySkin>) {

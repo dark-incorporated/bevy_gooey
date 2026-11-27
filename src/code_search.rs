@@ -7,7 +7,9 @@
 //! a closed editor owns none of it. The searching is [`crate::find_all`] and
 //! [`crate::replace_edits`]; a replace all is one undo step.
 
-use bevy::input_focus::{FocusCause, InputFocus};
+use bevy::input::ButtonState;
+use bevy::input::keyboard::{KeyCode, KeyboardInput};
+use bevy::input_focus::{FocusCause, FocusedInput, InputFocus};
 use bevy::picking::Pickable;
 use bevy::picking::events::{PointerDrag, PointerMove, PointerPress};
 use bevy::prelude::*;
@@ -135,6 +137,24 @@ fn panel(root: Entity, find: &CodeFind) -> impl Bundle {
         OverlayPart,
         // A press, drag or move on the bar is the bar's: the editor under it does not take it.
         observe(|mut press: On<PointerPress>| press.propagate(false)),
+        // Escape closes the bar and hands the keyboard back to the editor (VS Code's find widget;
+        // WCAG 2.1.2 makes Escape the way out of a widget Tab reaches). Every other key is already
+        // the field's or the editor's own: `code_on_key` takes only a key pressed in the editor
+        // itself, so nothing typed in the bar can reach the file (#128).
+        observe(
+            move |mut key: On<FocusedInput<KeyboardInput>>, mut finds: Query<&mut CodeFind>| {
+                if key.input.state != ButtonState::Pressed || key.input.repeat {
+                    return;
+                }
+                if key.input.key_code != KeyCode::Escape {
+                    return;
+                }
+                if let Ok(mut find) = finds.get_mut(root) {
+                    find.actions.push(FindAction::Close);
+                }
+                key.propagate(false);
+            },
+        ),
         observe(|mut drag: On<PointerDrag>| drag.propagate(false)),
         observe(|mut moved: On<PointerMove>| moved.propagate(false)),
         ChildOf(root),
