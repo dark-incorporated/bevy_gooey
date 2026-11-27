@@ -18,6 +18,9 @@
 //! `GOOEY_WRAPPED_MINIMAP=1` turns on both `CodeSoftWrap` and `CodeMinimap` in the left pane, over
 //! the long script, so the lane can be seen drawing **one bar per line** where the pane draws
 //! thousands of rows: the file's outline does not lengthen when the window narrows.
+//!
+//! `GOOEY_SCROLL=<line>` puts the minimap pane's view at that line before the capture, so a still can
+//! show the band where a bug was: it is as tall at line 200 as at line 0 (#123).
 
 use bevy::prelude::*;
 use bevy::render::view::screenshot::{Screenshot, save_to_disk};
@@ -82,7 +85,10 @@ fn main() {
     .insert_resource(ClearColor(skin.background))
     .insert_resource(skin)
     .add_systems(Startup, setup)
-    .add_systems(Update, (follow_background, step_syntax_theme, capture));
+    .add_systems(Update, (follow_background, step_syntax_theme, scroll_lane, capture));
+    if let Some(line) = env("GOOEY_SCROLL") {
+        app.insert_resource(LaneScroll { line });
+    }
     if let Some(at) = env("GOOEY_FRAMES") {
         app.insert_resource(Capture {
             at,
@@ -172,7 +178,7 @@ fn setup(mut commands: Commands) {
         .with_children(|body| {
             body.spawn(heading(right_title));
             if right_lane {
-                body.spawn((code_editor("Script", script()), CodeMinimap));
+                body.spawn((code_editor("Script", script()), CodeMinimap, Lane));
             } else {
                 body.spawn(code_editor("Notes", PAGE));
             }
@@ -189,6 +195,32 @@ fn setup(mut commands: Commands) {
             ..default()
         })
         .add_children(&[wrapped, right]);
+}
+
+/// The pane `GOOEY_SCROLL` scrolls: the editor with the lane on it.
+#[derive(Component)]
+struct Lane;
+
+/// `GOOEY_SCROLL=<line>` puts the lane's view at that line, once, so a still can show the band where
+/// a bug was (#123).
+fn scroll_lane(
+    scroll: Option<Res<LaneScroll>>,
+    mut lane: Query<&mut CodeEditor, With<Lane>>,
+    mut commands: Commands,
+) {
+    let Some(scroll) = scroll else {
+        return;
+    };
+    for mut editor in &mut lane {
+        editor.scroll_to_line(scroll.line);
+    }
+    commands.remove_resource::<LaneScroll>();
+}
+
+/// `GOOEY_SCROLL`'s line.
+#[derive(Resource)]
+struct LaneScroll {
+    line: usize,
 }
 
 /// F3 gives the skin the next ink theme after the one it has (the skin's own after a custom one).

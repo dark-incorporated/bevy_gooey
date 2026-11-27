@@ -319,9 +319,11 @@ pub(crate) struct View {
     /// The first display row drawn, and the first display column.
     pub(crate) first_row: usize,
     pub(crate) first_col: usize,
-    /// How many columns a row draws, how many display rows the text has, and how many are pooled.
+    /// How many columns a row draws, how many display rows the text has, how many of them fit the
+    /// viewport, and how many are pooled (the viewport's rows plus `POOL_SPARE_ROWS`).
     pub(crate) cols: usize,
     pub(crate) rows: usize,
+    pub(crate) rows_in_view: usize,
     pub(crate) needed: usize,
     pub(crate) shown: Vec2,
     pub(crate) pad: f32,
@@ -1666,7 +1668,8 @@ pub(crate) fn update_code_editors(
         );
         let first_col = (shown.x / advance).floor().max(0.0) as usize;
         let cols = ((size.x - pad) / advance).ceil().max(1.0) as usize + POOL_SPARE_COLS;
-        let needed = (size.y / m.line_px).ceil().max(1.0) as usize + POOL_SPARE_ROWS;
+        let rows_in_view = (size.y / m.line_px).ceil().max(1.0) as usize;
+        let needed = rows_in_view + POOL_SPARE_ROWS;
         let digits = lines.to_string().len().max(2);
         let gutter_w = (digits as f32 + GUTTER_SPARE_COLS) * advance;
         let revision = editor.buffer.revision();
@@ -1676,6 +1679,7 @@ pub(crate) fn update_code_editors(
             first_col,
             cols,
             rows,
+            rows_in_view,
             needed,
             shown,
             pad,
