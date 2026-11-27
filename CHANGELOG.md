@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.62.0] - 2026-11-27
+
+### Added
+
+- `quiet_chip(label)`: a `chip` with no Bevy `Button`, no tab stop and no `Activate`, for a host
+  that keeps focus traversal off on purpose (bevy_dark_factory's editor, #121). It carries the same
+  `Role::Chip` and `Hovered` as a `chip`, so the one skin arm draws it and the pointer still lights
+  it, and its `Selected` is the same lit look; the host listens for `PointerClick` and writes it.
+  Its words are its screen-reader name. The fourth such variant beside `plain_button`,
+  `quiet_list_row` and `status_item_quiet`. `docs/research/chip-quiet.md`.
+
 ## [0.61.0] - 2026-11-26
 
 ### Fixed
