@@ -24369,3 +24369,4 @@ pass	seq	phase	kind	category	tool	start	seconds	detail
 360	87	bugs	tool	web	web_search	2026-11-27T16:39:11Z	7.9	RTS minimap camera viewport rectangle shows visible portion designers guide "minimap"
 360	88	bugs	model	model		2026-11-27T16:39:19Z	28.0	
 360	89	bugs	model	model		2026-11-27T16:39:47Z	88.9	
+361	1	orient	model	model		2026-11-27T16:41:43Z	27.8	
