@@ -1070,3 +1070,140 @@ fn the_minimap_band_is_as_tall_as_the_lines_in_view_wherever_the_view_stands() {
         );
     }
 }
+
+/// Enter in the find query steps the match and never reaches the editor, which would put a line
+/// break over the match it just selected (#128). Each press moves the count on, and the file's text
+/// is the same after every one.
+#[test]
+fn enter_in_the_find_query_steps_the_match_and_leaves_the_text_alone() {
+    let mut app = app();
+    let editor = editor_of(&mut app, "cat dog cat\na cat", ());
+    {
+        let mut find = app.world_mut().get_mut::<CodeFind>(editor).expect("find");
+        find.open = true;
+        find.query = "cat".into();
+    }
+    settle(&mut app);
+    let before = app
+        .world()
+        .get::<CodeEditor>(editor)
+        .expect("editor")
+        .buffer()
+        .text();
+    assert_eq!(
+        app.world().get::<CodeFind>(editor).expect("find").count(),
+        3
+    );
+    for step in 1..=3 {
+        key(&mut app, KeyCode::Enter, Key::Enter, ButtonState::Pressed);
+        key(&mut app, KeyCode::Enter, Key::Enter, ButtonState::Released);
+        settle(&mut app);
+        assert_eq!(
+            app.world().get::<CodeEditor>(editor).expect("editor").buffer().text(),
+            before,
+            "Enter in the query is the bar's; nothing is typed into the file"
+        );
+        let find = app.world().get::<CodeFind>(editor).expect("find");
+        assert_eq!(
+            find.current(),
+            Some(step % 3),
+            "the {step}th Enter steps to the next match"
+        );
+    }
+}
+
+/// Escape in the bar closes it and gives the keyboard back to the editor, so the next key typed
+/// lands in the file where the caret stands (#128; WCAG 2.1.2, the bar is Tab's to leave and Escape
+/// is the way out).
+#[test]
+fn escape_in_the_bar_closes_it_and_hands_the_keyboard_back_to_the_editor() {
+    let mut app = app();
+    let editor = editor_of(&mut app, "cat, dog", ());
+    {
+        let mut find = app.world_mut().get_mut::<CodeFind>(editor).expect("find");
+        find.open = true;
+        find.query = "cat".into();
+    }
+    settle(&mut app);
+    key(&mut app, KeyCode::Escape, Key::Escape, ButtonState::Pressed);
+    key(
+        &mut app,
+        KeyCode::Escape,
+        Key::Escape,
+        ButtonState::Released,
+    );
+    settle(&mut app);
+    assert!(
+        !app.world().get::<CodeFind>(editor).expect("find").open,
+        "Escape closes the bar"
+    );
+    assert_eq!(
+        app.world().resource::<InputFocus>().get(),
+        Some(editor),
+        "the editor has the keys again"
+    );
+    key(
+        &mut app,
+        KeyCode::KeyX,
+        Key::Character("x".into()),
+        ButtonState::Pressed,
+    );
+    key(
+        &mut app,
+        KeyCode::KeyX,
+        Key::Character("x".into()),
+        ButtonState::Released,
+    );
+    settle(&mut app);
+    assert!(
+        app.world()
+            .get::<CodeEditor>(editor)
+            .expect("editor")
+            .buffer()
+            .text()
+            .contains('x'),
+        "the key after Escape was the editor's"
+    );
+}
+
+/// A character typed in the query edits the query and only it, even though the field's own handler
+/// is the one that takes it (#128: the bar's keys are its own, not the editor's).
+#[test]
+fn a_character_typed_in_the_query_never_reaches_the_editor() {
+    let mut app = app();
+    let editor = editor_of(&mut app, "cat", ());
+    {
+        let mut find = app.world_mut().get_mut::<CodeFind>(editor).expect("find");
+        find.open = true;
+        find.query = "ca".into();
+    }
+    settle(&mut app);
+    let before = app
+        .world()
+        .get::<CodeEditor>(editor)
+        .expect("editor")
+        .buffer()
+        .text();
+    key(
+        &mut app,
+        KeyCode::KeyT,
+        Key::Character("t".into()),
+        ButtonState::Pressed,
+    );
+    key(
+        &mut app,
+        KeyCode::KeyT,
+        Key::Character("t".into()),
+        ButtonState::Released,
+    );
+    settle(&mut app);
+    assert_eq!(
+        app.world().get::<CodeEditor>(editor).expect("editor").buffer().text(),
+        before,
+        "a character in the query is the field's"
+    );
+    assert_eq!(
+        app.world().get::<CodeFind>(editor).expect("find").query,
+        "cat"
+    );
+}
