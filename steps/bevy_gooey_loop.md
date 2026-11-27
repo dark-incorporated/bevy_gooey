@@ -1,6 +1,6 @@
 # Where bevy_gooey_loop's time goes
 
-Written by `tools/loop/steps.py publish` after every pass; the rows are in [`bevy_gooey_loop.tsv`](bevy_gooey_loop.tsv). Updated 2026-11-27 16:46Z.
+Written by `tools/loop/steps.py publish` after every pass; the rows are in [`bevy_gooey_loop.tsv`](bevy_gooey_loop.tsv). Updated 2026-11-27 16:49Z.
 
 ## What the last passes shipped
 
@@ -8,7 +8,6 @@ From [`bevy_gooey_loop-audit.tsv`](bevy_gooey_loop-audit.tsv): commits on main, 
 
 | pass | at | commits | unpushed | package_files | released | docs_files | demo_files | missing |
 |---|---|---|---|---|---|---|---|---|
-| 354 | 2026-11-26T00:04Z | 0 | 0 | 0 | - | 0 | 0 | nothing shipped |
 | 355 | 2026-11-26T01:05Z | 5 | 0 | 3 | v0.60.0 | 10 | 2 | - |
 | 356 | 2026-11-26T03:00Z | 15 | 0 | 4 | v0.61.0 | 6 | 1 | - |
 | 357 | 2026-11-27T13:37Z | 6 | 0 | 3 | v0.62.0 | 7 | 1 | - |
@@ -20,6 +19,7 @@ From [`bevy_gooey_loop-audit.tsv`](bevy_gooey_loop-audit.tsv): commits on main, 
 | 363 | 2026-11-27T16:43Z | 0 | 0 | 0 | - | 0 | 0 | nothing shipped |
 | 364 | 2026-11-27T16:44Z | 0 | 0 | 0 | - | 0 | 0 | nothing shipped |
 | 365 | 2026-11-27T16:46Z | 0 | 0 | 0 | - | 0 | 0 | nothing shipped |
+| 366 | 2026-11-27T16:49Z | 0 | 0 | 0 | - | 0 | 0 | nothing shipped |
 
 ## How each configuration did
 
@@ -30,39 +30,39 @@ host       model                        think    jobs  threads  passes  mean min
 big        anthropic/claude-sonnet-5-5  high     8     8            11      41.7        36.4
 big        anthropic/claude-sonnet-5-5  high     6     4            34      31.9        28.5
 big        anthropic/claude-sonnet-5-5  high     3     4             8      37.0        33.9
-big        ollama-cloud/deepseek-v4.1-flash:1017 high     3     4            14      34.5        25.6
+big        ollama-cloud/deepseek-v4.1-flash:1017 high     3     4            15      32.3        17.0
 ```
 
 ## The last 12 passes
 
 ```text
-12 pass(es), 3565 steps, 6.4 h of pass time
+12 pass(es), 3365 steps, 6.2 h of pass time
 
 category                       hours  share  steps  mean s
-model                           2.12  32.8%   1631     4.7
-wait: other                     1.90  29.4%    143    47.8
-cargo test                      1.18  18.4%    128    33.3
-cargo build                     0.50   7.7%     72    24.9
-shell                           0.36   5.5%   1181     1.1
+wait: other                     1.90  30.8%    143    47.8
+model                           1.85  30.0%   1561     4.3
+cargo test                      1.18  19.2%    128    33.3
+cargo build                     0.50   8.1%     72    24.9
+shell                           0.35   5.7%   1079     1.2
 cargo publish                   0.10   1.6%     13    27.8
-homestill                       0.08   1.2%     58     4.8
+homestill                       0.08   1.2%     45     6.0
 remote wait                     0.05   0.8%      7    25.8
-phase mark                      0.05   0.7%     47     3.6
+phase mark                      0.05   0.8%     44     3.8
 cargo clippy                    0.04   0.6%      5    26.3
-github                          0.02   0.4%     50     1.6
+github                          0.02   0.3%     43     1.7
 web                             0.01   0.2%      6     9.0
 sleep                           0.01   0.2%      1    45.4
 read files                      0.01   0.2%     84     0.4
 push gate                       0.01   0.2%     17     2.1
 
 phase                          hours  share  steps  mean s
-research                        2.44  37.8%   1319     6.7
-build                           1.23  19.1%    672     6.6
-log                             0.80  12.5%    325     8.9
-gate                            0.63   9.8%    144    15.8
-orient                          0.48   7.5%    560     3.1
-prove                           0.37   5.7%    192     6.9
-choose                          0.34   5.3%    278     4.5
+research                        2.32  37.6%   1253     6.7
+build                           1.23  20.0%    672     6.6
+log                             0.80  13.0%    325     8.9
+gate                            0.63  10.3%    144    15.8
+prove                           0.37   6.0%    192     6.9
+choose                          0.34   5.6%    278     4.5
+orient                          0.33   5.3%    426     2.8
 bugs                            0.06   1.0%     17    13.0
 release                         0.04   0.7%     30     5.3
 ship                            0.04   0.6%     12    10.6
@@ -88,10 +88,10 @@ slowest single steps
 ## Every pass recorded
 
 ```text
-85 pass(es), 24375 steps, 62.0 h of pass time
+86 pass(es), 24376 steps, 62.0 h of pass time
 
 category                       hours  share  steps  mean s
-model                          23.08  37.3%  11129     7.5
+model                          23.09  37.3%  11130     7.5
 wait: other                    10.94  17.7%    561    70.2
 wait: gate                      9.91  16.0%     74   482.3
 cargo test                      4.30   6.9%    761    20.3
@@ -108,7 +108,7 @@ cargo clippy                    0.26   0.4%     95     9.9
 github                          0.25   0.4%    273     3.3
 
 phase                          hours  share  steps  mean s
-orient                         19.65  31.7%   5232    13.5
+orient                         19.66  31.7%   5233    13.5
 prove                          10.28  16.6%   4921     7.5
 build                          10.17  16.4%   5497     6.7
 gate                            9.80  15.8%   1510    23.4
