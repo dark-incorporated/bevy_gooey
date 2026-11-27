@@ -1189,7 +1189,7 @@ fn draw_navigation(
     // `2 · first_row + needed` tall: 44 lines for a 20-line view scrolled to line 30, correct only at
     // the top of the file.
     let last_row =
-        (view.first_row + view.rows_in_view.saturating_sub(1)).min(view.rows.saturating_sub(1));
+        (view.first_row + view.needed.saturating_sub(1)).min(view.rows.saturating_sub(1));
     let bottom_line = lines
         .row_of(fold.line_at(last_row))
         .min(shown.saturating_sub(1));
