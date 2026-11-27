@@ -1015,3 +1015,58 @@ fn without_wrap_the_minimap_still_draws_one_bar_per_line() {
         .collect();
     assert_eq!(tops.len(), drawn.len(), "one place per bar");
 }
+
+/// #123: the band's height is the lines the **viewport** holds, so it must not change as the view
+/// scrolls. `drawn` was already one past the first row and the next line added `first_row` again, so
+/// the band was `2 · first_row + needed` tall: 44 lines for a 20-line view at line 30, correct only
+/// at the top of the file.
+#[test]
+fn the_minimap_band_is_as_tall_as_the_lines_in_view_wherever_the_view_stands() {
+    let mut app = app();
+    let text: String = (0..400).map(|i| format!("l{i}\n")).collect();
+    let editor = editor_of(&mut app, &text, CodeMinimap);
+    settle(&mut app);
+    settle(&mut app);
+    // The lane's pitch is 3 px (MINIMAP_BAR_PX * 2), so the band's height in slots is its lines.
+    let band_slots = |app: &App| -> f32 {
+        rect(app, shown_by_role(app, editor, Role::CodeMinimapBand)[0]).height() / 3.0
+    };
+    let in_view = |app: &App| -> f32 {
+        app.world()
+            .get::<CodeEditor>(editor)
+            .expect("editor")
+            .visible_lines()
+            .len() as f32
+    };
+    let unscrolled = band_slots(&app);
+    assert!(
+        (unscrolled - in_view(&app)).abs() <= 1.0,
+        "the band is the lines in view at the top: {unscrolled} slots for {} lines",
+        in_view(&app)
+    );
+    let mut heights = vec![unscrolled];
+    for line in [30usize, 200, 380] {
+        app.world_mut()
+            .get_mut::<CodeEditor>(editor)
+            .expect("editor")
+            .scroll_to_line(line);
+        for _ in 0..40 {
+            app.update();
+        }
+        let scrolled = app
+            .world()
+            .get::<CodeEditor>(editor)
+            .expect("editor")
+            .scroll()
+            .y;
+        assert!(scrolled > 0.0, "the view scrolled to line {line}");
+        heights.push(band_slots(&app));
+    }
+    for (at, height) in heights.iter().enumerate() {
+        assert!(
+            (height - unscrolled).abs() <= 1.0,
+            "the band keeps the height it has at the top, {unscrolled} slots, at stand {at}: \
+             {heights:?}"
+        );
+    }
+}

@@ -1179,8 +1179,15 @@ fn draw_navigation(
         .row_of(fold.line_at(view.first_row))
         .min(shown.saturating_sub(1));
     let travel = (shown as f32 * view.line_px - view.area.y).max(1.0);
-    // The band's height is the text in view, in lines: the ordinals of the first and the last
-    // display row drawn, so a wrapped line counts once however many rows of it show.
+    // The band's height is the text in view, in lines: the ordinals of the first row the **viewport**
+    // holds and of the last, so a wrapped line counts once however many rows of it show.
+    // `View::rows_in_view` is the viewport's own height in rows; the pool's `needed` carries
+    // `POOL_SPARE_ROWS` past it, which would claim two lines that are not on screen.
+    //
+    // The last row is **absolute**, so `first_row` is added once (#123). The pool's count is already
+    // one past the first row, and the old line added `first_row` to it again, which made the band
+    // `2 · first_row + needed` tall: 44 lines for a 20-line view scrolled to line 30, correct only at
+    // the top of the file.
     let drawn = (view.first_row + view.needed).min(view.rows).max(1);
     let bottom_line = lines
         .row_of(fold.line_at((view.first_row + drawn - 1).min(view.rows - 1)))
