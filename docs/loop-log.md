@@ -3925,11 +3925,24 @@ doctests **360**, `cargo check --lib`, wasm32, `cargo doc -D warnings` — all g
 main`) and the code all inside one commit range; `cargo publish --dry-run` packaged 100 files
 (673 KiB) and verified the tarball. The real `cargo publish` was refused **403 Forbidden**
 (authentication failed): the same broken token as every release since 0.51.9, so 0.51.9 through
-0.62.0 are pending the owner's new token. Logged once, not retried. `v0.62.0` is tagged on the
-published tree.
+0.62.0 are pending the owner's new token. Logged once, not retried. `v0.62.0` is tagged on `2d30a82`, which differs from the
+packaged `af2655b` only by this log file.
 
-**Top 5 backlog.** (1) crates.io token still 403 from 0.51.9 through 0.61.0 (owner must reissue;
-0.62.0 joins the pending list); (2) incremental wrap-map rebuild from `take_line_edits` (a prose
-pane rebuilds its whole wrap on one keystroke, median 9.7 ms at 20,000 lines); (3) windowed
-variable-height table; (4) a `problems()` note for a divider under 24 px; (5) the indent guides
-under soft wrap (read and reported, not edited).
+**Capture note.** `examples/kit` on the loop's own `Xvfb :93` needed three settings in this shell:
+`env -u WAYLAND_DISPLAY` (the session has `WAYLAND_DISPLAY=wayland-1` set, and a window opened on
+the real compositor never reaches Xvfb), `DISPLAY=:93`, and a software Vulkan — this host ships only
+`nvidia_icd.json` in `/usr/share/vulkan/icd.d`, so I wrote a one-entry ICD json pointing at the
+flatpak runtime's `libvulkan_lvp.so` (`org.freedesktop.Platform.GL.default`, 25.08,
+`files/lib/`). No `LD_LIBRARY_PATH` was needed; the first attempt with no `GOOEY_FRAMES` ran the
+interactive demo for 200 s and saved nothing.
+
+**Top 5 backlog.** (1) crates.io token still 403 from 0.51.9 through 0.62.0 (owner must reissue);
+(2) incremental wrap-map rebuild from `take_line_edits` (a prose pane rebuilds its whole wrap on
+one keystroke, median 9.7 ms at 20,000 lines); (3) windowed variable-height table; (4) a
+`problems()` note for a divider under 24 px; (5) the indent guides under soft wrap (read and
+reported, not edited).
+
+**Cleanup (iteration 113).** Kept `/tmp/g113` through the tag (the gate log and the still); it holds
+only this pass's files. No baseline worktree was made: the only visual change is one chip in a row,
+and it was judged by eye. Left overs from earlier passes, listed not removed: worktrees `~/g17_base`,
+`~/g17_parked`, `~/g17s_base`; parked branches `wiggum/parked-pass-90-…` (stale).
