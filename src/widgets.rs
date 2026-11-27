@@ -4413,6 +4413,38 @@ pub fn chip(label: impl Into<String>) -> impl Bundle {
     )
 }
 
+/// A [`chip`] that is not on the `Activate` bus and takes no focus: the same look, the same
+/// wrapping words, the same hover and the same lit [`Selected`](bevy::ui::Selected), but not Bevy's
+/// `Button`, so no `Activate` is sent, it is no tab stop and it has no pressed state. The host
+/// listens for the pointer itself ([`On<PointerClick>`](bevy::picking::events::PointerClick) through
+/// [`observe`](crate::observe)) and lights it with `Selected`; there is no
+/// [`toggle_chip`](crate::toggle_chip) twin, because only the host's click can flip it. Its words
+/// are its screen-reader name, as a chip's are; **for anything a keyboard or a screen reader must
+/// activate, use [`chip`]** (WCAG 2.2 SC 2.1.1: a pointer-only control is conformant only when the
+/// same function has another route).
+///
+/// It is for a host that keeps focus traversal off on purpose, as `bevy_dark_factory`'s editor
+/// does: the same call sites as [`plain_button`] and [`quiet_list_row`], for a filter row.
+///
+/// ```
+/// # use bevy::prelude::*;
+/// # use bevy_gooey::*;
+/// # fn ui(mut commands: Commands) {
+/// commands.spawn((
+///     quiet_chip("Clear filters"),
+///     observe(|click: On<PointerClick>| info!("cleared: {}", click.entity)),
+/// ));
+/// # }
+/// ```
+pub fn quiet_chip(label: impl Into<String>) -> impl Bundle {
+    (
+        Node::default(),
+        Role::Chip,
+        Hovered::default(),
+        children![(Text::new(label), CHIP_TEXT, Role::ChipText)],
+    )
+}
+
 /// A [`chip`] that is an on/off filter: a click, Enter, Space or South flips it, lights it with
 /// [`Selected`](bevy::ui::Selected) and sends one `ValueChange<bool>` on it (`is_final: true`)
 /// with the new state. A game that writes `Selected` itself moves the chip and sends no event, as
