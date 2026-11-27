@@ -4380,4 +4380,8 @@ on every keystroke in a prose pane); (4) an incremental fold map; (5) `SplitThic
 not reported by `problems()`.
 
 **Release.** 0.65.0 — minor pre-1.0: one new public marker, no signature changed. Merged to `main`
-fast-forward (75ec728, 826a7e5, d8991a3) and pushed.
+fast-forward (75ec728, 826a7e5, d8991a3) and pushed. `cargo publish --dry-run` packaged and verified
+the tarball; the real `cargo publish` was refused **403 Forbidden (authentication failed)** — the same
+broken token every release since 0.51.9 has hit, so 0.51.9 through 0.65.0 are pending the owner's new
+token. Logged once, not retried; `v0.65.0` is tagged and pushed so the history is right when the token
+lands.
