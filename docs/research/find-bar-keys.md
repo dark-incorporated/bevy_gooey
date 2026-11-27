@@ -77,3 +77,7 @@ stays right: the bar's exit is Escape, and Tab moves on out of it.
 - No public API change; `FindAction` and the panel stay `pub(crate)`.
 - Tab is deliberately not stopped: a bar that swallowed it would be a keyboard trap, which the issue
   does not ask for and WCAG 2.1.2 forbids.
+- The panel's observer handles `Escape` (which it stops, as the Close button does) and nothing else:
+  the editor's origin guard is the one rule that keeps every other key out of the file, so a second
+  list of keys to stop would be two paths to the same guarantee. A key the field consumed never
+  reaches the panel, and `Tab` must reach the window.

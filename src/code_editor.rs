@@ -875,6 +875,14 @@ fn code_on_key(
     let alt = held(KeyCode::AltLeft, KeyCode::AltRight);
     let sup = held(KeyCode::SuperLeft, KeyCode::SuperRight);
     let command = ctrl || sup;
+    // A key pressed in a widget inside the editor (the find bar's query, its toggles and buttons, a
+    // host's own toolbar) is that widget's: its unmodified keys are text and Enter, which the widget
+    // owns, not a second edit of the file (Enter in the find query used to put a line break over the
+    // match it had just stepped to, #128). A chord is a command and every widget lets it through, so
+    // Ctrl+F, Ctrl+Z and the bar's own Ctrl+Alt+F still work with focus in the bar.
+    if event.event_target() != event.original_event_target() && !(ctrl || alt || sup) {
+        return;
+    }
     let mut clipboard = clipboard;
     let page = editor.page();
 

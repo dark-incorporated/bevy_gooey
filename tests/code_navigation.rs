@@ -1078,11 +1078,17 @@ fn the_minimap_band_is_as_tall_as_the_lines_in_view_wherever_the_view_stands() {
 fn enter_in_the_find_query_steps_the_match_and_leaves_the_text_alone() {
     let mut app = app();
     let editor = editor_of(&mut app, "cat dog cat\na cat", ());
-    {
-        let mut find = app.world_mut().get_mut::<CodeFind>(editor).expect("find");
-        find.open = true;
-        find.query = "cat".into();
-    }
+    app.world_mut()
+        .get_mut::<CodeEditor>(editor)
+        .expect("editor")
+        .select(CodePos::new(0, 0), CodePos::new(0, 3));
+    settle(&mut app);
+    chord(
+        &mut app,
+        &[KeyCode::ControlLeft],
+        KeyCode::KeyF,
+        Key::Character("f".into()),
+    );
     settle(&mut app);
     let before = app
         .world()
@@ -1099,7 +1105,11 @@ fn enter_in_the_find_query_steps_the_match_and_leaves_the_text_alone() {
         key(&mut app, KeyCode::Enter, Key::Enter, ButtonState::Released);
         settle(&mut app);
         assert_eq!(
-            app.world().get::<CodeEditor>(editor).expect("editor").buffer().text(),
+            app.world()
+                .get::<CodeEditor>(editor)
+                .expect("editor")
+                .buffer()
+                .text(),
             before,
             "Enter in the query is the bar's; nothing is typed into the file"
         );
@@ -1119,11 +1129,17 @@ fn enter_in_the_find_query_steps_the_match_and_leaves_the_text_alone() {
 fn escape_in_the_bar_closes_it_and_hands_the_keyboard_back_to_the_editor() {
     let mut app = app();
     let editor = editor_of(&mut app, "cat, dog", ());
-    {
-        let mut find = app.world_mut().get_mut::<CodeFind>(editor).expect("find");
-        find.open = true;
-        find.query = "cat".into();
-    }
+    app.world_mut()
+        .get_mut::<CodeEditor>(editor)
+        .expect("editor")
+        .select(CodePos::new(0, 0), CodePos::new(0, 3));
+    settle(&mut app);
+    chord(
+        &mut app,
+        &[KeyCode::ControlLeft],
+        KeyCode::KeyF,
+        Key::Character("f".into()),
+    );
     settle(&mut app);
     key(&mut app, KeyCode::Escape, Key::Escape, ButtonState::Pressed);
     key(
@@ -1142,18 +1158,18 @@ fn escape_in_the_bar_closes_it_and_hands_the_keyboard_back_to_the_editor() {
         Some(editor),
         "the editor has the keys again"
     );
-    key(
-        &mut app,
-        KeyCode::KeyX,
-        Key::Character("x".into()),
-        ButtonState::Pressed,
-    );
-    key(
-        &mut app,
-        KeyCode::KeyX,
-        Key::Character("x".into()),
-        ButtonState::Released,
-    );
+    let window = window(&mut app);
+    for state in [ButtonState::Pressed, ButtonState::Released] {
+        app.world_mut().write_message(KeyboardInput {
+            key_code: KeyCode::KeyX,
+            logical_key: Key::Character("x".into()),
+            state,
+            text: Some("x".into()),
+            repeat: false,
+            window,
+        });
+        app.update();
+    }
     settle(&mut app);
     assert!(
         app.world()
@@ -1171,39 +1187,55 @@ fn escape_in_the_bar_closes_it_and_hands_the_keyboard_back_to_the_editor() {
 #[test]
 fn a_character_typed_in_the_query_never_reaches_the_editor() {
     let mut app = app();
-    let editor = editor_of(&mut app, "cat", ());
-    {
-        let mut find = app.world_mut().get_mut::<CodeFind>(editor).expect("find");
-        find.open = true;
-        find.query = "ca".into();
-    }
+    let editor = editor_of(&mut app, "cat, dog", ());
+    app.world_mut()
+        .get_mut::<CodeEditor>(editor)
+        .expect("editor")
+        .select(CodePos::new(0, 0), CodePos::new(0, 3));
     settle(&mut app);
+    chord(
+        &mut app,
+        &[KeyCode::ControlLeft],
+        KeyCode::KeyF,
+        Key::Character("f".into()),
+    );
+    settle(&mut app);
+    assert_eq!(
+        app.world().get::<CodeFind>(editor).expect("find").query,
+        "cat",
+        "the bar opened on the selected word"
+    );
     let before = app
         .world()
         .get::<CodeEditor>(editor)
         .expect("editor")
         .buffer()
         .text();
-    key(
-        &mut app,
-        KeyCode::KeyT,
-        Key::Character("t".into()),
-        ButtonState::Pressed,
-    );
-    key(
-        &mut app,
-        KeyCode::KeyT,
-        Key::Character("t".into()),
-        ButtonState::Released,
-    );
+    let window = window(&mut app);
+    for state in [ButtonState::Pressed, ButtonState::Released] {
+        app.world_mut().write_message(KeyboardInput {
+            key_code: KeyCode::KeyT,
+            logical_key: Key::Character("t".into()),
+            state,
+            text: Some("t".into()),
+            repeat: false,
+            window,
+        });
+        app.update();
+    }
     settle(&mut app);
     assert_eq!(
-        app.world().get::<CodeEditor>(editor).expect("editor").buffer().text(),
+        app.world()
+            .get::<CodeEditor>(editor)
+            .expect("editor")
+            .buffer()
+            .text(),
         before,
         "a character in the query is the field's"
     );
     assert_eq!(
         app.world().get::<CodeFind>(editor).expect("find").query,
-        "cat"
+        "catt",
+        "the character went into the query"
     );
 }
