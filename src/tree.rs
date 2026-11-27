@@ -482,6 +482,32 @@ impl RowSource for Tree {
 #[derive(Component, Clone, Copy, Debug, Default)]
 pub struct TreeView;
 
+/// Put on a [`crate::tree`] to break a node's label inside its cell instead of cutting it at the
+/// tree's edge (#124). A row is then as tall as its label (never under one pitch) and the labels of
+/// the lines after the first start under the node's own indent, so a wrapped name cannot read as a
+/// sibling of its parent.
+///
+/// It is the tree's own column that wraps: the same rule [`crate::Column::wrap`] gives a table's
+/// column, and the same cost, which is none — a wrapping tree windows on each row's **measured**
+/// height, so ten thousand wrapped nodes still cost a viewport of row entities.
+///
+/// ```
+/// # use bevy::prelude::*;
+/// # use bevy_gooey::*;
+/// # fn files(mut commands: Commands) {
+/// commands.spawn((
+///     panel(),
+///     children![(
+///         tree([TreeNode::new(1, "a_dwarf_warrior_game_ready_asset_with_a_long_name")]),
+///         TreeWrap,
+///     )],
+/// ));
+/// # }
+/// ```
+#[derive(Component, Clone, Copy, Debug, Default, Reflect)]
+#[reflect(Component, Default, Debug, Clone)]
+pub struct TreeWrap;
+
 /// The player opened or closed a node of a [`crate::tree`]: a click on its chevron, Left, Right
 /// or `*`. A change the game makes with [`Tree::set_open`] sends none. The place to load a node's
 /// children the first time it opens.

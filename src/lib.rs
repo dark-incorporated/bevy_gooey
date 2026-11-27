@@ -468,7 +468,7 @@ pub use tooltip::{
     TOOLTIP_DELAY_SECONDS, Tooltip, TooltipBox, TooltipDwell, TooltipSettings,
     restyle_sized_tooltips, show_tooltips, update_tooltip_text,
 };
-pub use tree::{Tree, TreeNode, TreeToggled, tree_by_input, update_trees};
+pub use tree::{Tree, TreeNode, TreeToggled, TreeWrap, tree_by_input, update_trees};
 pub use type_select::{TypeSelectGroup, TypedPrefix};
 pub use widgets::{
     ToggleChip, aspect_image, band, binding, button, button_box, button_row, card_grid, cell,
@@ -714,6 +714,7 @@ impl Plugin for GooeyStylePlugin {
             .register_type::<LedWord>()
             .register_type::<HoverGroup>()
             .register_type::<TypeSelectGroup>()
+            .register_type::<TreeWrap>()
             .register_type::<GroupReveal>()
             .register_type::<StyleClass>()
             .add_observer(style_sheet::take_cascade_base)
