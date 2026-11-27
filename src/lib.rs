@@ -478,13 +478,13 @@ pub use widgets::{
     icon_button, image_box, interface_size, label, label_with, led, list, list_row, menu, menu_bar,
     menu_item, menu_title, meter, motion_row, notification_center, number_field, overlay,
     pad_style, panel, placed, placed_at, plain_button, popover, popover_modal, primary_button,
-    progress, prompt, prompts, prompts_at, quiet_list_row, radial, radio_item, row, row_with,
-    screen, scrim, scroll_region, scroll_viewport, section, select, separator, side_tab_page,
-    side_tabs, side_tabs_icons, sized, sized_panel, skin_preset, slider, slot_grid, spacer,
-    spinner, split, status_bar, status_item, status_item_quiet, status_mark, status_progress,
-    submenu, surface, tab_page, table, tabs, tag, text_area, text_area_fill, text_input, text_size,
-    toast, toast_alert, toast_note, toggle, toggle_chip, toggle_group, toolbar, toolbar_separator,
-    tree, vec_field, viewport,
+    progress, prompt, prompts, prompts_at, quiet_chip, quiet_list_row, radial, radio_item, row,
+    row_with, screen, scrim, scroll_region, scroll_viewport, section, select, separator,
+    side_tab_page, side_tabs, side_tabs_icons, sized, sized_panel, skin_preset, slider, slot_grid,
+    spacer, spinner, split, status_bar, status_item, status_item_quiet, status_mark,
+    status_progress, submenu, surface, tab_page, table, tabs, tag, text_area, text_area_fill,
+    text_input, text_size, toast, toast_alert, toast_note, toggle, toggle_chip, toggle_group,
+    toolbar, toolbar_separator, tree, vec_field, viewport,
 };
 
 use bevy::app::PluginGroupBuilder;

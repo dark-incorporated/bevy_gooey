@@ -116,8 +116,9 @@ fn strip() -> impl Bundle {
 }
 
 /// A tag block: a wrapping row of `chip`s. The first three are an exclusive category the host
-/// lights (a click moves `Selected`), the last two are `toggle_chip` filters that flip themselves,
-/// and the long one wraps its own words inside the panel instead of pushing it wider.
+/// lights (a click moves `Selected`), the next two are `toggle_chip` filters that flip themselves,
+/// the long one wraps its own words inside the panel instead of pushing it wider, and the last is a
+/// `quiet_chip` the host hears itself (no tab stop, no `Activate`) which lights on the pointer.
 fn chips() -> impl Bundle {
     (
         row_with(
@@ -134,8 +135,33 @@ fn chips() -> impl Bundle {
             (chip("Armour (9)"), Category, observe(choose)),
             toggle_chip("Hide imported", true),
             toggle_chip("Not imported yet because the converter failed (4)", false),
+            (
+                quiet_chip("Only the pointer reaches this"),
+                QuietCategory,
+                observe(choose_quiet),
+            ),
         ],
     )
+}
+
+/// A category chip the host hears itself: no tab stop, no `Activate`.
+#[derive(Component)]
+struct QuietCategory;
+
+/// The host's own click on a quiet chip: it lights it and no other, exactly as `choose` does for a
+/// chip, and nothing else in the app hears about it.
+fn choose_quiet(
+    click: On<PointerClick>,
+    chips: Query<Entity, With<QuietCategory>>,
+    mut commands: Commands,
+) {
+    for chip in &chips {
+        if chip == click.entity {
+            commands.entity(chip).insert(Selected);
+        } else {
+            commands.entity(chip).remove::<Selected>();
+        }
+    }
 }
 
 /// A category chip.

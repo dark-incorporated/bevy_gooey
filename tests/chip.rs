@@ -8,6 +8,7 @@
 
 use bevy::camera::NormalizedRenderTarget;
 use bevy::input_focus::{FocusCause, InputFocus, InputFocusVisible};
+use bevy::picking::hover::Hovered;
 use bevy::picking::pointer::{Location, PointerAction, PointerId, PointerInput};
 use bevy::prelude::*;
 use bevy::render::RenderPlugin;
@@ -573,4 +574,227 @@ fn a_host_can_spawn_gooeys_chip_and_only_add_its_own_marker() {
             .map(str::to_owned);
         assert_eq!(name.as_deref(), Some("armour"), "the words are its name");
     }
+}
+
+// ---- a chip with no tab stop (#121) -----------------------------------------------------------
+
+/// A `quiet_chip` in a host `width` px wide, on a screen, with a `chip` beside it.
+fn quiet_chip_in(app: &mut App, label: &str, width: f32) -> (Entity, Entity) {
+    let host = app
+        .world_mut()
+        .spawn(Node {
+            width: Val::Px(width),
+            flex_direction: FlexDirection::Column,
+            align_items: AlignItems::FlexStart,
+            ..default()
+        })
+        .id();
+    let quiet = app.world_mut().spawn(quiet_chip(label)).id();
+    app.world_mut().entity_mut(host).add_child(quiet);
+    app.world_mut().spawn(screen()).add_child(host);
+    settle(app);
+    (host, quiet)
+}
+
+/// Focus `entity` the way Tab would, and show the ring.
+fn focus(app: &mut App, entity: Entity) {
+    app.world_mut()
+        .resource_mut::<InputFocus>()
+        .set(entity, FocusCause::Navigated);
+    app.insert_resource(InputFocusVisible(true));
+    settle(app);
+}
+
+fn focused(app: &App) -> Option<Entity> {
+    app.world().resource::<InputFocus>().get()
+}
+
+#[test]
+fn a_quiet_chip_is_a_chip_with_no_button_no_tab_stop_and_no_directional_navigation() {
+    let mut app = app_with(GooeySkin::dark());
+    let (_, quiet) = quiet_chip_in(&mut app, "Armour", 400.0);
+    let world = app.world();
+    assert_eq!(
+        world.get::<Role>(quiet),
+        Some(&Role::Chip),
+        "the quiet chip carries the role the skin draws"
+    );
+    assert!(
+        world.get::<Hovered>(quiet).is_some(),
+        "the pointer must still answer it"
+    );
+    assert!(
+        world.get::<bevy::ui_widgets::Button>(quiet).is_none(),
+        "no Button: no Activate, no pressed state"
+    );
+    assert!(
+        world
+            .get::<bevy::input_focus::tab_navigation::TabIndex>(quiet)
+            .is_none(),
+        "no TabIndex: not a tab stop"
+    );
+    assert!(
+        world
+            .get::<bevy::ui::auto_directional_navigation::AutoDirectionalNavigation>(quiet)
+            .is_none(),
+        "no directional navigation of its own"
+    );
+    // And its words are the chip's own part, with the chip's break rule.
+    let words = world
+        .get::<Children>(quiet)
+        .expect("a child")
+        .iter()
+        .find(|kid| world.get::<Role>(*kid) == Some(&Role::ChipText))
+        .expect("a ChipText child");
+    assert_eq!(
+        world.get::<Text>(words).map(|text| text.0.clone()),
+        Some("Armour".to_string())
+    );
+}
+
+#[test]
+fn a_quiet_chip_looks_exactly_like_a_chip_in_every_preset() {
+    for preset in SkinPreset::ALL {
+        let skin = preset.skin();
+        let name = preset.name();
+        let mut loud = app_with(skin.clone());
+        let (_, chip) = chip_in(&mut loud, "Weapons", 400.0);
+        let mut quiet = app_with(skin.clone());
+        let (_, quiet_chip) = quiet_chip_in(&mut quiet, "Weapons", 400.0);
+        assert_eq!(
+            fill(&quiet, quiet_chip),
+            fill(&loud, chip),
+            "{name}: rest fill"
+        );
+        assert_eq!(
+            frame(&quiet, quiet_chip),
+            frame(&loud, chip),
+            "{name}: rest frame"
+        );
+        assert_eq!(
+            ink(&quiet, quiet_chip),
+            ink(&loud, chip),
+            "{name}: rest ink"
+        );
+        assert_eq!(
+            size(&quiet, quiet_chip),
+            size(&loud, chip),
+            "{name}: the same words and the same box"
+        );
+        assert_eq!(
+            fill(&quiet, quiet_chip),
+            skin.surface_raised,
+            "{name}: the raised fill"
+        );
+        assert_eq!(ink(&quiet, quiet_chip), skin.text, "{name}: the text ink");
+        assert_eq!(
+            frame(&quiet, quiet_chip),
+            skin.outline,
+            "{name}: the outline frame"
+        );
+        // The host's `Selected` is the lit look, and nothing in the crate sends anything when it
+        // arrives or leaves.
+        quiet.world_mut().entity_mut(quiet_chip).observe(hear);
+        quiet
+            .world_mut()
+            .entity_mut(quiet_chip)
+            .observe(hear_change);
+        quiet.world_mut().entity_mut(quiet_chip).insert(Selected);
+        settle(&mut quiet);
+        assert_eq!(
+            fill(&quiet, quiet_chip),
+            skin.accent,
+            "{name}: selected fill"
+        );
+        assert_eq!(
+            ink(&quiet, quiet_chip),
+            skin.accent_text,
+            "{name}: selected ink"
+        );
+        // The pointer lights it, exactly as it lights a chip: a lit chip under the pointer is the
+        // lit look's hover.
+        point_at(&mut quiet, quiet_chip);
+        assert_eq!(
+            fill(&quiet, quiet_chip),
+            skin.primary_hovered(),
+            "{name}: selected hovered"
+        );
+        quiet
+            .world_mut()
+            .entity_mut(quiet_chip)
+            .remove::<Selected>();
+        settle(&mut quiet);
+        assert_eq!(
+            fill(&quiet, quiet_chip),
+            skin.hovered(),
+            "{name}: unselected under the pointer"
+        );
+        assert_eq!(
+            quiet.world().resource::<Heard>().activates,
+            0,
+            "{name}: a quiet chip is never activated"
+        );
+        assert!(
+            quiet.world().resource::<Heard>().changes.is_empty(),
+            "{name}: and it reports no toggle"
+        );
+    }
+}
+
+#[test]
+fn a_click_on_a_quiet_chip_reaches_only_the_host_and_the_tab_walks_past_it() {
+    let mut app = app_with(GooeySkin::dark());
+    let host = app
+        .world_mut()
+        .spawn(Node {
+            width: Val::Px(600.0),
+            flex_direction: FlexDirection::Column,
+            ..default()
+        })
+        .id();
+    let loud = app.world_mut().spawn(chip("Weapons")).id();
+    let quiet = app.world_mut().spawn(quiet_chip("Armour")).id();
+    app.world_mut().entity_mut(host).add_child(loud);
+    app.world_mut().entity_mut(host).add_child(quiet);
+    app.world_mut().spawn(screen()).add_child(host);
+    settle(&mut app);
+    app.world_mut().entity_mut(quiet).observe(hear);
+    click(&mut app, quiet);
+    assert_eq!(
+        app.world().resource::<Heard>().activates,
+        0,
+        "a quiet chip sends no Activate for a screen-wide handler to hear"
+    );
+    assert!(
+        app.world().get::<Selected>(quiet).is_none(),
+        "and lights nothing itself"
+    );
+    // One Tab from the loud chip leaves the box: the quiet one is not in the sequence.
+    focus(&mut app, loud);
+    press(&mut app, KeyCode::Tab);
+    assert_ne!(focused(&app), Some(quiet), "Tab walked onto a quiet chip");
+}
+
+#[test]
+fn a_quiet_chip_is_named_by_its_words_and_promises_no_click() {
+    let mut app = app_with(GooeySkin::dark());
+    let (_, quiet) = quiet_chip_in(&mut app, "Clear filters", 400.0);
+    app.world_mut()
+        .resource::<bevy::a11y::AccessibilityRequested>()
+        .set(true);
+    settle(&mut app);
+    let node = &app
+        .world()
+        .get::<bevy::a11y::AccessibilityNode>(quiet)
+        .expect("a node, once a reader asks")
+        .0;
+    assert_eq!(
+        node.label(),
+        Some("Clear filters"),
+        "the words are its name"
+    );
+    assert!(
+        !node.supports_action(accesskit::Action::Click),
+        "a quiet chip declares no Click: the host owns the click, so the crate sends no Activate"
+    );
 }
