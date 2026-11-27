@@ -4008,3 +4008,86 @@ the technical sources above were read directly.
 (2) windowed variable-height table; (3) a `problems()` note for a divider under 24 px; (4) the
 indent guides under soft wrap; (5) an incremental fold map (`FoldMap::set_fold` still relinks every
 range, and a 20,000-line tree's fold toggle pays it).
+
+## Iteration 115 — 2026-11-27 — a wrapping table windows on what its rows measured (#123)
+
+**Item.** The backlog's second: "windowed variable-height table", the open gap iteration 109 recorded
+when `.wrap()` shipped. A table with a wrapping column set `pool := len` and let the viewport scroll
+the laid-out rows, because rows no longer shared a height — so ten thousand wrapped rows meant ten
+thousand row entities, forty thousand cells and forty thousand `Text` layouts, which is a table that
+cannot be used for what a table is for. The research note is
+`docs/research/table-variable-height.md` (Lightbown's Nielsen limits, WCAG 1.4.10, Unity's
+`FixedHeight`/`DynamicHeight`, TanStack Virtual's measurement cache), committed alone as `43a0370`
+before any code.
+
+**What changed.** `model::rows_in_view(scroll, view, tops)` and `model::row_tops(tops, heights, from,
+pitch)`: the engine-free window ("the last row whose top is at or above the scroll", plus the cut row
+that says there is more) and the prefix sum, filled from the earliest row whose height moved.
+`TableCache` gains `heights` (a display row's measured height, `0.0` unknown), `tops`, `tops_dirty`
+and `max`. `update_tables` reads the pool's laid-out heights **at the display row the cache drew them
+at**, marks a row dirty only when the reading is more than half a pixel off what it stored (layout
+rounds to device pixels), re-sums from there, and takes the window from `rows_in_view`. The rows
+column's padding above and below is the measured room, so the scroll's length is the measured content.
+A rebuilt order (sort, insertion, removal) makes every height unknown and re-sums from the top, because
+row *i* is no longer the row measured at *i*. The anchor (the row at the top when rows come and go) and
+the cursor's reveal read the row's own top from `tops` instead of summing the pool's heights. A plain
+table's path is unchanged, line for line.
+
+**The bug the tests found.** Scrolled to the end, a table whose rows below it then measured taller
+left the player short of the last row: `max` grew but `y` stayed where the shorter content had put it,
+so the data's last row could never be shown. The fix keeps "at the end" as where the player put it:
+`was_at_end` (from the previous frame's `max`) makes the scroll follow the grown content. Both are
+pinned by `a_wrapping_table_scrolls_to_a_tall_row_and_to_the_last_one` and
+`the_last_row_of_a_wrapping_table_is_reachable_and_the_cursor_row_stays_in_view`.
+
+**Tests.** `table::ten_thousand_wrapping_rows_spawn_a_viewport_of_entities` (at 1x, at 200% text, at
+four scroll offsets, and the whole world's entity count equal to a 20-row table's — mutation check:
+`pool := len` fails it in 36 s), `table::the_last_rows_of_ten_thousand_wrapped_rows_are_reachable`
+(the capture's bug: End's cursor is row 9,999 *and* the view draws it, mutation-checked by putting
+the pitch back as the unmeasured height),
+`table::end_on_a_wrapping_table_reaches_the_last_row_of_the_data`,
+`table::a_wrapping_table_scrolls_to_a_tall_row_and_to_the_last_one`
+(a tall row among the first, End lands the data's last row on the viewport's bottom edge, 40 Down
+presses keep the whole cursor row in view), `table::a_wrapping_tables_scroll_does_not_drift_as_its_rows_are_measured`
+(a scroll away and back returns every row to its pixel; 30 idle frames write nothing), and the two
+older wrapping tests retargeted from "every row is bound" to "the rows in view are bound and the first
+stands at the top" (an assumption the issue's own acceptance reverses). `model`'s
+`row_window_tests` (4) hold the window and the sum: an unmeasured table answers exactly what
+`table_window` answers, a measured row moves only the rows after it, a row any of which is in view is
+drawn, and a bad scroll or view draws nothing — plus a case for a caller-supplied unmeasured height. The
+`table` suite is **32/32** and `model`'s **4/4** for the window.
+
+**Docs.** The CHANGELOG's 0.64.0 section, `docs/guide/tables.md` (the Virtualized bullet now says
+"a plain table's rows", and a new bullet "A wrapped column still windows" gives the measurement rule
+and the end-of-scroll rule), and `Column::wrap`'s rustdoc (which said "binds every row… keep it for a
+few hundred rows", the opposite of what the crate now does).
+
+**The gate.** `fmt`, `clippy -D warnings`, `nextest --all-features --lib --tests`, `test --doc`
+(361), `check --lib`, `check --lib --target wasm32-unknown-unknown` and `doc -D warnings` are green
+after the last edit. The first full nextest run had one failure,
+`code_editor::a_20000_line_wrapped_pane_costs_its_frames_after_one_rewrap_of_the_new_width` — a
+wall-clock comparison of two panes on the same host, run beside the previous gate's compile at load
+18; it passes alone in 2.06 s at load 7.6. Not this pass's code (`src/table.rs`, `src/model.rs`) and
+that test file is untouched. fmt also had one diff from the new test, fixed before that run.
+
+**Measured.** `examples/table` at 1280x720 on the loop's software Vulkan, `GOOEY_WRAP=1`, 200 frames,
+one binary per side (the old path restored by mutation, `mean_ms`, three alternating runs each):
+**before 124.138 / 126.202 / 128.619** (load 6.87 to 8.34), **after 16.514 / 16.531 / 16.603**
+(load 7.36 to 8.63). 7.6× at equal load: the old path bound 10,000 rows, 40,000 cells and 40,000 text
+layouts every frame, and the drawn pixels are identical.
+
+**The estimate bug the capture found.** The first cut gave every row not yet measured one pitch;
+with three-line rows that reported the content as about a third of its length, so `End` selected row
+9,999 and the view drew row 9,923 (measured on the running example with `GOOEY_WRAP=1`, then again
+in a headless test: `cursor Some(9999)`, drawn `9996..9999` at scroll 440,666 px where the real
+content is about 1.09 M px). Fixed by taking the unmeasured rows at the average of the measured ones
+(`TableCache::estimate`, re-summing from the top only when the average moves by half a pixel). The
+same example now draws row 9,996 to 10,000 at the end of the scroll.
+
+**Demo.** `examples/table` gained `GOOEY_WRAP=1`: a fifth Note column of one-to-three-line sentences,
+`.unsortable().wrap()`, so the rows differ in height. `docs/media/table-wrap.gif` (4.5 s at 15 fps,
+720x415, 701 KB, 67 frames, cropped from the 1280x720 window at x 136 y 70) shows the panel with that
+column: Down twice and Page Down twice walk the ring down short and tall rows with no gap and no
+overlap, End puts row 10,000 (Ember Cloak 10000, "Found in the cellar") under the ring at the
+bottom, Home returns to the first. `docs/media/README.md` lists it, the guide's `tables.md` embeds it under the plain table's GIF, and
+the README's "Show a lot of data" bullet links it.

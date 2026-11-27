@@ -12,7 +12,8 @@
 //! later; `GOOEY_SHOT_DIR=<dir>` also keeps every `GOOEY_SHOT_EVERY`th frame from `GOOEY_SHOT_FROM`
 //! (default 30) there as `f_%04d.png` (the directory must exist). `GOOEY_SKIN=parchment`,
 //! `high_contrast` or `tool`, `GOOEY_TEXT_SCALE=<f>` and `GOOEY_SIZE=<w>x<h>` set the start;
-//! `GOOEY_MULTI=1` lets the player select any number of rows.
+//! `GOOEY_MULTI=1` lets the player select any number of rows, `GOOEY_WRAP=1` adds a Note column whose
+//! words wrap (the rows then differ in height and window on what they measured).
 //! `GOOEY_KEYS=tab,down,…` stages one step every `GOOEY_KEY_EVERY` (default 10) frames from frame
 //! 30: `tab`, `up`, `down`, `home`, `end`, `pageup`, `pagedown`, `space`, `enter` as real keyboard
 //! input, `sort:<column>` a pointer click on that header, `row:<n>` a click on the nth shown row
@@ -74,8 +75,9 @@ fn env<T: std::str::FromStr>(name: &str) -> Option<T> {
     std::env::var(name).ok().and_then(|s| s.parse().ok())
 }
 
-/// Ten thousand items, the same ones every run.
-fn inventory() -> Vec<Vec<String>> {
+/// Ten thousand items, the same ones every run. `notes` adds a fifth cell of one to three lines of
+/// words, the column a `GOOEY_WRAP=1` run wraps.
+fn inventory(notes: bool) -> Vec<Vec<String>> {
     let mut seed = 0x2545_F491_u64;
     let mut next = move |range: u64| {
         seed = seed
@@ -88,12 +90,21 @@ fn inventory() -> Vec<Vec<String>> {
             let make = MAKES[next(MAKES.len() as u64) as usize];
             let thing = THINGS[next(THINGS.len() as u64) as usize];
             let kind = KINDS[next(KINDS.len() as u64) as usize];
-            vec![
+            let mut cells = vec![
                 format!("{make} {thing} {}", i + 1),
                 kind.to_string(),
                 format!("{}", 1 + next(99)),
                 format!("{}", 5 + next(2400)),
-            ]
+            ];
+            if notes {
+                const NOTES: [&str; 3] = [
+                    "Found in the cellar",
+                    "Sold by the smith at the harbour market, third stall past the gate",
+                    "Do not carry it past the toll bridge; the guard counts them",
+                ];
+                cells.push(NOTES[next(NOTES.len() as u64) as usize].to_string());
+            }
+            cells
         })
         .collect()
 }
@@ -208,6 +219,8 @@ fn setup(mut commands: Commands) {
     } else {
         SelectMode::Single
     };
+    // GOOEY_WRAP=1: a fifth column of notes whose words wrap, so the rows differ in height.
+    let wrapped = std::env::var_os("GOOEY_WRAP").is_some();
     commands.spawn((
         screen(),
         children![(
@@ -217,12 +230,16 @@ fn setup(mut commands: Commands) {
                 (
                     table(
                         [
-                            Column::new("Name").width(15.0),
+                            Column::new("Name").width(13.0),
                             Column::new("Kind").width(7.0),
                             Column::new("Qty").width(5.0),
-                            Column::new("Value").width(7.0),
-                        ],
-                        inventory(),
+                            Column::new("Value").width(6.5),
+                            Column::new("Note").width(16.0).unsortable().wrap(),
+                        ]
+                        .into_iter()
+                        .filter(|c| wrapped || c.title != "Note")
+                        .collect::<Vec<_>>(),
+                        inventory(wrapped),
                     ),
                     mode,
                     TableRows(9.5),
