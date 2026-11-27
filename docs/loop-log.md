@@ -4307,4 +4307,7 @@ on every keystroke in a prose pane); (4) an incremental fold map; (5) `SplitThic
 not reported by `problems()`.
 
 **Release.** 0.64.2 - patch: no public API changed (`FindAction` stays `pub(crate)`; the bar's Escape
-and the origin guard are behaviour).
+and the origin guard are behaviour). `cargo publish --dry-run` packaged and verified the tarball; the
+real `cargo publish` was refused **403 Forbidden (authentication failed)** - the same broken token
+every release since 0.51.9 has hit, so 0.51.9 through 0.64.2 are pending the owner's new token. Logged
+once, not retried; `v0.64.2` is tagged and pushed so the history is right when the token lands.
