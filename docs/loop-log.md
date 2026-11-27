@@ -4222,3 +4222,89 @@ heights came from a build with the old line restored by mutation and reverted wi
 restart); (3) an incremental wrap map (`Wrap` is keyed on the revision, so every keystroke in a prose
 pane rebuilds it: 9.7 ms for 20,000 lines); (4) an incremental fold map (`FoldMap::set_fold` relinks
 every range); (5) `SplitThickness` under 24 px is not reported by `problems()`.
+
+## Iteration 117 — 2026-11-27 — a find bar's keys belong to the bar (#128)
+
+**Triage.** The last audit (pass 392, 20:15Z) reports `-` in `missing`: iteration 116 pushed, released
+v0.64.1 (403 on publish, logged once as every release since 0.51.9), shipped docs and
+`minimap-band.png`. Nothing to finish first.
+
+**Item.** #128, a `bug` filed by `dark-incorporated/bevy_dark_factory` as its #612
+(`consumer:bevy_grimoire`), and the gravest kind this crate can have: **a key in the find bar edits the
+file it is searching.** The bar's text field is a child of the editor, Bevy's `FocusedInput` bubbles
+to every ancestor observer, and `code_on_key` answered every one that reached it — so `Enter` stepped
+to the next match and then inserted a line break at the match it had just stepped to. Measured on the
+consumer's page: four Enters in a query with three matches left three new lines in the file.
+
+**Research.** `docs/research/find-bar-keys.md` (`51fc7db`, before any code): VS Code's find widget
+owns its keys (`_onFindInputKeyDown`) and Escape closes it (`FindCommand`), and WCAG 2.1.2 forbids a
+bar that keeps Tab. Bevy 0.20's `FocusedInput` carries `On::original_event_target()` — the focused
+entity — so one line tells a key that started in the editor from one that bubbled up from its bar.
+
+**Parked work.** `git branch --list 'wiggum/parked-*'` and `git log --all --grep=parked`: none for this
+item.
+
+**What changed.**
+
+- `code_on_key` returns unless `event.event_target() == event.original_event_target()` **or a chord is
+  held** (Ctrl, Alt or Super): one rule for every widget a host may put inside an editor, and chords
+  still reach the editor from inside the field, so Ctrl+Z undoes and the bar's own Ctrl+Alt+F opens
+  the replace row with focus in the query.
+- The bar's panel observer turns `Escape` into `FindAction::Close` (the Close button's own path, which
+  puts focus back in the editor) and stops it. Tab is left to Bevy's tab navigation, so the bar is not
+  a keyboard trap.
+- `examples/prose` gained `GOOEY_FIND=<query>` / `GOOEY_FIND_STEPS=<n>` (opens the bar on the notes
+  pane, focuses its field, presses Enter `n` times before the shot) and the gallery's frame-keeping
+  knobs (`GOOEY_SHOT_DIR`, `GOOEY_SHOT_FROM`, `GOOEY_SHOT_EVERY`), which the demo needed.
+
+**Tests** (`tests/code_navigation.rs`, written first and failing on `main`): `the_minimap_band…` is
+untouched; `enter_in_the_find_query_steps_the_match_and_leaves_the_text_alone` (Ctrl+F seeded on a
+selection, three Enters, `current()` walks `1, 2, 0`, the buffer byte-identical after each),
+`escape_in_the_bar_closes_it_and_hands_the_keyboard_back_to_the_editor` (`CodeFind::open == false`,
+`InputFocus` the editor, the next typed `x` lands in the file) and
+`a_character_typed_in_the_query_never_reaches_the_editor` (typed `t` appends to the query, the file
+still says `cat dog cat`). Mutation checks on this tree, one run each: dropping the origin guard fails
+the first three; dropping the bar's Escape observer fails the second.
+
+**Checklist, before -> after** (the same 1280×720 dark frame of `examples/prose` with
+`GOOEY_FIND=the GOOEY_FIND_STEPS=4`, the notes pane cropped `22,84,662,680`):
+
+- the old build (the guard removed by mutation, then restored and rebuilt) reads **1 of 7** and the
+  page has grown line breaks and moved every line number down (line 1 is a blank, the first heading at
+  line 2); the count cannot be walked because each Enter edits the text it is counting.
+- the fixed build reads **4 of 10** after four Enters: the bar opened on 1 of 10, each Enter on the
+  bar stepped the match, and the page's line numbers (1…15) and every word in it are unchanged.
+- the matches are banded in the page as the count says; the bar's own text, toggles and buttons are
+  unchanged in look; `GooeySkin::problems()` empty for dark and parchment (this pass changes no
+  colour).
+
+**Demo.** `docs/media/find-keys.png` (1280×596): the notes pane twice — the old build's broken page at
+1 of 7, and the fixed page at 4 of 10 — joined side by side, with the recipe in
+`docs/media/README.md`. Shown in `docs/guide/code-editor.md`'s find section.
+
+**Docs.** CHANGELOG 0.64.2, `docs/guide/code-editor.md` (the find paragraph: whose keys the bar takes,
+Escape, Tab, chords, and the picture), `docs/media/README.md` row, AGENTS.md's find-bar line.
+
+**The gate.** After the last edit: `fmt --check`, `clippy --all-targets --all-features -D warnings`
+(the first run failed on `too_many_arguments` in `examples/prose.rs::find_stage`; the notes pane is now
+found from the editor's own entity and its `ChildOf` chain, so the system is one parameter lighter),
+`nextest --all-features --lib --tests` (**1740 passed, 0 skipped**, 441 s), `test --all-features --doc`
+(361), `check --lib`, `check --lib --target wasm32-unknown-unknown`, `doc -D warnings` - all green.
+
+**Performance.** No change: one comparison per key event, on a path that already read four
+`ButtonInput`s. `examples/prose` at 1280x720 under `GOOEY_FIND=the` read `mean_ms 23.990` at load ~30
+(vsync-bound at 30 Hz on this host's display, not a measurement of the change); no before run was
+taken and none is claimed.
+
+**Cleanup.** `/tmp/g117` holds this pass's stills, crops and the gate script; `docs/media/find-keys.png`
+is the one kept artifact. No baseline worktree: the "before" frame came from a build with the origin
+guard removed by mutation, restored from a copy and verified (`grep original_event_target`),
+then rebuilt and its frame compared byte-for-byte with the shipped demo's right panel (`bbox None`).
+
+**Top 5 backlog.** (1) crates.io token still 403 from 0.51.9 through 0.64.2 (owner must reissue);
+(2) indent guides under soft wrap (per row, not per line); (3) an incremental wrap map (`Wrap` rebuilds
+on every keystroke in a prose pane); (4) an incremental fold map; (5) `SplitThickness` under 24 px is
+not reported by `problems()`.
+
+**Release.** 0.64.2 - patch: no public API changed (`FindAction` stays `pub(crate)`; the bar's Escape
+and the origin guard are behaviour).

@@ -6,6 +6,8 @@
 //!
 //! Capture mode: `GOOEY_FRAMES=<n>` saves a screenshot at frame `n` to `GOOEY_SHOT` (default
 //! `prose.png`), prints `gooey: frames <n> mean_ms <x>` and exits 10 frames later.
+//! `GOOEY_SHOT_DIR=<dir>` also keeps every `GOOEY_SHOT_EVERY`th frame from `GOOEY_SHOT_FROM`
+//! (default 30) there as `f_%04d.png`, which is a GIF's.
 //! `GOOEY_SKIN=parchment`, `GOOEY_TEXT_SCALE=<f>` and `GOOEY_SIZE=<w>x<h>` set the start.
 //!
 //! The ink theme (#116): F3 steps through the `SyntaxPreset`s (skin, warm, cool, mono, separated),
@@ -21,7 +23,14 @@
 //!
 //! `GOOEY_SCROLL=<line>` puts the minimap pane's view at that line before the capture, so a still can
 //! show the band where a bug was: it is as tall at line 200 as at line 0 (#123).
+//!
+//! `GOOEY_FIND=<query>` opens the find bar on the notes pane with that query and presses Enter
+//! `GOOEY_FIND_STEPS` times (default 2) before the shot: the bar's count walks its matches and the
+//! text is untouched (#128).
 
+use bevy::input::ButtonState;
+use bevy::input::keyboard::{Key, KeyboardInput};
+use bevy::input_focus::{FocusCause, InputFocus};
 use bevy::prelude::*;
 use bevy::render::view::screenshot::{Screenshot, save_to_disk};
 use bevy::window::WindowResolution;
@@ -32,6 +41,10 @@ use bevy_gooey::*;
 struct Capture {
     at: u32,
     shot: String,
+    dir: Option<String>,
+    from: u32,
+    every: u32,
+    kept: u32,
     frame: u32,
     total_ms: f64,
     counted: u32,
@@ -87,8 +100,24 @@ fn main() {
     .add_systems(Startup, setup)
     .add_systems(
         Update,
-        (follow_background, step_syntax_theme, scroll_lane, capture),
+        (
+            follow_background,
+            step_syntax_theme,
+            scroll_lane,
+            find_stage,
+            capture,
+        ),
     );
+    if let Ok(query) = std::env::var("GOOEY_FIND") {
+        app.insert_resource(FindStage {
+            query,
+            steps: env("GOOEY_FIND_STEPS").unwrap_or(2),
+            sent: 0,
+            frame: 0,
+            opened: false,
+            focused: false,
+        });
+    }
     if let Some(line) = env("GOOEY_SCROLL") {
         app.insert_resource(LaneScroll { line });
     }
@@ -96,6 +125,10 @@ fn main() {
         app.insert_resource(Capture {
             at,
             shot: std::env::var("GOOEY_SHOT").unwrap_or_else(|_| "prose.png".into()),
+            dir: std::env::var("GOOEY_SHOT_DIR").ok(),
+            from: env("GOOEY_SHOT_FROM").unwrap_or(30),
+            every: env("GOOEY_SHOT_EVERY").unwrap_or(1),
+            kept: 0,
             frame: 0,
             total_ms: 0.0,
             counted: 0,
@@ -231,6 +264,84 @@ struct LaneScroll {
     line: usize,
 }
 
+/// `GOOEY_FIND`: the query, how many Enters to press in the bar, and where the staging stands.
+#[derive(Resource)]
+struct FindStage {
+    query: String,
+    steps: u32,
+    sent: u32,
+    frame: u32,
+    opened: bool,
+    focused: bool,
+}
+
+/// `GOOEY_FIND`'s staging: open the bar on the notes pane with the query, then press Enter in it
+/// once every [`FIND_BEAT`] frames, as the player would, until the count has stepped `steps` times.
+fn find_stage(
+    stage: Option<ResMut<FindStage>>,
+    mut editors: Query<(Entity, &mut CodeFind), With<CodeMarkdown>>,
+    fields: Query<Entity, With<bevy::ui_widgets::TextInput>>,
+    parents: Query<&ChildOf>,
+    window: Query<Entity, With<bevy::window::PrimaryWindow>>,
+    mut focus: ResMut<InputFocus>,
+    mut keys: MessageWriter<KeyboardInput>,
+) {
+    let Some(mut stage) = stage else {
+        return;
+    };
+    stage.frame += 1;
+    let mut notes = None;
+    for (editor, mut find) in &mut editors {
+        notes = Some(editor);
+        if !stage.opened && stage.frame > 20 {
+            find.open = true;
+            find.query.clone_from(&stage.query);
+            stage.opened = true;
+        }
+    }
+    let Some(notes) = notes else {
+        return;
+    };
+    // The bar's query takes the keys once it is built, which is a frame after it opens.
+    if stage.opened && !stage.focused {
+        for field in &fields {
+            let mut at = field;
+            while let Ok(parent) = parents.get(at) {
+                if parent.parent() == notes {
+                    focus.set(field, FocusCause::Navigated);
+                    stage.focused = true;
+                    return;
+                }
+                at = parent.parent();
+            }
+        }
+        return;
+    }
+    if stage.sent >= stage.steps {
+        return;
+    }
+    if stage.frame < 40 || (stage.frame - 40) % FIND_BEAT != 0 {
+        return;
+    }
+    let Ok(window) = window.single() else {
+        return;
+    };
+    for state in [ButtonState::Pressed, ButtonState::Released] {
+        keys.write(KeyboardInput {
+            key_code: KeyCode::Enter,
+            logical_key: Key::Enter,
+            state,
+            text: None,
+            repeat: false,
+            window,
+        });
+    }
+    stage.sent += 1;
+}
+
+/// Frames between two staged Enters.
+const FIND_BEAT: u32 = 12;
+
 /// F3 gives the skin the next ink theme after the one it has (the skin's own after a custom one).
 fn step_syntax_theme(keys: Res<ButtonInput<KeyCode>>, mut skin: ResMut<GooeySkin>) {
     if !keys.just_pressed(KeyCode::F3) {
@@ -264,7 +375,21 @@ fn capture(
         c.total_ms += time.delta_secs_f64() * 1000.0;
         c.counted += 1;
     }
+    if let Some(dir) = c.dir.clone()
+        && c.frame >= c.from
+        && (c.frame - c.from) % c.every.max(1) == 0
+        && c.frame <= c.at
+    {
+        c.kept += 1;
+        let path = format!("{dir}/f_{:04}.png", c.frame);
+        commands
+            .spawn(Screenshot::primary_window())
+            .observe(save_to_disk(path));
+    }
     if c.frame == c.at {
+        if let Some(dir) = &c.dir {
+            println!("gooey: kept {} frames in {dir}", c.kept);
+        }
         commands
             .spawn(Screenshot::primary_window())
             .observe(save_to_disk(c.shot.clone()));
