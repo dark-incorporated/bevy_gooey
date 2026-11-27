@@ -85,7 +85,10 @@ fn main() {
     .insert_resource(ClearColor(skin.background))
     .insert_resource(skin)
     .add_systems(Startup, setup)
-    .add_systems(Update, (follow_background, step_syntax_theme, scroll_lane, capture));
+    .add_systems(
+        Update,
+        (follow_background, step_syntax_theme, scroll_lane, capture),
+    );
     if let Some(line) = env("GOOEY_SCROLL") {
         app.insert_resource(LaneScroll { line });
     }

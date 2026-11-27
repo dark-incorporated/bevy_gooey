@@ -137,10 +137,16 @@ fn pick(mut skin: ResMut<GooeySkin>) {
 ## Navigating a long file
 
 - **`CodeMinimap`** on the editor draws the text small down the right edge: a bar a line as long as the line, the part in view as a band that follows the glided scroll, and the diagnostics marked. Press or drag it to scroll. It is whole on the editor's first frame, with no keystroke: a file opened for reading shows its bars and its band at once, and the band moves when the editor scrolls without an edit. The lane takes room beside the text, a thin line between them, so no bar is painted over the code; each bar is as long as its line scaled to the file's own longest line (never under 20 columns or over 200), so a short file's outline still reads across the lane. With `CodeSoftWrap` on, the lane still draws **one bar per line**, not per row: the file did not change when the window narrowed, so its outline must not grow longer. The band is the lines in view — it starts at the line the view starts on and ends at the line its
-  last drawn row is on, so however many rows each line takes it covers the lines and not the rows —
-  and a press maps a slot to its line.
+  last row in the **viewport** is on, so however many rows each line takes it covers the lines and not the rows —
+  and a press maps a slot to its line. Its height is a fact about the viewport, not about the scroll:
+  a pane bands the same number of lines at the first line of a file, at line 200 and at the end
+  (60, 58 and 58 px of a 3 px pitch); before the fix it was `2 · first_row + rows` tall, 66 px at the
+  top and 209 px at line 200 (#123, `docs/research/minimap-band.md`).
 
 ![The lane over a wrapped file, dark and parchment: one bar per line though every line is several rows, and a band as tall as the lines in view](../media/minimap-wrapped.png)
+
+![The same 300-line script at line 1, line 200 and the end: the gold band is the same height at all three](../media/minimap-band.png)
+
 - **Folding**: give `FoldRanges` (line ranges `start..end`: the header `start` stays, `start + 1..end` hides). A triangle (`▼` open, `►` closed) shows in the gutter on each header (press it or anywhere in its gutter row), and **Cmd or Ctrl+Shift+[** and **]** close and open the fold at the caret. The lines after a fold move up by the folded height, the caret cannot rest in a fold (it goes to the header), Up and Down walk rows.
 - **Indent guides** stand at each indent level, and the **matching bracket** of `()`, `[]` and `{}` at the caret is lit (`CodeBuffer::matching_bracket`).
 - **Find and replace**: **Cmd or Ctrl+F** opens the bar (seeded with a one-line selection), **Cmd or Ctrl+Alt+F** with the replace field. A query, case, whole-word and regular-expression options (the crate's own engine: no look-around, no back-references; the replacement may use `$1`; a backslash before a letter or digit it does not know, and `\n` or `\r` (a line is searched without its break), are errors; a pattern that backtracks without end, or recurses too deep on a long line, is an error in the bar, never "no matches"), a count ("3 of 10"), Previous and Next, Replace, **Replace all as one undo step**. `CodeFind` on the editor holds it (`open`, `query`, `options`, `count()`, `current()`, `error()`); `find_all` and `replace_edits` are the engine-free searching.

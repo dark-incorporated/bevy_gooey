@@ -1188,9 +1188,11 @@ fn draw_navigation(
     // one past the first row, and the old line added `first_row` to it again, which made the band
     // `2 · first_row + needed` tall: 44 lines for a 20-line view scrolled to line 30, correct only at
     // the top of the file.
-    let last_row = (view.first_row + view.rows_in_view.saturating_sub(1))
-        .min(view.rows.saturating_sub(1));
-    let bottom_line = lines.row_of(fold.line_at(last_row)).min(shown.saturating_sub(1));
+    let last_row =
+        (view.first_row + view.rows_in_view.saturating_sub(1)).min(view.rows.saturating_sub(1));
+    let bottom_line = lines
+        .row_of(fold.line_at(last_row))
+        .min(shown.saturating_sub(1));
     let in_view = bottom_line.saturating_sub(top_line) + 1;
     let first = if shown <= capacity {
         0

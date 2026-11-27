@@ -1,5 +1,17 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- **A minimap's view band is as tall as the lines the viewport holds, wherever the view stands.**
+  The band's bottom added the first drawn row to a row index that already counted it, so the band
+  was `2 · first_row + rows` tall: a 20-line pane scrolled to line 30 had a band 44 lines long,
+  one that grew as the player read down the file, while at the top it was right. It now ends on the
+  line of the last row the **viewport** holds (`View::rows_in_view`; the pool's two spare rows are
+  not text in view) and is the same height at line 0, line 30 and the end of the file
+  (`tests/code_navigation.rs::the_minimap_band_is_as_tall_as_the_lines_in_view_wherever_the_view_stands`).
+
 ## [0.64.0] - 2026-11-27
 
 ### Fixed
