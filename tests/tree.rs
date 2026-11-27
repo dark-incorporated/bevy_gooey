@@ -1507,8 +1507,7 @@ fn spawn_narrow(app: &mut App, nodes: Vec<TreeNode>, extra: impl Bundle) -> Enti
         children![(tree(nodes), TableRows(6.0), extra)],
     ));
     settle(app);
-    let tree = the_tree(app);
-    tree
+    the_tree(app)
 }
 
 fn line_break(app: &App, text: Entity) -> LineBreak {
@@ -1523,10 +1522,7 @@ fn a_tree_with_tree_wrap_breaks_a_long_label_inside_its_cell() {
     let mut app = app();
     let tree = spawn_narrow(
         &mut app,
-        vec![
-            TreeNode::new(1, LONG_NAME),
-            TreeNode::new(2, "short"),
-        ],
+        vec![TreeNode::new(1, LONG_NAME), TreeNode::new(2, "short")],
         TreeWrap,
     );
     assert!(app.world().get::<TreeWrap>(tree).is_some(), "the marker");
