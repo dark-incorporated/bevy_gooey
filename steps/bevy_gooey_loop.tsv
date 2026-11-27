@@ -24929,3 +24929,711 @@ pass	seq	phase	kind	category	tool	start	seconds	detail
 392	459	log	model	model		2026-11-27T20:15:27Z	4.2	
 392	460	log	tool	shell	bash	2026-11-27T20:15:31Z	0.0	cd /home/ladvien/bevy_gooey_loop && rm -rf /tmp/g116 && git status --short && git log --oneline -5 && df -h /home | tail -1 && ls /tmp | grep -c g11 || true
 392	461	log	model	model		2026-11-27T20:15:31Z	3.4	
+393	1	orient	model	model		2026-11-27T20:49:25Z	2.2	
+393	2	orient	tool	phase mark	bash	2026-11-27T20:49:27Z	0.1	python3 ~/.local/share/wiggum/steps.py mark orient; echo ---; git status --short; echo ---; git log --oneline -12; echo ---; tail -60 docs/loop-log.md
+393	3	orient	tool	git	bash	2026-11-27T20:49:27Z	0.6	git fetch -q origin loop-stats && git show origin/loop-stats:steps/bevy_gooey_loop-audit.tsv | tail -4
+393	4	orient	model	model		2026-11-27T20:49:28Z	1.3	
+393	5	orient	tool	github	bash	2026-11-27T20:49:29Z	0.6	cd /home/ladvien/bevy_gooey_loop; gh issue list --repo bevy-coven/bevy_gooey --state open --limit 100 --json number,title,labels,createdAt --jq '.[] | "#\(.numb
+393	6	orient	tool	shell	bash	2026-11-27T20:49:29Z	0.6	cd /home/ladvien/bevy_gooey_loop; git branch --list 'wiggum/parked-*'; git branch -a --list '*iter*' | tail -20; echo ---; git log --all --oneline -n 5 --grep='
+393	7	orient	model	model		2026-11-27T20:49:30Z	1.2	
+393	8	orient	tool	github	bash	2026-11-27T20:49:31Z	0.7	cd /home/ladvien/bevy_gooey_loop; gh issue view 124 -R bevy-coven/bevy_gooey 2>&1 | head -120
+393	9	orient	tool	github	bash	2026-11-27T20:49:31Z	0.7	cd /home/ladvien/bevy_gooey_loop; gh issue view 125 -R bevy-coven/bevy_gooey 2>&1 | head -160
+393	10	orient	model	model		2026-11-27T20:49:32Z	1.2	
+393	11	orient	tool	shell	bash	2026-11-27T20:49:33Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -n "wrap" src/table.rs | head -60; echo ===; grep -n "pub fn tree\|fn tree\|table_bundle\|outlined" src/tree.rs src/widge
+393	12	orient	tool	shell	bash	2026-11-27T20:49:33Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 1,60p src/tree.rs
+393	13	orient	model	model		2026-11-27T20:49:33Z	2.7	
+393	14	orient	tool	shell	bash	2026-11-27T20:49:36Z	0.1	cd /home/ladvien/bevy_gooey_loop; for b in wiggum/parked-pass-390-20261127-132615 wiggum/parked-pass-391-20261127-*; do echo "== $b"; git log --oneline -1 $b 2>
+393	15	orient	tool	shell	bash	2026-11-27T20:49:36Z	0.1	cd /home/ladvien/bevy_gooey_loop; git show b868564 --stat | head; echo ===; git show a677e28 --stat | head
+393	16	orient	model	model		2026-11-27T20:49:36Z	1.3	
+393	17	orient	tool	shell	bash	2026-11-27T20:49:37Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -n "fn set\|fn apply_external_edit\|fn publish\|fn buffer\|replace_ranges\|CodeAuthor\|fn apply_external\|external_dirty"
+393	18	orient	tool	shell	bash	2026-11-27T20:49:37Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -n "pub struct CodeEditor\b" -A 80 src/code_editor.rs
+393	19	orient	model	model		2026-11-27T20:49:37Z	1.3	
+393	20	orient	tool	shell	bash	2026-11-27T20:49:39Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 440,560p src/code_editor.rs
+393	21	orient	tool	shell	bash	2026-11-27T20:49:39Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 780,900p src/code_editor.rs
+393	22	orient	model	model		2026-11-27T20:49:39Z	1.2	
+393	23	orient	tool	shell	bash	2026-11-27T20:49:40Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -n "replace_ranges\|apply_external\|\.publish(\|publish(" src/code_editor.rs | head -40
+393	24	orient	tool	shell	bash	2026-11-27T20:49:40Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 1150,1215p src/code_buffer.rs; echo ===; sed -n 1300,1400p src/code_buffer.rs
+393	25	orient	model	model		2026-11-27T20:49:40Z	1.0	
+393	26	orient	tool	shell	bash	2026-11-27T20:49:41Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 1340,1420p src/code_editor.rs
+393	27	orient	tool	shell	bash	2026-11-27T20:49:41Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 220,260p src/code_editor.rs; echo === ; sed -n 350,400p src/code_decor.rs
+393	28	orient	model	model		2026-11-27T20:49:41Z	1.3	
+393	29	orient	tool	shell	bash	2026-11-27T20:49:42Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 1180,1340p src/code_editor.rs
+393	30	orient	model	model		2026-11-27T20:49:42Z	1.0	
+393	31	orient	tool	shell	bash	2026-11-27T20:49:43Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -rn "apply_external_edit" src/ | head; echo ===; grep -n "pub fn apply_external_edit" -B 30 -A 60 src/code_decor.rs src/c
+393	32	orient	model	model		2026-11-27T20:49:43Z	0.8	
+393	33	orient	tool	shell	bash	2026-11-27T20:49:44Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 300,420p src/code_overlay.rs
+393	34	orient	model	model		2026-11-27T20:49:44Z	3.7	
+393	35	orient	tool	shell	bash	2026-11-27T20:49:48Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -n "fn place\b" -A 40 src/code_buffer.rs; grep -n "fn splice\b" -A 40 src/code_buffer.rs
+393	36	orient	model	model		2026-11-27T20:49:48Z	3.8	
+393	37	orient	tool	shell	bash	2026-11-27T20:49:51Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -rn "replace_ranges\|replace_edits" src/ | grep -v "^src/code_buffer.rs" ; echo ===; grep -n "fn replace_edits" -A 30 src
+393	38	orient	model	model		2026-11-27T20:49:51Z	3.9	
+393	39	orient	tool	shell	bash	2026-11-27T20:49:55Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 1640,1790p src/code_buffer.rs
+393	40	orient	model	model		2026-11-27T20:49:55Z	15.2	
+393	41	orient	tool	shell	bash	2026-11-27T20:50:11Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 270,360p src/code_search.rs
+393	42	orient	tool	shell	bash	2026-11-27T20:50:11Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -n "Sources\|## " docs/research/code-editor.md | head -40; echo ===; wc -l docs/research/code-editor.md; echo ===; grep -
+393	43	orient	model	model		2026-11-27T20:50:11Z	8.9	
+393	44	orient	tool	shell	bash	2026-11-27T20:50:19Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -n "joins\|GROUP_PAUSE_S\|fn undo\|fn redo\|kind: Kind" src/code_buffer.rs | head -40
+393	45	orient	tool	shell	bash	2026-11-27T20:50:19Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -n "fn undo" -A 30 src/code_buffer.rs | head -70; echo ===; sed -n 1000,1100p src/code_buffer.rs
+393	46	orient	model	model		2026-11-27T20:50:19Z	1.1	
+393	47	orient	tool	shell	bash	2026-11-27T20:50:21Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -n "fn edit_lines" -B 20 -A 60 src/code_buffer.rs
+393	48	orient	model	model		2026-11-27T20:50:21Z	3.6	
+393	49	orient	tool	shell	bash	2026-11-27T20:50:24Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -n " pub fn " src/code_buffer.rs | head -60
+393	50	orient	tool	shell	bash	2026-11-27T20:50:24Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -n "pub fn line\|pub fn offset\|line_starts\|pub fn len\b\|pub fn len_lines" src/code_buffer.rs | head -30
+393	51	orient	model	model		2026-11-27T20:50:24Z	22.5	
+393	52	orient	tool	shell	bash	2026-11-27T20:50:47Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 1125,1250p src/table.rs
+393	53	orient	tool	shell	bash	2026-11-27T20:50:47Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 1440,1530p src/table.rs; echo === ; sed -n 1570,1615p src/table.rs
+393	54	orient	model	model		2026-11-27T20:50:47Z	20.3	
+393	55	choose	tool	phase mark	bash	2026-11-27T20:51:07Z	0.2	cd /home/ladvien/bevy_gooey_loop; python3 ~/.local/share/wiggum/steps.py mark choose; sed -n 1090,1130p src/table.rs; echo === ; grep -n "TreeWrap\|Column::wrap
+393	56	choose	tool	shell	bash	2026-11-27T20:51:07Z	0.2	cd /home/ladvien/bevy_gooey_loop; ls docs/research/ | head -80; echo ===; sed -n 2890,2935p src/widgets.rs
+393	57	choose	model	model		2026-11-27T20:51:07Z	9.6	
+393	58	choose	tool	shell	bash	2026-11-27T20:51:17Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -n "type Laid" -A 20 src/table.rs; echo ===; grep -n "TreeView" -n src/tree.rs src/widgets.rs src/lib.rs src/skin.rs | he
+393	59	choose	tool	shell	bash	2026-11-27T20:51:17Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 150,215p src/table.rs; echo ===; grep -n "One line\|ONE_LINE\|wraps\b" src/table.rs | head -40
+393	60	choose	model	model		2026-11-27T20:51:17Z	7.6	
+393	61	choose	tool	shell	bash	2026-11-27T20:51:24Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 1,90p docs/research/divider-wrap-led-size.md
+393	62	choose	tool	shell	bash	2026-11-27T20:51:24Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -n "fn spawn_lead" -B5 -A50 src/tree.rs; echo ===; grep -n "TreeTwisty" src/skin.rs src/tree.rs | head
+393	63	choose	model	model		2026-11-27T20:51:24Z	5.4	
+393	64	choose	tool	shell	bash	2026-11-27T20:51:30Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 900,960p src/table.rs
+393	65	choose	tool	shell	bash	2026-11-27T20:51:30Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 1300,1345p src/table.rs; echo ===; sed -n 1530,1580p src/table.rs
+393	66	choose	model	model		2026-11-27T20:51:30Z	1.0	
+393	67	choose	tool	shell	bash	2026-11-27T20:51:31Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 1400,1470p src/table.rs
+393	68	choose	model	model		2026-11-27T20:51:31Z	7.7	
+393	69	choose	tool	shell	bash	2026-11-27T20:51:39Z	25.3	cd /home/ladvien/bevy_gooey_loop; (hs status 2>&1 | head -20) ; echo "=== corpus"; ls docs/guide | head -60; echo ===; ls docs/media | head -40
+393	70	choose	tool	shell	bash	2026-11-27T20:51:39Z	25.3	cd /home/ladvien/bevy_gooey_loop; grep -n "tree" README.md | head -20; echo ===; grep -n "wrap\|Tree" docs/guide/tree.md 2>/dev/null | head; ls docs/guide | gre
+393	71	choose	model	model		2026-11-27T20:52:04Z	12.7	
+393	72	research	tool	phase mark	bash	2026-11-27T20:52:17Z	0.6	cd /home/ladvien/bevy_gooey_loop; python3 ~/.local/share/wiggum/steps.py mark research; echo "TARGET=$CARGO_TARGET_DIR"; df -h /home | tail -1; sed -n 1,80p doc
+393	73	research	tool	shell	bash	2026-11-27T20:52:17Z	0.6	cd /home/ladvien/bevy_gooey_loop; grep -n "struct TableCache" -A 40 src/table.rs
+393	74	research	model	model		2026-11-27T20:52:17Z	3.6	
+393	75	research	tool	shell	bash	2026-11-27T20:52:21Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 1360,1400p src/table.rs; echo === ; wc -l examples/tree.rs tests/tree.rs; sed -n 1,80p examples/tree.rs
+393	76	research	tool	shell	bash	2026-11-27T20:52:21Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 1,70p tests/tree.rs
+393	77	research	model	model		2026-11-27T20:52:21Z	10.0	
+393	78	research	tool	shell	bash	2026-11-27T20:52:31Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -n "Role::TableCellText\|Role::TableCell\b\|Role::TableRow\b" -A 25 src/skin.rs | sed -n 1,120p
+393	79	research	tool	shell	bash	2026-11-27T20:52:31Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -rn "TableRows" src/*.rs | head -20
+393	80	research	model	model		2026-11-27T20:52:31Z	10.0	
+393	81	research	tool	shell	bash	2026-11-27T20:52:41Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -n "tops\b" src/table.rs | head -40; echo ===; grep -n "fn rows_in_view" -A 25 src/table.rs; echo ===; sed -n 1,60p src/t
+393	82	research	tool	shell	bash	2026-11-27T20:52:41Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -n "TableRows\|rows_in_view" src/lib.rs | head; echo ===; grep -n "scroll_to_reveal\|tops" src/table.rs | sed -n 1,40p; e
+393	83	research	model	model		2026-11-27T20:52:41Z	1.0	
+393	84	research	tool	shell	bash	2026-11-27T20:52:42Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -n "pub fn row_tops" -B 20 -A 40 src/model.rs
+393	85	research	tool	shell	bash	2026-11-27T20:52:42Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -n "pub fn rows_in_view" -B 25 -A 40 src/model.rs
+393	86	research	model	model		2026-11-27T20:52:42Z	10.3	
+393	87	research	tool	shell	bash	2026-11-27T20:52:52Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 80,200p examples/tree.rs
+393	88	research	tool	shell	bash	2026-11-27T20:52:52Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -n "fn spawn\|fn app\|panel\|tree(" tests/tree.rs | head -30; echo ===; grep -n "fn tree_app\|fn build" -A 40 tests/tree.
+393	89	research	model	model		2026-11-27T20:52:52Z	9.5	
+393	90	research	tool	shell	bash	2026-11-27T20:53:02Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -n "wrap" tests/table.rs | head -40
+393	91	research	tool	shell	bash	2026-11-27T20:53:02Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -n "fn a_wrapping_column" -A 90 tests/table.rs | head -120
+393	92	research	model	model		2026-11-27T20:53:02Z	0.9	
+393	93	research	tool	shell	bash	2026-11-27T20:53:03Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 1008,1110p tests/table.rs
+393	94	research	model	model		2026-11-27T20:53:03Z	13.3	
+393	95	research	tool	shell	bash	2026-11-27T20:53:16Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 250,430p examples/tree.rs
+393	96	research	tool	shell	bash	2026-11-27T20:53:16Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 460,500p src/tree.rs; echo === ; grep -n "TreeView" -B3 -A8 src/tree.rs | sed -n 1,30p
+393	97	research	model	model		2026-11-27T20:53:16Z	11.7	
+393	98	research	tool	shell	bash	2026-11-27T20:53:28Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -n "TableCellText" -A 12 src/skin.rs | sed -n 1,60p; echo ===; grep -n "enum Role" -A 40 src/skin.rs | sed -n 1,20p
+393	99	research	tool	shell	bash	2026-11-27T20:53:28Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -n "MeterTone\|SplitThickness\|LedSize" -A 6 src/meter.rs src/split.rs src/led.rs | grep -n "derive" -B2 -A3 | head -30
+393	100	research	model	model		2026-11-27T20:53:28Z	17.1	
+393	101	research	tool	sleep	bash	2026-11-27T20:53:45Z	2.0	cd /home/ladvien/bevy_gooey_loop; export CARGO_TARGET_DIR=/home/ladvien/target/gooey-loop; mkdir -p /tmp/g117/before; (timeout 1500 cargo build --release --exam
+393	102	research	tool	read files	read	2026-11-27T20:53:45Z	2.0	https://www.w3.org/WAI/WCAG22/Understanding/reflow.html
+393	103	research	model	model		2026-11-27T20:53:47Z	2.4	
+393	104	research	tool	shell	bash	2026-11-27T20:53:49Z	0.0	cd /home/ladvien/bevy_gooey_loop; tail -30 /tmp/g117/build.log 2>/dev/null; grep -n "stem\|^- " docs/research/corpus.md | head -50
+393	105	research	tool	homestill	bash	2026-11-27T20:53:49Z	3.6	cd /home/ladvien/bevy_gooey_loop; timeout 90 hs distill search "game UI outliner tree view label wrapping long names file browser" --output json 2>&1 | head -40
+393	106	research	model	model		2026-11-27T20:53:53Z	13.5	
+393	107	research	tool	shell	bash	2026-11-27T20:54:07Z	0.0	cd /home/ladvien/bevy_gooey_loop; cat .cargo/config.toml 2>/dev/null; echo ===; env | grep -i "cargo\|sccache" ; echo ===; grep -n "incremental" Cargo.toml
+393	108	research	tool	shell	bash	2026-11-27T20:54:07Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -n "pub struct Table" -A 25 src/table.rs | head -40; echo ===; grep -n "fn table_bundle" -A 30 src/table.rs | head -40
+393	109	research	model	model		2026-11-27T20:54:07Z	11.3	
+393	110	research	tool	cargo build	bash	2026-11-27T20:54:18Z	3.0	cd /home/ladvien/bevy_gooey_loop; export CARGO_INCREMENTAL=0; (setsid nohup bash -c 'CARGO_INCREMENTAL=0 timeout 1800 cargo build --release --examples > /tmp/g1
+393	111	research	tool	read files	read	2026-11-27T20:54:18Z	3.0	https://www.w3.org/WAI/WCAG22/Techniques/general/G224
+393	112	research	model	model		2026-11-27T20:54:21Z	11.1	
+393	113	research	tool	shell	bash	2026-11-27T20:54:32Z	0.1	cd /home/ladvien/bevy_gooey_loop; grep -rn "GOOEY_WRAP\|\.wrap()" examples/*.rs | head -20; echo ===; tail -3 /tmp/g117/build.log
+393	114	research	tool	shell	bash	2026-11-27T20:54:32Z	0.1	cd /home/ladvien/bevy_gooey_loop; grep -rn "Tree\|tree" examples/gallery.rs | head -20
+393	115	research	model	model		2026-11-27T20:54:32Z	8.4	
+393	116	research	tool	shell	bash	2026-11-27T20:54:41Z	0.4	cd /home/ladvien/bevy_gooey_loop; grep -n "update_trees\|update_tables" src/lib.rs | head; echo ===; echo "DISPLAY=$DISPLAY"; xdpyinfo -display :93 2>&1 | head 
+393	117	research	tool	shell	bash	2026-11-27T20:54:41Z	0.3	cd /home/ladvien/bevy_gooey_loop; grep -n "GooeySystems::Style" -B5 -A5 src/lib.rs | head -60
+393	118	research	model	model		2026-11-27T20:54:41Z	12.3	
+393	119	research	tool	shell	bash	2026-11-27T20:54:54Z	0.2	cd /home/ladvien/bevy_gooey_loop; sed -n 5310,5345p src/skin.rs; echo ===; tail -3 /tmp/g117/build.log
+393	120	research	tool	homestill	bash	2026-11-27T20:54:54Z	31.4	cd /home/ladvien/bevy_gooey_loop; timeout 90 hs distill search "file explorer long file names wrapping versus truncation tooltip" --output json 2>&1 | jq -r '.[
+393	121	research	model	model		2026-11-27T20:55:25Z	22.4	
+393	122	research	tool	shell	bash	2026-11-27T20:55:48Z	0.5	cd /home/ladvien/bevy_gooey_loop; tail -5 /tmp/g117/build.log; ls -la /home/ladvien/target/gooey-loop/release/examples/gallery 2>/dev/null
+393	123	research	tool	web	web_search	2026-11-27T20:55:48Z	7.3	Windows Explorer Details view wraps long file names multiple lines accessibility
+393	124	research	model	model		2026-11-27T20:55:55Z	20.2	
+393	125	research	tool	read files	read	2026-11-27T20:56:17Z	0.8	https://github.com/microsoft/vscode/issues/214269
+393	126	research	tool	shell	bash	2026-11-27T20:56:17Z	0.9	cd /home/ladvien/bevy_gooey_loop; grep -n "fn table_pitch" -B8 -A20 src/skin.rs; echo ===; tail -2 /tmp/g117/build.log
+393	127	research	model	model		2026-11-27T20:56:18Z	5.7	
+393	128	research	tool	shell	bash	2026-11-27T20:56:23Z	0.2	cd /home/ladvien/bevy_gooey_loop; grep -n "Role::TableCellText =>" -A 20 src/skin.rs | head -40; echo ===; grep -n "Role::TableCell\b" -A 20 src/skin.rs | sed -
+393	129	research	tool	shell	bash	2026-11-27T20:56:23Z	0.3	cd /home/ladvien/bevy_gooey_loop; tail -3 /tmp/g117/build.log; ps aux | grep -c "[r]ustc"
+393	130	research	model	model		2026-11-27T20:56:24Z	14.8	
+393	131	research	tool	shell	bash	2026-11-27T20:56:38Z	0.6	cd /home/ladvien/bevy_gooey_loop; sed -n 200,258p examples/tree.rs; echo ===; tail -3 /tmp/g117/build.log
+393	132	research	tool	shell	bash	2026-11-27T20:56:38Z	0.6	cd /home/ladvien/bevy_gooey_loop; grep -n "fn bind_lead" -A 40 src/tree.rs
+393	133	research	model	model		2026-11-27T20:56:39Z	14.8	
+393	134	research	tool	read files	read	2026-11-27T20:56:54Z	0.6	https://github.com/microsoft/vscode/issues/197785
+393	135	research	tool	shell	bash	2026-11-27T20:56:54Z	0.6	cd /home/ladvien/bevy_gooey_loop; grep -n "register_type::<TreeView>\|register_type::<Tree" src/lib.rs | head; echo ===; grep -n "tree" README.md | head -20; ec
+393	136	research	model	model		2026-11-27T20:56:54Z	16.8	
+393	137	research	tool	shell	bash	2026-11-27T20:57:11Z	0.2	cd /home/ladvien/bevy_gooey_loop; sed -n 200,340p tests/tree.rs
+393	138	research	tool	shell	bash	2026-11-27T20:57:11Z	0.3	cd /home/ladvien/bevy_gooey_loop; tail -3 /tmp/g117/build.log; grep -n "fn update_trees" -A 30 src/tree.rs
+393	139	research	model	model		2026-11-27T20:57:12Z	11.1	
+393	140	research	tool	shell	bash	2026-11-27T20:57:23Z	0.3	cd /home/ladvien/bevy_gooey_loop; tail -3 /tmp/g117/build.log; ls ~/.cargo/registry/src/*/ | grep "^bevy_ui-" ; grep -rn "pub struct TextLayout" -A 25 ~/.cargo/
+393	141	research	tool	shell	bash	2026-11-27T20:57:23Z	0.6	cd /home/ladvien/bevy_gooey_loop; grep -rn "TextLayout" tests/*.rs | head -20; echo ===; sed -n 820,860p src/lib.rs
+393	142	research	model	model		2026-11-27T20:57:24Z	15.3	
+393	143	research	tool	shell	bash	2026-11-27T20:57:39Z	0.6	cd /home/ladvien/bevy_gooey_loop; tail -3 /tmp/g117/build.log; ls -la /home/ladvien/target/gooey-loop/release/examples/tree 2>/dev/null
+393	144	research	tool	shell	bash	2026-11-27T20:57:39Z	0.6	cd /home/ladvien/bevy_gooey_loop; sed -n 1030,1065p src/table.rs; echo ===; grep -n "TableParts" -A 12 src/table.rs | head -30
+393	145	research	model	model		2026-11-27T20:57:39Z	6.5	
+393	146	research	tool	cargo build	bash	2026-11-27T20:57:46Z	0.2	cd /home/ladvien/bevy_gooey_loop; wc -l /tmp/g117/build.log; grep -c "Compiling" /tmp/g117/build.log; tail -6 /tmp/g117/build.log; pgrep -fa "cargo build --rele
+393	147	research	model	model		2026-11-27T20:57:46Z	10.3	
+393	148	research	tool	shell	bash	2026-11-27T20:57:56Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 1,60p docs/research/code-soft-wrap.md
+393	149	research	tool	shell	bash	2026-11-27T20:57:56Z	0.1	cd /home/ladvien/bevy_gooey_loop; tail -3 /tmp/g117/build.log; ls -la /home/ladvien/target/gooey-loop/release/examples/ | head
+393	150	research	model	model		2026-11-27T20:57:57Z	8.6	
+393	151	research	tool	shell	bash	2026-11-27T20:58:05Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -n "Role::TableView" -A 15 src/skin.rs | head -40; echo ===; tail -3 /tmp/g117/build.log
+393	152	research	tool	shell	bash	2026-11-27T20:58:05Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -n "fn list_height" -B10 -A20 src/model.rs; echo ===; grep -n "Role::TableRows" -A 12 src/skin.rs | head -20
+393	153	research	model	model		2026-11-27T20:58:05Z	12.9	
+393	154	research	tool	shell	bash	2026-11-27T20:58:18Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -n "Role::TableRow =>" -A 14 src/skin.rs; echo ===; tail -3 /tmp/g117/build.log
+393	155	research	tool	shell	bash	2026-11-27T20:58:18Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -n "TABLE_ROW\|table_pitch" src/skin.rs | head -20; echo ===; grep -n "fn rect\|fn settle\|fn pool\|fn viewport_rect" -A 
+393	156	research	model	model		2026-11-27T20:58:18Z	1.9	
+393	157	research	tool	shell	bash	2026-11-27T20:58:20Z	0.1	cd /home/ladvien/bevy_gooey_loop; git branch --show-current; git status --short | head -20; echo ===; date; ls /tmp/g117/ 2>/dev/null; echo ===; tail -40 docs/l
+393	158	research	tool	shell	bash	2026-11-27T20:58:20Z	0.1	ps -o etime= -p 278079 2>/dev/null; cd /home/ladvien/bevy_gooey_loop; git log --oneline -3; echo ===; git log --oneline main..HEAD | head
+393	159	research	model	model		2026-11-27T20:58:20Z	1.5	
+393	160	research	tool	shell	bash	2026-11-27T20:58:22Z	0.8	cd /home/ladvien/bevy_gooey_loop; git fetch -q origin loop-stats && git show origin/loop-stats:steps/bevy_gooey_loop-audit.tsv | tail -3; echo ===; ls /tmp/g117
+393	161	research	tool	github	bash	2026-11-27T20:58:22Z	0.8	cd /home/ladvien/bevy_gooey_loop; gh issue list --state open --limit 30 2>&1 | head -30; echo ===; git branch --list 'wiggum/parked-*'; git log --all --oneline 
+393	162	research	model	model		2026-11-27T20:58:22Z	2.4	
+393	163	research	tool	github	bash	2026-11-27T20:58:25Z	1.4	cd /home/ladvien/bevy_gooey_loop; gh issue view 128 2>&1 | head -60; echo "=========="; gh issue view 127 2>&1 | head -50
+393	164	research	tool	shell	bash	2026-11-27T20:58:25Z	1.4	cd /home/ladvien/bevy_gooey_loop; git show origin/loop-stats:steps/bevy_gooey_loop-audit.tsv | head -1; git show origin/loop-stats:steps/bevy_gooey_loop-audit.t
+393	165	research	model	model		2026-11-27T20:58:26Z	0.9	
+393	166	research	tool	github	bash	2026-11-27T20:58:27Z	0.8	cd /home/ladvien/bevy_gooey_loop; gh issue view 126 2>&1 | sed -n 1,60p
+393	167	research	tool	github	bash	2026-11-27T20:58:27Z	0.8	cd /home/ladvien/bevy_gooey_loop; gh issue view 124 2>&1 | sed -n 1,90p
+393	168	research	model	model		2026-11-27T20:58:28Z	5.9	
+393	169	research	tool	shell	bash	2026-11-27T20:58:34Z	0.1	cd /home/ladvien/bevy_gooey_loop; for b in $(git branch --format='%(refname:short)' --list 'wiggum/parked-*'); do echo "== $b"; git log -1 --format='%s' "$b"; g
+393	170	research	tool	cargo build	bash	2026-11-27T20:58:34Z	0.1	cd /home/ladvien/bevy_gooey_loop; pgrep -fa "cargo build --release" | head -3; tail -5 /tmp/g117/build.log; df -h /home | tail -1
+393	171	research	model	model		2026-11-27T20:58:34Z	3.9	
+393	172	research	tool	shell	bash	2026-11-27T20:58:38Z	0.0	cd /home/ladvien/bevy_gooey_loop; git diff main...wiggum/parked-pass-390 -- examples/prose.rs | head -60; echo "=== code_editor"; git diff main...wiggum/parked-
+393	173	research	tool	shell	bash	2026-11-27T20:58:38Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -n "stop_press\|stop_release\|stop_click\|FindAction\|Role::CodeFind\|panel(" src/code_search.rs | head -40; echo ===; gr
+393	174	research	model	model		2026-11-27T20:58:38Z	9.4	
+393	175	research	tool	shell	bash	2026-11-27T20:58:47Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 100,250p src/code_search.rs
+393	176	research	tool	shell	bash	2026-11-27T20:58:47Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 250,420p src/code_search.rs
+393	177	research	model	model		2026-11-27T20:58:47Z	2.0	
+393	178	research	tool	cargo build	bash	2026-11-27T20:58:49Z	0.1	cd /home/ladvien/bevy_gooey_loop; date; tail -3 /tmp/g117/build.log; pgrep -fa "cargo build --release" | head -3; tail -4 /tmp/g117/build.log
+393	179	research	tool	shell	bash	2026-11-27T20:58:49Z	0.1	cd /home/ladvien/bevy_gooey_loop; grep -n "Iteration 11[5-9]\|Iteration 39[0-9]\|^## " docs/loop-log.md | tail -12
+393	180	research	model	model		2026-11-27T20:58:49Z	14.6	
+393	181	bugs	tool	phase mark	bash	2026-11-27T20:59:04Z	2.3	kill 278078 278079 278080 2>/dev/null; sleep 2; pgrep -fa "cargo build --release" | head -3; echo "---"; python3 ~/.local/share/wiggum/steps.py mark bugs; pytho
+393	182	bugs	tool	shell	bash	2026-11-27T20:59:04Z	2.3	cd /home/ladvien/bevy_gooey_loop; grep -n "find\b\|Find\|Ctrl" tests/code_navigation.rs | head -40
+393	183	bugs	model	model		2026-11-27T20:59:06Z	7.1	
+393	184	bugs	tool	shell	bash	2026-11-27T20:59:13Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 520,620p tests/code_navigation.rs; echo "=== helpers"; sed -n 1,160p tests/code_navigation.rs
+393	185	bugs	tool	shell	bash	2026-11-27T20:59:13Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 930,1010p src/code_editor.rs; echo "=== observers"; grep -n "add_observer\|observe(" src/code_editor.rs | head -30
+393	186	bugs	model	model		2026-11-27T20:59:13Z	19.2	
+393	187	bugs	tool	shell	bash	2026-11-27T20:59:33Z	0.2	cd /home/ladvien/bevy_gooey_loop; git status --short; git log --oneline -1; echo ===; grep -n "pending_paste\|Key::Character\|\.text\b" src/code_editor.rs | hea
+393	188	bugs	tool	shell	bash	2026-11-27T20:59:33Z	0.2	cd /home/ladvien/bevy_gooey_loop; sed -n 1060,1140p src/code_editor.rs; echo "=== find guide"; grep -n "Find\|find" docs/guide/code-editor.md | head -30
+393	189	bugs	model	model		2026-11-27T20:59:33Z	7.0	
+393	190	bugs	tool	shell	bash	2026-11-27T20:59:40Z	0.1	grep -rn "dispatch_focused_input" -A 30 ~/.cargo/registry/src/*/bevy_input_focus-0.20.0/src/lib.rs | head -60; echo ===; grep -rn "FocusedInput" ~/.cargo/regist
+393	191	bugs	tool	shell	bash	2026-11-27T20:59:40Z	0.1	grep -rn "propagate\|fn on_focused_keyboard_input" -B3 -A 25 ~/.cargo/registry/src/*/bevy_ui_widgets-0.20.0/src/text_input.rs | head -70
+393	192	bugs	model	model		2026-11-27T20:59:40Z	8.7	
+393	193	bugs	tool	shell	bash	2026-11-27T20:59:48Z	0.0	sed -n 174,330p ~/.cargo/registry/src/*/bevy_ui_widgets-0.20.0/src/text_input.rs
+393	194	bugs	tool	shell	bash	2026-11-27T20:59:48Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 130,200p src/text.rs
+393	195	bugs	model	model		2026-11-27T20:59:49Z	4.3	
+393	196	bugs	tool	shell	bash	2026-11-27T20:59:53Z	0.1	cd /home/ladvien/bevy_gooey_loop; grep -n "Escape\|KeyboardInput\|FocusedInput" src/code_search.rs src/code_editor.rs | head -30; echo "=== combobox escape"; gr
+393	197	bugs	tool	shell	bash	2026-11-27T20:59:53Z	0.1	cd /home/ladvien/bevy_gooey_loop; grep -rn "fn add_observer\|global observer" ~/.cargo/registry/src/*/bevy_ecs-0.20.0/src/observer/*.rs | head, 2>/dev/null | he
+393	198	bugs	model	model		2026-11-27T20:59:53Z	18.9	
+393	199	bugs	tool	shell	bash	2026-11-27T21:00:12Z	0.1	cd /home/ladvien/bevy_gooey_loop; sed -n 1,40p src/code_search.rs; echo "=== 843-900"; sed -n 843,880p src/code_editor.rs; echo "=== 1015,1060"; sed -n 1015,106
+393	200	bugs	tool	shell	bash	2026-11-27T21:00:12Z	0.1	cd /home/ladvien/bevy_gooey_loop; grep -n "add_observer" src/lib.rs | head -30
+393	201	bugs	model	model		2026-11-27T21:00:12Z	17.3	
+393	202	bugs	tool	shell	bash	2026-11-27T21:00:29Z	0.1	grep -rn "TabNavigation\|handle_tab\|add_observer\|add_systems" ~/.cargo/registry/src/*/bevy_ui_widgets-0.20.0/src/{tab_navigation.rs,button.rs,lib.rs} 2>/dev/n
+393	203	bugs	tool	shell	bash	2026-11-27T21:00:29Z	0.1	cd /home/ladvien/bevy_gooey_loop; grep -n "GOOEY_\|find\|Find" examples/prose.rs | head -40; echo "=== media"; ls docs/media | head -50
+393	204	bugs	model	model		2026-11-27T21:00:29Z	12.0	
+393	205	bugs	tool	shell	bash	2026-11-27T21:00:41Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 1,60p examples/prose.rs; echo "=== keys?"; grep -n "GOOEY_KEYS\|keys\|staged" examples/prose.rs | head -20
+393	206	bugs	tool	shell	bash	2026-11-27T21:00:41Z	0.1	cd /home/ladvien/bevy_gooey_loop; ls tests/ ; grep -n "code_navigation\|code_editor" tests/all.rs
+393	207	bugs	model	model		2026-11-27T21:00:41Z	17.8	
+393	208	bugs	tool	homestill	bash	2026-11-27T21:00:59Z	19.6	cd /home/ladvien/bevy_gooey_loop; (hs status 2>&1 | head -20) ; echo "=== scribe"; (hs scribe_health 2>&1 | head -10)
+393	209	bugs	tool	shell	bash	2026-11-27T21:00:59Z	19.6	cd /home/ladvien/bevy_gooey_loop; grep -n "GOOEY_KEYS" -A 40 examples/toolbar.rs | head -80
+393	210	bugs	model	model		2026-11-27T21:01:19Z	13.4	
+393	211	bugs	tool	shell	bash	2026-11-27T21:01:32Z	0.1	cd /home/ladvien/bevy_gooey_loop; grep -n "fn show" -A 20 src/code_find.rs; echo "=== README editor"; grep -n "find\|code_editor" README.md | head
+393	212	bugs	tool	shell	bash	2026-11-27T21:01:32Z	0.1	cd /home/ladvien/bevy_gooey_loop; grep -n "find" docs/research/code-editor.md | head -20; echo ===; grep -n "Escape\|next match\|Enter" docs/guide/code-editor.m
+393	213	bugs	model	model		2026-11-27T21:01:32Z	30.3	
+393	214	bugs	tool	shell	bash	2026-11-27T21:02:03Z	0.1	cd /home/ladvien/bevy_gooey_loop; sed -n 40,110p src/code_search.rs; echo "=== prose 130-235"; sed -n 130,235p examples/prose.rs
+393	215	bugs	tool	shell	bash	2026-11-27T21:02:03Z	0.1	cd /home/ladvien/bevy_gooey_loop; grep -n "Cancel" src/code_editor.rs src/lib.rs | head -20; echo ===; grep -n "fn cancel_by_input" -A 25 src/cancel.rs
+393	216	bugs	model	model		2026-11-27T21:02:03Z	15.6	
+393	217	bugs	tool	shell	bash	2026-11-27T21:02:18Z	0.1	cd /home/ladvien/bevy_gooey_loop; grep -n "text_on_key_input\|add_observer" src/lib.rs | sed -n 1,40p; echo "=== ecs trigger order"; grep -rn "fn trigger_observ
+393	218	bugs	tool	shell	bash	2026-11-27T21:02:18Z	0.1	cd /home/ladvien/bevy_gooey_loop; grep -n "Role::CodeFind =>" -A 14 src/skin.rs
+393	219	bugs	model	model		2026-11-27T21:02:18Z	18.4	
+393	220	bugs	tool	shell	bash	2026-11-27T21:02:37Z	0.1	cd /home/ladvien/bevy_gooey_loop; grep -n "#128\|#127\|#126\|#125\|#124" docs/loop-log.md | head -20; echo "=== tail of 116"; sed -n 4121,4135p docs/loop-log.md
+393	221	bugs	tool	shell	bash	2026-11-27T21:02:37Z	0.1	grep -rn "Escape" ~/.cargo/registry/src/*/bevy_ui_widgets-0.20.0/src/*.rs | head -10
+393	222	bugs	model	model		2026-11-27T21:02:37Z	14.4	
+393	223	bugs	tool	shell	bash	2026-11-27T21:02:51Z	0.0	sed -n 230,400p ~/.cargo/registry/src/*/bevy_ecs-0.20.0/src/observer/mod.rs
+393	224	bugs	tool	shell	bash	2026-11-27T21:02:51Z	0.1	cd /home/ladvien/bevy_gooey_loop; grep -n "fn cancel_target" -A 20 src/nav.rs src/cancel.rs 2>/dev/null | head -30; grep -rn "fn cancel_target" -A 25 src/ | hea
+393	225	bugs	model	model		2026-11-27T21:02:51Z	20.2	
+393	226	bugs	tool	shell	bash	2026-11-27T21:03:12Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 60,130p examples/prose.rs; echo "=== rest"; sed -n 235,330p examples/prose.rs
+393	227	bugs	tool	shell	bash	2026-11-27T21:03:12Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -n "GOOEY_KEYS" -A 60 examples/gallery.rs | sed -n 1,90p
+393	228	bugs	model	model		2026-11-27T21:03:12Z	8.2	
+393	229	bugs	tool	shell	bash	2026-11-27T21:03:20Z	0.0	grep -rn "fn trigger_entity_internal" -A 60 ~/.cargo/registry/src/*/bevy_ecs-0.20.0/src/event/*.rs ~/.cargo/registry/src/*/bevy_ecs-0.20.0/src/observer/*.rs 2>/
+393	230	bugs	model	model		2026-11-27T21:03:20Z	45.7	
+393	231	bugs	tool	shell	bash	2026-11-27T21:04:06Z	0.1	cd /home/ladvien/bevy_gooey_loop; grep -n "fn holds\|fn of(" -A 18 src/nav.rs | head -50; echo "=== register keep_focus"; grep -n "keep_focus_on_escape\|combo_o
+393	232	bugs	tool	read files	read	2026-11-27T21:04:06Z	0.6	https://code.visualstudio.com/docs/editing/codebasics#_find-and-replace
+393	233	bugs	model	model		2026-11-27T21:04:06Z	39.0	
+393	234	bugs	tool	shell	bash	2026-11-27T21:04:45Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -n "update_code_find\|code_find\|text_on_key_input" src/lib.rs; echo "=== which set"; grep -n "GooeySystems::Style" src/l
+393	235	bugs	tool	shell	bash	2026-11-27T21:04:45Z	0.0	sed -n 236,330p ~/.cargo/registry/src/*/bevy_ecs-0.20.0/src/event/trigger.rs
+393	236	bugs	model	model		2026-11-27T21:04:45Z	6.9	
+393	237	bugs	tool	shell	bash	2026-11-27T21:04:52Z	0.0	sed -n 220,260p ~/.cargo/registry/src/*/bevy_input_focus-0.20.0/src/lib.rs; sed -n 380,440p ~/.cargo/registry/src/*/bevy_input_focus-0.20.0/src/lib.rs
+393	238	bugs	model	model		2026-11-27T21:04:52Z	32.9	
+393	239	bugs	tool	shell	bash	2026-11-27T21:05:25Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -rn "original_event_target" src/ | head -8; echo "=== buffer()"; grep -n "pub fn buffer" -A 4 src/code_editor.rs; echo "=
+393	240	bugs	tool	shell	bash	2026-11-27T21:05:25Z	0.0	cd /home/ladvien/bevy_gooey_loop; ls tools/ 2>/dev/null; ls tools/loop 2>/dev/null; grep -rn "gif" --include="*.sh" --include="*.py" --include="*.md" tools docs
+393	241	bugs	model	model		2026-11-27T21:05:25Z	31.7	
+393	242	bugs	tool	shell	bash	2026-11-27T21:05:57Z	0.1	cd /home/ladvien/bevy_gooey_loop; grep -n "is_text_editing" src/*.rs | head -20; echo "=== page_lists sig"; grep -n "pub fn page_lists" -B6 src/list.rs | head -
+393	243	bugs	tool	shell	bash	2026-11-27T21:05:57Z	0.1	cd /home/ladvien/bevy_gooey_loop; grep -n "code_editor\|CodeFind" examples/*.rs | head -20
+393	244	bugs	model	model		2026-11-27T21:05:57Z	23.0	
+393	245	bugs	tool	shell	bash	2026-11-27T21:06:20Z	0.2	cd /home/ladvien/bevy_gooey_loop; grep -ln "GOOEY_KEYS" examples/*.rs; echo ===; grep -n "fn stage\|GOOEY_KEYS\|struct Keys\|fn keys" examples/table.rs | head -
+393	246	bugs	tool	read files	read	2026-11-27T21:06:20Z	0.2	https://www.w3.org/WAI/WCAG22/Understanding/no-keyboard-trap.html
+393	247	bugs	model	model		2026-11-27T21:06:20Z	19.2	
+393	248	bugs	tool	shell	bash	2026-11-27T21:06:40Z	0.1	cd /home/ladvien/bevy_gooey_loop; sed -n 25,120p examples/tree.rs; echo "=== stage"; sed -n 300,400p examples/tree.rs
+393	249	bugs	model	model		2026-11-27T21:06:40Z	14.9	
+393	250	bugs	tool	shell	bash	2026-11-27T21:06:55Z	0.0	grep -rn "TabNavigation\|focus_visible\|handle_tab" ~/.cargo/registry/src/*/bevy_input_focus-0.20.0/src/*.rs | head -20
+393	251	bugs	tool	shell	bash	2026-11-27T21:06:55Z	0.0	grep -rn "fn .*keyboard_input\|FocusedInput<KeyboardInput>" ~/.cargo/registry/src/*/bevy_input_focus-0.20.0/src/*.rs | head -20
+393	252	bugs	model	model		2026-11-27T21:06:55Z	1.5	
+393	253	bugs	tool	shell	bash	2026-11-27T21:06:56Z	0.0	sed -n 380,470p ~/.cargo/registry/src/*/bevy_input_focus-0.20.0/src/tab_navigation.rs
+393	254	bugs	model	model		2026-11-27T21:06:56Z	2.1	
+393	255	bugs	tool	shell	bash	2026-11-27T21:06:58Z	0.7	cd /home/ladvien/bevy_gooey_loop; git log --oneline -6; git status --short; git fetch -q origin loop-stats && git show origin/loop-stats:steps/bevy_gooey_loop-a
+393	256	bugs	tool	shell	bash	2026-11-27T21:06:58Z	0.7	cd /home/ladvien/bevy_gooey_loop; grep -n "fn code_on_key" -A 40 src/code_editor.rs; echo "=== FindAction"; grep -n "enum FindAction" -A 20 src/code_find.rs; ec
+393	257	bugs	model	model		2026-11-27T21:06:59Z	1.1	
+393	258	bugs	tool	shell	bash	2026-11-27T21:07:00Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -n "FindAction\|fn update_code_find\|PaletteInput\|CodeFind\b\|struct CodeFind" src/code_find.rs | head -40; echo ===; wc
+393	259	bugs	model	model		2026-11-27T21:07:00Z	1.3	
+393	260	bugs	tool	shell	bash	2026-11-27T21:07:01Z	0.1	cd /home/ladvien/bevy_gooey_loop; grep -rn "struct CodeFind" src/; grep -rn "pub struct CodeFind" -A 30 src/code_search.rs | head -60
+393	261	bugs	model	model		2026-11-27T21:07:02Z	1.0	
+393	262	bugs	tool	read files	read	2026-11-27T21:07:03Z	0.1	src/code_search.rs
+393	263	bugs	model	model		2026-11-27T21:07:03Z	1.2	
+393	264	bugs	tool	shell	bash	2026-11-27T21:07:04Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 80,200p src/code_search.rs
+393	265	bugs	tool	shell	bash	2026-11-27T21:07:04Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 200,321p src/code_search.rs
+393	266	bugs	model	model		2026-11-27T21:07:04Z	2.8	
+393	267	bugs	tool	shell	bash	2026-11-27T21:07:07Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 880,1080p src/code_editor.rs
+393	268	bugs	model	model		2026-11-27T21:07:07Z	1.3	
+393	269	bugs	tool	shell	bash	2026-11-27T21:07:08Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -n "^## Iteration\|^### Iteration\|^# " docs/loop-log.md | tail -20; wc -l docs/loop-log.md
+393	270	bugs	model	model		2026-11-27T21:07:08Z	1.1	
+393	271	bugs	tool	shell	bash	2026-11-27T21:07:09Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 4121,4224p docs/loop-log.md
+393	272	bugs	model	model		2026-11-27T21:07:09Z	5.5	
+393	273	bugs	tool	phase mark	bash	2026-11-27T21:07:15Z	0.8	cd /home/ladvien/bevy_gooey_loop; python3 ~/.local/share/wiggum/steps.py mark bugs; gh issue list --state open --limit 30
+393	274	bugs	tool	shell	bash	2026-11-27T21:07:15Z	0.8	cd /home/ladvien/bevy_gooey_loop; sed -n 1,80p tests/code_navigation.rs
+393	275	bugs	model	model		2026-11-27T21:07:15Z	1.1	
+393	276	bugs	tool	github	bash	2026-11-27T21:07:17Z	0.7	cd /home/ladvien/bevy_gooey_loop; gh issue view 128
+393	277	bugs	model	model		2026-11-27T21:07:17Z	1.2	
+393	278	bugs	tool	shell	bash	2026-11-27T21:07:18Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 120,215p src/text.rs
+393	279	bugs	tool	shell	bash	2026-11-27T21:07:18Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -n "find" tests/code_navigation.rs | head -40
+393	280	bugs	model	model		2026-11-27T21:07:18Z	1.2	
+393	281	bugs	tool	shell	bash	2026-11-27T21:07:20Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 80,180p tests/code_navigation.rs; echo ===; sed -n 500,580p tests/code_navigation.rs
+393	282	bugs	model	model		2026-11-27T21:07:20Z	6.6	
+393	283	bugs	tool	shell	bash	2026-11-27T21:07:26Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 380,460p src/code_search.rs
+393	284	bugs	model	model		2026-11-27T21:07:26Z	13.2	
+393	285	bugs	tool	shell	bash	2026-11-27T21:07:39Z	0.0	sed -n 200,380p ~/.cargo/registry/src/*/bevy_input_focus-0.20.0/src/tab_navigation.rs
+393	286	bugs	model	model		2026-11-27T21:07:39Z	4.1	
+393	287	bugs	tool	shell	bash	2026-11-27T21:07:44Z	0.0	grep -rn "Escape" ~/.cargo/registry/src/*/bevy_ui_widgets-0.20.0/src/text_input.rs | head; echo ===; grep -rn "fn on_focused_keyboard_input" -A 60 ~/.cargo/regi
+393	288	bugs	model	model		2026-11-27T21:07:44Z	1.2	
+393	289	bugs	tool	shell	bash	2026-11-27T21:07:45Z	0.0	sed -n 228,270p ~/.cargo/registry/src/*/bevy_ui_widgets-0.20.0/src/text_input.rs; echo ...; sed -n 330,400p ~/.cargo/registry/src/*/bevy_ui_widgets-0.20.0/src/t
+393	290	bugs	model	model		2026-11-27T21:07:45Z	1.5	
+393	291	bugs	tool	shell	bash	2026-11-27T21:07:46Z	0.0	sed -n 500,570p ~/.cargo/registry/src/*/bevy_input_focus-0.20.0/src/lib.rs; echo ====; grep -n "fn dispatch_focused_input\|struct FocusedInput\|propagate" ~/.ca
+393	292	bugs	model	model		2026-11-27T21:07:46Z	1.0	
+393	293	bugs	tool	shell	bash	2026-11-27T21:07:47Z	0.0	sed -n 150,240p ~/.cargo/registry/src/*/bevy_input_focus-0.20.0/src/lib.rs; echo ===; sed -n 380,430p ~/.cargo/registry/src/*/bevy_input_focus-0.20.0/src/lib.rs
+393	294	bugs	model	model		2026-11-27T21:07:47Z	5.0	
+393	295	bugs	tool	shell	bash	2026-11-27T21:07:52Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 460,560p src/code_search.rs
+393	296	bugs	model	model		2026-11-27T21:07:52Z	1.2	
+393	297	bugs	tool	shell	bash	2026-11-27T21:07:54Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 300,370p src/code_search.rs
+393	298	bugs	model	model		2026-11-27T21:07:54Z	11.9	
+393	299	bugs	tool	shell	bash	2026-11-27T21:08:06Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 1,120p examples/prose.rs
+393	300	bugs	model	model		2026-11-27T21:08:06Z	15.7	
+393	301	bugs	tool	shell	bash	2026-11-27T21:08:21Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 1,120p src/text.rs
+393	302	bugs	tool	shell	bash	2026-11-27T21:08:21Z	0.1	cd /home/ladvien/bevy_gooey_loop; sed -n 215,330p src/text.rs
+393	303	bugs	model	model		2026-11-27T21:08:21Z	16.2	
+393	304	bugs	tool	shell	bash	2026-11-27T21:08:38Z	0.1	cd /home/ladvien/bevy_gooey_loop; git rev-parse --abbrev-ref HEAD; sed -n 1,40p CHANGELOG.md; echo "=== guide find"; grep -n "find" docs/guide/code-editor.md | 
+393	305	bugs	tool	loop tools	bash	2026-11-27T21:08:38Z	0.1	cd /home/ladvien/bevy_gooey_loop; sed -n 1,120p tools/loop/regen-gifs.py
+393	306	bugs	model	model		2026-11-27T21:08:38Z	4.8	
+393	307	bugs	tool	shell	bash	2026-11-27T21:08:43Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 120,300p examples/prose.rs
+393	308	bugs	model	model		2026-11-27T21:08:43Z	22.4	
+393	309	bugs	tool	shell	bash	2026-11-27T21:09:05Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -n "text_on_key_input\|code_on_key" src/lib.rs
+393	310	bugs	tool	shell	bash	2026-11-27T21:09:05Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -n "fn selected_text\|fn select(" -A 6 src/code_buffer.rs | head -40
+393	311	bugs	model	model		2026-11-27T21:09:05Z	1.4	
+393	312	bugs	tool	shell	bash	2026-11-27T21:09:06Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -n "find\|Find" docs/research/code-editor.md | head -30; echo ===; grep -n "observer\|bubble\|propagate" docs/research/co
+393	313	bugs	model	model		2026-11-27T21:09:06Z	9.4	
+393	314	bugs	tool	shell	bash	2026-11-27T21:09:16Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -rn "text_on_key_input\|code_on_key\|observe(" src/lib.rs | head -30
+393	315	bugs	tool	shell	bash	2026-11-27T21:09:16Z	0.0	grep -rn "fn trigger_propagate\|propagate\b" ~/.cargo/registry/src/*/bevy_ecs-0.20.0/src/event/*.rs | head -20
+393	316	bugs	model	model		2026-11-27T21:09:16Z	1.3	
+393	317	bugs	tool	shell	bash	2026-11-27T21:09:17Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -rn "code_on_key\|code_on_press\|observe(" src/code_editor.rs | head -20; echo ===; grep -rn "observe(" src/lib.rs | head
+393	318	bugs	model	model		2026-11-27T21:09:17Z	1.0	
+393	319	bugs	tool	shell	bash	2026-11-27T21:09:18Z	0.0	sed -n 260,340p ~/.cargo/registry/src/*/bevy_ecs-0.20.0/src/event/mod.rs
+393	320	bugs	model	model		2026-11-27T21:09:18Z	1.3	
+393	321	bugs	tool	shell	bash	2026-11-27T21:09:20Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -n "code_navigation" tests/all.rs; sed -n 255,300p tests/code_navigation.rs
+393	322	bugs	model	model		2026-11-27T21:09:20Z	18.4	
+393	323	bugs	tool	shell	bash	2026-11-27T21:09:38Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -n "code_editor\|CodeFind\|find" examples/gallery.rs | head -20; echo ===; grep -rn "text_on_key_input" src/ | head
+393	324	bugs	model	model		2026-11-27T21:09:38Z	3.8	
+393	325	bugs	tool	shell	bash	2026-11-27T21:09:42Z	0.0	cd /home/ladvien/bevy_gooey_loop; cat >> tests/code_navigation.rs <<'EOF' /// Enter in the find query steps the match and never reaches the editor, which would 
+393	326	bugs	model	model		2026-11-27T21:09:42Z	1.2	
+393	327	bugs	tool	cargo test	bash	2026-11-27T21:09:43Z	60.1	[launched bg_46] cd /home/ladvien/bevy_gooey_loop; export CARGO_TARGET_DIR=$HOME/.cargo-target-shared/global; timeout 900 cargo nextest run --all-features --lib --tests -E 'test
+393	328	bugs	model	model		2026-11-27T21:10:43Z	1.5	
+393	329	bugs	tool	shell	bash	2026-11-27T21:10:44Z	0.0	cd /home/ladvien/bevy_gooey_loop; ls docs/research | tail -20; sed -n 1,40p docs/research/minimap-band.md
+393	330	bugs	model	model		2026-11-27T21:10:44Z	1.0	
+393	331	bugs	tool	shell	bash	2026-11-27T21:10:46Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 40,100p docs/research/minimap-band.md
+393	332	bugs	model	model		2026-11-27T21:10:46Z	1.6	
+393	333	bugs	tool	shell	bash	2026-11-27T21:10:47Z	0.2	cd /tmp; curl -s https://raw.githubusercontent.com/microsoft/vscode/main/src/vs/editor/contrib/find/browser/findWidget.ts -o /tmp/findWidget.ts; wc -l /tmp/find
+393	334	bugs	model	model		2026-11-27T21:10:47Z	1.1	
+393	335	bugs	tool	shell	bash	2026-11-27T21:10:48Z	0.0	sed -n 860,935p /tmp/findWidget.ts; echo ...; grep -n "onEscape\|KeyCode.Escape\|'Escape'" /tmp/findWidget.ts | head -20
+393	336	bugs	model	model		2026-11-27T21:10:48Z	1.7	
+393	337	bugs	tool	shell	bash	2026-11-27T21:10:50Z	0.2	grep -n "onDidSubmitText\|_onFindInputSubmit\|find(true)\|find(false)" /tmp/findWidget.ts | head; echo ===; cd /tmp; curl -s https://raw.githubusercontent.com/m
+393	338	bugs	model	model		2026-11-27T21:10:50Z	1.7	
+393	339	bugs	tool	shell	bash	2026-11-27T21:10:52Z	0.0	cd /tmp; sed -n 1065,1090p findController.ts; echo "=== findInput submit"; grep -n "onDidChange\|onDidSubmit\|Enter" findWidget.ts | sed -n 1,20p
+393	340	bugs	model	model		2026-11-27T21:10:52Z	1.4	
+393	341	bugs	tool	shell	bash	2026-11-27T21:10:53Z	0.0	cd /tmp; sed -n 1010,1040p findWidget.ts
+393	342	bugs	model	model		2026-11-27T21:10:53Z	14.4	
+393	343	bugs	tool	git	bash	2026-11-27T21:11:08Z	0.1	cd /home/ladvien/bevy_gooey_loop; cat > docs/research/find-bar-keys.md <<'EOF' # The find bar's keys are the bar's Researched 2026-11-27 for issue #128 (a `bug`
+393	344	bugs	model	model		2026-11-27T21:11:08Z	1.2	
+393	345	bugs	tool	shell	bash	2026-11-27T21:11:09Z	0.0	cd /home/ladvien/bevy_gooey_loop; echo waiting
+393	346	bugs	model	model		2026-11-27T21:11:09Z	1.1	
+393	347	bugs	tool	wait: other	wait	2026-11-27T21:11:10Z	5.0	{}
+393	348	bugs	model	model		2026-11-27T21:11:15Z	1.0	
+393	349	bugs	tool	wait: other	wait	2026-11-27T21:11:16Z	68.6	{}
+393	350	bugs	model	model		2026-11-27T21:12:25Z	1.4	
+393	351	bugs	tool	cargo test	bash	2026-11-27T21:12:26Z	2.8	cd /home/ladvien/bevy_gooey_loop; export CARGO_TARGET_DIR=$HOME/.cargo-target-shared/global; timeout 600 cargo nextest run --all-features --lib --tests -E 'test
+393	352	bugs	model	model		2026-11-27T21:12:29Z	6.9	
+393	353	bugs	tool	shell	bash	2026-11-27T21:12:36Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -n "text: Some" tests/code_editor.rs | head -5; grep -n "fn typed\|fn character" -A 20 tests/code_editor.rs | head -40
+393	354	bugs	model	model		2026-11-27T21:12:36Z	2.1	
+393	355	bugs	tool	shell	bash	2026-11-27T21:12:38Z	0.1	cd /home/ladvien/bevy_gooey_loop; python3 - <<'EOF' import re p='tests/code_navigation.rs' s=open(p).read() old=''' key( &mut app, KeyCode::KeyT, Key::Character
+393	356	bugs	model	model		2026-11-27T21:12:38Z	6.4	
+393	357	bugs	tool	cargo test	bash	2026-11-27T21:12:44Z	45.7	cd /home/ladvien/bevy_gooey_loop; python3 - <<'EOF' p='tests/code_navigation.rs' s=open(p).read() i=s.index("/// Enter in the find query steps the match and nev
+393	358	bugs	model	model		2026-11-27T21:13:30Z	1.6	
+393	359	bugs	tool	cargo test	bash	2026-11-27T21:13:32Z	3.2	cd /home/ladvien/bevy_gooey_loop; export CARGO_TARGET_DIR=$HOME/.cargo-target-shared/global; timeout 600 cargo nextest run --all-features --lib --tests -E 'test
+393	360	bugs	model	model		2026-11-27T21:13:35Z	3.1	
+393	361	bugs	tool	cargo test	bash	2026-11-27T21:13:38Z	48.0	cd /home/ladvien/bevy_gooey_loop; python3 - <<'EOF' p='tests/code_navigation.rs' s=open(p).read() old=''' let editor = editor_of(&mut app, "cat", ()); chord( &m
+393	362	bugs	model	model		2026-11-27T21:14:26Z	6.6	
+393	363	bugs	tool	shell	bash	2026-11-27T21:14:33Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 1,20p src/code_search.rs
+393	364	bugs	model	model		2026-11-27T21:14:33Z	4.0	
+393	365	bugs	tool	shell	bash	2026-11-27T21:14:37Z	0.1	cd /home/ladvien/bevy_gooey_loop; python3 - <<'EOF' p='tests/code_navigation.rs' s=open(p).read() s=s.replace(''' "cats", "the character went into the query"'''
+393	366	bugs	model	model		2026-11-27T21:14:37Z	6.3	
+393	367	bugs	tool	shell	bash	2026-11-27T21:14:43Z	0.0	cd /home/ladvien/bevy_gooey_loop; python3 - <<'EOF' p='src/code_editor.rs' s=open(p).read() old=""" let root = event.event_target(); let Ok((mut editor, mut val
+393	368	bugs	model	model		2026-11-27T21:14:43Z	4.3	
+393	369	bugs	tool	cargo test	bash	2026-11-27T21:14:47Z	60.0	[launched bg_47] cd /home/ladvien/bevy_gooey_loop; python3 - <<'EOF' p='src/code_search.rs' s=open(p).read() old="""use bevy::input_focus::{FocusCause, InputFocus};""" new="""us
+393	370	bugs	model	model		2026-11-27T21:15:47Z	1.2	
+393	371	bugs	tool	shell	bash	2026-11-27T21:15:48Z	0.1	cd /home/ladvien/bevy_gooey_loop; sed -n 145,160p docs/guide/code-editor.md
+393	372	bugs	model	model		2026-11-27T21:15:49Z	1.2	
+393	373	bugs	tool	read files	read	2026-11-27T21:15:50Z	0.0	docs/guide/code-editor.md:152:152:raw
+393	374	bugs	model	model		2026-11-27T21:15:50Z	1.2	
+393	375	bugs	tool	shell	bash	2026-11-27T21:15:51Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 152p docs/guide/code-editor.md | cat
+393	376	bugs	model	model		2026-11-27T21:15:51Z	1.1	
+393	377	bugs	tool	shell	bash	2026-11-27T21:15:52Z	0.0	cd /home/ladvien/bevy_gooey_loop; awk 'NR==152' docs/guide/code-editor.md | fold -w 200 | tail -8
+393	378	bugs	model	model		2026-11-27T21:15:52Z	2.7	
+393	379	bugs	tool	wait: other	wait	2026-11-27T21:15:55Z	5.0	{}
+393	380	bugs	model	model		2026-11-27T21:16:00Z	1.1	
+393	381	bugs	tool	wait: other	wait	2026-11-27T21:16:01Z	56.8	{}
+393	382	bugs	model	model		2026-11-27T21:16:58Z	1.9	
+393	383	bugs	tool	shell	bash	2026-11-27T21:17:00Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 320,345p tests/code_navigation.rs; echo ===; sed -n 545,575p tests/code_navigation.rs
+393	384	bugs	model	model		2026-11-27T21:17:00Z	7.7	
+393	385	bugs	tool	cargo test	bash	2026-11-27T21:17:07Z	60.0	[launched bg_48] cd /home/ladvien/bevy_gooey_loop; python3 - <<'EOF' p='src/code_editor.rs' s=open(p).read() old=""" let root = event.event_target(); // Only a key pressed in th
+393	386	bugs	model	model		2026-11-27T21:18:07Z	1.2	
+393	387	bugs	tool	wait: other	wait	2026-11-27T21:18:08Z	5.0	{}
+393	388	bugs	model	model		2026-11-27T21:18:14Z	1.1	
+393	389	bugs	tool	wait: other	wait	2026-11-27T21:18:15Z	118.4	{}
+393	390	bugs	model	model		2026-11-27T21:20:13Z	4.8	
+393	391	bugs	tool	cargo test	bash	2026-11-27T21:20:18Z	50.5	cd /home/ladvien/bevy_gooey_loop; python3 - <<'EOF' p='tests/code_navigation.rs' s=open(p).read() old=''' let editor = editor_of(&mut app, "cat dog cat\\na cat"
+393	392	bugs	model	model		2026-11-27T21:21:08Z	4.0	
+393	393	bugs	tool	shell	bash	2026-11-27T21:21:12Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -n "SHOT_DIR\|fn capture" -A 40 examples/gallery.rs | sed -n 1,80p
+393	394	bugs	model	model		2026-11-27T21:21:12Z	5.3	
+393	395	bugs	tool	shell	bash	2026-11-27T21:21:18Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -n "code_editor\|find bar" README.md | head; echo ===; grep -n "minimap-band.png" docs/media/README.md; echo ===; grep -n
+393	396	bugs	model	model		2026-11-27T21:21:18Z	3.9	
+393	397	bugs	tool	shell	bash	2026-11-27T21:21:22Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -n '\.gif`' docs/media/README.md | head -5 | cat; echo ===; awk 'NR>=1 && /table-wrap.gif/' docs/media/README.md | cut -c
+393	398	bugs	model	model		2026-11-27T21:21:22Z	5.5	
+393	399	bugs	tool	shell	bash	2026-11-27T21:21:27Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 60,120p examples/tree.rs; echo "=== 380-440"; sed -n 400,470p examples/tree.rs
+393	400	bugs	model	model		2026-11-27T21:21:27Z	8.0	
+393	401	build	tool	phase mark	bash	2026-11-27T21:21:35Z	0.1	cd /home/ladvien/bevy_gooey_loop; python3 ~/.local/share/wiggum/steps.py mark build; git diff --stat
+393	402	build	model	model		2026-11-27T21:21:35Z	5.5	
+393	403	build	tool	shell	bash	2026-11-27T21:21:41Z	0.0	cd /home/ladvien/bevy_gooey_loop; python3 - <<'EOF' p='examples/prose.rs' s=open(p).read() s=s.replace('''//! `GOOEY_SCROLL=<line>` puts the minimap pane's view
+393	404	build	model	model		2026-11-27T21:21:41Z	1.5	
+393	405	build	tool	cargo build	bash	2026-11-27T21:21:42Z	60.0	[launched bg_49] cd /home/ladvien/bevy_gooey_loop; python3 - <<'EOF' p='examples/prose.rs' s=open(p).read() s=s.replace('''use bevy::prelude::*; use bevy::render::view::screensh
+393	406	build	model	model		2026-11-27T21:22:42Z	1.1	
+393	407	build	tool	wait: other	wait	2026-11-27T21:22:43Z	5.0	{}
+393	408	build	model	model		2026-11-27T21:22:48Z	1.0	
+393	409	build	tool	wait: other	wait	2026-11-27T21:22:49Z	225.0	{}
+393	410	build	model	model		2026-11-27T21:26:34Z	1.5	
+393	411	build	tool	shell	bash	2026-11-27T21:26:36Z	2.7	cd /home/ladvien/bevy_gooey_loop; export DISPLAY=:93; G="$CARGO_TARGET_DIR/release/examples/prose"; echo "$G"; mkdir -p /tmp/g117/after; GOOEY_FIND=row GOOEY_FI
+393	412	build	model	model		2026-11-27T21:26:39Z	1.1	
+393	413	build	tool	read files	read	2026-11-27T21:26:40Z	0.0	/tmp/g117/after/find.png
+393	414	build	model	model		2026-11-27T21:26:40Z	1.5	
+393	415	build	tool	shell	bash	2026-11-27T21:26:41Z	0.1	cd /tmp/g117/after; file find.png; python3 -c " from PIL import Image; im=Image.open('find.png'); print(im.size)" 2>/dev/null || true
+393	416	build	model	model		2026-11-27T21:26:41Z	2.1	
+393	417	build	tool	shell	bash	2026-11-27T21:26:44Z	0.0	export DISPLAY=:93; xdpyinfo -display :93 | grep -E "dimensions|screen #" ; echo "=== :9x"; ls /tmp/.X11-unix/ 2>/dev/null
+393	418	build	model	model		2026-11-27T21:26:44Z	1.8	
+393	419	build	tool	shell	bash	2026-11-27T21:26:45Z	0.1	export DISPLAY=:93; xrandr 2>&1 | head -5; echo ===; ps -o pid,args -C Xvfb 2>/dev/null | head
+393	420	build	model	model		2026-11-27T21:26:45Z	2.5	
+393	421	build	tool	shell	bash	2026-11-27T21:26:48Z	3.8	cd /home/ladvien/bevy_gooey_loop; export DISPLAY=:93; G="$CARGO_TARGET_DIR/release/examples/prose"; GOOEY_FIND=row GOOEY_FIND_STEPS=2 GOOEY_FRAMES=150 GOOEY_SIZ
+393	422	build	model	model		2026-11-27T21:26:52Z	2.2	
+393	423	build	tool	shell	bash	2026-11-27T21:26:54Z	0.1	cd /home/ladvien/bevy_gooey_loop; export DISPLAY=:93; ls $CARGO_TARGET_DIR/release/examples/ | head; G="$CARGO_TARGET_DIR/release/examples/gallery"; GOOEY_HEALT
+393	424	build	model	model		2026-11-27T21:26:54Z	2.3	
+393	425	build	tool	cargo build	bash	2026-11-27T21:26:56Z	60.0	[launched bg_50] cd /home/ladvien/bevy_gooey_loop; export CARGO_TARGET_DIR=$HOME/.cargo-target-shared/global; timeout 1500 cargo build --release --examples 2>&1 | tail -3
+393	426	build	model	model		2026-11-27T21:27:56Z	2.8	
+393	427	build	tool	wait: other	wait	2026-11-27T21:27:59Z	5.1	{}
+393	428	build	model	model		2026-11-27T21:28:04Z	1.4	
+393	429	build	tool	shell	bash	2026-11-27T21:28:06Z	0.2	cd /home/ladvien/bevy_gooey_loop; sed -n 100,120p docs/guide/code-editor.md
+393	430	build	model	model		2026-11-27T21:28:06Z	1.1	
+393	431	build	tool	wait: other	wait	2026-11-27T21:28:07Z	81.8	{}
+393	432	build	model	model		2026-11-27T21:29:29Z	1.4	
+393	433	build	tool	shell	bash	2026-11-27T21:29:30Z	5.9	cd /home/ladvien/bevy_gooey_loop; export DISPLAY=:93; G="$CARGO_TARGET_DIR/release/examples/prose"; GOOEY_FIND=row GOOEY_FIND_STEPS=2 GOOEY_FRAMES=150 GOOEY_SIZ
+393	434	build	model	model		2026-11-27T21:29:36Z	2.9	
+393	435	build	tool	shell	bash	2026-11-27T21:29:39Z	5.6	cd /home/ladvien/bevy_gooey_loop; export DISPLAY=:93; G="$CARGO_TARGET_DIR/release/examples/prose"; env | grep -i "GOOEY\|WAYLAND\|DISPLAY"; GOOEY_FRAMES=150 GO
+393	436	build	model	model		2026-11-27T21:29:45Z	1.5	
+393	437	build	tool	shell	bash	2026-11-27T21:29:46Z	6.9	cd /home/ladvien/bevy_gooey_loop; export DISPLAY=:93; unset WAYLAND_DISPLAY XDG_BACKEND XDG_SESSION_TYPE; G="$CARGO_TARGET_DIR/release/examples/prose"; GOOEY_FR
+393	438	build	model	model		2026-11-27T21:29:53Z	1.6	
+393	439	build	tool	shell	bash	2026-11-27T21:29:55Z	17.6	cd /home/ladvien/bevy_gooey_loop; export DISPLAY=:93; unset WAYLAND_DISPLAY XDG_BACKEND XDG_SESSION_TYPE; G="$CARGO_TARGET_DIR/release/examples/prose"; for n in
+393	440	build	model	model		2026-11-27T21:30:12Z	1.1	
+393	441	build	tool	read files	read	2026-11-27T21:30:13Z	0.1	/tmp/g117/after/find2.png
+393	442	build	model	model		2026-11-27T21:30:14Z	9.4	
+393	443	build	tool	shell	bash	2026-11-27T21:30:23Z	16.8	cd /home/ladvien/bevy_gooey_loop; export DISPLAY=:93; unset WAYLAND_DISPLAY XDG_BACKEND XDG_SESSION_TYPE; G="$CARGO_TARGET_DIR/release/examples/prose"; for n in
+393	444	build	model	model		2026-11-27T21:30:40Z	5.0	
+393	445	build	tool	read files	read	2026-11-27T21:30:45Z	0.0	/tmp/g117/after/c1.png
+393	446	build	model	model		2026-11-27T21:30:45Z	2.4	
+393	447	build	tool	shell	bash	2026-11-27T21:30:47Z	0.3	cd /tmp/g117/after; for n in 1 3 5; do magick s$n.png -crop 150x28+268+332 +repage -filter point -resize 300% d$n.png; done; magick d1.png d3.png d5.png -append
+393	448	build	model	model		2026-11-27T21:30:47Z	1.2	
+393	449	build	tool	read files	read	2026-11-27T21:30:49Z	0.0	/tmp/g117/after/counts.png
+393	450	build	model	model		2026-11-27T21:30:49Z	5.4	
+393	451	build	tool	shell	bash	2026-11-27T21:30:54Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -n "fn show\b" -B3 -A3 src/code_search.rs; grep -n "key_down\|ControlLeft" examples/gallery.rs | head -5
+393	452	build	model	model		2026-11-27T21:30:54Z	5.8	
+393	453	build	tool	remote wait	bash	2026-11-27T21:31:00Z	0.0	cd /home/ladvien/bevy_gooey_loop; python3 - <<'EOF' p='examples/prose.rs' s=open(p).read() old='''fn find_stage( stage: Option<ResMut<FindStage>>, mut editors: 
+393	454	build	model	model		2026-11-27T21:31:00Z	1.8	
+393	455	build	tool	cargo build	bash	2026-11-27T21:31:02Z	5.7	cd /home/ladvien/bevy_gooey_loop; export CARGO_TARGET_DIR=$HOME/.cargo-target-shared/global; timeout 900 cargo build --release --example prose 2>&1 | tail -5
+393	456	build	model	model		2026-11-27T21:31:07Z	1.5	
+393	457	build	tool	shell	bash	2026-11-27T21:31:09Z	15.9	cd /home/ladvien/bevy_gooey_loop; export DISPLAY=:93; unset WAYLAND_DISPLAY XDG_BACKEND XDG_SESSION_TYPE; G="$CARGO_TARGET_DIR/release/examples/prose"; for n in
+393	458	build	model	model		2026-11-27T21:31:25Z	1.1	
+393	459	build	tool	read files	read	2026-11-27T21:31:26Z	0.0	/tmp/g117/after/counts2.png
+393	460	build	model	model		2026-11-27T21:31:26Z	2.0	
+393	461	build	tool	shell	bash	2026-11-27T21:31:28Z	0.1	cd /tmp/g117/after; for n in 0 1 2; do magick k$n.png -crop 200x30+250+330 +repage -filter point -resize 300% w$n.png; done; magick w0.png w1.png w2.png -append
+393	462	build	model	model		2026-11-27T21:31:28Z	1.3	
+393	463	build	tool	read files	read	2026-11-27T21:31:29Z	0.0	/tmp/g117/after/counts3.png
+393	464	build	model	model		2026-11-27T21:31:29Z	4.0	
+393	465	build	tool	shell	bash	2026-11-27T21:31:33Z	16.1	cd /home/ladvien/bevy_gooey_loop; export DISPLAY=:93; unset WAYLAND_DISPLAY XDG_BACKEND XDG_SESSION_TYPE; G="$CARGO_TARGET_DIR/release/examples/prose"; for n in
+393	466	build	model	model		2026-11-27T21:31:49Z	1.4	
+393	467	build	tool	read files	read	2026-11-27T21:31:51Z	0.0	/tmp/g117/after/counts4.png
+393	468	build	model	model		2026-11-27T21:31:51Z	3.0	
+393	469	build	tool	read files	read	2026-11-27T21:31:54Z	0.1	/tmp/g117/after/t3.png
+393	470	build	model	model		2026-11-27T21:31:54Z	6.9	
+393	471	build	tool	shell	bash	2026-11-27T21:32:01Z	15.7	cd /home/ladvien/bevy_gooey_loop; export DISPLAY=:93; unset WAYLAND_DISPLAY XDG_BACKEND XDG_SESSION_TYPE; G="$CARGO_TARGET_DIR/release/examples/prose"; for n in
+393	472	build	model	model		2026-11-27T21:32:16Z	1.2	
+393	473	build	tool	read files	read	2026-11-27T21:32:18Z	0.0	/tmp/g117/after/counts5.png
+393	474	build	model	model		2026-11-27T21:32:18Z	4.9	
+393	475	build	tool	shell	bash	2026-11-27T21:32:23Z	3.6	cd /home/ladvien/bevy_gooey_loop; export DISPLAY=:93; unset WAYLAND_DISPLAY XDG_BACKEND XDG_SESSION_TYPE; G="$CARGO_TARGET_DIR/release/examples/prose"; rm -rf /
+393	476	build	model	model		2026-11-27T21:32:26Z	3.7	
+393	477	build	tool	cargo build	bash	2026-11-27T21:32:30Z	1.9	cd /home/ladvien/bevy_gooey_loop; python3 - <<'EOF' p='examples/prose.rs' s=open(p).read() old='''//! Capture mode: `GOOEY_FRAMES=<n>` saves a screenshot at fra
+393	478	build	model	model		2026-11-27T21:32:32Z	1.2	
+393	479	build	tool	cargo build	bash	2026-11-27T21:32:33Z	0.5	cd /home/ladvien/bevy_gooey_loop; export CARGO_TARGET_DIR=$HOME/.cargo-target-shared/global; timeout 600 cargo build --release --example prose 2>&1 | grep -B3 -
+393	480	build	model	model		2026-11-27T21:32:33Z	1.9	
+393	481	build	tool	cargo build	bash	2026-11-27T21:32:35Z	4.0	cd /home/ladvien/bevy_gooey_loop; python3 - <<'EOF' p='examples/prose.rs' s=open(p).read() s=s.replace(''' if let Some(dir) = &c.dir && c.frame >= c.from && (c.
+393	482	build	model	model		2026-11-27T21:32:39Z	1.6	
+393	483	build	tool	shell	bash	2026-11-27T21:32:41Z	13.2	cd /home/ladvien/bevy_gooey_loop; export DISPLAY=:93; unset WAYLAND_DISPLAY XDG_BACKEND XDG_SESSION_TYPE; G="$CARGO_TARGET_DIR/release/examples/prose"; rm -rf /
+393	484	build	model	model		2026-11-27T21:32:54Z	2.1	
+393	485	build	tool	shell	bash	2026-11-27T21:32:56Z	1.0	cd /tmp/g117/gif; ls | head -3; magick f_0124.png -crop 600x600+22+82 +repage c_last.png; python3 -c " from PIL import Image; print(Image.open('/tmp/g117/gif/c_
+393	486	build	model	model		2026-11-27T21:32:57Z	2.3	
+393	487	build	tool	shell	bash	2026-11-27T21:33:00Z	0.7	cd /tmp/g117/gif; magick f_0040.png -crop 640x600+22+82 +repage -filter point -resize 100% a.png; magick f_0100.png -crop 640x600+22+82 +repage b.png; magick a.
+393	488	build	model	model		2026-11-27T21:33:00Z	1.0	
+393	489	build	tool	read files	read	2026-11-27T21:33:01Z	0.0	/tmp/g117/gif/ab.png
+393	490	build	model	model		2026-11-27T21:33:01Z	3.4	
+393	491	build	tool	cargo build	bash	2026-11-27T21:33:05Z	60.2	[launched bg_51] cd /home/ladvien/bevy_gooey_loop; cp src/code_editor.rs /tmp/g117/code_editor.fixed.rs; python3 - <<'EOF' p='src/code_editor.rs' s=open(p).read() old=""" if eve
+393	492	build	model	model		2026-11-27T21:34:05Z	1.4	
+393	493	build	tool	wait: other	wait	2026-11-27T21:34:07Z	5.2	{}
+393	494	build	model	model		2026-11-27T21:34:12Z	1.7	
+393	495	build	tool	wait: other	wait	2026-11-27T21:34:13Z	208.0	{}
+393	496	build	model	model		2026-11-27T21:37:41Z	1.3	
+393	497	build	tool	shell	bash	2026-11-27T21:37:43Z	7.2	cd /home/ladvien/bevy_gooey_loop; export DISPLAY=:93; unset WAYLAND_DISPLAY XDG_BACKEND XDG_SESSION_TYPE; G="$CARGO_TARGET_DIR/release/examples/prose"; mkdir -p
+393	498	build	model	model		2026-11-27T21:37:50Z	1.3	
+393	499	build	tool	shell	bash	2026-11-27T21:37:51Z	0.6	cd /tmp/g117; magick before/bug.png -crop 640x600+22+82 +repage -filter point -resize 100% b1.png; magick gif/f_0124.png -crop 640x600+22+82 +repage a1.png; mag
+393	500	build	model	model		2026-11-27T21:37:52Z	1.1	
+393	501	build	tool	read files	read	2026-11-27T21:37:53Z	0.0	/tmp/g117/ba.png
+393	502	build	model	model		2026-11-27T21:37:53Z	1.9	
+393	503	build	tool	cargo build	bash	2026-11-27T21:37:55Z	60.0	[launched bg_52] cd /home/ladvien/bevy_gooey_loop; cp /tmp/g117/code_editor.fixed.rs src/code_editor.rs; grep -n "original_event_target" src/code_editor.rs; export CARGO_TARGET_
+393	504	build	model	model		2026-11-27T21:38:55Z	2.8	
+393	505	build	tool	wait: other	wait	2026-11-27T21:38:58Z	5.0	{}
+393	506	build	model	model		2026-11-27T21:39:03Z	4.3	
+393	507	build	tool	shell	bash	2026-11-27T21:39:07Z	4.8	cd /tmp/g117; magick before/bug.png -crop 640x596+22+84 +repage bf.png; magick gif/f_0124.png -crop 640x596+22+84 +repage af.png; magick bf.png -bordercolor "#1
+393	508	build	model	model		2026-11-27T21:39:12Z	4.0	
+393	509	build	tool	read files	read	2026-11-27T21:39:16Z	0.2	/tmp/g117/both.png
+393	510	build	model	model		2026-11-27T21:39:16Z	3.9	
+393	511	build	tool	shell	bash	2026-11-27T21:39:20Z	4.8	cd /tmp/g117; magick before/bug.png -crop 640x596+22+84 +repage /tmp/g117/crop_before.png; magick gif/f_0124.png -crop 640x596+22+84 +repage /tmp/g117/crop_afte
+393	512	build	model	model		2026-11-27T21:39:25Z	6.8	
+393	513	build	tool	wait: other	wait	2026-11-27T21:39:32Z	20.5	{}
+393	514	build	model	model		2026-11-27T21:39:53Z	3.8	
+393	515	prove	tool	phase mark	bash	2026-11-27T21:39:57Z	2.9	cd /home/ladvien/bevy_gooey_loop; python3 ~/.local/share/wiggum/steps.py mark prove; cat > /tmp/g117/gate.sh <<'EOF' set -u cd /home/ladvien/bevy_gooey_loop exp
+393	516	prove	model	model		2026-11-27T21:40:00Z	2.6	
+393	517	prove	tool	shell	bash	2026-11-27T21:40:02Z	0.1	cd /home/ladvien/bevy_gooey_loop; sed -n 10,14p docs/media/README.md | cut -c1-400; echo ...; grep -n "^| \`minimap-band.png\`" -A0 docs/media/README.md | cut -
+393	518	prove	model	model		2026-11-27T21:40:02Z	2.0	
+393	519	prove	tool	cargo build	bash	2026-11-27T21:40:04Z	0.2	cd /home/ladvien/bevy_gooey_loop; python3 - <<'EOF' p='docs/media/README.md' lines=open(p).read().split('\n') row = "| `find-keys.png` | #128, Enter in the find
+393	520	prove	model	model		2026-11-27T21:40:05Z	1.2	
+393	521	prove	tool	shell	bash	2026-11-27T21:40:06Z	0.4	cd /home/ladvien/bevy_gooey_loop; cp /tmp/g117/find-keys.png docs/media/find-keys.png; ls -la docs/media/find-keys.png; tail -5 /tmp/g117/gate.log
+393	522	prove	model	model		2026-11-27T21:40:06Z	1.6	
+393	523	prove	tool	shell	bash	2026-11-27T21:40:08Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -n "CodeFind" AGENTS.md | cut -c1-300
+393	524	prove	model	model		2026-11-27T21:40:08Z	1.2	
+393	525	prove	tool	shell	bash	2026-11-27T21:40:09Z	0.1	cd /home/ladvien/bevy_gooey_loop; awk 'NR==37' AGENTS.md | grep -o "bars, a count.\{0,700\}"
+393	526	prove	model	model		2026-11-27T21:40:09Z	1.2	
+393	527	prove	tool	shell	bash	2026-11-27T21:40:10Z	0.1	cd /home/ladvien/bevy_gooey_loop; awk 'NR==37' AGENTS.md | fold -w 160 | grep -n "FindAction\|bar\b" | head -20
+393	528	prove	model	model		2026-11-27T21:40:11Z	1.9	
+393	529	prove	tool	shell	bash	2026-11-27T21:40:12Z	0.2	cd /home/ladvien/bevy_gooey_loop; python3 - <<'EOF' p='AGENTS.md' s=open(p).read() old = "its observers stop the pointer so the editor under it does not take it
+393	530	prove	model	model		2026-11-27T21:40:13Z	2.0	
+393	531	prove	tool	homestill	bash	2026-11-27T21:40:15Z	0.2	cd /home/ladvien/bevy_gooey_loop; python3 - <<'EOF' p='CHANGELOG.md' s=open(p).read() head = "# Changelog\n\n" new = """## [0.64.2] - 2026-11-27 ### Fixed - **T
+393	532	prove	model	model		2026-11-27T21:40:15Z	1.3	
+393	533	prove	tool	shell	bash	2026-11-27T21:40:16Z	0.1	cd /home/ladvien/bevy_gooey_loop; tail -4 /tmp/g117/gate.log; df -h /home | tail -1
+393	534	prove	model	model		2026-11-27T21:40:16Z	1.5	
+393	535	prove	tool	shell	bash	2026-11-27T21:40:18Z	0.2	cd /home/ladvien/bevy_gooey_loop; date; stat -c '%y %s' /tmp/g117/gate.log; pgrep -af "cargo (clippy|nextest|test|check|doc)" | head
+393	536	prove	model	model		2026-11-27T21:40:18Z	1.6	
+393	537	prove	tool	shell	bash	2026-11-27T21:40:20Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -n "0.64.1\|0.64.0" README.md Cargo.toml | head; echo ===; grep -n "compat\|Bevy 0.20" README.md | head
+393	538	prove	model	model		2026-11-27T21:40:20Z	1.4	
+393	539	prove	tool	shell	bash	2026-11-27T21:40:21Z	0.7	cd /home/ladvien/bevy_gooey_loop; ps -o pid,etime,args -p $(pgrep -f "/tmp/g117/gate.sh" | head -3 | tr '\n' ',' | sed 's/,$//') 2>/dev/null; pgrep -P $(pgrep -
+393	540	prove	model	model		2026-11-27T21:40:22Z	1.9	
+393	541	prove	tool	shell	bash	2026-11-27T21:40:24Z	0.0	cd /home/ladvien/bevy_gooey_loop; awk 'NR==104' README.md | fold -w 170 | sed -n 1,12p
+393	542	prove	model	model		2026-11-27T21:40:24Z	2.6	
+393	543	prove	tool	shell	bash	2026-11-27T21:40:26Z	0.1	cd /home/ladvien/bevy_gooey_loop; grep -n "minimap-band.png\|\.png" README.md | cut -c1-160; echo ===; grep -n "minimap-band\|!\[" docs/guide/code-editor.md | c
+393	544	prove	model	model		2026-11-27T21:40:26Z	1.1	
+393	545	prove	tool	shell	bash	2026-11-27T21:40:28Z	0.1	cd /home/ladvien/bevy_gooey_loop; sed -n 90,152p docs/guide/code-editor.md
+393	546	prove	model	model		2026-11-27T21:40:28Z	1.4	
+393	547	prove	tool	shell	bash	2026-11-27T21:40:29Z	0.1	cd /home/ladvien/bevy_gooey_loop; grep -n "Find and replace" docs/guide/code-editor.md; grep -n "" docs/guide/code-editor.md | sed -n '150,160p' | cut -c1-120
+393	548	prove	model	model		2026-11-27T21:40:29Z	1.1	
+393	549	prove	tool	shell	bash	2026-11-27T21:40:30Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 152p docs/guide/code-editor.md | tail -c 900; echo; echo "=== gate"; tail -3 /tmp/g117/gate.log
+393	550	prove	model	model		2026-11-27T21:40:30Z	1.1	
+393	551	prove	tool	shell	bash	2026-11-27T21:40:31Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 152p docs/guide/code-editor.md | wc -c
+393	552	prove	model	model		2026-11-27T21:40:32Z	1.1	
+393	553	prove	tool	shell	bash	2026-11-27T21:40:33Z	0.2	cd /home/ladvien/bevy_gooey_loop; python3 -c " l=open('docs/guide/code-editor.md').read().split('\n')[151] print(repr(l[-260:]))"
+393	554	prove	model	model		2026-11-27T21:40:33Z	1.1	
+393	555	prove	tool	shell	bash	2026-11-27T21:40:34Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 153,160p docs/guide/code-editor.md | cut -c1-300
+393	556	prove	model	model		2026-11-27T21:40:34Z	2.0	
+393	557	prove	tool	shell	bash	2026-11-27T21:40:36Z	0.1	cd /home/ladvien/bevy_gooey_loop; python3 - <<'EOF' p='docs/guide/code-editor.md' s=open(p).read() old="`find_all` and `replace_edits` are the engine-free searc
+393	558	prove	model	model		2026-11-27T21:40:36Z	1.4	
+393	559	prove	tool	shell	bash	2026-11-27T21:40:37Z	0.1	cd /home/ladvien/bevy_gooey_loop; tail -4 /tmp/g117/gate.log; ls -la /tmp/g117/gate.log
+393	560	prove	model	model		2026-11-27T21:40:38Z	1.8	
+393	561	prove	tool	shell	bash	2026-11-27T21:40:39Z	0.2	cd /home/ladvien/bevy_gooey_loop; git status --short; echo ===; grep -n "enter_in_the_find_query_steps_the_match_and_leaves_the_text_alone\|escape_in_the_bar_cl
+393	562	prove	model	model		2026-11-27T21:40:40Z	1.0	
+393	563	prove	tool	shell	bash	2026-11-27T21:40:41Z	0.1	cd /home/ladvien/bevy_gooey_loop; git diff src/code_search.rs | head -80
+393	564	prove	model	model		2026-11-27T21:40:41Z	1.2	
+393	565	prove	tool	shell	bash	2026-11-27T21:40:42Z	0.2	cd /home/ladvien/bevy_gooey_loop; git diff src/code_editor.rs; git diff tests/code_navigation.rs | head -140
+393	566	prove	model	model		2026-11-27T21:40:42Z	1.7	
+393	567	prove	tool	shell	bash	2026-11-27T21:40:44Z	0.1	cd /home/ladvien/bevy_gooey_loop; git diff examples/prose.rs
+393	568	prove	model	model		2026-11-27T21:40:44Z	1.9	
+393	569	prove	tool	shell	bash	2026-11-27T21:40:46Z	0.1	cd /home/ladvien/bevy_gooey_loop; tail -6 /tmp/g117/gate.log
+393	570	prove	model	model		2026-11-27T21:40:46Z	3.6	
+393	571	prove	tool	shell	bash	2026-11-27T21:40:49Z	0.7	cd /home/ladvien/bevy_gooey_loop; python3 - <<'EOF' p='docs/media/README.md' s=open(p).read() old="before the fix the first Enter put a line break over the matc
+393	572	prove	model	model		2026-11-27T21:40:50Z	2.6	
+393	573	prove	tool	cargo build	bash	2026-11-27T21:40:53Z	1.5	cd /home/ladvien/bevy_gooey_loop; python3 - <<'EOF' p='docs/media/README.md' lines=open(p).read().split('\n') i = next(i for i,l in enumerate(lines) if l.starts
+393	574	prove	model	model		2026-11-27T21:40:54Z	1.6	
+393	575	prove	tool	shell	bash	2026-11-27T21:40:56Z	0.5	cd /home/ladvien/bevy_gooey_loop; tail -8 /tmp/g117/gate.log; date
+393	576	prove	model	model		2026-11-27T21:40:56Z	2.0	
+393	577	prove	tool	shell	bash	2026-11-27T21:40:58Z	0.6	cd /home/ladvien/bevy_gooey_loop; grep -n "find\|Find" README.md | cut -c1-180
+393	578	prove	model	model		2026-11-27T21:40:59Z	2.4	
+393	579	prove	tool	shell	bash	2026-11-27T21:41:01Z	0.2	cd /home/ladvien/bevy_gooey_loop; awk 'NR==104' README.md | wc -c; awk 'NR==103' README.md | cut -c1-200; awk 'NR==105' README.md | cut -c1-200
+393	580	prove	model	model		2026-11-27T21:41:02Z	1.9	
+393	581	prove	tool	shell	bash	2026-11-27T21:41:03Z	0.3	cd /home/ladvien/bevy_gooey_loop; tail -40 docs/loop-log.md | cut -c1-200
+393	582	prove	model	model		2026-11-27T21:41:04Z	1.1	
+393	583	prove	tool	shell	bash	2026-11-27T21:41:05Z	0.3	cd /home/ladvien/bevy_gooey_loop; tail -3 /tmp/g117/gate.log; date; git log --oneline -3
+393	584	prove	model	model		2026-11-27T21:41:05Z	1.5	
+393	585	prove	tool	shell	bash	2026-11-27T21:41:07Z	0.2	cd /home/ladvien/bevy_gooey_loop; grep -n "^## " docs/loop-log.md | tail -6; head -30 docs/loop-log.md | cut -c1-160
+393	586	prove	model	model		2026-11-27T21:41:07Z	1.0	
+393	587	prove	tool	shell	bash	2026-11-27T21:41:08Z	0.3	cd /home/ladvien/bevy_gooey_loop; tail -4 /tmp/g117/gate.log; git status --short
+393	588	prove	model	model		2026-11-27T21:41:08Z	1.3	
+393	589	prove	tool	shell	bash	2026-11-27T21:41:10Z	0.2	cd /home/ladvien/bevy_gooey_loop; git show --stat 51fc7db | head -20; sed -n 4121,4180p docs/loop-log.md
+393	590	prove	model	model		2026-11-27T21:41:10Z	2.9	
+393	591	prove	tool	shell	bash	2026-11-27T21:41:13Z	0.0	cd /home/ladvien/bevy_gooey_loop; cat docs/research/find-bar-keys.md | head -40; echo ...; grep -n "code_on_key" src/code_editor.rs | head
+393	592	prove	model	model		2026-11-27T21:41:13Z	1.1	
+393	593	prove	tool	shell	bash	2026-11-27T21:41:14Z	0.0	cd /home/ladvien/bevy_gooey_loop; tail -3 /tmp/g117/gate.log; date
+393	594	prove	model	model		2026-11-27T21:41:14Z	1.3	
+393	595	prove	tool	shell	bash	2026-11-27T21:41:15Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 40,79p docs/research/find-bar-keys.md
+393	596	prove	model	model		2026-11-27T21:41:15Z	2.3	
+393	597	prove	tool	shell	bash	2026-11-27T21:41:17Z	0.1	cd /home/ladvien/bevy_gooey_loop; python3 - <<'EOF' p='docs/research/find-bar-keys.md' s=open(p).read() old = """- No public API change; `FindAction` and the pa
+393	598	prove	model	model		2026-11-27T21:41:17Z	1.3	
+393	599	prove	tool	shell	bash	2026-11-27T21:41:19Z	0.1	cd /home/ladvien/bevy_gooey_loop; git diff tests/code_navigation.rs | sed -n 140,230p
+393	600	prove	model	model		2026-11-27T21:41:19Z	1.1	
+393	601	prove	tool	cargo test	bash	2026-11-27T21:41:20Z	0.2	cd /home/ladvien/bevy_gooey_loop; tail -6 /tmp/g117/gate.log; date; pgrep -af "cargo-nextest|cargo nextest" | head -2
+393	602	prove	model	model		2026-11-27T21:41:20Z	1.5	
+393	603	prove	tool	shell	bash	2026-11-27T21:41:22Z	0.9	cd /home/ladvien/bevy_gooey_loop; git fetch -q origin loop-stats 2>&1 | tail -1; git show origin/loop-stats:steps/bevy_gooey_loop-audit.tsv 2>/dev/null | tail -
+393	604	prove	model	model		2026-11-27T21:41:23Z	1.4	
+393	605	prove	tool	shell	bash	2026-11-27T21:41:24Z	0.0	cd /home/ladvien/bevy_gooey_loop; tail -3 /tmp/g117/gate.log; date
+393	606	prove	model	model		2026-11-27T21:41:24Z	1.0	
+393	607	prove	tool	wait: other	wait	2026-11-27T21:41:25Z	0.0	{}
+393	608	prove	model	model		2026-11-27T21:41:25Z	1.5	
+393	609	prove	tool	shell	bash	2026-11-27T21:41:26Z	0.2	cd /home/ladvien/bevy_gooey_loop; date; tail -3 /tmp/g117/gate.log; pgrep -f "g117/gate.sh" -a; pgrep -P $(pgrep -f "g117/gate.sh" | head -1) -a 2>/dev/null
+393	610	prove	model	model		2026-11-27T21:41:27Z	1.2	
+393	611	prove	tool	shell	bash	2026-11-27T21:41:28Z	0.1	uptime; nproc; free -g | head -2
+393	612	prove	model	model		2026-11-27T21:41:28Z	4.3	
+393	613	prove	tool	shell	bash	2026-11-27T21:41:32Z	0.0	cd /home/ladvien/bevy_gooey_loop; cat > /tmp/g117/log.md <<'EOF' ## Iteration 117 — 2026-11-27 — a find bar's keys belong to the bar (#128) **Triage.** The last
+393	614	prove	model	model		2026-11-27T21:41:32Z	1.0	
+393	615	prove	tool	remote wait	bash	2026-11-27T21:41:33Z	60.0	[launched bg_53] sleep 120; cd /home/ladvien/bevy_gooey_loop; tail -4 /tmp/g117/gate.log; date
+393	616	prove	model	model		2026-11-27T21:42:33Z	1.1	
+393	617	prove	tool	wait: other	wait	2026-11-27T21:42:34Z	5.0	{}
+393	618	prove	model	model		2026-11-27T21:42:39Z	1.0	
+393	619	prove	tool	wait: other	wait	2026-11-27T21:42:40Z	53.1	{}
+393	620	prove	model	model		2026-11-27T21:43:33Z	1.6	
+393	621	prove	tool	shell	bash	2026-11-27T21:43:35Z	0.1	cd /home/ladvien/bevy_gooey_loop; sed -i 's/^version = "0.64.1"/version = "0.64.2"/' Cargo.toml; sed -i 's/| 0.1 – 0.64.1 and `main` | 0.20 |/| 0.1 – 0.64.2 and
+393	622	prove	model	model		2026-11-27T21:43:35Z	1.1	
+393	623	prove	tool	shell	bash	2026-11-27T21:43:36Z	60.0	[launched bg_54] cd /home/ladvien/bevy_gooey_loop; sleep 150; tail -5 /tmp/g117/gate.log; date
+393	624	prove	model	model		2026-11-27T21:44:36Z	1.0	
+393	625	prove	tool	wait: other	wait	2026-11-27T21:44:37Z	5.0	{}
+393	626	prove	model	model		2026-11-27T21:44:42Z	1.0	
+393	627	prove	tool	wait: other	wait	2026-11-27T21:44:43Z	83.1	{}
+393	628	prove	model	model		2026-11-27T21:46:06Z	3.3	
+393	629	prove	tool	shell	bash	2026-11-27T21:46:10Z	0.0	cd /home/ladvien/bevy_gooey_loop; grep -n "too_many_arguments" -B30 /tmp/g117/gate.log | grep -n "examples/prose.rs:" | head -3
+393	630	prove	model	model		2026-11-27T21:46:10Z	2.9	
+393	631	prove	tool	shell	bash	2026-11-27T21:46:13Z	0.0	cd /home/ladvien/bevy_gooey_loop; sed -n 285,300p examples/prose.rs
+393	632	prove	model	model		2026-11-27T21:46:13Z	4.7	
+393	633	prove	tool	remote wait	bash	2026-11-27T21:46:17Z	25.3	cd /home/ladvien/bevy_gooey_loop; python3 - <<'EOF' p='examples/prose.rs' s=open(p).read() s = s.replace(""" body.spawn(( code_editor("Notes", PAGE), CodeSoftWr
+393	634	prove	model	model		2026-11-27T21:46:43Z	2.3	
+393	635	prove	tool	cargo build	bash	2026-11-27T21:46:45Z	60.0	[launched bg_55] cd /home/ladvien/bevy_gooey_loop; export CARGO_TARGET_DIR=$HOME/.cargo-target-shared/global; timeout 900 cargo build --release --example prose 2>&1 | tail -2 &&
+393	636	prove	model	model		2026-11-27T21:47:45Z	1.1	
+393	637	prove	tool	wait: other	wait	2026-11-27T21:47:46Z	5.0	{}
+393	638	prove	model	model		2026-11-27T21:47:51Z	1.5	
+393	639	prove	tool	wait: other	wait	2026-11-27T21:47:52Z	240.0	{}
+393	640	prove	model	model		2026-11-27T21:51:52Z	1.6	
+393	641	prove	tool	shell	bash	2026-11-27T21:51:54Z	0.1	cd /home/ladvien/bevy_gooey_loop; wc -l README.md; tail -c 700 docs/guide/code-editor.md
+393	642	prove	model	model		2026-11-27T21:51:54Z	1.4	
+393	643	prove	tool	shell	bash	2026-11-27T21:51:56Z	0.0	cd /home/ladvien/bevy_gooey_loop; python3 - <<'EOF' p='docs/guide/code-editor.md' s=open(p).read() dup = "the engine-free searching.\n`find_all` and `replace_ed
+393	644	prove	model	model		2026-11-27T21:51:56Z	1.3	
+393	645	prove	tool	shell	bash	2026-11-27T21:51:57Z	0.0	cd /home/ladvien/bevy_gooey_loop; python3 -c " s=open('docs/guide/code-editor.md').read() i=s.index('## Navigating a long file') print(repr(s[i+2500:i+3600]))" 
+393	646	prove	model	model		2026-11-27T21:51:57Z	1.5	
+393	647	prove	tool	wait: other	wait	2026-11-27T21:51:58Z	46.0	{}
+393	648	prove	model	model		2026-11-27T21:52:44Z	1.6	
+393	649	gate	tool	phase mark	bash	2026-11-27T21:52:46Z	5.5	cd /home/ladvien/bevy_gooey_loop; python3 ~/.local/share/wiggum/steps.py mark gate; cargo fmt --check && echo FMT_OK; (setsid nohup /tmp/g117/gate.sh > /tmp/g11
+393	650	gate	model	model		2026-11-27T21:52:51Z	1.3	
+393	651	gate	tool	remote wait	bash	2026-11-27T21:52:53Z	60.0	[launched bg_56] sleep 280; cd /home/ladvien/bevy_gooey_loop; tail -6 /tmp/g117/gate2.log
+393	652	gate	model	model		2026-11-27T21:53:53Z	1.3	
+393	653	gate	tool	shell	bash	2026-11-27T21:53:54Z	0.0	cd /home/ladvien/bevy_gooey_loop; python3 - <<'EOF' p='docs/loop-log.md' s=open(p).read() add=open('/tmp/g117/log.md').read() s=s.rstrip()+"\n"+add open(p,'w').
+393	654	gate	model	model		2026-11-27T21:53:54Z	1.2	
+393	655	gate	tool	remote wait	bash	2026-11-27T21:53:55Z	60.0	[launched bg_57] sleep 240; cd /home/ladvien/bevy_gooey_loop; tail -8 /tmp/g117/gate2.log
+393	656	gate	model	model		2026-11-27T21:54:55Z	1.0	
+393	657	gate	tool	wait: other	wait	2026-11-27T21:54:56Z	5.0	{}
+393	658	gate	model	model		2026-11-27T21:55:01Z	1.0	
+393	659	gate	tool	wait: other	wait	2026-11-27T21:55:02Z	152.0	{}
+393	660	gate	model	model		2026-11-27T21:57:34Z	1.0	
+393	661	gate	tool	wait: other	wait	2026-11-27T21:57:35Z	5.0	{}
+393	662	gate	model	model		2026-11-27T21:57:40Z	1.0	
+393	663	gate	tool	wait: other	wait	2026-11-27T21:57:41Z	14.0	{}
+393	664	gate	model	model		2026-11-27T21:57:55Z	1.1	
+393	665	gate	tool	wait: other	wait	2026-11-27T21:57:57Z	0.0	{"timeout": 240}
+393	666	gate	model	model		2026-11-27T21:57:57Z	1.5	
+393	667	gate	tool	shell	bash	2026-11-27T21:57:58Z	0.1	cd /home/ladvien/bevy_gooey_loop; tail -4 /tmp/g117/gate2.log; date; git diff --stat
+393	668	gate	model	model		2026-11-27T21:57:58Z	1.8	
+393	669	gate	tool	shell	bash	2026-11-27T21:58:00Z	60.0	[launched bg_58] cd /home/ladvien/bevy_gooey_loop; for i in $(seq 1 60); do if grep -q "GATE DONE\|GATE FAIL" /tmp/g117/gate2.log; then break; fi; sleep 10; done; tail -12 /tmp/
+393	670	gate	model	model		2026-11-27T21:59:00Z	1.2	
+393	671	gate	tool	wait: other	wait	2026-11-27T21:59:01Z	5.0	{"timeout": 600}
+393	672	gate	model	model		2026-11-27T21:59:06Z	1.1	
+393	673	gate	tool	wait: other	wait	2026-11-27T21:59:07Z	240.0	{"timeout": 600}
+393	674	gate	model	model		2026-11-27T22:03:07Z	1.5	
+393	675	gate	tool	shell	bash	2026-11-27T22:03:09Z	0.1	cd /home/ladvien/bevy_gooey_loop; tail -3 /tmp/g117/gate2.log; uptime
+393	676	gate	model	model		2026-11-27T22:03:09Z	1.1	
+393	677	gate	tool	wait: other	wait	2026-11-27T22:03:10Z	240.2	{"timeout": 600}
+393	678	gate	model	model		2026-11-27T22:07:10Z	1.6	
+393	679	gate	tool	shell	bash	2026-11-27T22:07:12Z	0.2	cd /home/ladvien/bevy_gooey_loop; tail -3 /tmp/g117/gate2.log; uptime; pgrep -af "gate.sh" | head -2
+393	680	gate	model	model		2026-11-27T22:07:12Z	1.2	
+393	681	gate	tool	wait: other	wait	2026-11-27T22:07:13Z	52.2	{"timeout": 600}
+393	682	gate	model	model		2026-11-27T22:08:05Z	1.5	
+393	683	gate	tool	shell	bash	2026-11-27T22:08:07Z	60.1	[launched bg_59] cd /home/ladvien/bevy_gooey_loop; for i in $(seq 1 90); do if grep -q "GATE DONE\|GATE FAIL" /tmp/g117/gate2.log; then break; fi; sleep 10; done; tail -25 /tmp/
+393	684	gate	model	model		2026-11-27T22:09:07Z	1.3	
+393	685	gate	tool	wait: other	wait	2026-11-27T22:09:08Z	5.1	{"timeout": 900}
+393	686	gate	model	model		2026-11-27T22:09:13Z	1.3	
+393	687	gate	tool	wait: other	wait	2026-11-27T22:09:15Z	240.4	{"timeout": 900}
+393	688	gate	model	model		2026-11-27T22:13:15Z	3.1	
+393	689	gate	tool	shell	bash	2026-11-27T22:13:18Z	0.5	cd /home/ladvien/bevy_gooey_loop; grep -c "PASS\|FAIL" /tmp/g117/gate2.log; tail -2 /tmp/g117/gate2.log; uptime
+393	690	gate	model	model		2026-11-27T22:13:19Z	2.5	
+393	691	gate	tool	shell	bash	2026-11-27T22:13:21Z	0.1	cd /home/ladvien/bevy_gooey_loop; grep -E "^ *(Summary|Starting)|FAIL " /tmp/g117/gate2.log | head -5
+393	692	gate	model	model		2026-11-27T22:13:21Z	1.1	
+393	693	gate	tool	wait: other	wait	2026-11-27T22:13:22Z	112.2	{"timeout": 900}
+393	694	gate	model	model		2026-11-27T22:15:15Z	3.7	
+393	695	gate	tool	git	bash	2026-11-27T22:15:18Z	0.2	cd /home/ladvien/bevy_gooey_loop; python3 - <<'EOF' p='docs/loop-log.md' s=open(p).read() old = """**Release.** 0.64.2 - patch: no public API changed (`FindActi
+393	696	gate	model	model		2026-11-27T22:15:19Z	2.4	
+393	697	ship	tool	phase mark	bash	2026-11-27T22:15:21Z	0.8	cd /home/ladvien/bevy_gooey_loop; python3 ~/.local/share/wiggum/steps.py mark ship; git add -A && git -c user.name="C. Thomas Brittain" commit -q -F - <<'EOF' T
+393	698	ship	model	model		2026-11-27T22:15:22Z	1.6	
+393	699	ship	tool	push gate	bash	2026-11-27T22:15:23Z	60.1	[launched bg_60] cd /home/ladvien/bevy_gooey_loop; git push -q origin main 2>&1 | tail -2; git log --oneline origin/main -1; cargo publish --dry-run --allow-dirty 2>&1 | tail -5
+393	700	ship	model	model		2026-11-27T22:16:23Z	1.2	
+393	701	ship	tool	wait: other	wait	2026-11-27T22:16:25Z	5.1	{"timeout": 600}
+393	702	ship	model	model		2026-11-27T22:16:30Z	1.8	
+393	703	ship	tool	wait: other	wait	2026-11-27T22:16:32Z	18.7	{"timeout": 600}
+393	704	ship	model	model		2026-11-27T22:16:50Z	1.4	
+393	705	ship	tool	cargo publish	bash	2026-11-27T22:16:52Z	27.8	cd /home/ladvien/bevy_gooey_loop; cargo publish 2>&1 | tail -6
+393	706	ship	model	model		2026-11-27T22:17:19Z	3.6	
+393	707	log	tool	phase mark	bash	2026-11-27T22:17:23Z	5.2	cd /home/ladvien/bevy_gooey_loop; git tag -a v0.64.2 -m "0.64.2: the find bar's keys are the bar's (#128)" && git push -q origin v0.64.2 && git tag --points-at 
+393	708	log	model	model		2026-11-27T22:17:28Z	2.6	
