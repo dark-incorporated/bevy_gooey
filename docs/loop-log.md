@@ -4057,6 +4057,16 @@ stands at the top" (an assumption the issue's own acceptance reverses). `model`'
 drawn, and a bad scroll or view draws nothing — plus a case for a caller-supplied unmeasured height. The
 `table` suite is **32/32** and `model`'s **4/4** for the window.
 
+**Release.** 0.64.0: `Cargo.toml`, the CHANGELOG section and the README compat row
+(`0.1 – 0.64.0 and main`) inside the one fix commit. `cargo publish --dry-run` packaged 100 files
+(680.1 KiB compressed) and verified the tarball. `cargo semver-checks --baseline-version 0.63.0`
+aborted in its own rustdoc generator (a panic in `prepare_generator`, not a report about this
+crate), so the bump rests on the rule the crate has used since 0.27: a change to a public
+signature or an enum variant is a minor. The real `cargo publish` was refused **403 Forbidden**
+(authentication failed): the same broken token as every release since 0.51.9, so 0.51.9 through
+0.64.0 are pending the owner's new token. Logged once, not retried; the tag is pushed so the
+history is right when the token lands.
+
 **Docs.** The CHANGELOG's 0.64.0 section, `docs/guide/tables.md` (the Virtualized bullet now says
 "a plain table's rows", and a new bullet "A wrapped column still windows" gives the measurement rule
 and the end-of-scroll rule), and `Column::wrap`'s rustdoc (which said "binds every row… keep it for a
@@ -4091,3 +4101,19 @@ column: Down twice and Page Down twice walk the ring down short and tall rows wi
 overlap, End puts row 10,000 (Ember Cloak 10000, "Found in the cellar") under the ring at the
 bottom, Home returns to the first. `docs/media/README.md` lists it, the guide's `tables.md` embeds it under the plain table's GIF, and
 the README's "Show a lot of data" bullet links it.
+
+**Pending index.** home-still was not queried this pass (the item's sources were already indexed by
+iteration 109's `table-window.md` and this note adds none); the research note cites the crate's own
+measurements and the Craft/Lightbrown and Rune material already in `corpus.md`. Nothing new to file.
+
+**Cleanup.** Removed this pass's `/tmp/g115` (GIF frames, stills, the capture binaries and the gate
+log). The baseline worktree was not made: the before number came from the same tree with the old
+`pool := len` restored by mutation and reverted with `git checkout -- src/table.rs`, so no cache was
+duplicated. `df -h /home`: 168 GB free.
+
+**Top 5 backlog.** (1) crates.io token still 403 from 0.51.9 through 0.64.0 (owner must reissue);
+(2) a `problems()` note for a divider under 24 px; (3) the indent guides under soft wrap; (4) an
+incremental fold map (`FoldMap::set_fold` relinks every range, and a 20,000-line tree's fold toggle
+pays it); (5) a wrapping code pane rebuilds its whole wrap map on every keystroke (`Wrap` is keyed on
+the revision; `take_line_edits` is already there to feed an incremental rebuild, and a 20,000-line
+prose pane measured 9.7 ms a change).
