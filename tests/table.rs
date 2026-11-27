@@ -1051,7 +1051,15 @@ fn a_wrapping_cell_breaks_inside_its_column_and_its_row_grows() {
     let mut app = app();
     spawn_wrapping(&mut app, 6);
     let shown = pool(&mut app);
-    assert_eq!(shown.len(), 6, "every row of a wrapping table is bound");
+    assert!(
+        shown.len() >= 3 && shown.len() < 6,
+        "the rows in view are bound, not every row: {}",
+        shown.len()
+    );
+    // The first row stands at the top of the viewport.
+    let view = viewport_rect(&mut app);
+    let top = rect(&app, shown[0].1);
+    assert!((top.min.y - view.min.y).abs() < 1.5, "{top:?} in {view:?}");
     let (long, short) = (shown[0].1, shown[1].1);
     let pitch = pitch(&app);
     let cells = app.world().get::<Children>(long).expect("cells").to_vec();
@@ -1105,14 +1113,19 @@ fn the_last_row_of_a_wrapping_table_is_reachable_and_the_cursor_row_stays_in_vie
     let mut app = app();
     let table = spawn_wrapping(&mut app, 40);
     let view = viewport_rect(&mut app);
+    // The rows in view are drawn; the rest is the measured room above and below them.
     let tall = {
-        let shown = pool(&mut app);
-        let last = rect(&app, shown.last().expect("rows").1);
-        last.max.y - rect(&app, shown[0].1).min.y
+        let view = viewport(&mut app);
+        let node = app.world().get::<ComputedNode>(view).expect("laid out");
+        node.content_size().y * node.inverse_scale_factor()
     };
     assert!(
         tall > view.height() + 100.0,
         "{tall} must overflow {view:?}"
+    );
+    assert!(
+        pool(&mut app).len() < 40,
+        "the rows not in view are not bound"
     );
 
     // Scrolling to the end shows the last row whole.
@@ -1151,4 +1164,131 @@ fn the_last_row_of_a_wrapping_table_is_reachable_and_the_cursor_row_stays_in_vie
     let top = pool(&mut app)[0].1;
     let first = rect(&app, top);
     assert!(first.min.y >= view.min.y - 1.0, "Home shows the first row");
+}
+
+// A wrapping table windows on its rows' measured heights (#123): ten thousand tall and short rows
+// cost a viewport's worth of entities, the rows stack whole, and the scroll is the measured content.
+
+#[test]
+fn ten_thousand_wrapping_rows_spawn_a_viewport_of_entities() {
+    let mut app = app();
+    spawn_wrapping(&mut app, 10_000);
+    let view = viewport_rect(&mut app);
+    let pitch = pitch(&app);
+    let shown = pool(&mut app);
+    assert!(
+        !shown.is_empty() && shown.len() <= 20,
+        "{} row entities for a {view:?} viewport (pitch {pitch})",
+        shown.len()
+    );
+    // The rows drawn stand at the top of the viewport and stack with no gap.
+    let first = rect(&app, shown[0].1);
+    assert!(
+        (first.min.y - view.min.y).abs() < 1.5,
+        "{first:?} in {view:?}"
+    );
+    for pair in shown.windows(2) {
+        let (a, b) = (rect(&app, pair[0].1), rect(&app, pair[1].1));
+        assert!((b.min.y - a.max.y).abs() < 1.0, "{b:?} under {a:?}");
+    }
+    // However far it scrolls, and at a larger text size, it stays as small.
+    for y in [1234.0f32, 100_000.0, 439_000.0, 0.0] {
+        scroll_to(&mut app, y);
+        assert!(pool(&mut app).len() <= 20, "at scroll {y}");
+    }
+    app.world_mut().resource_mut::<GooeySkin>().text_scale = 2.0;
+    settle(&mut app);
+    assert!(pool(&mut app).len() <= 20, "at 200% text");
+    // A table of ten thousand wrapped rows costs what a table of twenty does.
+    let mut small_app = self::app();
+    spawn_wrapping(&mut small_app, 20);
+    small_app.world_mut().resource_mut::<GooeySkin>().text_scale = 2.0;
+    settle(&mut small_app);
+    assert_eq!(
+        app.world().entities().count_spawned(),
+        small_app.world().entities().count_spawned(),
+        "ten thousand wrapped rows cost no more entities than twenty"
+    );
+}
+
+#[test]
+fn a_wrapping_table_scrolls_to_a_tall_row_and_to_the_last_one() {
+    let mut app = app();
+    let table = spawn_wrapping(&mut app, 400);
+    // Every other row is three lines tall, so the content is far taller than 400 pitches.
+    let tops: Vec<f32> = pool(&mut app)
+        .iter()
+        .map(|(_, row)| rect(&app, *row).min.y)
+        .collect();
+    let pitch = pitch(&app);
+    assert!(
+        tops.windows(2).any(|w| w[1] - w[0] > pitch * 1.5),
+        "a tall row is among the first ones"
+    );
+
+    // The end: the last row of the data is the last drawn, ending the scroll.
+    scroll_to(&mut app, 1.0e7);
+    let view = viewport_rect(&mut app);
+    let last = *pool(&mut app).last().expect("rows");
+    assert_eq!(last.0.index, 399);
+    let last = rect(&app, last.1);
+    assert!(
+        last.max.y <= view.max.y + 1.0 && last.max.y >= view.max.y - 20.0,
+        "the last row {last:?} ends the scroll in {view:?}"
+    );
+
+    // Down on a tall row brings the whole row into view, measured.
+    scroll_to(&mut app, 0.0);
+    focus(&mut app, table);
+    for step in 0..40 {
+        tap(&mut app, KeyCode::ArrowDown);
+        settle(&mut app);
+        let view = viewport_rect(&mut app);
+        let at = app.world().get::<TableCursor>(table).expect("c").0;
+        let row = pool(&mut app)
+            .into_iter()
+            .find(|(r, _)| Some(r.key) == at)
+            .expect("the cursor row is bound")
+            .1;
+        let rect = rect(&app, row);
+        assert!(
+            rect.min.y >= view.min.y - 1.0 && rect.max.y <= view.max.y + 1.0,
+            "step {step}: the cursor row {rect:?} is whole in {view:?}"
+        );
+    }
+}
+
+#[test]
+fn a_wrapping_tables_scroll_does_not_drift_as_its_rows_are_measured() {
+    let mut app = app();
+    spawn_wrapping(&mut app, 400);
+    // Scrolling to a place and back puts the rows where they were: the measured tops do not
+    // accumulate a rounding error, and a frame at rest writes nothing.
+    scroll_to(&mut app, 5_000.0);
+    let before: Vec<(usize, f32)> = pool(&mut app)
+        .iter()
+        .map(|(r, row)| (r.index, rect(&app, *row).min.y))
+        .collect();
+    for y in [12_000.0f32, 30_000.0, 5_000.0] {
+        scroll_to(&mut app, y);
+    }
+    let after: Vec<(usize, f32)> = pool(&mut app)
+        .iter()
+        .map(|(r, row)| (r.index, rect(&app, *row).min.y))
+        .collect();
+    assert_eq!(before.len(), after.len());
+    for ((i, a), (j, b)) in before.iter().zip(&after) {
+        assert_eq!(i, j, "the same rows are drawn");
+        assert!((a - b).abs() < 1.0, "row {i} moved {a} to {b}");
+    }
+    // Thirty frames at rest write nothing.
+    let writes = app.world().resource::<Writes>().0;
+    for _ in 0..30 {
+        app.update();
+    }
+    assert_eq!(
+        writes,
+        app.world().resource::<Writes>().0,
+        "a table at rest writes no Node"
+    );
 }
