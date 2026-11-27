@@ -101,6 +101,11 @@ rule: position moves, extent does not.
 - A partially visible row at the top counts as a line in view (its line is where the band starts), and
   the band may then be one slot shorter than `CodeEditor::visible_lines()`'s `ceil`; the validation
   target allows one slot for exactly this reason.
+- **Measured after the fix** (`examples/prose` with `GOOEY_MINIMAP=1` at 1280×720, dark, one 3 px
+  pitch, `GOOEY_SCROLL` at 0 / 200 / 290 of a 300-line script): the band's frame is **60, 58 and 58 px**
+  — the same height at line 1, at line 200 and at the end. Before the fix, the same three stands read
+  **66, 209 and 58 px**; 209 px at line 200 is the 70 slots the doubled `first_row` produced. The
+  three-stand still is `docs/media/minimap-band.png`.
 
 ## Pending index
 
