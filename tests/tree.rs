@@ -1493,3 +1493,121 @@ fn a_relabelled_or_appended_row_of_a_sorted_table_takes_its_place_in_the_sort() 
     });
     assert_eq!(keys(&mut app), vec![3, 6, 5, 2, 4, 1], "aa sorts second");
 }
+
+// A tree's labels wrap (#124): a name longer than a narrow pane is drawn on lines of its own, under
+// its indent, instead of being cut at the pane.
+
+/// Longer than any 240 px pane holds, and with one word wider than two lines' worth of it.
+const LONG_NAME: &str = "dwarf_warrior_game_ready_asset_with_a_long_name";
+
+fn spawn_narrow(app: &mut App, nodes: Vec<TreeNode>, extra: impl Bundle) -> Entity {
+    app.world_mut().spawn((
+        panel(),
+        CardWidth::Px(240.0),
+        children![(tree(nodes), TableRows(6.0), extra)],
+    ));
+    settle(app);
+    let tree = the_tree(app);
+    tree
+}
+
+fn line_break(app: &App, text: Entity) -> LineBreak {
+    app.world()
+        .get::<TextLayout>(text)
+        .expect("a layout")
+        .linebreak
+}
+
+#[test]
+fn a_tree_with_tree_wrap_breaks_a_long_label_inside_its_cell() {
+    let mut app = app();
+    let tree = spawn_narrow(
+        &mut app,
+        vec![
+            TreeNode::new(1, LONG_NAME),
+            TreeNode::new(2, "short"),
+        ],
+        TreeWrap,
+    );
+    assert!(app.world().get::<TreeWrap>(tree).is_some(), "the marker");
+    let long = row_of(&mut app, 1);
+    let short = row_of(&mut app, 2);
+    let pitch = pitch(&app);
+    let label = label_of(&app, long);
+    assert_eq!(
+        line_break(&app, label),
+        LineBreak::WordOrCharacter,
+        "the label breaks"
+    );
+    let words = rect(&app, label);
+    let cell = rect(&app, app.world().get::<Children>(long).expect("cells")[0]);
+    assert!(
+        words.height() > pitch * 1.5,
+        "the name stands on several lines: {} px against a {pitch} px pitch",
+        words.height()
+    );
+    assert!(
+        words.min.x >= cell.min.x - 0.5 && words.max.x <= cell.max.x + 0.5,
+        "the words stay inside their cell: {words:?} in {cell:?}"
+    );
+    let row = rect(&app, long);
+    assert!(row.height() > pitch * 1.5, "the row grew: {}", row.height());
+    // The chevron box is the row high, so its click target grew with the row.
+    let twisty = rect(&app, twisty_of(&app, long));
+    assert!(
+        (twisty.height() - row.height()).abs() < 1.5,
+        "the chevron box is a row high: {twisty:?} in {row:?}"
+    );
+    // A node whose label fits is still exactly one row.
+    assert!(
+        (rect(&app, short).height() - pitch).abs() < 1.0,
+        "a short node is one pitch"
+    );
+    // Its words start right of the long label's: the continuation lines are under the indent.
+    let long_left = words.min.x;
+    let short_left = rect(&app, label_of(&app, short)).min.x;
+    assert!(
+        (short_left - long_left).abs() < 0.5,
+        "both labels start at the same indent: {short_left} against {long_left}"
+    );
+}
+
+#[test]
+fn a_tree_without_tree_wrap_cuts_its_label_on_one_line_and_keeps_one_pitch_rows() {
+    let mut app = app();
+    spawn_narrow(
+        &mut app,
+        vec![TreeNode::new(1, LONG_NAME), TreeNode::new(2, "short")],
+        (),
+    );
+    let row = row_of(&mut app, 1);
+    let pitch = pitch(&app);
+    assert_eq!(
+        line_break(&app, label_of(&app, row)),
+        LineBreak::NoWrap,
+        "one line, as before"
+    );
+    assert!((rect(&app, row).height() - pitch).abs() < 1.0);
+}
+
+#[test]
+fn tree_wrap_added_after_spawn_rewraps_the_rows_it_holds() {
+    let mut app = app();
+    let tree = spawn_narrow(
+        &mut app,
+        vec![TreeNode::new(1, LONG_NAME), TreeNode::new(2, "short")],
+        (),
+    );
+    let pitch = pitch(&app);
+    let row = row_of(&mut app, 1);
+    assert!((rect(&app, row).height() - pitch).abs() < 1.0);
+    app.world_mut().entity_mut(tree).insert(TreeWrap);
+    settle(&mut app);
+    let row = row_of(&mut app, 1);
+    assert_eq!(
+        line_break(&app, label_of(&app, row)),
+        LineBreak::WordOrCharacter,
+        "the pool was rebuilt with the wrap on"
+    );
+    assert!(rect(&app, row).height() > pitch * 1.5, "and the row grew");
+}
