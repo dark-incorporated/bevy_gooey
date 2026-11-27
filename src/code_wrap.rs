@@ -137,7 +137,8 @@ impl Wrap {
                     let old_rows = self.first_row[old_end];
                     let new_rows = *rows.last().unwrap_or(&old_rows);
                     self.breaks.splice(first..old_end, fresh);
-                    self.first_row.splice(first + 1..=old_end, rows.into_iter().skip(1));
+                    self.first_row
+                        .splice(first + 1..=old_end, rows.into_iter().skip(1));
                     let delta = new_rows as i64 - old_rows as i64;
                     if delta != 0 {
                         for row in &mut self.first_row[new_end + 1..] {
@@ -649,9 +650,14 @@ mod tests {
                 "step {step} ({} lines): the row sums disagreed with a fresh build",
                 buffer.len_lines()
             );
-            let line_on = |wrap: &Wrap, row: usize| wrap.first_row.partition_point(|&r| r <= row) - 1;
+            let line_on =
+                |wrap: &Wrap, row: usize| wrap.first_row.partition_point(|&r| r <= row) - 1;
             for row in 0..map.rows(buffer.len_lines()) {
-                assert_eq!(map.line_at(row), line_on(&fresh, row), "step {step} row {row}");
+                assert_eq!(
+                    map.line_at(row),
+                    line_on(&fresh, row),
+                    "step {step} row {row}"
+                );
             }
         }
     }

@@ -1260,7 +1260,11 @@ fn a_20000_line_wrapped_pane_costs_its_frames_after_one_rewrap_of_the_new_width(
                 settled.push(frame(&mut app));
             }
         }
-        let before = app.world().entity(editor).get::<CodeEditor>().map(CodeEditor::scroll);
+        let before = app
+            .world()
+            .entity(editor)
+            .get::<CodeEditor>()
+            .map(CodeEditor::scroll);
         let at = {
             let node = app.world().get::<ComputedNode>(editor).expect("laid out");
             node.size() * 0.5 / node.inverse_scale_factor()
@@ -1277,7 +1281,11 @@ fn a_20000_line_wrapped_pane_costs_its_frames_after_one_rewrap_of_the_new_width(
             });
             settled.push(frame(&mut app));
         }
-        let after = app.world().entity(editor).get::<CodeEditor>().map(CodeEditor::scroll);
+        let after = app
+            .world()
+            .entity(editor)
+            .get::<CodeEditor>()
+            .map(CodeEditor::scroll);
         assert_ne!(before, after, "the wheel never moved the view");
         settled.sort_by(|a, b| a.total_cmp(b));
         settled[settled.len() / 2]

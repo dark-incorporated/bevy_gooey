@@ -1513,7 +1513,6 @@ mod tests {
         }
     }
 
-
     use super::*;
 
     fn typed(buffer: &mut CodeBuffer, text: &str, mut now: f64) -> f64 {
