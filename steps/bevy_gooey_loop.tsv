@@ -25637,3 +25637,534 @@ pass	seq	phase	kind	category	tool	start	seconds	detail
 393	706	ship	model	model		2026-11-27T22:17:19Z	3.6	
 393	707	log	tool	phase mark	bash	2026-11-27T22:17:23Z	5.2	cd /home/ladvien/bevy_gooey_loop; git tag -a v0.64.2 -m "0.64.2: the find bar's keys are the bar's (#128)" && git push -q origin v0.64.2 && git tag --points-at 
 393	708	log	model	model		2026-11-27T22:17:28Z	2.6	
+395	1	orient	model	model		2026-11-27T22:47:52Z	1.1	
+395	2	orient	tool	phase mark	bash	2026-11-27T22:47:57Z	9.2	python3 ~/.local/share/wiggum/steps.py mark orient; echo "---"; pwd; git status --short | head -20; echo "--- branch"; git branch --show-current; echo "--- log"
+395	3	orient	tool	git	bash	2026-11-27T22:47:57Z	9.4	git fetch -q origin loop-stats 2>/dev/null && git show origin/loop-stats:steps/bevy_gooey_loop-audit.tsv 2>/dev/null | tail -3 || echo "no audit"
+395	4	orient	model	model		2026-11-27T22:48:06Z	3.9	
+395	5	orient	tool	shell	bash	2026-11-27T22:48:10Z	2.4	cd /home/ladvien/bevy_gooey_loop && tail -120 docs/loop-log.md
+395	6	orient	tool	github	bash	2026-11-27T22:48:10Z	3.4	cd /home/ladvien/bevy_gooey_loop && gh issue list --repo bevy-coven/bevy_gooey --state open --limit 100 --json number,title,labels,createdAt --jq '.[] | "#\(.nu
+395	7	orient	model	model		2026-11-27T22:48:14Z	3.6	
+395	8	orient	tool	github	bash	2026-11-27T22:48:18Z	6.2	cd /home/ladvien/bevy_gooey_loop && for n in 124 125 126 127; do echo "=== #$n ==="; gh issue view $n --repo bevy-coven/bevy_gooey --json number,title,body,labe
+395	9	orient	tool	git	bash	2026-11-27T22:48:18Z	6.6	cd /home/ladvien/bevy_gooey_loop && git branch --list 'wiggum/parked-*'; git branch -a --list '*iter*'; git log --all --oneline -n 5 --grep='parked'; echo "--- 
+395	10	orient	model	model		2026-11-27T22:48:24Z	4.2	
+395	11	orient	tool	shell	bash	2026-11-27T22:48:29Z	0.8	cd /home/ladvien/bevy_gooey_loop && for b in wiggum/parked-pass-394-20261127-164652 wiggum/parked-pass-390-20261127-132615 wiggum/parked-pass-341-20261122-00583
+395	12	orient	tool	github	bash	2026-11-27T22:48:30Z	2.2	cd /home/ladvien/bevy_gooey_loop && gh issue list -R bevy-coven/bevy_grimoire --label ui --state open --limit 100 --json number,body --jq '.[] | select(.body|te
+395	13	orient	model	model		2026-11-27T22:48:32Z	7.5	
+395	14	orient	tool	github	bash	2026-11-27T22:48:41Z	3.3	cd /home/ladvien/bevy_gooey_loop && git branch -a --list '*grimoire*' ; echo "--- labels seen"; gh label list -R bevy-coven/bevy_gooey | head -20; echo "--- any
+395	15	orient	tool	git	bash	2026-11-27T22:48:41Z	3.7	cd /home/ladvien/bevy_gooey_loop && git show wiggum/parked-pass-394-20261127-164652:docs/research/row-alignment.md
+395	16	orient	model	model		2026-11-27T22:48:45Z	3.9	
+395	17	orient	tool	github	bash	2026-11-27T22:48:49Z	0.6	cd /home/ladvien/bevy_gooey_loop && gh issue view 117 --repo bevy-coven/bevy_gooey --json number,title,state,labels,createdAt,body --jq '"\(.number) [\(.state)]
+395	18	orient	tool	shell	bash	2026-11-27T22:48:49Z	0.6	cd /home/ladvien/bevy_gooey_loop && grep -n "takes_a_row_layout" -A 12 src/skin.rs | head -30; echo "=== tree fn"; grep -n "pub fn tree\b" -A 20 src/widgets.rs 
+395	19	orient	model	model		2026-11-27T22:48:49Z	7.7	
+395	20	bugs	tool	phase mark	bash	2026-11-27T22:48:57Z	0.9	cd /home/ladvien/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark bugs; grep -n "wrap" src/table.rs | head -40; echo "=== table_bundle"; grep -n "
+395	21	bugs	tool	homestill	bash	2026-11-27T22:48:57Z	18.9	cd /home/ladvien/bevy_gooey_loop && hs status 2>&1 | head -20; echo "=== scribe"; scribe_health 2>&1 | head -5
+395	22	bugs	model	model		2026-11-27T22:49:16Z	6.5	
+395	23	bugs	tool	shell	bash	2026-11-27T22:49:22Z	0.2	cd /home/ladvien/bevy_gooey_loop && sed -n 3270,3300p src/skin.rs; echo "=== ListRow arm"; grep -n "Role::ListRow =>" -A 40 src/skin.rs | head -60
+395	24	bugs	tool	shell	bash	2026-11-27T22:49:22Z	0.2	cd /home/ladvien/bevy_gooey_loop && grep -n "Role::Row =>\|Role::Column =>\|Role::ButtonRow =>" -A 22 src/skin.rs | head -90; echo "=== list_row fn"; grep -n "p
+395	25	bugs	model	model		2026-11-27T22:49:23Z	5.5	
+395	26	bugs	tool	shell	bash	2026-11-27T22:49:28Z	0.5	cd /home/ladvien/bevy_gooey_loop && sed -n 5745,5800p src/skin.rs; echo "=== ListRow skin arm"; grep -n "Role::ListRow =>" src/skin.rs
+395	27	bugs	tool	shell	bash	2026-11-27T22:49:28Z	0.5	cd /home/ladvien/bevy_gooey_loop && ls tests/ ; echo "=== rows.rs"; ls tests/rows.rs 2>/dev/null && head -40 tests/rows.rs
+395	28	bugs	model	model		2026-11-27T22:49:29Z	7.2	
+395	29	bugs	tool	shell	bash	2026-11-27T22:49:36Z	0.4	ls -d ~/.cargo/registry/src/index.crates.io-*/bevy_ui-0.20.0 2>/dev/null; grep -rn "impl Default for AlignItems" -A 6 ~/.cargo/registry/src/index.crates.io-*/be
+395	30	bugs	tool	shell	bash	2026-11-27T22:49:36Z	0.4	cd /home/ladvien/bevy_gooey_loop && sed -n 4480,4520p src/skin.rs; echo "=== Band arm"; grep -n "Role::Band =>" -A 25 src/skin.rs | sed -n 1,60p
+395	31	bugs	model	model		2026-11-27T22:49:37Z	1.2	
+395	32	bugs	tool	shell	bash	2026-11-27T22:49:38Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 4485,4530p src/skin.rs
+395	33	bugs	tool	shell	bash	2026-11-27T22:49:38Z	0.0	grep -n "pub const DEFAULT" -B3 -A3 ~/.cargo/registry/src/index.crates.io-*/bevy_ui-0.20.0/src/ui_node.rs | head -20
+395	34	bugs	model	model		2026-11-27T22:49:38Z	11.5	
+395	35	bugs	tool	shell	bash	2026-11-27T22:49:50Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "spawn_lead\|bind_lead\|fn tree_row\|TreeTwisty\|lead" src/tree.rs | head -40
+395	36	bugs	tool	shell	bash	2026-11-27T22:49:50Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "spawn_lead" -A 60 src/table.rs | head -100
+395	37	bugs	model	model		2026-11-27T22:49:50Z	6.9	
+395	38	bugs	tool	shell	bash	2026-11-27T22:49:57Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -rn "a_plain_row_keeps_a_patched_node" -A 40 tests/ | head -60; echo "=== role name"; grep -n "fn name\b\|fn role_name\
+395	39	bugs	tool	shell	bash	2026-11-27T22:49:57Z	0.0	cd /home/ladvien/bevy_gooey_loop && head -60 tests/layout.rs; echo "=== grep list_row tests"; grep -rln "quiet_list_row\|list_row" tests/ | head
+395	40	bugs	model	model		2026-11-27T22:49:57Z	9.4	
+395	41	bugs	tool	shell	bash	2026-11-27T22:50:06Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "fn table_bundle" -B5 -A 80 src/widgets.rs | head -110
+395	42	bugs	tool	shell	bash	2026-11-27T22:50:06Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 505,600p src/tree.rs
+395	43	bugs	model	model		2026-11-27T22:50:06Z	1.0	
+395	44	bugs	tool	shell	bash	2026-11-27T22:50:07Z	0.1	cd /home/ladvien/bevy_gooey_loop && grep -rn "fn table_bundle" src/ ; grep -rn "table_bundle" src/*.rs | head
+395	45	bugs	tool	shell	bash	2026-11-27T22:50:07Z	0.1	cd /home/ladvien/bevy_gooey_loop && grep -n "pub fn table\b" -A 40 src/widgets.rs | head -60
+395	46	bugs	model	model		2026-11-27T22:50:07Z	3.3	
+395	47	bugs	tool	shell	bash	2026-11-27T22:50:10Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 855,960p src/table.rs
+395	48	bugs	model	model		2026-11-27T22:50:11Z	7.5	
+395	49	bugs	tool	shell	bash	2026-11-27T22:50:18Z	0.0	cd /home/ladvien/bevy_gooey_loop && ls docs/research/ | head -50; echo; head -5 Cargo.toml; grep -n "^version" Cargo.toml; echo "=== guide"; ls docs/guide/
+395	50	bugs	tool	shell	bash	2026-11-27T22:50:18Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "wrap" -B3 -A25 docs/research/divider-wrap-led-size.md | head -80
+395	51	bugs	model	model		2026-11-27T22:50:18Z	7.8	
+395	52	bugs	tool	shell	bash	2026-11-27T22:50:26Z	0.0	cd /home/ladvien/bevy_gooey_loop && wc -l src/code_wrap.rs src/code_editor.rs src/code_overlay.rs src/code_search.rs && sed -n 1,80p src/code_wrap.rs
+395	53	bugs	tool	shell	bash	2026-11-27T22:50:26Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "origin_x\|break_columns\|fn build\|struct Wrap\|impl Wrap" src/code_wrap.rs
+395	54	bugs	model	model		2026-11-27T22:50:26Z	8.4	
+395	55	bugs	tool	shell	bash	2026-11-27T22:50:34Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 130,230p src/table.rs
+395	56	bugs	tool	shell	bash	2026-11-27T22:50:34Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "pub fn update_tables" -A 40 src/table.rs | head -60
+395	57	bugs	model	model		2026-11-27T22:50:34Z	9.4	
+395	58	bugs	tool	shell	bash	2026-11-27T22:50:44Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "TableWidths\|struct Laid\|row_sizing\|WRAPPED\|ONE_LINE" src/table.rs | head -40
+395	59	bugs	tool	shell	bash	2026-11-27T22:50:44Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 1420,1500p src/table.rs
+395	60	bugs	model	model		2026-11-27T22:50:44Z	4.0	
+395	61	bugs	tool	shell	bash	2026-11-27T22:50:48Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 1040,1115p src/table.rs; echo "=== Table struct"; sed -n 230,330p src/table.rs
+395	62	bugs	tool	shell	bash	2026-11-27T22:50:48Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 340,420p src/table.rs
+395	63	bugs	model	model		2026-11-27T22:50:48Z	11.1	
+395	64	bugs	tool	shell	bash	2026-11-27T22:50:59Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 1,80p tests/tree.rs; echo "=== count"; grep -c "^fn \|^#\[test\]" tests/tree.rs
+395	65	bugs	tool	shell	bash	2026-11-27T22:50:59Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 1,60p examples/tree.rs; echo "=== knobs"; grep -n "GOOEY_" examples/tree.rs | head -20; wc -l examples/tree.rs
+395	66	bugs	model	model		2026-11-27T22:50:59Z	4.9	
+395	67	bugs	tool	shell	bash	2026-11-27T22:51:04Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "TreeTwisty" -A 15 src/skin.rs | head -40; echo "=== TableCellText / TableCell arms"; grep -n "Role::TableCell\b" -A
+395	68	bugs	tool	shell	bash	2026-11-27T22:51:04Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "tree_indent" -B5 -A 10 src/table.rs | head -40; grep -n "LIST_RAIL_LINES\|TreeTwisty =>" -A 6 src/skin.rs | head -3
+395	69	bugs	model	model		2026-11-27T22:51:04Z	12.6	
+395	70	bugs	tool	shell	bash	2026-11-27T22:51:17Z	0.3	cd /home/ladvien/bevy_gooey_loop && sed -n 60,240p tests/tree.rs
+395	71	bugs	tool	shell	bash	2026-11-27T22:51:17Z	0.3	cd /home/ladvien/bevy_gooey_loop && grep -n "fn nodes\|fn tree_of\|fn world\|fn settle\|fn rect\|fn screen" -A 20 tests/tree.rs | head -120
+395	72	bugs	model	model		2026-11-27T22:51:17Z	10.9	
+395	73	research	tool	phase mark	bash	2026-11-27T22:51:28Z	0.6	cd /home/ladvien/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark research; grep -n "GOOEY_\|fn main" examples/kit.rs | head -20; echo "=== band f
+395	74	research	tool	homestill	bash	2026-11-27T22:51:28Z	20.5	cd /home/ladvien/bevy_gooey_loop && hs distill search "scikit-learn API design warnings ignored parameters" --output json 2>/dev/null | head -c 2000
+395	75	research	model	model		2026-11-27T22:51:48Z	2.1	
+395	76	research	tool	homestill	bash	2026-11-27T22:51:50Z	14.2	cd /home/ladvien/bevy_gooey_loop && hs distill search "silently ignored parameter warning users of the library" --output json 2>/dev/null | jq -r '.[] | "\(.doc
+395	77	research	tool	homestill	bash	2026-11-27T22:51:50Z	14.2	cd /home/ladvien/bevy_gooey_loop && hs distill search "alignment of items in a row, typography baseline in tool interfaces" --output json 2>/dev/null | jq -r '.
+395	78	research	model	model		2026-11-27T22:52:05Z	9.3	
+395	79	research	tool	shell	bash	2026-11-27T22:52:14Z	0.2	cd /home/ladvien/bevy_gooey_loop && cat docs/research/corpus.md | head -60
+395	80	research	tool	homestill	bash	2026-11-27T22:52:14Z	12.6	cd /home/ladvien/bevy_gooey_loop && hs distill search "truncation ellipsis versus wrapping long file names in list panels" --output json 2>/dev/null | jq -r '.[
+395	81	research	model	model		2026-11-27T22:52:27Z	14.2	
+395	82	research	tool	shell	bash	2026-11-27T22:52:41Z	0.1	cd /home/ladvien/bevy_gooey_loop && sed -n 1151,1420p src/table.rs
+395	83	research	model	model		2026-11-27T22:52:41Z	11.1	
+395	84	research	tool	shell	bash	2026-11-27T22:52:52Z	0.1	cd /home/ladvien/bevy_gooey_loop && grep -n "wrap" -B4 -A30 tests/table.rs | sed -n 1,160p
+395	85	research	tool	shell	bash	2026-11-27T22:52:52Z	0.1	cd /home/ladvien/bevy_gooey_loop && grep -rn "TreeWrap\|wrap" src/widgets.rs | grep -n "tree" ; grep -n "pub fn rows_in_view\|fn row_tops" -A 12 src/model.rs | 
+395	86	research	model	model		2026-11-27T22:52:52Z	10.3	
+395	87	research	tool	shell	bash	2026-11-27T22:53:03Z	0.1	cd /home/ladvien/bevy_gooey_loop && grep -n "pub fn row\b" -A 18 src/widgets.rs; echo "=== column"; grep -n "pub fn column\b" -A 14 src/widgets.rs
+395	88	research	tool	shell	bash	2026-11-27T22:53:03Z	0.1	cd /home/ladvien/bevy_gooey_loop && grep -n "fn probe" -A 20 tests/layout_gaps.rs | head -30; grep -n "warn!" src/skin.rs | head
+395	89	research	model	model		2026-11-27T22:53:03Z	7.6	
+395	90	research	tool	homestill	bash	2026-11-27T22:53:10Z	4.3	cd /home/ladvien/bevy_gooey_loop && hs distill search "scikit-learn API design consistency principle users should not be surprised" --output json 2>/dev/null | 
+395	91	research	tool	homestill	bash	2026-11-27T22:53:10Z	5.6	cd /home/ladvien/bevy_gooey_loop && hs distill search "Gestalt good continuation elements grouped smooth contours alignment" --output json 2>/dev/null | jq -r '
+395	92	research	model	model		2026-11-27T22:53:16Z	1.9	
+395	93	research	tool	homestill	bash	2026-11-27T22:53:18Z	5.3	cd /home/ladvien/bevy_gooey_loop && hs distill search "good continuation tendency for elements to be grouped to form smooth contours" --output json 2>/dev/null 
+395	94	research	tool	homestill	bash	2026-11-27T22:53:18Z	5.3	cd /home/ladvien/bevy_gooey_loop && hs distill search "game UI list rows alignment baseline inventory HUD readability" --output json 2>/dev/null | jq -r '.[] | 
+395	95	research	model	model		2026-11-27T22:53:23Z	15.9	
+395	96	research	tool	homestill	bash	2026-11-27T22:53:39Z	12.0	cd /home/ladvien/bevy_gooey_loop && hs distill search "game accessibility guidelines text size scalable UI menus reflow" --output json 2>/dev/null | jq -r '.[] 
+395	97	research	tool	homestill	bash	2026-11-27T22:53:39Z	13.6	cd /home/ladvien/bevy_gooey_loop && hs distill search "file explorer tree view long file names truncation panel width" --output json 2>/dev/null | jq -r '.[] | 
+395	98	research	model	model		2026-11-27T22:53:53Z	7.3	
+395	99	research	tool	shell	bash	2026-11-27T22:54:00Z	0.3	cd /home/ladvien/bevy_gooey_loop && grep -n "CodeSoftWrap" -B6 -A10 src/code_wrap.rs | head -30; echo "=== lib exports of tree"; grep -n "tree::" src/lib.rs
+395	100	research	tool	shell	bash	2026-11-27T22:54:00Z	0.3	cd /home/ladvien/bevy_gooey_loop && sed -n 120,200p examples/tree.rs; sed -n 240,330p examples/tree.rs
+395	101	research	model	model		2026-11-27T22:54:00Z	11.0	
+395	102	research	tool	shell	bash	2026-11-27T22:54:12Z	0.2	cd /home/ladvien/bevy_gooey_loop && sed -n 60,120p examples/tree.rs; echo "=== setup"; grep -n "fn setup" -A 60 examples/tree.rs | head -80
+395	103	research	tool	shell	bash	2026-11-27T22:54:12Z	0.2	cd /home/ladvien/bevy_gooey_loop && sed -n 1,60p examples/tree.rs | tail -5; grep -n "WARM_FRAMES\|KEY_FROM\|Readout\|struct Readout" examples/tree.rs
+395	104	research	model	model		2026-11-27T22:54:12Z	12.8	
+395	105	research	tool	shell	bash	2026-11-27T22:54:25Z	0.1	cd /home/ladvien/bevy_gooey_loop && echo "DISPLAY=$DISPLAY"; echo "CARGO_TARGET_DIR=$CARGO_TARGET_DIR"; ls -d /tmp/.X11-unix/* 2>/dev/null; (xdpyinfo -display :
+395	106	research	tool	shell	bash	2026-11-27T22:54:25Z	0.2	cd /home/ladvien/bevy_gooey_loop && grep -rn "warn" tests/*.rs | head -20; echo "=== Role derives"; sed -n 1430,1460p src/skin.rs; grep -n "derive" -A 6 src/ski
+395	107	research	model	model		2026-11-27T22:54:25Z	20.8	
+395	108	research	tool	shell	bash	2026-11-27T22:54:46Z	0.1	cd /home/ladvien/bevy_gooey_loop && grep -n "Role::TableRow =>" -A 20 src/skin.rs | head -30; grep -n "Role::TableRows =>" -A 10 src/skin.rs | head -15; sed -n 
+395	109	research	tool	git	bash	2026-11-27T22:54:46Z	0.1	cd /home/ladvien/bevy_gooey_loop && git show wiggum/parked-pass-390-20261127-132615 --stat | cat; git show wiggum/parked-pass-390-20261127-132615 -- tests/code_
+395	110	research	model	model		2026-11-27T22:54:46Z	15.1	
+395	111	research	tool	shell	bash	2026-11-27T22:55:01Z	0.1	cd /home/ladvien/bevy_gooey_loop && sed -n 240,330p tests/tree.rs; echo ===; grep -n "fn spawn_tree\|fn spawn" -A 25 tests/tree.rs | head -70
+395	112	research	tool	shell	bash	2026-11-27T22:55:01Z	0.1	cd /home/ladvien/bevy_gooey_loop && grep -n "fn viewport\|fn the_table\|fn pitch" -A 15 tests/tree.rs | head -60; grep -n "fn tree_of\|nodes(" tests/tree.rs | h
+395	113	research	model	model		2026-11-27T22:55:01Z	7.6	
+395	114	research	tool	shell	bash	2026-11-27T22:55:09Z	0.1	cd /home/ladvien/bevy_gooey_loop && grep -n "Role::TableRow => {" -A 16 src/skin.rs; grep -n "fn table_pitch" -A 8 src/skin.rs; grep -n "TABLE_ROW_TEXT_SIZES\|t
+395	115	research	tool	shell	bash	2026-11-27T22:55:09Z	0.1	cd /home/ladvien/bevy_gooey_loop && grep -n "struct TreeCache" -A 40 src/table.rs
+395	116	research	model	model		2026-11-27T22:55:09Z	3.2	
+395	117	research	tool	shell	bash	2026-11-27T22:55:12Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "pub fn apply_skin" -A 40 src/skin.rs | head -60
+395	118	research	tool	shell	bash	2026-11-27T22:55:12Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "struct StateQuery\|#\[derive(SystemParam)\]" -A 60 src/skin.rs | sed -n 1,120p
+395	119	research	model	model		2026-11-27T22:55:12Z	16.6	
+395	120	research	tool	shell	bash	2026-11-27T22:55:29Z	0.1	cd /home/ladvien/bevy_gooey_loop && grep -n "flow" src/skin.rs | head -20; echo "=== State struct"; grep -n "pub struct State" -A 40 src/skin.rs | head -60
+395	121	research	tool	shell	bash	2026-11-27T22:55:29Z	0.1	cd /home/ladvien/bevy_gooey_loop && grep -n "dev-dependencies" -A 20 Cargo.toml; grep -n "tracing" Cargo.toml
+395	122	research	model	model		2026-11-27T22:55:29Z	8.4	
+395	123	research	tool	homestill	bash	2026-11-27T22:55:37Z	7.6	cd /home/ladvien/bevy_gooey_loop && hs distill search "WCAG reflow content must not require scrolling in two dimensions" --output json 2>/dev/null | jq -r '.[] 
+395	124	research	tool	shell	bash	2026-11-27T22:55:37Z	7.6	cd /home/ladvien/bevy_gooey_loop && sed -n 1,60p docs/research/divider-wrap-led-size.md | tail -20; echo "=== pending sections in an existing note"; sed -n 1,40
+395	125	research	model	model		2026-11-27T22:55:45Z	10.8	
+395	126	research	tool	shell	bash	2026-11-27T22:55:56Z	0.2	cd /home/ladvien/bevy_gooey_loop && grep -n "Role::TableCellText\|Role::FillText =>" -A 10 src/skin.rs | sed -n 1,40p; echo "=== ONE_LINE"; grep -n "pub(crate) 
+395	127	research	tool	shell	bash	2026-11-27T22:55:56Z	0.2	cd /home/ladvien/bevy_gooey_loop && grep -n "TextLayout\b" src/skin.rs | head -20; grep -n "Role::TableCellText" -B3 -A12 src/skin.rs | sed -n 1,40p
+395	128	research	model	model		2026-11-27T22:55:56Z	18.5	
+395	129	research	tool	homestill	bash	2026-11-27T22:56:14Z	4.2	cd /home/ladvien/bevy_gooey_loop && hs distill search "truncation ellipsis long text labels in user interface list guidance" --output json 2>/dev/null | jq -r '
+395	130	research	tool	homestill	bash	2026-11-27T22:56:14Z	4.2	cd /home/ladvien/bevy_gooey_loop && hs distill search "Designing the User Experience of Game Development Tools Lightbown panel layout" --output json 2>/dev/null
+395	131	research	model	model		2026-11-27T22:56:19Z	1.7	
+395	132	research	tool	homestill	bash	2026-11-27T22:56:20Z	3.6	cd /home/ladvien/bevy_gooey_loop && hs distill search "Lightbown hierarchy of information density display controls efficient" --output json 2>/dev/null | jq -r 
+395	133	research	model	model		2026-11-27T22:56:24Z	9.0	
+395	134	research	tool	shell	bash	2026-11-27T22:56:33Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "struct TableCache" -B4 -A 45 src/table.rs; echo "=== Parts"; grep -n "struct TableParts" -A 12 src/table.rs
+395	135	research	tool	shell	bash	2026-11-27T22:56:33Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "TableRows\|TableWidths\|pub use table::" src/lib.rs | head; sed -n 465,480p src/lib.rs; echo "=== trees guide"; sed
+395	136	research	model	model		2026-11-27T22:56:33Z	13.6	
+395	137	research	tool	homestill	bash	2026-11-27T22:56:47Z	6.9	cd /home/ladvien/bevy_gooey_loop && hs distill search "Lightbown interface density panels resize narrow pane text adapt" --output json 2>/dev/null | jq -r '.[] 
+395	138	research	tool	homestill	bash	2026-11-27T22:56:47Z	6.9	cd /home/ladvien/bevy_gooey_loop && hs distill search "file browser panel file names truncated tooltip full name usability" --output json 2>/dev/null | jq -r '.
+395	139	research	model	model		2026-11-27T22:56:54Z	18.7	
+395	140	research	tool	cargo build	bash	2026-11-27T22:57:12Z	1.0	cd /home/ladvien/bevy_gooey_loop && mkdir -p /tmp/g118/before /tmp/g118/after && (CARGO_TARGET_DIR=/home/ladvien/target/gooey-loop timeout 1200 cargo build --re
+395	141	research	tool	shell	bash	2026-11-27T22:57:12Z	1.0	cd /home/ladvien/bevy_gooey_loop && grep -n "change_since\|fn revision" -A 12 src/tree.rs | head -40
+395	142	research	model	model		2026-11-27T22:57:13Z	1.3	
+395	143	research	tool	cargo build	bash	2026-11-27T22:57:15Z	0.4	cd /home/ladvien/bevy_gooey_loop && CARGO_TARGET_DIR=/home/ladvien/target/gooey-loop timeout 1200 cargo build --release --example tree 2>&1 | grep -E "^error|^w
+395	144	research	model	model		2026-11-27T22:57:15Z	1.0	
+395	145	research	tool	cargo build	bash	2026-11-27T22:57:16Z	0.3	cd /home/ladvien/bevy_gooey_loop && CARGO_TARGET_DIR=/home/ladvien/target/gooey-loop timeout 1200 cargo build --release --example tree 2>&1 | tail -30
+395	146	research	model	model		2026-11-27T22:57:16Z	1.2	
+395	147	research	tool	cargo build	bash	2026-11-27T22:57:18Z	0.3	cd /home/ladvien/bevy_gooey_loop && env | grep -i "CARGO_INCREMENTAL\|SCCACHE" ; unset CARGO_INCREMENTAL; CARGO_TARGET_DIR=/home/ladvien/target/gooey-loop timeo
+395	148	research	model	model		2026-11-27T22:57:18Z	1.2	
+395	149	research	tool	shell	bash	2026-11-27T22:57:19Z	3.5	cd /home/ladvien/bevy_gooey_loop && ls -la /home/ladvien/target/gooey-loop/release/examples/tree; G=/home/ladvien/target/gooey-loop/release/examples/tree; for s
+395	150	research	model	model		2026-11-27T22:57:23Z	1.2	
+395	151	research	tool	shell	bash	2026-11-27T22:57:24Z	0.0	cd /tmp/g118/before && file *.png;
+395	152	research	tool	shell	bash	2026-11-27T22:57:24Z	0.0	cd /home/ladvien/bevy_gooey_loop && ls -la /tmp/g117 2>/dev/null | head; which magick convert; echo "---"; ls /usr/bin | grep -i -E "^magick|^convert|identify" 
+395	153	research	model	model		2026-11-27T22:57:24Z	1.9	
+395	154	research	tool	shell	bash	2026-11-27T22:57:26Z	2.6	cd /home/ladvien/bevy_gooey_loop && G=/home/ladvien/target/gooey-loop/release/examples/tree; GOOEY_FRAMES=120 GOOEY_SHOT=/tmp/g118/before/tree.png GOOEY_SIZE=12
+395	155	research	model	model		2026-11-27T22:57:28Z	1.5	
+395	156	research	tool	cargo build	bash	2026-11-27T22:57:30Z	0.8	cd /home/ladvien/bevy_gooey_loop && ps aux | grep -c "[X]vfb"; ps aux | grep "[X]vfb" | head -3; echo "---"; CARGO_TARGET_DIR=/home/ladvien/target/gooey-loop ti
+395	157	research	model	model		2026-11-27T22:57:31Z	1.5	
+395	158	research	tool	shell	bash	2026-11-27T22:57:32Z	1.8	cd /home/ladvien/bevy_gooey_loop && G=/home/ladvien/target/gooey-loop/release/examples/gallery; GOOEY_FRAMES=60 GOOEY_SHOT=/tmp/g118/before/gallery.png GOOEY_SI
+395	159	research	model	model		2026-11-27T22:57:34Z	1.4	
+395	160	research	tool	shell	bash	2026-11-27T22:57:35Z	4.1	cd /home/ladvien/bevy_gooey_loop && echo "WAYLAND=$WAYLAND_DISPLAY"; echo "XDG_SESSION_TYPE=$XDG_SESSION_TYPE"; G=/home/ladvien/target/gooey-loop/release/exampl
+395	161	research	model	model		2026-11-27T22:57:39Z	1.6	
+395	162	research	tool	shell	bash	2026-11-27T22:57:41Z	11.3	cd /home/ladvien/bevy_gooey_loop && G=/home/ladvien/target/gooey-loop/release/examples/tree; for s in dark parchment; do env -u WAYLAND_DISPLAY GOOEY_FRAMES=120
+395	163	research	model	model		2026-11-27T22:57:52Z	1.5	
+395	164	research	tool	read files	read	2026-11-27T22:57:54Z	0.0	/tmp/g118/before/tree-dark.png
+395	165	research	model	model		2026-11-27T22:57:54Z	10.3	
+395	166	research	tool	github	bash	2026-11-27T22:58:04Z	1.1	cd /home/ladvien/bevy_gooey_loop && gh issue list -R bevy-coven/bevy_grimoire --label ui --state open --limit 5 --json number,body --jq '.[] | "#\(.number): \(.
+395	167	research	tool	shell	bash	2026-11-27T22:58:04Z	1.1	cd /home/ladvien/bevy_gooey_loop && grep -n "fn bind_lead" -B3 -A28 src/tree.rs; grep -n "bind_lead(" src/table.rs
+395	168	research	model	model		2026-11-27T22:58:05Z	16.5	
+395	169	research	tool	shell	bash	2026-11-27T22:58:22Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "update_tables\|GooeySystems::Style" -B3 -A6 src/lib.rs | sed -n 1,80p
+395	170	research	tool	shell	bash	2026-11-27T22:58:22Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "fn add_systems" -A 40 src/lib.rs | sed -n 1,80p
+395	171	research	model	model		2026-11-27T22:58:22Z	19.6	
+395	172	research	tool	shell	bash	2026-11-27T22:58:41Z	0.1	cd /home/ladvien/bevy_gooey_loop && hs --help 2>&1 | head -25
+395	173	research	tool	homestill	bash	2026-11-27T22:58:41Z	8.3	cd /home/ladvien/bevy_gooey_loop && hs distill search "outliner hierarchy panel game editor node names long wrapped" --output json 2>/dev/null | jq -r '.[] | "\
+395	174	research	model	model		2026-11-27T22:58:50Z	3.3	
+395	175	research	tool	git	bash	2026-11-27T22:58:53Z	0.9	cd /home/ladvien/bevy_gooey_loop && git status --short | head -20; echo "=== branch"; git branch --show-current; echo "=== log"; git log --oneline -8; echo "===
+395	176	research	tool	shell	bash	2026-11-27T22:58:53Z	0.9	cd /home/ladvien/bevy_gooey_loop && tail -60 docs/loop-log.md
+395	177	research	model	model		2026-11-27T22:58:54Z	1.3	
+395	178	research	tool	github	bash	2026-11-27T22:58:55Z	0.6	cd /home/ladvien/bevy_gooey_loop && gh issue list --state open --limit 20 --json number,title,labels,createdAt --jq '.[] | "#\(.number) \(.createdAt[0:16]) [\((
+395	179	research	tool	shell	bash	2026-11-27T22:58:55Z	0.6	cd /home/ladvien/bevy_gooey_loop && grep -n "^## Iteration 117" -A 20 docs/loop-log.md | head -30; echo "=== backlog"; grep -n "^## \|^### Backlog\|Top 5" docs/
+395	180	research	model	model		2026-11-27T22:58:56Z	1.1	
+395	181	research	tool	github	bash	2026-11-27T22:58:57Z	1.0	cd /home/ladvien/bevy_gooey_loop && for n in 124 127; do echo "===== #$n"; gh issue view $n --json title,body --jq '.title + "\n\n" + .body' | head -70; done
+395	182	research	model	model		2026-11-27T22:58:58Z	2.6	
+395	183	research	tool	shell	bash	2026-11-27T22:59:01Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "wraps\|wrapped" src/table.rs | head -40
+395	184	research	tool	shell	bash	2026-11-27T22:59:01Z	0.1	cd /home/ladvien/bevy_gooey_loop && ls docs/research/ | tr '\n' ' '; echo; grep -n "fn tree\b" -A 30 src/widgets.rs
+395	185	research	model	model		2026-11-27T22:59:01Z	4.7	
+395	186	research	tool	shell	bash	2026-11-27T22:59:05Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 1040,1160p src/table.rs
+395	187	research	model	model		2026-11-27T22:59:05Z	1.2	
+395	188	research	tool	shell	bash	2026-11-27T22:59:06Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 1480,1530p src/table.rs; echo "=== row_sizing"; grep -n "fn row_sizing" -A 14 src/table.rs
+395	189	research	model	model		2026-11-27T22:59:06Z	4.6	
+395	190	research	tool	shell	bash	2026-11-27T22:59:11Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "fn spawn_lead" -A 55 src/tree.rs
+395	191	research	tool	shell	bash	2026-11-27T22:59:11Z	0.1	cd /home/ladvien/bevy_gooey_loop && sed -n 1120,1140p docs/guide/trees.md 2>/dev/null; wc -l docs/guide/trees.md; grep -n "wrap" docs/guide/trees.md docs/guide/
+395	192	research	model	model		2026-11-27T22:59:11Z	0.9	
+395	193	research	tool	read files	read	2026-11-27T22:59:12Z	0.0	/home/ladvien/bevy_gooey_loop/docs/guide/trees.md
+395	194	research	model	model		2026-11-27T22:59:12Z	3.0	
+395	195	research	tool	shell	bash	2026-11-27T22:59:15Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "TableRow =>" -A 22 src/skin.rs
+395	196	research	tool	shell	bash	2026-11-27T22:59:15Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 1440,1480p src/table.rs
+395	197	research	model	model		2026-11-27T22:59:15Z	8.7	
+395	198	research	tool	shell	bash	2026-11-27T22:59:24Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 1,80p examples/tree.rs
+395	199	research	tool	shell	bash	2026-11-27T22:59:24Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "wrap" tests/table.rs | head -20; echo "=== head of tests/tree.rs"; sed -n 1,60p tests/tree.rs
+395	200	research	model	model		2026-11-27T22:59:24Z	1.4	
+395	201	research	tool	shell	bash	2026-11-27T22:59:25Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 1000,1100p tests/table.rs; echo "=== tree spawn helper"; grep -n "fn spawn_tree\|fn tree_app\|GOOEY" tests/tree.rs | 
+395	202	research	tool	shell	bash	2026-11-27T22:59:25Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "fn spawn_tree\|fn spawn" -A 22 tests/tree.rs | sed -n 1,60p
+395	203	research	model	model		2026-11-27T22:59:25Z	9.2	
+395	204	research	tool	shell	bash	2026-11-27T22:59:34Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "TreeTwisty" src/skin.rs src/tree.rs | head; echo "=== apply_skin arm"; grep -n "Role::TreeTwisty" -A 14 src/skin.rs
+395	205	research	tool	shell	bash	2026-11-27T22:59:34Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "fn settle\|fn pool\|fn rect\b\|fn the_tree\|fn viewport_rect\|fn pitch" -A 12 tests/tree.rs | head -70
+395	206	research	model	model		2026-11-27T22:59:34Z	10.0	
+395	207	research	tool	shell	bash	2026-11-27T22:59:44Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 80,240p examples/tree.rs
+395	208	research	model	model		2026-11-27T22:59:44Z	10.8	
+395	209	choose	tool	phase mark	bash	2026-11-27T22:59:55Z	0.4	cd /home/ladvien/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark choose 2>&1 | tail -2; grep -n "fn tree_indent\|fn table_pitch" -A 6 src/tree.rs
+395	210	choose	tool	git	bash	2026-11-27T22:59:55Z	0.4	cd /home/ladvien/bevy_gooey_loop && git branch --list 'wiggum/parked-*'; git log --all --oneline -n 8 --grep='parked'; echo "=== row-alignment note"; head -30 d
+395	211	choose	model	model		2026-11-27T22:59:56Z	1.3	
+395	212	choose	tool	git	bash	2026-11-27T22:59:57Z	0.0	cd /home/ladvien/bevy_gooey_loop && git show --stat a6188df | head -20; echo "=== 391"; git show --stat b868564 | head -20
+395	213	choose	model	model		2026-11-27T22:59:57Z	13.1	
+395	214	choose	tool	shell	bash	2026-11-27T23:00:10Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -rn "pub const WRAPPED\|pub const ONE_LINE" -A 8 src/ | head -30; echo "=== pool calc"; sed -n 1360,1400p src/table.rs
+395	215	choose	tool	shell	bash	2026-11-27T23:00:10Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 1180,1260p src/table.rs
+395	216	choose	model	model		2026-11-27T23:00:10Z	9.4	
+395	217	choose	tool	shell	bash	2026-11-27T23:00:19Z	0.1	cd /home/ladvien/bevy_gooey_loop && grep -rn "ONE_LINE\b" src/*.rs | head -5; grep -rn "pub const WRAPPED" -A 6 src/ | head -12; echo "=== CodeSoftWrap"; grep -
+395	218	choose	tool	shell	bash	2026-11-27T23:00:20Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "register_type::<" src/lib.rs | sed -n 1,12p; grep -n "TreeView\|TypeSelectGroup>()" src/lib.rs
+395	219	choose	model	model		2026-11-27T23:00:20Z	27.8	
+395	220	choose	tool	shell	bash	2026-11-27T23:00:47Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 150,200p src/table.rs; echo "=== table_by_input wraps"; grep -n "wrap" src/table.rs | sed -n 1,60p
+395	221	choose	tool	shell	bash	2026-11-27T23:00:47Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "LIST_LINE_TEXT_SIZES\|LIST_PADDING_FACTOR" -A 3 src/skin.rs | head -20; sed -n 5240,5270p src/skin.rs
+395	222	choose	model	model		2026-11-27T23:00:47Z	6.3	
+395	223	choose	tool	shell	bash	2026-11-27T23:00:54Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -rn "WRAPPED\s*:\|const ONE_LINE\|const WRAPPED" -A 4 src/ | head -20; echo "=== TableCellText skin arm"; grep -n "Role
+395	224	choose	tool	shell	bash	2026-11-27T23:00:54Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "TableRow =>" -A 8 src/skin.rs | sed -n 1,20p; echo "=== does apply_skin write LineBreak for cells"; grep -n "LineBr
+395	225	choose	model	model		2026-11-27T23:00:54Z	11.3	
+395	226	choose	tool	homestill	bash	2026-11-27T23:01:05Z	6.2	cd /home/ladvien/bevy_gooey_loop && hs distill search "reflow 320 CSS pixels without two-dimensional scrolling exception data tables" --output json 2>/dev/null 
+395	227	choose	tool	homestill	bash	2026-11-27T23:01:05Z	6.2	cd /home/ladvien/bevy_gooey_loop && hs distill search "outliner hierarchy list long names truncated ellipsis tooltip editor Lightbown" --output json 2>/dev/null
+395	228	choose	model	model		2026-11-27T23:01:11Z	4.9	
+395	229	choose	tool	homestill	bash	2026-11-27T23:01:16Z	3.6	cd /home/ladvien/bevy_gooey_loop && hs distill search "customizable docking panels windows size layout tool interface" --output json 2>/dev/null | jq -r '.[] | 
+395	230	choose	model	model		2026-11-27T23:01:20Z	7.9	
+395	231	choose	tool	shell	bash	2026-11-27T23:01:28Z	0.1	cd /home/ladvien/bevy_gooey_loop && grep -rn "TreeView" src/*.rs | head; echo "=== rebind"; sed -n 1400,1445p src/table.rs
+395	232	choose	tool	shell	bash	2026-11-27T23:01:28Z	0.1	cd /home/ladvien/bevy_gooey_loop && sed -n 240,300p examples/tree.rs
+395	233	choose	model	model		2026-11-27T23:01:28Z	8.8	
+395	234	choose	tool	shell	bash	2026-11-27T23:01:36Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 1260,1360p src/table.rs
+395	235	choose	tool	shell	bash	2026-11-27T23:01:36Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 1530,1600p src/table.rs; echo "=== sized_panel"; grep -n "pub fn sized_panel" -A 10 src/widgets.rs
+395	236	choose	model	model		2026-11-27T23:01:36Z	20.1	
+395	237	choose	tool	shell	bash	2026-11-27T23:01:57Z	0.1	cd /home/ladvien/bevy_gooey_loop && grep -n "Role::Table\b\|Role::TableView\|Role::TableRows\|Role::TableHeader\b" -A 12 src/skin.rs | sed -n 1,80p
+395	238	choose	tool	shell	bash	2026-11-27T23:01:57Z	0.1	cd /home/ladvien/bevy_gooey_loop && grep -n "PageDown\|PageUp\|page" src/table.rs | sed -n 1,40p
+395	239	choose	model	model		2026-11-27T23:01:57Z	15.0	
+395	240	choose	tool	homestill	bash	2026-11-27T23:02:12Z	6.6	cd /home/ladvien/bevy_gooey_loop && date -u; hs distill search "a panel's width can be changed by the person and its contents adapt" --output json 2>/dev/null |
+395	241	choose	tool	shell	bash	2026-11-27T23:02:12Z	6.6	cd /home/ladvien/bevy_gooey_loop && wc -l README.md; grep -n "TableRows" -B3 -A8 src/table.rs | sed -n 1,30p
+395	242	choose	model	model		2026-11-27T23:02:18Z	10.0	
+395	243	choose	tool	shell	bash	2026-11-27T23:02:28Z	0.1	cd /home/ladvien/bevy_gooey_loop && grep -n "Role::Table =>" -A 12 src/skin.rs; grep -n "Role::TableRows =>" -A 6 src/skin.rs; echo "=== table_bundle"; grep -n 
+395	244	choose	tool	homestill	bash	2026-11-27T23:02:28Z	5.3	cd /home/ladvien/bevy_gooey_loop && hs distill search "outliner scene hierarchy drag panels resize interface information density" --output json 2>/dev/null | jq
+395	245	choose	model	model		2026-11-27T23:02:34Z	9.2	
+395	246	choose	tool	homestill	bash	2026-11-27T23:02:43Z	13.8	cd /home/ladvien/bevy_gooey_loop && for q in "WCAG reflow content can be presented without loss of information or functionality vertical scrolling" "truncated f
+395	247	choose	model	model		2026-11-27T23:02:57Z	16.1	
+395	248	choose	tool	shell	bash	2026-11-27T23:03:13Z	0.4	cd /home/ladvien/bevy_gooey_loop && grep -rn "TextLayout" tests/*.rs | head -12; echo "=== bevy def"; grep -n "pub struct TextLayout" -A 20 ~/.cargo/registry/sr
+395	249	choose	tool	shell	bash	2026-11-27T23:03:13Z	0.4	cd /home/ladvien/bevy_gooey_loop && grep -n "LineBreak" -A 12 ~/.cargo/registry/src/*/bevy_text-0.20.0/src/text.rs | head -30
+395	250	choose	model	model		2026-11-27T23:03:13Z	16.4	
+395	251	research	tool	phase mark	bash	2026-11-27T23:03:30Z	0.2	cd /home/ladvien/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark research 2>&1 | tail -1
+395	252	research	tool	web	web_search	2026-11-27T23:03:30Z	8.2	WCAG 1.4.10 Reflow "without loss of information or functionality" vertical scrolling 320 CSS pixels exception data tables
+395	253	research	model	model		2026-11-27T23:03:38Z	17.8	
+395	254	research	tool	read files	read	2026-11-27T23:03:56Z	0.1	https://www.w3.org/WAI/WCAG21/Understanding/reflow.html
+395	255	research	model	model		2026-11-27T23:03:56Z	12.8	
+395	256	research	tool	shell	bash	2026-11-27T23:04:09Z	0.0	cd /home/ladvien/bevy_gooey_loop && head -30 docs/research/divider-wrap-led-size.md; echo "=========="; head -24 docs/research/gallery-wrap.md
+395	257	research	tool	shell	bash	2026-11-27T23:04:09Z	0.0	cd /home/ladvien/bevy_gooey_loop && head -20 docs/media/README.md; grep -n "tree.gif" -A 6 docs/media/README.md
+395	258	research	model	model		2026-11-27T23:04:09Z	19.0	
+395	259	research	tool	homestill	bash	2026-11-27T23:04:28Z	14.9	cd /home/ladvien/bevy_gooey_loop && for q in "windows can be resized and contents adapt to the change in size" "information density in tool interface panels" "h
+395	260	research	model	model		2026-11-27T23:04:43Z	2.0	
+395	261	research	tool	homestill	bash	2026-11-27T23:04:45Z	4.1	cd /home/ladvien/bevy_gooey_loop && hs distill search "game development tool panels layout customization the person arranges the interface" --output json 2>/dev
+395	262	research	model	model		2026-11-27T23:04:49Z	11.9	
+395	263	research	tool	homestill	bash	2026-11-27T23:05:01Z	20.4	cd /home/ladvien/bevy_gooey_loop && for q in "the user can resize a panel in the interface" "long names in a list are hard to read when cut off" "dock panels re
+395	264	research	model	model		2026-11-27T23:05:21Z	12.0	
+395	265	research	tool	shell	bash	2026-11-27T23:05:33Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 1128,1160p src/table.rs; echo "=== TreeView decl"; sed -n 478,500p src/tree.rs; echo "=== warn style"; grep -n "warn!
+395	266	research	tool	shell	bash	2026-11-27T23:05:33Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "CardWidth" -A6 src/layout.rs | head -40; grep -n "fn sized_panel" -B6 -A4 src/widgets.rs
+395	267	research	model	model		2026-11-27T23:05:33Z	20.8	
+395	268	research	tool	shell	bash	2026-11-27T23:05:54Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 200,215p src/table.rs; grep -n "fn air\b" -A 8 src/skin.rs src/widgets.rs | head -20
+395	269	research	model	model		2026-11-27T23:05:54Z	14.0	
+395	270	research	tool	edit files	write	2026-11-27T23:06:08Z	0.0	/home/ladvien/bevy_gooey_loop/docs/research/tree-wrap.md
+395	271	research	model	model		2026-11-27T23:06:08Z	1.9	
+395	272	research	tool	git	bash	2026-11-27T23:06:10Z	0.1	cd /home/ladvien/bevy_gooey_loop && git status --short && git checkout -q -b loop/iter-118 && (git add docs/research/tree-wrap.md && git commit -q -m "Research:
+395	273	research	tool	shell	bash	2026-11-27T23:06:10Z	0.1	cd /home/ladvien/bevy_gooey_loop && grep -n "TableParts\b" -B2 -A2 src/table.rs | head; grep -n "cache.wrapped" -n src/table.rs
+395	274	research	model	model		2026-11-27T23:06:10Z	27.1	
+395	275	research	tool	shell	bash	2026-11-27T23:06:37Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "pub struct TypeSelectGroup" -B8 src/type_select.rs; grep -n "pub struct CodeMarkdown" -B6 src/code_markdown.rs; gre
+395	276	research	tool	shell	bash	2026-11-27T23:06:37Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 380,420p tests/tree.rs; grep -n "fn cell_text\|fn row_of\|fn label_of" tests/tree.rs
+395	277	research	model	model		2026-11-27T23:06:37Z	1.2	
+395	278	research	tool	shell	bash	2026-11-27T23:06:39Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 205,235p tests/tree.rs; grep -n "pub struct CodeSoftWrap" -B8 -A6 src/*.rs
+395	279	research	model	model		2026-11-27T23:06:39Z	3.8	
+395	280	research	tool	shell	bash	2026-11-27T23:06:42Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 60,100p tests/tree.rs; tail -20 tests/tree.rs
+395	281	research	model	model		2026-11-27T23:06:42Z	1.8	
+395	282	research	tool	shell	bash	2026-11-27T23:06:44Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "^#\[test\]" tests/tree.rs | tail -3; grep -n "fn spawn(" -B6 tests/tree.rs | head -12; sed -n 300,312p tests/tree.r
+395	283	research	model	model		2026-11-27T23:06:44Z	10.3	
+395	284	research	tool	shell	bash	2026-11-27T23:06:55Z	0.0	cd /home/ladvien/bevy_gooey_loop && cat >> tests/tree.rs <<'EOF' // A tree's labels wrap (#124): a name longer than a narrow pane is drawn on lines of its own, 
+395	285	research	model	model		2026-11-27T23:06:55Z	4.3	
+395	286	research	tool	shell	bash	2026-11-27T23:06:59Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 470,486p src/tree.rs
+395	287	research	model	model		2026-11-27T23:06:59Z	2.1	
+395	288	research	tool	edit files	edit	2026-11-27T23:07:01Z	0.1	/home/ladvien/bevy_gooey_loop/src/tree.rs
+395	289	research	model	model		2026-11-27T23:07:01Z	4.1	
+395	290	research	tool	shell	bash	2026-11-27T23:07:05Z	0.1	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' import re p='src/table.rs' s=open(p).read() s=s.replace("""use crate::tree::{Lead, Tree, TreeView, bind_lea
+395	291	research	model	model		2026-11-27T23:07:05Z	2.7	
+395	292	research	tool	shell	bash	2026-11-27T23:07:08Z	0.0	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='src/lib.rs' s=open(p).read() s=s.replace("pub use tree::{Tree, TreeNode, TreeToggled, tree_by_input, upd
+395	293	research	model	model		2026-11-27T23:07:08Z	1.8	
+395	294	research	tool	cargo test	bash	2026-11-27T23:07:10Z	60.1	[launched bg_32] cd /home/ladvien/bevy_gooey_loop && which cargo-nextest; unset CARGO_INCREMENTAL; CARGO_TARGET_DIR=/home/ladvien/target-shared/global timeout 2400 cargo nextest
+395	295	research	model	model		2026-11-27T23:08:10Z	1.8	
+395	296	research	tool	shell	bash	2026-11-27T23:08:12Z	0.1	cd /home/ladvien/bevy_gooey_loop && grep -n "table_pitch\|TableCell\b" -A 3 src/skin.rs | grep -n "Role::TableCell\b" ; echo "=== example tree: add GOOEY_WRAP";
+395	297	research	model	model		2026-11-27T23:08:12Z	7.5	
+395	298	research	tool	shell	bash	2026-11-27T23:08:19Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "pub struct TreeNode" -A 22 src/tree.rs
+395	299	research	model	model		2026-11-27T23:08:19Z	3.4	
+395	300	research	tool	shell	bash	2026-11-27T23:08:23Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 100,135p examples/tree.rs; sed -n 215,245p examples/tree.rs
+395	301	research	model	model		2026-11-27T23:08:23Z	3.0	
+395	302	research	tool	shell	bash	2026-11-27T23:08:26Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 245,330p examples/tree.rs
+395	303	research	model	model		2026-11-27T23:08:26Z	3.5	
+395	304	research	tool	shell	bash	2026-11-27T23:08:29Z	0.1	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='examples/tree.rs' s=open(p).read() s=s.replace("""//! `GOOEY_MULTI=1` lets the player select any number 
+395	305	research	model	model		2026-11-27T23:08:29Z	1.4	
+395	306	research	tool	git	bash	2026-11-27T23:08:31Z	0.0	cd /home/ladvien/bevy_gooey_loop && git diff --stat
+395	307	research	model	model		2026-11-27T23:08:31Z	1.0	
+395	308	research	tool	wait: other	wait	2026-11-27T23:08:32Z	5.2	{}
+395	309	research	model	model		2026-11-27T23:08:37Z	1.8	
+395	310	research	tool	wait: other	wait	2026-11-27T23:08:39Z	240.9	{}
+395	311	research	model	model		2026-11-27T23:12:40Z	5.0	
+395	312	research	tool	shell	bash	2026-11-27T23:12:45Z	0.4	cd /home/ladvien/bevy_gooey_loop && head -20 CHANGELOG.md; echo ===; sed -n 100,110p README.md
+395	313	research	model	model		2026-11-27T23:12:45Z	2.3	
+395	314	research	tool	shell	bash	2026-11-27T23:12:48Z	2.1	cd /home/ladvien/bevy_gooey_loop && sed -n 25p README.md | cut -c1-80; echo; sed -n 25p README.md | tail -c 900
+395	315	research	model	model		2026-11-27T23:12:50Z	3.8	
+395	316	research	tool	shell	bash	2026-11-27T23:12:54Z	1.5	cd /home/ladvien/bevy_gooey_loop && python3 -c " s=open('README.md').read().split('\n') print(len(s)) for i,l in enumerate(s,1): if 'Show a lot of data' in l: p
+395	317	research	model	model		2026-11-27T23:12:56Z	5.5	
+395	318	research	tool	wait: other	wait	2026-11-27T23:13:02Z	241.2	{}
+395	319	research	model	model		2026-11-27T23:17:03Z	6.5	
+395	320	research	tool	shell	bash	2026-11-27T23:17:10Z	3.9	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='README.md' s=open(p).read() old="A table column can `.wrap()` its text and the table still windows on wh
+395	321	research	model	model		2026-11-27T23:17:14Z	8.4	
+395	322	research	tool	shell	bash	2026-11-27T23:17:24Z	3.9	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='docs/guide/trees.md' s=open(p).read() s=s.replace("""- **Where it stops.** One line a node, cut at the t
+395	323	research	model	model		2026-11-27T23:17:28Z	3.8	
+395	324	research	tool	wait: other	wait	2026-11-27T23:17:33Z	241.8	{}
+395	325	research	model	model		2026-11-27T23:21:34Z	5.4	
+395	326	research	tool	shell	bash	2026-11-27T23:21:40Z	1.7	cd /home/ladvien/bevy_gooey_loop && grep -n "src/tree.rs" AGENTS.md | head -3
+395	327	research	model	model		2026-11-27T23:21:42Z	2.3	
+395	328	research	tool	shell	bash	2026-11-27T23:21:44Z	0.8	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='AGENTS.md' s=open(p).read() old="`tree(nodes)` in `src/widgets.rs` = `table_bundle(.., outlined: true)` 
+395	329	research	model	model		2026-11-27T23:21:45Z	1.2	
+395	330	research	tool	wait: other	wait	2026-11-27T23:21:46Z	73.3	{}
+395	331	research	model	model		2026-11-27T23:22:59Z	1.7	
+395	332	research	tool	shell	bash	2026-11-27T23:23:01Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 1548,1562p tests/tree.rs
+395	333	research	model	model		2026-11-27T23:23:01Z	1.9	
+395	334	research	tool	cargo test	bash	2026-11-27T23:23:03Z	2.9	cd /home/ladvien/bevy_gooey_loop && unset CARGO_INCREMENTAL; CARGO_TARGET_DIR=/home/ladvien/target-shared/global timeout 900 cargo nextest run --all-features --
+395	335	research	model	model		2026-11-27T23:23:06Z	2.4	
+395	336	research	tool	cargo test	bash	2026-11-27T23:23:08Z	46.5	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='tests/tree.rs' s=open(p).read() s=s.replace(""" // The chevron box is the row high, so its click target 
+395	337	research	model	model		2026-11-27T23:23:55Z	2.0	
+395	338	research	tool	cargo test	bash	2026-11-27T23:23:57Z	49.3	cd /home/ladvien/bevy_gooey_loop && cp src/table.rs /tmp/g118/table.rs.good && python3 - <<'PY' p='src/table.rs' s=open(p).read() s=s.replace(""" if cache.wrapp
+395	339	research	model	model		2026-11-27T23:24:46Z	1.7	
+395	340	research	tool	cargo test	bash	2026-11-27T23:24:48Z	35.1	cd /home/ladvien/bevy_gooey_loop && cp /tmp/g118/table.rs.good src/table.rs && python3 - <<'PY' p='src/table.rs' s=open(p).read() s=s.replace(" let every_wraps 
+395	341	research	model	model		2026-11-27T23:25:23Z	2.2	
+395	342	prove	tool	phase mark	bash	2026-11-27T23:25:25Z	60.1	[launched bg_33] cd /home/ladvien/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark prove 2>&1|tail -1; unset CARGO_INCREMENTAL; CARGO_TARGET_DIR=/home/ladvien/targ
+395	343	prove	model	model		2026-11-27T23:26:25Z	2.8	
+395	344	prove	tool	git	bash	2026-11-27T23:26:28Z	0.2	cd /home/ladvien/bevy_gooey_loop && git add -A && git commit -q -m "A tree's long label wraps: TreeWrap (#124) A tree builds its one column itself (table_bundle
+395	345	prove	model	model		2026-11-27T23:26:28Z	1.3	
+395	346	prove	tool	wait: other	wait	2026-11-27T23:26:30Z	5.1	{}
+395	347	prove	model	model		2026-11-27T23:26:35Z	1.3	
+395	348	prove	tool	wait: other	wait	2026-11-27T23:26:36Z	40.6	{}
+395	349	prove	model	model		2026-11-27T23:27:17Z	4.1	
+395	350	prove	tool	shell	bash	2026-11-27T23:27:21Z	8.3	cd /home/ladvien/bevy_gooey_loop && G=/home/ladvien/target/gooey-loop/release/examples/tree; env -u WAYLAND_DISPLAY GOOEY_WRAP=1 GOOEY_FRAMES=120 GOOEY_SHOT=/tm
+395	351	prove	model	model		2026-11-27T23:27:29Z	1.2	
+395	352	prove	tool	read files	read	2026-11-27T23:27:30Z	0.0	/tmp/g118/after/wrap-1280.png
+395	353	prove	model	model		2026-11-27T23:27:30Z	5.2	
+395	354	prove	tool	shell	bash	2026-11-27T23:27:36Z	0.2	cd /tmp/g118/after && magick wrap-1280.png -crop 250x420+510+120 +repage -filter point -resize 300% crop1.png && file crop1.png
+395	355	prove	model	model		2026-11-27T23:27:36Z	1.2	
+395	356	prove	tool	read files	read	2026-11-27T23:27:37Z	0.0	/tmp/g118/after/crop1.png
+395	357	prove	model	model		2026-11-27T23:27:37Z	11.0	
+395	358	prove	tool	cargo test	bash	2026-11-27T23:27:48Z	16.5	cd /home/ladvien/bevy_gooey_loop && cat >> tests/tree.rs <<'EOF' #[test] fn scratch_print_wrap() { let mut app = app(); spawn_narrow( &mut app, vec![ TreeNode::
+395	359	prove	model	model		2026-11-27T23:28:04Z	1.5	
+395	360	prove	tool	cargo test	bash	2026-11-27T23:28:06Z	3.5	cd /home/ladvien/bevy_gooey_loop && unset CARGO_INCREMENTAL; CARGO_TARGET_DIR=/home/ladvien/target-shared/global timeout 900 cargo nextest run --all-features --
+395	361	prove	model	model		2026-11-27T23:28:09Z	1.6	
+395	362	prove	tool	cargo test	bash	2026-11-27T23:28:11Z	21.1	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='tests/tree.rs' s=open(p).read() s=s.replace(""" for g in &info.glyphs { println!(" glyph {:?} at {:?}", 
+395	363	prove	model	model		2026-11-27T23:28:32Z	8.9	
+395	364	prove	tool	cargo test	bash	2026-11-27T23:28:41Z	25.3	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='tests/tree.rs' s=open(p).read() s=s.replace(""" println!("{name}: size {:?}", info.size);""",""" println
+395	365	prove	model	model		2026-11-27T23:29:06Z	2.5	
+395	366	prove	tool	shell	bash	2026-11-27T23:29:09Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "WRAPPED\|ONE_LINE\|fn cell_text\|CellText" src/table.rs src/widgets.rs | head -20
+395	367	prove	model	model		2026-11-27T23:29:09Z	0.9	
+395	368	prove	tool	shell	bash	2026-11-27T23:29:10Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 1490,1530p src/table.rs; echo ====; sed -n 920,945p src/table.rs
+395	369	prove	model	model		2026-11-27T23:29:10Z	8.6	
+395	370	prove	tool	read files	read	2026-11-27T23:29:18Z	0.0	/tmp/g118/after/wrap-parchment.png
+395	371	prove	model	model		2026-11-27T23:29:18Z	4.8	
+395	372	prove	tool	shell	bash	2026-11-27T23:29:23Z	0.0	grep -rn "pub struct PositionedGlyph" -A 20 ~/.cargo/registry/src/*/bevy_text-0.20.0/src/*.rs | head -30
+395	373	prove	model	model		2026-11-27T23:29:23Z	6.7	
+395	374	prove	tool	cargo test	bash	2026-11-27T23:29:30Z	30.9	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='tests/tree.rs' s=open(p).read() s=s.replace(""" println!("{name}: line count {}", info.glyphs.len());"""
+395	375	prove	model	model		2026-11-27T23:30:01Z	6.6	
+395	376	prove	tool	shell	bash	2026-11-27T23:30:07Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "flex_grow\|min_width\|fn cell_node\|fn width_px" src/table.rs | head -20; echo ====; sed -n '/fn cell_node/,/^}/p' 
+395	377	prove	model	model		2026-11-27T23:30:07Z	4.6	
+395	378	prove	tool	shell	bash	2026-11-27T23:30:12Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 236,300p examples/tree.rs
+395	379	prove	model	model		2026-11-27T23:30:12Z	4.8	
+395	380	prove	tool	shell	bash	2026-11-27T23:30:17Z	0.6	cd /tmp/g118 && magick before/tree-dark.png -crop 400x300+440+100 +repage -filter point -resize 200% before_crop.png && echo ok
+395	381	prove	model	model		2026-11-27T23:30:17Z	1.0	
+395	382	prove	tool	read files	read	2026-11-27T23:30:18Z	0.1	/tmp/g118/before_crop.png
+395	383	prove	model	model		2026-11-27T23:30:18Z	8.7	
+395	384	prove	tool	shell	bash	2026-11-27T23:30:27Z	0.0	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='tests/tree.rs' s=open(p).read() s=s.replace('TreeNode::new(2, "meshes")','TreeNode::new(2, LONG_NAME_2)'
+395	385	prove	model	model		2026-11-27T23:30:27Z	11.6	
+395	386	prove	tool	shell	bash	2026-11-27T23:30:39Z	0.1	cd /tmp/g118/after && magick wrap-1280.png -crop 250x110+520+185 +repage -filter point -resize 400% row1.png && file row1.png
+395	387	prove	model	model		2026-11-27T23:30:39Z	1.4	
+395	388	prove	tool	read files	read	2026-11-27T23:30:40Z	0.0	/tmp/g118/after/row1.png
+395	389	prove	model	model		2026-11-27T23:30:40Z	4.5	
+395	390	prove	tool	shell	bash	2026-11-27T23:30:45Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "fn spawn_lead" -A 60 src/tree.rs
+395	391	prove	model	model		2026-11-27T23:30:45Z	6.2	
+395	392	prove	tool	shell	bash	2026-11-27T23:30:51Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "TableCellText" src/*.rs | head -20; echo ===; grep -n "TextLayout" src/skin.rs | head
+395	393	prove	model	model		2026-11-27T23:30:51Z	1.0	
+395	394	prove	tool	shell	bash	2026-11-27T23:30:52Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 5975,6010p src/skin.rs
+395	395	prove	model	model		2026-11-27T23:30:52Z	5.2	
+395	396	prove	tool	shell	bash	2026-11-27T23:30:57Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 190,240p examples/tree.rs
+395	397	prove	model	model		2026-11-27T23:30:57Z	1.8	
+395	398	prove	tool	shell	bash	2026-11-27T23:30:59Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "ASSETS" -A 16 examples/tree.rs | head -40
+395	399	prove	model	model		2026-11-27T23:30:59Z	1.8	
+395	400	prove	tool	shell	bash	2026-11-27T23:31:01Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 1,30p examples/tree.rs
+395	401	prove	model	model		2026-11-27T23:31:01Z	3.9	
+395	402	prove	tool	shell	bash	2026-11-27T23:31:05Z	0.0	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='examples/tree.rs' s=open(p).read() old_start=s.index(' if std::env::var("GOOEY_WRAP").is_ok() {') old_en
+395	403	prove	model	model		2026-11-27T23:31:05Z	1.5	
+395	404	prove	tool	cargo build	bash	2026-11-27T23:31:06Z	7.9	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='examples/tree.rs' s=open(p).read() s=s.replace("""//! `GOOEY_MULTI=1` lets the player select any number 
+395	405	prove	model	model		2026-11-27T23:31:14Z	1.2	
+395	406	prove	tool	shell	bash	2026-11-27T23:31:15Z	4.5	cd /home/ladvien/bevy_gooey_loop && G=/home/ladvien/target/gooey-loop/release/examples/tree; env -u WAYLAND_DISPLAY GOOEY_WRAP=1 GOOEY_FRAMES=120 GOOEY_SHOT=/tm
+395	407	prove	model	model		2026-11-27T23:31:20Z	1.0	
+395	408	prove	tool	read files	read	2026-11-27T23:31:21Z	0.0	/tmp/g118/after/tree-wrap.png
+395	409	prove	model	model		2026-11-27T23:31:21Z	7.4	
+395	410	prove	tool	shell	bash	2026-11-27T23:31:28Z	0.1	cd /tmp/g118/after && magick tree-wrap.png -crop 620x470+328+100 +repage tree-wrap-crop.png && magick tree-wrap-crop.png -format "%wx%h\n" info: && magick tree-
+395	411	prove	model	model		2026-11-27T23:31:28Z	2.0	
+395	412	prove	tool	shell	bash	2026-11-27T23:31:30Z	4.4	cd /home/ladvien/bevy_gooey_loop && G=/home/ladvien/target/gooey-loop/release/examples/tree; env -u WAYLAND_DISPLAY GOOEY_WRAP=1 GOOEY_FRAMES=120 GOOEY_SKIN=par
+395	413	prove	model	model		2026-11-27T23:31:35Z	1.0	
+395	414	prove	tool	read files	read	2026-11-27T23:31:36Z	0.0	/tmp/g118/after/tree-wrap-parchment.png
+395	415	prove	model	model		2026-11-27T23:31:36Z	4.4	
+395	416	prove	tool	shell	bash	2026-11-27T23:31:40Z	0.2	cd /tmp/g118/after && python3 - <<'PY' import subprocess def px(img,x,y): o=subprocess.run(["magick",img,"-crop",f"1x1+{x}+{y}","+repage","-format","%[fx:int(25
+395	417	prove	model	model		2026-11-27T23:31:40Z	2.3	
+395	418	prove	tool	shell	bash	2026-11-27T23:31:43Z	0.2	cd /tmp/g118/after && python3 - <<'PY' import subprocess def stats(img,x,y,w,h): o=subprocess.run(["magick",img,"-crop",f"{w}x{h}+{x}+{y}","+repage","txt:-"],ca
+395	419	prove	model	model		2026-11-27T23:31:43Z	2.1	
+395	420	prove	tool	shell	bash	2026-11-27T23:31:45Z	12.1	cd /home/ladvien/bevy_gooey_loop && G=/home/ladvien/target/gooey-loop/release/examples/tree; env -u WAYLAND_DISPLAY GOOEY_WRAP=1 GOOEY_FRAMES=100 GOOEY_SKIN=too
+395	421	prove	model	model		2026-11-27T23:31:57Z	1.1	
+395	422	prove	tool	shell	bash	2026-11-27T23:31:58Z	0.3	cd /tmp/g118/after && magick tree-wrap-large.png -crop 1300x900+660+230 +repage tree-wrap-large-crop.png && magick tree-wrap-large-crop.png -format "%wx%h\n" in
+395	423	prove	model	model		2026-11-27T23:31:58Z	1.3	
+395	424	prove	tool	read files	read	2026-11-27T23:32:00Z	0.0	/tmp/g118/after/tree-wrap-large-crop.png
+395	425	prove	model	model		2026-11-27T23:32:00Z	2.9	
+395	426	prove	tool	shell	bash	2026-11-27T23:32:03Z	0.1	cd /home/ladvien/bevy_gooey_loop && magick /tmp/g118/after/tree-wrap.png -crop 620x470+328+100 +repage docs/media/tree-wrap.png && magick docs/media/tree-wrap.p
+395	427	prove	model	model		2026-11-27T23:32:03Z	1.8	
+395	428	prove	tool	shell	bash	2026-11-27T23:32:04Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 44,50p docs/media/README.md | cut -c1-400
+395	429	prove	model	model		2026-11-27T23:32:04Z	1.8	
+395	430	prove	tool	shell	bash	2026-11-27T23:32:06Z	0.0	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='docs/media/README.md' lines=open(p).read().split('\n') idx=next(i for i,l in enumerate(lines) if l.start
+395	431	prove	model	model		2026-11-27T23:32:06Z	2.3	
+395	432	prove	tool	shell	bash	2026-11-27T23:32:09Z	0.0	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='CHANGELOG.md' s=open(p).read() entry="""## [0.65.0] - 2026-11-27 ### Added - **A tree's long label wraps
+395	433	prove	model	model		2026-11-27T23:32:09Z	1.7	
+395	434	prove	tool	shell	bash	2026-11-27T23:32:10Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -i 's/^version = "0.64.2"/version = "0.65.0"/' Cargo.toml && python3 - <<'PY' p='tests/tree.rs' s=open(p).read() i=s.ind
+395	435	prove	model	model		2026-11-27T23:32:10Z	1.2	
+395	436	gate	tool	phase mark	bash	2026-11-27T23:32:11Z	1.4	cd /home/ladvien/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark gate 2>&1|tail -1; unset CARGO_INCREMENTAL; export CARGO_TARGET_DIR=/home/ladvie
+395	437	gate	model	model		2026-11-27T23:32:13Z	1.2	
+395	438	gate	tool	shell	bash	2026-11-27T23:32:14Z	2.5	cd /home/ladvien/bevy_gooey_loop && export CARGO_TARGET_DIR=/home/ladvien/target-shared/global && cargo fmt 2>&1 | tail -2 && cargo fmt --check && echo FMT_OK
+395	439	gate	model	model		2026-11-27T23:32:17Z	1.7	
+395	440	gate	tool	cargo clippy	bash	2026-11-27T23:32:18Z	60.1	[launched bg_34] cd /home/ladvien/bevy_gooey_loop && unset CARGO_INCREMENTAL; export CARGO_TARGET_DIR=/home/ladvien/target-shared/global; timeout 2400 cargo clippy --all-targets
+395	441	gate	model	model		2026-11-27T23:33:18Z	1.3	
+395	442	gate	tool	shell	bash	2026-11-27T23:33:20Z	0.1	cd /home/ladvien/bevy_gooey_loop && grep -n "tree" README.md | cut -c1-200
+395	443	gate	model	model		2026-11-27T23:33:20Z	1.7	
+395	444	gate	tool	shell	bash	2026-11-27T23:33:21Z	0.1	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='README.md' s=open(p).read() old="A table column can `.wrap()` its text and the table still windows on wh
+395	445	gate	model	model		2026-11-27T23:33:21Z	1.1	
+395	446	gate	tool	shell	bash	2026-11-27T23:33:23Z	0.1	cd /home/ladvien/bevy_gooey_loop && sed -n 103p README.md | grep -o "A table column can[^.]*\.[^)]*)" | head -2; echo ---; sed -n 103p README.md | tail -c 800
+395	447	gate	model	model		2026-11-27T23:33:23Z	1.5	
+395	448	gate	tool	shell	bash	2026-11-27T23:33:24Z	0.0	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='README.md' s=open(p).read() old="([a wrapping inventory](https://raw.githubusercontent.com/dark-incorpor
+395	449	gate	model	model		2026-11-27T23:33:24Z	1.0	
+395	450	gate	tool	wait: other	wait	2026-11-27T23:33:25Z	5.0	{}
+395	451	gate	model	model		2026-11-27T23:33:30Z	1.3	
+395	452	gate	tool	wait: other	wait	2026-11-27T23:33:31Z	36.4	{}
+395	453	gate	model	model		2026-11-27T23:34:08Z	1.7	
+395	454	gate	tool	cargo clippy	bash	2026-11-27T23:34:10Z	10.0	cd /home/ladvien/bevy_gooey_loop && unset CARGO_INCREMENTAL; export CARGO_TARGET_DIR=/home/ladvien/target-shared/global; timeout 900 cargo clippy --all-targets 
+395	455	gate	model	model		2026-11-27T23:34:20Z	1.2	
+395	456	gate	tool	shell	bash	2026-11-27T23:34:21Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 1495,1520p tests/tree.rs
+395	457	gate	model	model		2026-11-27T23:34:21Z	1.3	
+395	458	gate	tool	cargo clippy	bash	2026-11-27T23:34:22Z	9.4	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='tests/tree.rs' s=open(p).read() s=s.replace(""" settle(app); let tree = the_tree(app); tree }""",""" set
+395	459	gate	model	model		2026-11-27T23:34:31Z	1.5	
+395	460	gate	tool	cargo test	bash	2026-11-27T23:34:33Z	60.0	[launched bg_35] cd /home/ladvien/bevy_gooey_loop && unset CARGO_INCREMENTAL; export CARGO_TARGET_DIR=/home/ladvien/target-shared/global; timeout 2400 cargo nextest run --all-fe
+395	461	gate	model	model		2026-11-27T23:35:33Z	1.1	
+395	462	gate	tool	git	bash	2026-11-27T23:35:34Z	0.1	cd /home/ladvien/bevy_gooey_loop && git status --short | head -20; sed -n 1,25p docs/guide/trees.md
+395	463	gate	model	model		2026-11-27T23:35:34Z	1.0	
+395	464	gate	tool	wait: other	wait	2026-11-27T23:35:35Z	5.0	{}
+395	465	gate	model	model		2026-11-27T23:35:40Z	0.9	
+395	466	gate	tool	wait: other	wait	2026-11-27T23:35:41Z	240.0	{}
+395	467	gate	model	model		2026-11-27T23:39:41Z	1.3	
+395	468	gate	tool	shell	bash	2026-11-27T23:39:42Z	0.0	cd /home/ladvien/bevy_gooey_loop && tail -40 docs/loop-log.md | cut -c1-300
+395	469	gate	model	model		2026-11-27T23:39:42Z	1.1	
+395	470	gate	tool	shell	bash	2026-11-27T23:39:44Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "Top 5 backlog\|^## Iteration 117\|^## Iteration 116" docs/loop-log.md | tail -5; grep -c "" docs/loop-log.md
+395	471	gate	model	model		2026-11-27T23:39:44Z	2.0	
+395	472	gate	tool	git	bash	2026-11-27T23:39:46Z	0.8	cd /home/ladvien/bevy_gooey_loop && git fetch -q origin loop-stats 2>&1 | tail -2; git show origin/loop-stats:steps/bevy_gooey_loop-audit.tsv 2>/dev/null | tail
+395	473	gate	model	model		2026-11-27T23:39:46Z	2.3	
+395	474	gate	tool	shell	bash	2026-11-27T23:39:49Z	0.0	cd /home/ladvien/bevy_gooey_loop && grep -n "TreeWrap" src/lib.rs src/tree.rs | head; sed -n 34,46p docs/guide/trees.md
+395	475	gate	model	model		2026-11-27T23:39:49Z	1.8	
+395	476	gate	tool	shell	bash	2026-11-27T23:39:51Z	0.0	cd /home/ladvien/bevy_gooey_loop && sed -n 485,515p src/tree.rs
+395	477	gate	model	model		2026-11-27T23:39:51Z	1.8	
+395	478	gate	tool	wait: other	wait	2026-11-27T23:39:52Z	106.5	{}
+395	479	gate	model	model		2026-11-27T23:41:39Z	4.2	
+395	480	gate	tool	cargo test	bash	2026-11-27T23:41:43Z	60.1	[launched bg_36] cd /home/ladvien/bevy_gooey_loop && unset CARGO_INCREMENTAL; export CARGO_TARGET_DIR=/home/ladvien/target-shared/global; timeout 1200 cargo test --all-features 
+395	481	gate	model	model		2026-11-27T23:42:43Z	5.3	
+395	482	log	tool	phase mark	bash	2026-11-27T23:42:48Z	0.3	cd /home/ladvien/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark log 2>&1|tail -1; python3 - <<'PY' p='docs/loop-log.md' s=open(p).read() entry =
+395	483	log	model	model		2026-11-27T23:42:49Z	1.0	
+395	484	log	tool	wait: other	wait	2026-11-27T23:42:50Z	5.1	{}
+395	485	log	model	model		2026-11-27T23:42:55Z	1.2	
+395	486	log	tool	wait: other	wait	2026-11-27T23:42:56Z	240.1	{}
+395	487	log	model	model		2026-11-27T23:46:56Z	1.8	
+395	488	log	tool	git	bash	2026-11-27T23:46:58Z	0.2	cd /home/ladvien/bevy_gooey_loop && git add -A && git commit -q -m "Docs: TreeWrap in the guide, README, CHANGELOG and log (0.65.0) CHANGELOG 0.65.0, README's t
+395	489	log	model	model		2026-11-27T23:46:58Z	0.9	
+395	490	log	tool	wait: other	wait	2026-11-27T23:46:59Z	32.6	{}
+395	491	log	model	model		2026-11-27T23:47:32Z	1.3	
+395	492	log	tool	cargo build	bash	2026-11-27T23:47:33Z	11.2	cd /home/ladvien/bevy_gooey_loop && unset CARGO_INCREMENTAL; export CARGO_TARGET_DIR=/home/ladvien/target-shared/global; RUSTDOCFLAGS="-D warnings" timeout 1200
+395	493	log	model	model		2026-11-27T23:47:44Z	1.2	
+395	494	ship	tool	phase mark	bash	2026-11-27T23:47:46Z	1.0	cd /home/ladvien/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark ship 2>&1|tail -1; git push -q origin main 2>&1|tail -2; git log --oneline origi
+395	495	ship	model	model		2026-11-27T23:47:47Z	1.6	
+395	496	ship	tool	push gate	bash	2026-11-27T23:47:48Z	0.9	cd /home/ladvien/bevy_gooey_loop && git status -sb | head -3; git push origin main 2>&1 | tail -5
+395	497	ship	model	model		2026-11-27T23:47:49Z	1.3	
+395	498	ship	tool	git	bash	2026-11-27T23:47:51Z	0.0	cd /home/ladvien/bevy_gooey_loop && git log --oneline -3 main; echo ---; git log --oneline -2 loop/iter-118; echo ---; git rev-parse main origin/main
+395	499	ship	model	model		2026-11-27T23:47:51Z	1.7	
+395	500	ship	tool	git	bash	2026-11-27T23:47:52Z	0.0	cd /home/ladvien/bevy_gooey_loop && git merge-base --is-ancestor main loop/iter-118 && echo FF_OK; git log --oneline main..loop/iter-118
+395	501	ship	model	model		2026-11-27T23:47:52Z	1.4	
+395	502	ship	tool	push gate	bash	2026-11-27T23:47:54Z	1.9	cd /home/ladvien/bevy_gooey_loop && git checkout -q main && git merge --ff-only -q loop/iter-118 && git log --oneline -1 && git push -q origin main && git rev-p
+395	503	ship	model	model		2026-11-27T23:47:56Z	1.4	
+395	504	ship	tool	cargo publish	bash	2026-11-27T23:47:57Z	60.1	[launched bg_37] cd /home/ladvien/bevy_gooey_loop && unset CARGO_INCREMENTAL; export CARGO_TARGET_DIR=/home/ladvien/target-shared/global; timeout 900 cargo publish --dry-run 2>&
+395	505	ship	model	model		2026-11-27T23:48:57Z	2.1	
+395	506	ship	tool	push gate	bash	2026-11-27T23:48:59Z	2.1	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='docs/loop-log.md' s=open(p).read() s=s.replace("""**Release.** 0.65.0 — minor pre-1.0: one new public ma
+395	507	ship	model	model		2026-11-27T23:49:01Z	1.1	
+395	508	ship	tool	wait: other	wait	2026-11-27T23:49:02Z	5.0	{}
+395	509	ship	model	model		2026-11-27T23:49:07Z	1.1	
+395	510	ship	tool	wait: other	wait	2026-11-27T23:49:08Z	95.5	{}
+395	511	ship	model	model		2026-11-27T23:50:44Z	1.4	
+395	512	ship	tool	cargo publish	bash	2026-11-27T23:50:45Z	25.8	cd /home/ladvien/bevy_gooey_loop && timeout 600 cargo publish 2>&1 | tail -6
+395	513	ship	model	model		2026-11-27T23:51:11Z	2.1	
+395	514	ship	tool	push gate	bash	2026-11-27T23:51:13Z	2.2	cd /home/ladvien/bevy_gooey_loop && git tag -a v0.65.0 -m "0.65.0: TreeWrap, a tree's long label wraps" && git push -q origin v0.65.0 && python3 - <<'PY' p='doc
+395	515	ship	model	model		2026-11-27T23:51:15Z	1.5	
+395	516	ship	tool	git	bash	2026-11-27T23:51:17Z	0.1	cd /home/ladvien/bevy_gooey_loop && git log --oneline -3; grep -n "403 Forbidden (authentication failed)" docs/loop-log.md | tail -2
+395	517	ship	model	model		2026-11-27T23:51:17Z	1.9	
+395	518	ship	tool	shell	bash	2026-11-27T23:51:19Z	0.0	cd /home/ladvien/bevy_gooey_loop && tail -5 docs/loop-log.md
+395	519	ship	model	model		2026-11-27T23:51:19Z	2.1	
+395	520	ship	tool	push gate	bash	2026-11-27T23:51:21Z	2.2	cd /home/ladvien/bevy_gooey_loop && python3 - <<'PY' p='docs/loop-log.md' s=open(p).read() old="""**Release.** 0.65.0 — minor pre-1.0: one new public marker, no
+395	521	ship	model	model		2026-11-27T23:51:23Z	1.5	
+395	522	ship	tool	git	bash	2026-11-27T23:51:25Z	0.7	cd /home/ladvien/bevy_gooey_loop && git log --oneline -3; git status -sb|head -2; git ls-remote --tags origin v0.65.0; git rev-parse main origin/main
+395	523	ship	model	model		2026-11-27T23:51:25Z	1.8	
+395	524	ship	tool	github	bash	2026-11-27T23:51:27Z	0.8	cd /home/ladvien/bevy_gooey_loop && gh issue view 124 --json number,title,state -q '"\(.number) \(.state) \(.title)"' 2>&1 | head -3
+395	525	ship	model	model		2026-11-27T23:51:28Z	3.0	
+395	526	ship	tool	cargo publish	bash	2026-11-27T23:51:31Z	1.2	cd /home/ladvien/bevy_gooey_loop && gh issue comment 124 --body "Shipped in 0.65.0 as \`TreeWrap\` (commit 75ec728). **What it is.** A public marker on the tree
+395	527	ship	model	model		2026-11-27T23:51:32Z	1.4	
+395	528	ship	tool	github	bash	2026-11-27T23:51:34Z	2.6	cd /home/ladvien/bevy_gooey_loop && gh issue close 124 -R dark-incorporated/bevy_gooey -c "Closed by the 0.65.0 comment above: shipped in \`main\` (75ec728), ta
+395	529	ship	model	model		2026-11-27T23:51:36Z	1.3	
+395	530	ship	tool	shell	bash	2026-11-27T23:51:38Z	0.1	cd /home/ladvien/bevy_gooey_loop && rm -f /tmp/g118/table.rs.good /tmp/g118/after/tree-wrap-1280.png /tmp/g118/after/wrap-1280.png /tmp/g118/after/wrap-parchmen
+395	531	ship	model	model		2026-11-27T23:51:38Z	2.7	
