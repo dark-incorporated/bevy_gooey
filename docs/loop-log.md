@@ -3918,8 +3918,15 @@ standard's line on when a quiet variant is conformant; source 4 is the editor's 
 `docs/media/chip.png` now shows six chips including the quiet one and its row in
 `docs/media/README.md` says so.
 
-**Checklist.** fmt, clippy `-D warnings`, nextest, doctests, `cargo check --lib`, wasm32,
-`cargo doc -D warnings` — see below for the counts.
+**Checklist.** fmt, clippy `-D warnings`, nextest **1723 passed** (the four new tests included),
+doctests **360**, `cargo check --lib`, wasm32, `cargo doc -D warnings` — all green on `af2655b`.
+
+**Release.** 0.62.0: `Cargo.toml`, a `CHANGELOG` section, the README's compat row (`0.1 - 0.62.0 and
+main`) and the code all inside one commit range; `cargo publish --dry-run` packaged 100 files
+(673 KiB) and verified the tarball. The real `cargo publish` was refused **403 Forbidden**
+(authentication failed): the same broken token as every release since 0.51.9, so 0.51.9 through
+0.62.0 are pending the owner's new token. Logged once, not retried. `v0.62.0` is tagged on the
+published tree.
 
 **Top 5 backlog.** (1) crates.io token still 403 from 0.51.9 through 0.61.0 (owner must reissue;
 0.62.0 joins the pending list); (2) incremental wrap-map rebuild from `take_line_edits` (a prose
