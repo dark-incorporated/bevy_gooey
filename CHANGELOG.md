@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.64.0] - 2026-11-27
+
+### Fixed
+
+- **A table with a wrapping column holds ten thousand rows, not ten thousand row entities.** `.wrap()`
+  made rows differ in height, and the window was arithmetic on one pitch, so such a table bound
+  **every** row: 10,000 rows meant 10,000 row nodes, 40,000 cells and 40,000 text layouts to sort an
+  inventory. It now keeps each row's measured height (`model::rows_in_view`, `model::row_tops`),
+  re-sums only the rows after one that measured differently, draws the rows those heights put in
+  view plus the cut one, and pads the column above and below with the measured room. A row the
+  layout has not answered for yet counts the **average** of the ones measured (one pitch each
+  reported a table of three-line rows as a third of its length: `End` selected row 9,999 and drew
+  row 9,923 on a 10,000-row inventory); a table scrolled to its end stays at its end as the rows
+  below measure tall, a sort re-measures from the top, and the anchor and the cursor's reveal read
+  the row's own top instead of summing the pool. A plain table's code path is unchanged
+  (`docs/research/table-variable-height.md`).
+
 ## [0.63.0] - 2026-11-27
 
 ### Fixed
