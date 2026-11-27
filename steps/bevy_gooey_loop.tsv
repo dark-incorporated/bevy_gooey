@@ -24393,3 +24393,14 @@ pass	seq	phase	kind	category	tool	start	seconds	detail
 373	10	orient	model	model		2026-11-27T17:17:24Z	61.3	
 373	11	orient	model	model		2026-11-27T17:18:25Z	61.2	
 374	1	orient	model	model		2026-11-27T17:21:38Z	0.1	
+375	1	orient	model	model		2026-11-27T17:23:51Z	28.0	
+375	2	orient	model	model		2026-11-27T17:24:19Z	61.0	
+375	3	orient	model	model		2026-11-27T17:25:20Z	61.0	
+375	4	orient	model	model		2026-11-27T17:26:21Z	61.2	
+375	5	orient	model	model		2026-11-27T17:27:22Z	61.1	
+375	6	orient	model	model		2026-11-27T17:28:24Z	61.2	
+375	7	orient	model	model		2026-11-27T17:29:25Z	61.1	
+375	8	orient	model	model		2026-11-27T17:30:26Z	61.0	
+375	9	orient	model	model		2026-11-27T17:31:27Z	61.4	
+375	10	orient	model	model		2026-11-27T17:32:28Z	61.3	
+375	11	orient	model	model		2026-11-27T17:33:29Z	61.0	
