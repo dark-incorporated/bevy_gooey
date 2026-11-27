@@ -262,6 +262,10 @@ pub struct CodeBuffer {
     /// What was done to the lines since [`CodeBuffer::take_line_edits`], so what stands on a line
     /// number (a fold) can follow the text.
     line_edits: Vec<LineEdit>,
+    /// Each line's width in display columns, and how many lines are that wide: the widest is the
+    /// last key, so an edit updates the lines it replaced and nothing else.
+    widths: Vec<usize>,
+    width_counts: std::collections::BTreeMap<usize, usize>,
 }
 
 /// What an edit did to the line numbers: the lines after it are renumbered, a line it began on
@@ -279,7 +283,7 @@ pub(crate) enum LineEdit {
 }
 
 /// How many line edits are kept before they are given up for a [`LineEdit::Reset`].
-const LINE_EDIT_LOG: usize = 4096;
+pub(crate) const LINE_EDIT_LOG: usize = 4096;
 
 impl Default for CodeBuffer {
     fn default() -> Self {
@@ -345,6 +349,8 @@ impl CodeBuffer {
             tab_width: 4,
             indent: CodeIndent::default(),
             line_edits: Vec::new(),
+            widths: Vec::new(),
+            width_counts: std::collections::BTreeMap::new(),
         };
         buffer.load(text);
         buffer
@@ -362,6 +368,7 @@ impl CodeBuffer {
             _ => "\n",
         };
         self.lines = lines;
+        self.measure_all();
         self.line_edits.clear();
         self.line_edits.push(LineEdit::Reset);
         self.undo.clear();
@@ -441,7 +448,11 @@ impl CodeBuffer {
 
     /// Sets how wide a tab character is drawn (at least 1).
     pub fn set_tab_width(&mut self, width: usize) {
-        self.tab_width = width.max(1);
+        let width = width.max(1);
+        if width != self.tab_width {
+            self.tab_width = width;
+            self.measure_all();
+        }
     }
 
     /// How the Tab key indents.
@@ -542,12 +553,46 @@ impl CodeBuffer {
 
     /// The longest line's width in display columns.
     pub fn longest_cols(&self) -> usize {
-        // The line with the most bytes is the one that can be widest; a tab-heavy shorter line is
-        // not (a tab is a handful of columns, so this errs short only by what a tab adds).
-        self.lines
+        self.width_counts
+            .last_key_value()
+            .map_or(0, |(&width, _)| width)
+    }
+
+    /// Measures every line's width afresh: the whole text is walked, which only a load or a tab
+    /// width change needs.
+    fn measure_all(&mut self) {
+        self.widths.clear();
+        self.width_counts.clear();
+        for line in &self.lines {
+            let width = display_width(content(line), self.tab_width);
+            self.widths.push(width);
+            *self.width_counts.entry(width).or_default() += 1;
+        }
+    }
+
+    /// Measures the `inserted` lines now standing at `first` in place of the `removed` they
+    /// replaced, so [`CodeBuffer::longest_cols`] stays exact for the cost of the edit.
+    fn remeasure(&mut self, first: usize, removed: usize, inserted: usize) {
+        let old: Vec<usize> = self.widths.drain(first..first + removed).collect();
+        for width in old {
+            match self.width_counts.entry(width) {
+                std::collections::btree_map::Entry::Occupied(mut count) => {
+                    *count.get_mut() -= 1;
+                    if *count.get() == 0 {
+                        count.remove();
+                    }
+                }
+                std::collections::btree_map::Entry::Vacant(_) => {}
+            }
+        }
+        let fresh: Vec<usize> = self.lines[first..first + inserted]
             .iter()
-            .max_by_key(|line| content(line).len())
-            .map_or(0, |line| display_width(content(line), self.tab_width))
+            .map(|line| display_width(content(line), self.tab_width))
+            .collect();
+        for width in &fresh {
+            *self.width_counts.entry(*width).or_default() += 1;
+        }
+        self.widths.splice(first..first, fresh);
     }
 
     fn step_left(&self, pos: CodePos) -> CodePos {
@@ -833,6 +878,7 @@ impl CodeBuffer {
             });
         }
         self.lines.splice(a.line..=b.line, pieces);
+        self.remeasure(a.line, b.line - a.line + 1, last + 1);
         end
     }
 
