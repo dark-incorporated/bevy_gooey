@@ -37,8 +37,8 @@ use crate::clicks::DoublePress;
 use crate::list::ListView;
 use crate::model::{
     MIN_TARGET_PX, PAD_REPEAT_DELAY, PAD_REPEAT_RATE, SPLIT_KEY_STEP_PX, TABLE_LEAST_COLUMN,
-    TableStep, column_resize, natural_cmp, repeat_steps, scroll_to_reveal, table_anchor,
-    table_step, table_window, tree_indent, type_ahead,
+    TableStep, column_resize, natural_cmp, repeat_steps, row_tops, rows_in_view, scroll_to_reveal,
+    table_anchor, table_step, table_window, tree_indent, type_ahead,
 };
 use crate::motion::MotionSettings;
 use crate::nav::show_focus;
@@ -511,6 +511,17 @@ pub struct TableCache {
     pitch: f32,
     /// Each column's `wrap` as the pool's cells were spawned.
     wrapped: Vec<bool>,
+    /// Each display row's measured height in logical pixels, `0.0` for one the layout has not
+    /// answered for yet (it takes the pitch). A wrapping table windows on these.
+    heights: Vec<f32>,
+    /// Each row's top, and the content's end after the last one: one entry more than `heights`.
+    tops: Vec<f32>,
+    /// The earliest row whose height moved since `tops` was summed, so only the rows after it are
+    /// walked again.
+    tops_dirty: Option<usize>,
+    /// The scroll's end as the frame before measured it: a table that was scrolled to its end stays
+    /// there when a row measured tall makes the content longer.
+    max: f32,
     /// The source's [`RowSource::revision`] this cache was last made from.
     seen: u64,
 }
@@ -1119,8 +1130,9 @@ pub fn update_tables(
         let len = table.source.len();
         let columns = table.columns.len();
         // A wrapping column makes the rows differ in height, so the pitch arithmetic that windows
-        // a table (which row is at a scroll, how long the scroll is) does not hold: such a table
-        // binds every row and reads its lengths from the layout.
+        // a table does not hold: such a table windows on its rows' **measured** heights, a row
+        // the layout has not answered for yet counting as one pitch (which is what it is until its
+        // words are laid out, so the first frame is the pitch window it always was).
         let wraps = table.columns.iter().any(|c| c.wrap);
         if !cache
             .wrapped
@@ -1166,18 +1178,56 @@ pub fn update_tables(
             view.rows = rows_tall.0;
         }
         let tall = rows_tall.0.max(0.0);
+        // Whether the table was scrolled to its end as the frame before drew it.
+        let was_at_end = wraps && cache.max > 0.0 && scroll.y >= cache.max - 0.5;
+        // The wrapping rows' heights: the pool bound last frame is what the layout has answered
+        // for, at the display rows this cache drew it at.
+        if wraps {
+            if cache.heights.len() != len {
+                cache.heights.clear();
+                cache.heights.resize(len, 0.0);
+                cache.tops_dirty = Some(0);
+            }
+            let drew_at = cache.first;
+            for (slot, bound) in cache.pool.iter().enumerate() {
+                let index = drew_at + slot;
+                let Ok(node) = laid_out.get(bound.row) else {
+                    continue;
+                };
+                let height = node.size().y * node.inverse_scale_factor;
+                let Some(stored) = cache.heights.get_mut(index) else {
+                    continue;
+                };
+                // Layout rounds to device pixels, so a reading a fraction off what was stored is
+                // the same row: only a real move re-sums the rows after it.
+                if (*stored - height).abs() > 0.5 {
+                    *stored = height;
+                    cache.tops_dirty = Some(cache.tops_dirty.map_or(index, |d| d.min(index)));
+                }
+            }
+            if let Some(from) = cache.tops_dirty.take() {
+                row_tops(&mut cache.tops, &cache.heights, from, pitch);
+            }
+        }
         let (view_h, max) = if wraps {
-            laid_out.get(parts.view).map_or((0.0, 0.0), |node| {
-                let to_logical = node.inverse_scale_factor;
-                let inside = node.size().y * to_logical;
-                let content = node.content_size().y * to_logical;
-                (inside, (content - inside).max(0.0))
-            })
+            let inside = laid_out.get(parts.view).map_or(0.0, |node| {
+                node.size().y * node.inverse_scale_factor
+            });
+            let content = cache.tops.get(len).copied().unwrap_or(0.0);
+            (inside, (content - inside).max(0.0))
         } else {
             let view_h = (tall * pitch).min(len as f32 * pitch);
             (view_h, (len as f32 * pitch - view_h).max(0.0))
         };
         let mut y = scroll.y.clamp(0.0, max);
+        // A row that measured taller than its pitch makes the content longer under a table the
+        // player had scrolled to the end: the end is where they put it, so follow the content or
+        // they can never reach the last row.
+        if was_at_end && max > cache.max + 0.5 {
+            y = max;
+            scroll.y = max;
+        }
+        cache.max = max;
 
         if let Some((row, count @ 1..)) = patch {
             // The rows the source added, at display row `row`. With no sort the order is the
@@ -1205,7 +1255,13 @@ pub fn update_tables(
                 if table.is_changed() {
                     // Rows came or went: the row at the top stays at the top.
                     let now = cache.index_of(old_first_key);
-                    if !wraps {
+                    if wraps {
+                        // The row that was at the top keeps that place: its own top is where the
+                        // scroll goes, however many rows came or went above it.
+                        if let Some(top) = now.and_then(|i| cache.tops.get(i)).copied() {
+                            y = top.clamp(0.0, max);
+                        }
+                    } else {
                         y = table_anchor(y, pitch, old_first, now, max);
                     }
                     // A selected row that is gone is no longer selected (a tree's node under a
@@ -1244,6 +1300,12 @@ pub fn update_tables(
         }
         if rebuilt || patch.is_some() {
             cache.seen = table.source.revision();
+            // The rows' places in the table changed (a sort, an insertion), so no row is where it
+            // was measured: every height is unknown again and the walk starts from the top.
+            if wraps && !fresh {
+                cache.heights.fill(0.0);
+                cache.tops_dirty = Some(0);
+            }
         }
         // The table moved the scroll itself this frame (a sort starts from the top, the rows
         // shrank): a glide that was running is over, and a request starts from `y`.
@@ -1255,18 +1317,10 @@ pub fn update_tables(
             cache.follow = false;
             if let Some(i) = cache.index_of(cursor.0) {
                 let (top, bottom) = if wraps {
-                    // The rows' laid-out heights (a row not laid out yet is a pitch).
-                    let height = |slot: &PoolRow| {
-                        laid_out
-                            .get(slot.row)
-                            .ok()
-                            .map(|node| node.size().y * node.inverse_scale_factor)
-                            .filter(|h| *h > 0.0)
-                            .unwrap_or(pitch)
-                    };
-                    let top: f32 = cache.pool.iter().take(i).map(height).sum();
-                    let own = cache.pool.get(i).map_or(pitch, height);
-                    (top, top + own)
+                    // The row's own place, from the heights the pool measured.
+                    let top = cache.tops.get(i).copied().unwrap_or(i as f32 * pitch);
+                    let bottom = cache.tops.get(i + 1).copied().unwrap_or(top + pitch);
+                    (top, bottom)
                 } else {
                     (i as f32 * pitch, (i + 1) as f32 * pitch)
                 };
@@ -1293,12 +1347,15 @@ pub fn update_tables(
             scroll.y = y;
         }
 
-        let pool = if wraps {
-            len
+        // The window. A table of one-pitch rows is arithmetic; a wrapping table asks the rows it
+        // has measured where the scroll falls, and binds those in view and the cut one after.
+        let (first, pool) = if wraps {
+            let (first, end) = rows_in_view(y, view_h, &cache.tops);
+            (first, (end - first + 1).max(1).min(len.saturating_sub(first)))
         } else {
-            (tall.ceil() as usize + 1).min(len)
+            let pool = (tall.ceil() as usize + 1).min(len);
+            (table_window(y, pitch, pool, len), pool)
         };
-        let first = table_window(y, pitch, pool, len);
         let moved = first != cache.first || pool != cache.pool.len() || rebuilt || patch.is_some();
         let resized = cache.text_px != text_px || cache.pitch != pitch;
         cache.first = first;
@@ -1426,10 +1483,25 @@ pub fn update_tables(
             cache.pool.push(PoolRow { row, cells, lead });
         }
 
-        // The room the rows not drawn would take, above and below the pool.
+        // The room the rows not drawn would take, above and below the pool: a pitch each, or the
+        // measured height of the rows the pool has already been laid out at.
         if let Ok(mut column) = nodes.get_mut(parts.rows) {
-            let above = Val::Px(first as f32 * pitch);
-            let below = Val::Px(len.saturating_sub(first + cache.pool.len()) as f32 * pitch);
+            let (above, below) = if wraps {
+                let end = cache.tops.get(len).copied().unwrap_or(0.0);
+                let top = cache.tops.get(first).copied().unwrap_or(0.0);
+                let after = cache
+                    .tops
+                    .get(first + cache.pool.len())
+                    .copied()
+                    .unwrap_or(end);
+                (top, (end - after).max(0.0))
+            } else {
+                (
+                    first as f32 * pitch,
+                    len.saturating_sub(first + cache.pool.len()) as f32 * pitch,
+                )
+            };
+            let (above, below) = (Val::Px(above), Val::Px(below));
             if column.padding.top != above || column.padding.bottom != below {
                 column.padding.top = above;
                 column.padding.bottom = below;
