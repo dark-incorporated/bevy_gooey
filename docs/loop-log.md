@@ -3878,3 +3878,51 @@ incremental wrap-map rebuild from `take_line_edits` (a prose pane rebuilds its w
 keystroke, median 9.7 ms at 20,000 lines); (3) windowed variable-height table; (4) a `problems()`
 note for a divider under 24 px; (5) a livelier dark-skin `warning` plate. The indent guides under
 soft wrap were read and reported, not edited (see above).
+
+## Iteration 113 — 2026-11-27 — `quiet_chip`: a chip the pointer reaches and the focus does not (#121)
+
+**What and why.** The one open issue, #121, and the last control without a quiet variant. `button`
+has `plain_button`, `list_row` has `quiet_list_row`, `status_item` has `status_item_quiet`; a `chip`
+had only the `Activate`-bus one. The Dark Factory editor keeps focus traversal off by design (its
+own `focus_traversal_stays_off_until_somebody_reopens_it` refuses a `TabIndex`), so with `chip()` it
+would take a tab stop and an `Activate` it has decided against — and a hand-built `Role::Chip` node
+is the second implementation the kit exists to end (its `chrome::chip`, 16 call sites).
+
+**What shipped.** `quiet_chip(label)`: `Node::default()`, `Role::Chip`, `Hovered::default()` and one
+`Role::ChipText` child carrying the chip's `CHIP_TEXT` break rule. No `Button`, no `TabIndex`, no
+`AutoDirectionalNavigation`. Because the role is the same, **no skin code changed**: the fill,
+frame, radius, padding, hit floor and every state colour are the one `Role::Chip` arm; the pointer
+still lights it (only a `Button` was ever needed for `Activate`), and the host's `Selected` is the
+lit look. Re-exported flat from `lib.rs`.
+
+**Assumed decisions (on #121, `assumed-decision` labeled).** (1) No pressed look and no quiet
+`toggle_chip`: `Pressed` is Bevy `Button`'s state and the other quiet variants have none; a quiet
+toggle cannot hear `Activate`, so it could only be a host-written flip plus a host-sent
+`ValueChange`, which is the host's one path. (2) The a11y role stays the container
+`update_accessibility` gives a role-less widget (the `plain_button` precedent) rather than declaring
+`Button` with no `Click` behind it; the label is the words, which is what the acceptance asks, and
+the docs say plainly that `chip` is the one for anything a reader must activate. Both are on the
+issue with the option each rejected.
+
+**Tests** (`tests/chip.rs`, four, each mutation-checked): the component set (putting `Button` +
+`TabIndex` back fails it); the look equal to a `chip`'s in all four presets — rest, hovered, lit and
+lit-hovered fills, the inks, and **the same laid-out box** — with no `Activate` and no
+`ValueChange<bool>` when `Selected` comes and goes; a real click reaching only the host, and Tab
+from the `chip` beside it never landing on it (putting `TabIndex` back fails it); and its words as
+its `AccessibilityNode` label with no declared `Click`.
+
+**Docs and demo.** README's chrome bullet, `docs/guide/layout.md`'s parts table and
+`docs/guide/catalogue.md`, the CHANGELOG, and `docs/research/chip-quiet.md` (source 1 is WCAG 2.2
+SC 2.1.1's own note that not every pointer control must be keyboard focusable, which is the
+standard's line on when a quiet variant is conformant; source 4 is the editor's gate). The still
+`docs/media/chip.png` now shows six chips including the quiet one and its row in
+`docs/media/README.md` says so.
+
+**Checklist.** fmt, clippy `-D warnings`, nextest, doctests, `cargo check --lib`, wasm32,
+`cargo doc -D warnings` — see below for the counts.
+
+**Top 5 backlog.** (1) crates.io token still 403 from 0.51.9 through 0.61.0 (owner must reissue;
+0.62.0 joins the pending list); (2) incremental wrap-map rebuild from `take_line_edits` (a prose
+pane rebuilds its whole wrap on one keystroke, median 9.7 ms at 20,000 lines); (3) windowed
+variable-height table; (4) a `problems()` note for a divider under 24 px; (5) the indent guides
+under soft wrap (read and reported, not edited).
