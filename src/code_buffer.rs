@@ -262,6 +262,9 @@ pub struct CodeBuffer {
     /// What was done to the lines since [`CodeBuffer::take_line_edits`], so what stands on a line
     /// number (a fold) can follow the text.
     line_edits: Vec<LineEdit>,
+    /// How many lines are each width in display columns: the widest is the last key, so an edit
+    /// touches only the widths of the lines it replaced.
+    width_counts: std::collections::BTreeMap<usize, usize>,
 }
 
 /// What an edit did to the line numbers: the lines after it are renumbered, a line it began on
@@ -279,7 +282,7 @@ pub(crate) enum LineEdit {
 }
 
 /// How many line edits are kept before they are given up for a [`LineEdit::Reset`].
-const LINE_EDIT_LOG: usize = 4096;
+pub(crate) const LINE_EDIT_LOG: usize = 4096;
 
 impl Default for CodeBuffer {
     fn default() -> Self {
@@ -345,6 +348,7 @@ impl CodeBuffer {
             tab_width: 4,
             indent: CodeIndent::default(),
             line_edits: Vec::new(),
+            width_counts: std::collections::BTreeMap::new(),
         };
         buffer.load(text);
         buffer
@@ -362,6 +366,7 @@ impl CodeBuffer {
             _ => "\n",
         };
         self.lines = lines;
+        self.measure_all();
         self.line_edits.clear();
         self.line_edits.push(LineEdit::Reset);
         self.undo.clear();
@@ -441,7 +446,11 @@ impl CodeBuffer {
 
     /// Sets how wide a tab character is drawn (at least 1).
     pub fn set_tab_width(&mut self, width: usize) {
-        self.tab_width = width.max(1);
+        let width = width.max(1);
+        if width != self.tab_width {
+            self.tab_width = width;
+            self.measure_all();
+        }
     }
 
     /// How the Tab key indents.
@@ -542,12 +551,45 @@ impl CodeBuffer {
 
     /// The longest line's width in display columns.
     pub fn longest_cols(&self) -> usize {
-        // The line with the most bytes is the one that can be widest; a tab-heavy shorter line is
-        // not (a tab is a handful of columns, so this errs short only by what a tab adds).
-        self.lines
-            .iter()
-            .max_by_key(|line| content(line).len())
-            .map_or(0, |line| display_width(content(line), self.tab_width))
+        self.width_counts
+            .last_key_value()
+            .map_or(0, |(&width, _)| width)
+    }
+
+    /// Measures every line's width afresh: the whole text is walked, which only a load or a tab
+    /// width change needs.
+    fn measure_all(&mut self) {
+        self.width_counts.clear();
+        for line in &self.lines {
+            *self
+                .width_counts
+                .entry(display_width(content(line), self.tab_width))
+                .or_default() += 1;
+        }
+    }
+
+    /// Drops the widths of the lines `gone` and takes the widths of the lines `fresh`: one map
+    /// entry per line the edit touched, so a replace-all of `n` single-line edits stays linear.
+    fn remeasure(&mut self, gone: &[usize], fresh: &[String]) {
+        let tab = self.tab_width;
+        for &width in gone {
+            let empty = match self.width_counts.get_mut(&width) {
+                Some(count) => {
+                    *count -= 1;
+                    *count == 0
+                }
+                None => false,
+            };
+            if empty {
+                self.width_counts.remove(&width);
+            }
+        }
+        for line in fresh {
+            *self
+                .width_counts
+                .entry(display_width(content(line), tab))
+                .or_default() += 1;
+        }
     }
 
     fn step_left(&self, pos: CodePos) -> CodePos {
@@ -832,6 +874,12 @@ impl CodeBuffer {
                 inserted: pieces.len(),
             });
         }
+        let tab = self.tab_width;
+        let gone: Vec<usize> = self.lines[a.line..=b.line]
+            .iter()
+            .map(|line| display_width(content(line), tab))
+            .collect();
+        self.remeasure(&gone, &pieces);
         self.lines.splice(a.line..=b.line, pieces);
         end
     }
@@ -1407,6 +1455,65 @@ pub fn expand_slice(line: &str, from: usize, to: usize, tab: usize) -> String {
 
 #[cfg(test)]
 mod tests {
+    /// The widest line is a fact about the text, and the buffer's cache of it answers the same
+    /// after any edit as a fresh walk of the lines does — a tab width change and a text load
+    /// included.
+    #[test]
+    fn the_widest_line_is_exact_after_every_kind_of_edit() {
+        let mut buffer = CodeBuffer::new("alpha\nbeta beta\n\tg\n");
+        let fresh = |buffer: &CodeBuffer| {
+            let tab = buffer.tab_width();
+            (0..buffer.len_lines())
+                .map(|line| display_width(buffer.line(line), tab))
+                .max()
+                .unwrap_or(0)
+        };
+        let mut seed: u64 = 0x1234_5678_9abc_def1;
+        let mut next = move |n: usize| {
+            seed = seed
+                .wrapping_mul(6_364_136_223_846_793_005)
+                .wrapping_add(1_442_695_040_888_963_407);
+            ((seed >> 33) % n as u64) as usize
+        };
+        for step in 0..300 {
+            match next(6) {
+                0 => {
+                    let line = next(buffer.len_lines());
+                    let mut col = next(buffer.line(line).len() + 1);
+                    while !buffer.line(line).is_char_boundary(col) {
+                        col -= 1;
+                    }
+                    buffer.select(CodePos::new(line, col), CodePos::new(line, col));
+                    buffer.insert(if next(2) == 0 { "w\t" } else { "wide-word " }, 0.0);
+                }
+                1 => {
+                    let line = next(buffer.len_lines());
+                    buffer.select(
+                        CodePos::new(line, 0),
+                        CodePos::new(line, buffer.line(line).len()),
+                    );
+                    buffer.delete_forward(false, 0.0);
+                }
+                2 => {
+                    let line = next(buffer.len_lines());
+                    buffer.select(CodePos::new(line, 0), CodePos::new(line, 0));
+                    buffer.insert("one\ntwo\nthree", 0.0);
+                }
+                3 => {
+                    buffer.undo();
+                }
+                4 => buffer.set_tab_width(1 + next(9)),
+                _ => buffer.load(&format!("loaded {}\n{}\t{}", next(40), next(9), next(9))),
+            }
+            assert_eq!(
+                buffer.longest_cols(),
+                fresh(&buffer),
+                "step {step} disagreed with a walk of the lines"
+            );
+        }
+    }
+
+
     use super::*;
 
     fn typed(buffer: &mut CodeBuffer, text: &str, mut now: f64) -> f64 {

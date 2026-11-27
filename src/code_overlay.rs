@@ -198,6 +198,7 @@ pub(crate) fn update_code_folds(
         // The text moved under the folds: they follow it, so a fold stays on the lines it was
         // made on, until the host answers for the new revision.
         let edits = editor.buffer.take_line_edits();
+        editor.fold.follow_edits(&edits);
         if !edits.is_empty() {
             dirty |= follow_the_text(
                 &edits,

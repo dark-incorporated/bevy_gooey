@@ -1157,3 +1157,69 @@ fn a_settled_wrapped_editor_writes_nothing() {
     }
     assert_eq!(node_ticks(&app, editor), before);
 }
+
+// -- #122: a keystroke in a wrapped pane costs what the pane draws, not the file --
+
+/// The time of one frame in which one character was typed, median of `rounds`, after two warm-up
+/// rounds. The caret sits where it was when the helper was entered, so the typing grows the text
+/// it is in.
+fn typed_frame_ms(app: &mut App, rounds: usize) -> f64 {
+    let mut times = Vec::new();
+    for round in 0..rounds + 2 {
+        let window = window(app);
+        let text = ((b'a' + (round % 26) as u8) as char).to_string();
+        app.world_mut().write_message(KeyboardInput {
+            key_code: KeyCode::KeyA,
+            logical_key: Key::Character(text.as_str().into()),
+            state: ButtonState::Pressed,
+            text: Some(text.clone().into()),
+            repeat: false,
+            window,
+        });
+        let began = Instant::now();
+        app.update();
+        let spent = began.elapsed().as_secs_f64() * 1000.0;
+        app.world_mut().write_message(KeyboardInput {
+            key_code: KeyCode::KeyA,
+            logical_key: Key::Character(text.as_str().into()),
+            state: ButtonState::Released,
+            text: None,
+            repeat: false,
+            window,
+        });
+        app.update();
+        if round >= 2 {
+            times.push(spent);
+        }
+    }
+    times.sort_by(|a, b| a.total_cmp(b));
+    times[times.len() / 2]
+}
+
+/// `n` lines, each about `width` characters of prose.
+fn prose_lines(n: usize, width: usize) -> String {
+    let mut text = String::new();
+    for i in 0..n {
+        let mut line = String::new();
+        while line.len() < width {
+            line.push_str(&format!("w{i} "));
+        }
+        line.push('\n');
+        text.push_str(&line);
+    }
+    text
+}
+
+#[test]
+fn typing_in_a_wrapped_20000_line_file_costs_what_typing_in_a_20_line_one_does() {
+    let mut small = app();
+    wrapped_editor_of(&mut small, &prose_lines(20, 100));
+    let mut big = app();
+    wrapped_editor_of(&mut big, &prose_lines(20_000, 100));
+    let small_ms = typed_frame_ms(&mut small, 5);
+    let big_ms = typed_frame_ms(&mut big, 5);
+    assert!(
+        big_ms <= small_ms * f64::from(PERF_BUDGET),
+        "a keystroke in 20,000 wrapped lines took {big_ms:.2} ms to 20 lines' {small_ms:.2} ms"
+    );
+}
