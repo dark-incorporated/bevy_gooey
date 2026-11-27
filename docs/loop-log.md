@@ -4159,9 +4159,9 @@ are not on screen. Under soft wrap the band counts **lines**, not rows, because 
 **Tests.** `code_navigation::the_minimap_band_is_as_tall_as_the_lines_in_view_wherever_the_view_stands`
 (a 400-line file, the band's height in 3 px slots read at the top, at line 30, line 200 and line 380,
 each within one slot of the view's own `visible_lines()`), plus the parked pass's
-`under_soft_wrap_the_minimap_band_is_as_tall_as_the_lines_in_view`. Mutation-checked: restoring the
-double `first_row` fails the first test at stand 1 (the band is 2x too tall); taking `needed` back
-instead of `rows_in_view` fails it at the end of the file.
+`under_soft_wrap_the_minimap_band_is_as_tall_as_the_lines_in_view`. Mutation-checked on this tree, one
+run each: restoring the double `first_row` fails it, and so does taking the pool's `needed` back in
+place of `rows_in_view`; with the fix both pass in 2.2 s.
 
 **Checklist, before -> after** (`/tmp/g116/before` vs `after`, the lane cropped from the same
 1280x720 dark frame each time, band measured from its frame in the PNG):
