@@ -3987,6 +3987,20 @@ with the before and after numbers), and `docs/research/code-wrap-incremental.md`
 limit, xi's incremental wrapping, VS Code's text buffer, Roblox Studio's editor; the line-granular
 model and its equivalence rule; the tail-shift-vs-balance-tree deviation).
 
+**Checklist.** fmt, clippy `-D warnings`, nextest **1726 of 1727** (the one failure,
+`split::a_double_click_collapses_the_first_pane_and_a_second_gives_it_back`, is a wall-clock
+double-click test that passes alone in 1.5 s; it failed at load 28 and has no wrap code in it),
+doctests **360**, `cargo check --lib`, wasm32, `cargo doc -D warnings` — all green on `6aa6645`.
+
+**Release.** 0.63.0: `Cargo.toml`, the CHANGELOG section, the README compat row
+(`0.1 - 0.63.0 and main`) and the code inside one commit range; `cargo publish --dry-run` packaged
+100 files (676.6 KiB compressed) and verified the tarball. The real `cargo publish` was refused
+**403 Forbidden** (authentication failed): the same broken token as every release since 0.51.9, so
+0.51.9 through 0.63.0 are pending the owner's new token. Logged once, not retried.
+
+**Demo.** Not visible: a keystroke draws the same pixels before and after, only sooner, so no new
+medium; the guide's prose GIF (`docs/media/prose.png`) is the pane this changes and stands as it is.
+
 **Pending index.** home-still holds no text-editor sources (`code-soft-wrap.md` recorded the same);
 the technical sources above were read directly.
 
