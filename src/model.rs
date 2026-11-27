@@ -4351,3 +4351,134 @@ mod tests {
         assert_eq!(spring.scaled(f32::NAN), spring);
     }
 }
+
+/// Where a virtualized table with rows of differing heights draws: `(first, end)`, the display
+/// rows in view from the offset `scroll` and the viewport `view` tall.
+///
+/// `tops` holds each row's top and, one entry past the last row, the content's end: `tops.len()`
+/// is one more than the number of rows, so a table that has not measured a row yet gives it the
+/// pitch and the answer is still a place. A row half above the top is the first one drawn (a
+/// scroll is not a row boundary), and a row that starts within the viewport is drawn even if only
+/// its first pixel is inside, so the cut row at the bottom is there to say there is more.
+///
+/// ```
+/// use bevy_gooey::rows_in_view;
+/// // Three rows 40, 60, 40 tall; content 140.
+/// let tops = [0.0, 40.0, 100.0, 140.0];
+/// assert_eq!(rows_in_view(0.0, 100.0, &tops), (0, 2));
+/// assert_eq!(rows_in_view(50.0, 100.0, &tops), (1, 3));
+/// assert_eq!(rows_in_view(100.0, 40.0, &tops), (2, 3));
+/// // A scroll at the end, a view taller than the content, and a scroll that is not usable.
+/// assert_eq!(rows_in_view(140.0, 100.0, &tops), (2, 3));
+/// assert_eq!(rows_in_view(0.0, 1000.0, &tops), (0, 3));
+/// assert_eq!(rows_in_view(f32::NAN, 100.0, &tops), (0, 2));
+/// assert_eq!(rows_in_view(0.0, f32::NAN, &tops), (0, 2));
+/// // No rows at all.
+/// assert_eq!(rows_in_view(0.0, 100.0, &[0.0]), (0, 0));
+/// ```
+pub fn rows_in_view(scroll: f32, view: f32, tops: &[f32]) -> (usize, usize) {
+    let len = tops.len().saturating_sub(1);
+    if len == 0 {
+        return (0, 0);
+    }
+    if !scroll.is_finite() || !view.is_finite() || view <= 0.0 {
+        return (0, 0);
+    }
+    let scroll = scroll.max(0.0);
+    // The row whose box holds the scroll: the last one starting at or above it.
+    let first = tops[..len]
+        .partition_point(|&top| top <= scroll)
+        .saturating_sub(1);
+    let bottom = scroll + view;
+    let end = tops[..len].partition_point(|&top| top < bottom);
+    let end = end.clamp(first + 1, len);
+    (first, end)
+}
+
+/// The top of every row, from the rows' `heights` (`0.0`, or a height that is not positive and
+/// finite, is a row not measured yet: it takes the `pitch`). `tops` is filled from `from` on, so
+/// a table that has measured one row in the middle moves the rows after it and no others; it is
+/// grown to `heights.len() + 1` entries, the last being the content's end. `from` past the end
+/// is no work.
+pub fn row_tops(tops: &mut Vec<f32>, heights: &[f32], from: usize, pitch: f32) {
+    let pitch = if pitch.is_finite() && pitch > 0.0 { pitch } else { 1.0 };
+    tops.resize(heights.len() + 1, 0.0);
+    let from = from.min(heights.len());
+    if from == 0 {
+        tops[0] = 0.0;
+    }
+    for i in from..heights.len() {
+        let height = heights[i];
+        let height = if height.is_finite() && height > 0.0 { height } else { pitch };
+        tops[i + 1] = tops[i] + height;
+    }
+}
+
+#[cfg(test)]
+mod row_window_tests {
+    use super::*;
+
+    /// A row's height in the order the table measures it: unknown is the pitch.
+    fn heights_of(pitch: f32, measured: &[(usize, f32)], len: usize) -> Vec<f32> {
+        let mut heights = vec![0.0; len];
+        for &(i, h) in measured {
+            heights[i] = h;
+        }
+        let mut tops = Vec::new();
+        row_tops(&mut tops, &heights, 0, pitch);
+        tops
+    }
+
+    #[test]
+    fn an_unmeasured_table_is_the_pitch_one() {
+        // Every row unmeasured: the same answer `table_window` gives, one row at a time.
+        let pitch = 40.0;
+        let tops = heights_of(pitch, &[], 1000);
+        for scroll in [0.0f32, 39.0, 40.0, 41.0, 400.0, 399.0, 1.0e6] {
+            let (first, end) = rows_in_view(scroll, 340.0, &tops);
+            assert_eq!(first, table_window(scroll, pitch, 10, 1000), "at {scroll}");
+            assert_eq!(end - first, 9, "a 340 px view of 40 px rows at {scroll}");
+        }
+    }
+
+    #[test]
+    fn a_measured_row_moves_the_rows_after_it_and_no_others() {
+        let mut heights = vec![0.0; 5];
+        let mut tops = Vec::new();
+        row_tops(&mut tops, &heights, 0, 40.0);
+        assert_eq!(tops, vec![0.0, 40.0, 80.0, 120.0, 160.0, 200.0]);
+        // Row 1 stands on three lines instead of one.
+        heights[1] = 120.0;
+        row_tops(&mut tops, &heights, 1, 40.0);
+        assert_eq!(tops, vec![0.0, 40.0, 160.0, 200.0, 240.0, 280.0]);
+        // The rows before it are where they were, and one that is not usable is the pitch.
+        heights[3] = f32::NAN;
+        row_tops(&mut tops, &heights, 3, 40.0);
+        assert_eq!(tops, vec![0.0, 40.0, 160.0, 200.0, 240.0, 280.0]);
+        heights[3] = -3.0;
+        row_tops(&mut tops, &heights, 3, 40.0);
+        assert_eq!(tops[4], 240.0);
+    }
+
+    #[test]
+    fn a_row_is_drawn_when_any_of_it_is_in_the_view() {
+        let tops = heights_of(40.0, &[(0, 100.0)], 4);
+        // 0..100, 100..140, 140..180, 180..220.
+        assert_eq!(rows_in_view(0.0, 100.0, &tops), (0, 1));
+        assert_eq!(rows_in_view(0.0, 101.0, &tops), (0, 2));
+        assert_eq!(rows_in_view(99.0, 41.0, &tops), (0, 3));
+        assert_eq!(rows_in_view(100.0, 80.0, &tops), (1, 3));
+        // Exactly the end of the content draws the last row; there is nowhere else to be.
+        assert_eq!(rows_in_view(220.0, 80.0, &tops), (3, 4));
+        assert_eq!(rows_in_view(1.0e9, 80.0, &tops), (3, 4));
+    }
+
+    #[test]
+    fn a_bad_scroll_or_view_draws_the_top_and_no_rows() {
+        let tops = heights_of(40.0, &[], 10);
+        assert_eq!(rows_in_view(f32::NAN, 100.0, &tops), (0, 0));
+        assert_eq!(rows_in_view(0.0, 0.0, &tops), (0, 0));
+        assert_eq!(rows_in_view(0.0, -10.0, &tops), (0, 0));
+        assert_eq!(rows_in_view(-40.0, 80.0, &tops), (0, 2));
+    }
+}
