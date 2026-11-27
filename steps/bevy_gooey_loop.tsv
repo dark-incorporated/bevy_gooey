@@ -23547,3 +23547,736 @@ pass	seq	phase	kind	category	tool	start	seconds	detail
 358	406	release	model	model		2026-11-27T14:26:56Z	0.9	
 358	407	log	tool	phase mark	bash	2026-11-27T14:26:57Z	0.1	cd /home/ladvien/bevy_gooey_loop && python3 ~/.local/share/wiggum/steps.py mark log 2>&1|tail -1; git status --short; git log --oneline origin/main -3
 358	408	log	model	model		2026-11-27T14:26:57Z	1.7	
+359	1	orient	model	model		2026-11-27T14:27:27Z	1.5	
+359	2	orient	tool	phase mark	bash	2026-11-27T14:27:28Z	0.2	python3 ~/.local/share/wiggum/steps.py mark orient; echo "---"; git log --oneline -8; echo "---"; git status --short; echo "---"; tail -60 docs/loop-log.md
+359	3	orient	model	model		2026-11-27T14:27:29Z	1.2	
+359	4	orient	tool	shell	bash	2026-11-27T14:27:30Z	0.8	cd ~/bevy_gooey_loop; grep -n '^## Iteration' docs/loop-log.md | tail -5; echo "--- audit"; git fetch -q origin loop-stats 2>/dev/null && git show origin/loop-s
+359	5	orient	model	model		2026-11-27T14:27:31Z	1.6	
+359	6	orient	tool	github	bash	2026-11-27T14:27:32Z	0.6	cd ~/bevy_gooey_loop; gh issue list --repo bevy-coven/bevy_gooey --state open --limit 100 --json number,title,labels,createdAt --jq '.[] | "#\(.number) \(.title
+359	7	orient	model	model		2026-11-27T14:27:33Z	1.2	
+359	8	orient	tool	github	bash	2026-11-27T14:27:34Z	1.2	cd ~/bevy_gooey_loop; gh issue view 121 --repo bevy-coven/bevy_gooey --json state,title,body,comments --jq '{state,title,body,comments:[.comments[]|{author:.aut
+359	9	orient	model	model		2026-11-27T14:27:35Z	5.0	
+359	10	orient	tool	github	bash	2026-11-27T14:27:40Z	0.5	cd ~/bevy_gooey_loop; gh issue view 121 --repo bevy-coven/bevy_gooey --json state,closedAt,closedByPullRequestsReferences --jq '[.state,.closedAt]' 2>&1; echo "
+359	11	orient	model	model		2026-11-27T14:27:41Z	1.1	
+359	12	orient	tool	github	bash	2026-11-27T14:27:42Z	1.5	cd ~/bevy_gooey_loop; gh issue close 121 --repo bevy-coven/bevy_gooey --reason "not planned" 2>&1 | head -3 || gh issue comment 121 --repo bevy-coven/bevy_gooey
+359	13	orient	model	model		2026-11-27T14:27:43Z	1.7	
+359	14	orient	tool	github	bash	2026-11-27T14:27:45Z	4.6	cd ~/bevy_gooey_loop; gh issue reopen 121 --repo bevy-coven/bevy_gooey 2>&1; gh issue comment 121 --repo bevy-coven/bevy_gooey --body 'Shipped: `quiet_chip(labe
+359	15	orient	model	model		2026-11-27T14:27:50Z	2.1	
+359	16	orient	tool	shell	bash	2026-11-27T14:27:52Z	0.0	cd ~/bevy_gooey_loop; wc -l src/table.rs src/code_fold.rs; grep -n 'pool\|wrapped\|view_h\|row_sizing\|pitch' src/table.rs | head -60
+359	17	orient	model	model		2026-11-27T14:27:52Z	1.5	
+359	18	choose	tool	phase mark	bash	2026-11-27T14:27:53Z	0.1	cd ~/bevy_gooey_loop; python3 ~/.local/share/wiggum/steps.py mark choose >/dev/null; sed -n '1093,1210p' src/table.rs
+359	19	choose	model	model		2026-11-27T14:27:53Z	2.4	
+359	20	choose	tool	shell	bash	2026-11-27T14:27:56Z	0.0	cd ~/bevy_gooey_loop; sed -n '1210,1305p' src/table.rs
+359	21	choose	model	model		2026-11-27T14:27:56Z	7.2	
+359	22	choose	tool	shell	bash	2026-11-27T14:28:03Z	0.0	cd ~/bevy_gooey_loop; grep -rn 'wrap' tests/table.rs | head -20; echo "=== guide"; grep -rn 'wrap' docs/guide/table.md | head -20
+359	23	choose	model	model		2026-11-27T14:28:03Z	0.8	
+359	24	choose	tool	shell	bash	2026-11-27T14:28:04Z	0.0	cd ~/bevy_gooey_loop; sed -n '1000,1160p' tests/table.rs
+359	25	choose	model	model		2026-11-27T14:28:04Z	5.0	
+359	26	choose	tool	shell	bash	2026-11-27T14:28:09Z	0.0	cd ~/bevy_gooey_loop; sed -n '1,60p' src/table.rs
+359	27	choose	model	model		2026-11-27T14:28:09Z	1.3	
+359	28	choose	tool	shell	bash	2026-11-27T14:28:10Z	0.1	cd ~/bevy_gooey_loop; grep -rn 'scroll_y\|ScrollArea' src/table.rs | head; echo "=== ListView/wrapping tests count"; grep -c '#\[test\]' tests/table.rs; echo "=
+359	29	choose	model	model		2026-11-27T14:28:10Z	1.5	
+359	30	choose	tool	shell	bash	2026-11-27T14:28:12Z	0.0	cd ~/bevy_gooey_loop; grep -n 'fn .*cost\|PERF\|Instant\|mean_ms' tests/table.rs | head -20
+359	31	choose	model	model		2026-11-27T14:28:12Z	0.9	
+359	32	choose	tool	shell	bash	2026-11-27T14:28:13Z	0.0	cd ~/bevy_gooey_loop; grep -n 'fn rows_that\|rows_that_fit\|table_rows' src/widgets.rs | head; echo ===; sed -n '/fn rows_that_fit\|fn table_rows/,+30p' src/wid
+359	33	choose	model	model		2026-11-27T14:28:13Z	0.8	
+359	34	choose	tool	shell	bash	2026-11-27T14:28:13Z	0.0	cd ~/bevy_gooey_loop; grep -rn 'TableRows\|DEFAULT_ROWS' src/*.rs | head -20
+359	35	choose	model	model		2026-11-27T14:28:13Z	0.8	
+359	36	choose	tool	shell	bash	2026-11-27T14:28:14Z	0.0	cd ~/bevy_gooey_loop; sed -n '990,1050p' src/table.rs
+359	37	choose	model	model		2026-11-27T14:28:14Z	6.5	
+359	38	choose	tool	shell	bash	2026-11-27T14:28:21Z	0.0	cd ~/bevy_gooey_loop; sed -n '1300,1500p' src/table.rs
+359	39	choose	model	model		2026-11-27T14:28:21Z	4.0	
+359	40	choose	tool	homestill	bash	2026-11-27T14:28:25Z	14.5	cd ~/bevy_gooey_loop; hs status 2>&1 | head -20; echo "=== scribe"; hs scribe health 2>&1 | head -5; echo "=== disk"; df -h /tmp . | tail -3
+359	41	choose	model	model		2026-11-27T14:28:39Z	1.3	
+359	42	research	tool	phase mark	bash	2026-11-27T14:28:41Z	10.7	cd ~/bevy_gooey_loop; python3 ~/.local/share/wiggum/steps.py mark research >/dev/null; hs distill search 'virtual scrolling list variable height rows windowing 
+359	43	research	model	model		2026-11-27T14:28:51Z	1.3	
+359	44	research	tool	homestill	bash	2026-11-27T14:28:53Z	5.4	cd ~/bevy_gooey_loop; hs distill search 'user interface list virtualization recycling list view scrolling performance' --output json 2>&1 | jq -r '.[] | "\(.tit
+359	45	research	model	model		2026-11-27T14:28:58Z	7.9	
+359	46	research	tool	shell	bash	2026-11-27T14:29:06Z	0.1	cd ~/bevy_gooey_loop; sed -n '1,120p' tests/table.rs
+359	47	research	model	model		2026-11-27T14:29:06Z	8.5	
+359	48	research	tool	shell	bash	2026-11-27T14:29:14Z	0.0	cd ~/bevy_gooey_loop; sed -n '3882,3950p' docs/loop-log.md
+359	49	research	model	model		2026-11-27T14:29:14Z	4.0	
+359	50	research	tool	shell	bash	2026-11-27T14:29:18Z	0.0	cd ~/bevy_gooey_loop; grep -n 'wrap' docs/guide/tables.md; echo ===; grep -n 'wrap' README.md; echo === ; grep -n 'wrap' CHANGELOG.md | head
+359	51	research	model	model		2026-11-27T14:29:18Z	0.9	
+359	52	research	tool	shell	bash	2026-11-27T14:29:19Z	0.0	cd ~/bevy_gooey_loop; grep -n 'TableRow' src/access.rs | head; echo ===; grep -n 'size_of_set\|row_count\|row_index' src/access.rs | head
+359	53	research	model	model		2026-11-27T14:29:19Z	0.7	
+359	54	research	tool	shell	bash	2026-11-27T14:29:20Z	0.0	cd ~/bevy_gooey_loop; sed -n '600,640p;740,830p' src/access.rs
+359	55	research	model	model		2026-11-27T14:29:20Z	22.0	
+359	56	research	tool	shell	bash	2026-11-27T14:29:42Z	0.4	cd ~/bevy_gooey_loop; sed -n '460,540p' src/table.rs; echo "=== Laid"; sed -n '1046,1095p' src/table.rs; echo "=== model fns"; grep -n 'pub fn table_window\|pub
+359	57	research	model	model		2026-11-27T14:29:43Z	9.9	
+359	58	research	tool	shell	bash	2026-11-27T14:29:53Z	0.0	cd ~/bevy_gooey_loop; grep -n '10_000\|10000\|entity_count\|query_filtered::<Entity' tests/table.rs | head -20
+359	59	research	model	model		2026-11-27T14:29:53Z	0.6	
+359	60	research	tool	shell	bash	2026-11-27T14:29:53Z	0.0	cd ~/bevy_gooey_loop; sed -n '300,380p' tests/table.rs
+359	61	research	model	model		2026-11-27T14:29:53Z	31.9	
+359	62	research	tool	homestill	bash	2026-11-27T14:30:25Z	14.7	cd ~/bevy_gooey_loop; hs distill search 'list user interface scrolling Nielsen response time 0.1 second' --output json 2>&1 | jq -r '.[] | "\(.title) | \(.doc_i
+359	63	research	model	model		2026-11-27T14:30:40Z	1.4	
+359	64	research	tool	homestill	bash	2026-11-27T14:30:41Z	4.9	cd ~/bevy_gooey_loop; hs distill search 'Designing the User Experience of Game Development Tools Lightbown scrolling performance list long data' --output json 2
+359	65	research	model	model		2026-11-27T14:30:46Z	0.8	
+359	66	research	tool	homestill	bash	2026-11-27T14:30:47Z	5.3	cd ~/bevy_gooey_loop; hs distill search 'Lightbown tool interface responsiveness feedback latency' --output json 2>&1 | jq -r '.[] | select(.doc_id|test("lightb
+359	67	research	model	model		2026-11-27T14:30:52Z	19.8	
+359	68	research	tool	shell	bash	2026-11-27T14:31:12Z	0.1	cd ~/bevy_gooey_loop; ls docs/media/ | head -40; echo ===; grep -n 'table' docs/media/README.md; echo ===; grep -n 'GOOEY_WRAP\|wrap' examples/table.rs | head
+359	69	research	model	model		2026-11-27T14:31:12Z	16.3	
+359	70	research	tool	shell	bash	2026-11-27T14:31:29Z	0.0	cd ~/bevy_gooey_loop; grep -n 'PERF_BUDGET' -A6 src/code_editor.rs | head -30; echo ===; grep -n 'typing_in_a_wrapped_20000_line_file_costs' -A60 tests/code_edi
+359	71	research	model	model		2026-11-27T14:31:29Z	12.5	
+359	72	research	tool	homestill	bash	2026-11-27T14:31:41Z	14.9	cd ~/bevy_gooey_loop; for q in 'incremental layout reuse measurement height text reflow' 'scroll position anchoring content shift reading' 'lazy layout renderin
+359	73	research	model	model		2026-11-27T14:31:56Z	9.4	
+359	74	research	tool	phase mark	bash	2026-11-27T14:32:05Z	0.2	cd ~/bevy_gooey_loop; python3 ~/.local/share/wiggum/steps.py mark research >/dev/null; web_search "Unity UI Toolkit ListView virtualization variable height rows
+359	75	research	model	model		2026-11-27T14:32:06Z	0.6	
+359	76	research	tool	web	web_search	2026-11-27T14:32:06Z	8.1	Unity UI Toolkit ListView virtualization variable height rows documentation
+359	77	research	model	model		2026-11-27T14:32:14Z	1.3	
+359	78	research	tool	homestill	bash	2026-11-27T14:32:15Z	4.8	cd ~/bevy_gooey_loop; hs distill search 'CSS scroll anchoring content shifts browser' --output json 2>/dev/null | jq -r '.[]|"\(.title) :: \(.chunk_text[0:120]|
+359	79	research	model	model		2026-11-27T14:32:20Z	3.4	
+359	80	research	tool	shell	bash	2026-11-27T14:32:24Z	0.1	cd ~/bevy_gooey_loop; grep -n 'Top 5 backlog' -A8 docs/loop-log.md | tail -40
+359	81	research	model	model		2026-11-27T14:32:24Z	7.5	
+359	82	research	tool	shell	bash	2026-11-27T14:32:31Z	0.0	cd ~/bevy_gooey_loop; date -u; grep -n 'fn table_by_input' -A80 src/table.rs | grep -n 'pitch\|page\|reveal\|window' | head -20
+359	83	research	model	model		2026-11-27T14:32:31Z	5.5	
+359	84	build	tool	phase mark	bash	2026-11-27T14:32:37Z	0.1	cd ~/bevy_gooey_loop; python3 ~/.local/share/wiggum/steps.py mark build >/dev/null; mkdir -p /tmp/g115; cat > /tmp/g115/measure.rs <<'EOF' #[test] fn measure_en
+359	85	build	model	model		2026-11-27T14:32:37Z	4.5	
+359	86	build	tool	shell	bash	2026-11-27T14:32:41Z	0.0	cd ~/bevy_gooey_loop; sed -n '1500,1693p' src/table.rs
+359	87	build	model	model		2026-11-27T14:32:41Z	22.8	
+359	88	build	tool	shell	bash	2026-11-27T14:33:04Z	0.0	cd ~/bevy_gooey_loop; ls docs/research/ | grep -i 'table\|wrap\|variable' ; echo ===; sed -n '1,60p' docs/research/table-row-pool.md 2>/dev/null || sed -n '1,50
+359	89	build	model	model		2026-11-27T14:33:04Z	14.6	
+359	90	build	tool	shell	bash	2026-11-27T14:33:19Z	0.0	cd ~/bevy_gooey_loop; grep -n 'Column::new\|fn main\|spawn_items\|rows' examples/table.rs | head -30
+359	91	build	model	model		2026-11-27T14:33:19Z	23.1	
+359	92	build	tool	shell	bash	2026-11-27T14:33:42Z	0.0	cd ~/bevy_gooey_loop; grep -n 'fn table_anchor' -A20 src/model.rs; grep -n 'fn width_of' -A12 src/table.rs
+359	93	build	model	model		2026-11-27T14:33:42Z	10.5	
+359	94	build	tool	shell	bash	2026-11-27T14:33:52Z	0.0	cd ~/bevy_gooey_loop; sed -n '200,300p' tests/table.rs
+359	95	build	model	model		2026-11-27T14:33:52Z	3.7	
+359	96	build	tool	phase mark	bash	2026-11-27T14:33:56Z	1.1	cd ~/bevy_gooey_loop; cat >> tests/table.rs <<'EOF' #[test] fn measure_wrapping_pool() { let mut app = app(); let began = std::time::Instant::now(); spawn_wrapp
+359	97	build	model	model		2026-11-27T14:33:57Z	0.8	
+359	98	build	tool	cargo test	bash	2026-11-27T14:33:58Z	0.2	cd ~/bevy_gooey_loop; export CARGO_TARGET_DIR=$HOME/.cargo-target-shared/global CARGO_INCREMENTAL=0; cargo nextest run --all-features -E 'test(table::measure_wr
+359	99	build	model	model		2026-11-27T14:33:58Z	1.0	
+359	100	build	tool	cargo test	bash	2026-11-27T14:33:59Z	0.2	cd ~/bevy_gooey_loop; env | grep -i 'CARGO_INCREMENTAL\|RUSTC_WRAPPER'; export CARGO_TARGET_DIR=$HOME/.cargo-target-shared/global; env -u CARGO_INCREMENTAL carg
+359	101	build	model	model		2026-11-27T14:34:00Z	1.1	
+359	102	build	tool	cargo test	bash	2026-11-27T14:34:01Z	0.2	cd ~/bevy_gooey_loop; unset CARGO_INCREMENTAL; export CARGO_TARGET_DIR=$HOME/.cargo-target-shared/global; cargo nextest run --all-features -E 'test(table::measu
+359	103	build	model	model		2026-11-27T14:34:01Z	1.2	
+359	104	build	tool	cargo test	bash	2026-11-27T14:34:02Z	0.2	cd ~/bevy_gooey_loop; grep -rn 'incremental' ~/.cargo/config.toml .cargo/config.toml 2>/dev/null; echo "---"; CARGO_INCREMENTAL=1 CARGO_TARGET_DIR=$HOME/.cargo-
+359	105	build	model	model		2026-11-27T14:34:02Z	1.2	
+359	106	build	tool	shell	bash	2026-11-27T14:34:03Z	0.1	cd ~/bevy_gooey_loop; printenv CARGO_INCREMENTAL; echo "rc=$?"; sccache --version 2>&1 | head -2; cat ~/.cargo/config.toml 2>/dev/null | head -20
+359	107	build	model	model		2026-11-27T14:34:04Z	1.5	
+359	108	build	tool	shell	bash	2026-11-27T14:34:05Z	0.1	cd ~/bevy_gooey_loop; ls tools/ 2>/dev/null; grep -rn 'sccache\|CARGO_INCREMENTAL' tools/ ~/.local/share/wiggum/*.sh 2>/dev/null | head -10; echo ===; cat ~/.lo
+359	109	build	model	model		2026-11-27T14:34:05Z	1.1	
+359	110	build	tool	shell	bash	2026-11-27T14:34:06Z	0.0	cd ~/bevy_gooey_loop; ls ~/.config/sccache/; cat ~/.config/sccache/config 2>/dev/null | head -20; echo ===; grep -rn 'INCREMENTAL' ~/.bashrc ~/.profile ~/.confi
+359	111	build	model	model		2026-11-27T14:34:06Z	1.8	
+359	112	build	tool	cargo test	bash	2026-11-27T14:34:08Z	60.0	[launched bg_1] cd ~/bevy_gooey_loop; RUSTC_WRAPPER= CARGO_TARGET_DIR=$HOME/.cargo-target-shared/global cargo nextest run --all-features -E 'test(table::measure_wrapping_pool)'
+359	113	build	model	model		2026-11-27T14:35:08Z	13.7	
+359	114	build	tool	homestill	bash	2026-11-27T14:35:22Z	30.3	cd ~/bevy_gooey_loop; hs distill search 'Nielsen response time limits 0.1 second immediate feedback' --output json 2>/dev/null | jq -r '.[]|select(.title|test("
+359	115	build	model	model		2026-11-27T14:35:52Z	1.3	
+359	116	build	tool	shell	bash	2026-11-27T14:35:53Z	0.1	cd ~/bevy_gooey_loop; grep -n 'wrap' docs/research/table.md | head -10; echo ===; head -20 docs/research/table.md; echo ===; sed -n '1,40p' docs/guide/tables.md
+359	117	build	model	model		2026-11-27T14:35:53Z	1.1	
+359	118	build	tool	shell	bash	2026-11-27T14:35:54Z	0.0	cd ~/bevy_gooey_loop; sed -n '40,60p' docs/research/table.md
+359	119	build	model	model		2026-11-27T14:35:54Z	28.1	
+359	120	build	tool	shell	bash	2026-11-27T14:36:23Z	0.1	cd ~/bevy_gooey_loop; sed -n '1240,1300p' src/table.rs
+359	121	build	model	model		2026-11-27T14:36:23Z	13.7	
+359	122	build	tool	shell	bash	2026-11-27T14:36:37Z	0.3	cd ~/bevy_gooey_loop; grep -n 'fn pick' -A60 src/table.rs | head -70
+359	123	build	model	model		2026-11-27T14:36:37Z	9.5	
+359	124	build	tool	shell	bash	2026-11-27T14:36:47Z	0.4	cd ~/bevy_gooey_loop; sed -n '1700,1730p' src/model.rs; echo "=== tests style"; grep -n 'mod tests' src/model.rs; sed -n "$(grep -n 'mod tests' src/model.rs | h
+359	125	build	model	model		2026-11-27T14:36:47Z	19.2	
+359	126	build	tool	shell	bash	2026-11-27T14:37:07Z	0.3	cd ~/bevy_gooey_loop; sed -n '1690,1705p' src/model.rs
+359	127	build	model	model		2026-11-27T14:37:07Z	2.9	
+359	128	build	tool	shell	bash	2026-11-27T14:37:10Z	0.7	cd ~/bevy_gooey_loop; cat >> src/model.rs <<'RUST' /// The rows a virtualized table with rows of differing heights draws, from the offset `scroll` /// and the h
+359	129	build	model	model		2026-11-27T14:37:11Z	0.7	
+359	130	build	tool	shell	bash	2026-11-27T14:37:11Z	0.0	cd ~/bevy_gooey_loop; grep -n 'table_window' src/lib.rs
+359	131	build	model	model		2026-11-27T14:37:11Z	0.8	
+359	132	build	tool	shell	bash	2026-11-27T14:37:12Z	0.5	cd ~/bevy_gooey_loop; python3 - <<'EOF' import re p='src/lib.rs' s=open(p).read() s=s.replace(" table_anchor, table_step, table_window, target_step, target_towa
+359	133	build	model	model		2026-11-27T14:37:13Z	1.0	
+359	134	build	tool	shell	bash	2026-11-27T14:37:14Z	0.2	cd ~/bevy_gooey_loop; grep -n 'view_h, max\|let (view_h' -B4 -A16 src/table.rs | sed -n '1,40p'
+359	135	build	model	model		2026-11-27T14:37:14Z	18.3	
+359	136	build	tool	shell	bash	2026-11-27T14:37:32Z	0.3	cd ~/bevy_gooey_loop; grep -n 'fn line\b\|fn line(\|line_height\|LIST_LINE_TEXT_SIZES' src/skin.rs src/model.rs | head -15
+359	137	build	model	model		2026-11-27T14:37:33Z	1.3	
+359	138	build	tool	shell	bash	2026-11-27T14:37:34Z	0.1	cd ~/bevy_gooey_loop; grep -n 'pub fn table_pitch' -A12 src/skin.rs
+359	139	build	model	model		2026-11-27T14:37:34Z	10.7	
+359	140	build	tool	shell	bash	2026-11-27T14:37:45Z	1.2	cd ~/bevy_gooey_loop; python3 - <<'PY' p='src/model.rs' s=open(p).read() start=s.index("/// The rows a virtualized table with rows of differing heights draws") 
+359	141	build	model	model		2026-11-27T14:37:46Z	2.2	
+359	142	build	tool	shell	bash	2026-11-27T14:37:48Z	0.6	cd ~/bevy_gooey_loop; python3 - <<'PY' p='src/model.rs' s=open(p).read() old_start=s.index(" let scroll = scroll.max(0.0);\n // The first row whose bottom is pa
+359	143	build	model	model		2026-11-27T14:37:49Z	1.9	
+359	144	build	tool	shell	bash	2026-11-27T14:37:51Z	0.1	cd ~/bevy_gooey_loop; grep -n 'table_rows_at\|usable_height' src/model.rs src/lib.rs; python3 - <<'PY' p='src/lib.rs' s=open(p).read() s=s.replace(""" table_anc
+359	145	build	model	model		2026-11-27T14:37:51Z	1.3	
+359	146	build	tool	shell	bash	2026-11-27T14:37:52Z	0.0	cd ~/bevy_gooey_loop; python3 - <<'PY' p='src/lib.rs' s=open(p).read() s=s.replace(""" snap_line_width, snap_text_size, snap_to_row, spinner_angle, split_clamp,
+359	147	build	model	model		2026-11-27T14:37:52Z	11.6	
+359	148	build	tool	shell	bash	2026-11-27T14:38:04Z	0.1	cd ~/bevy_gooey_loop; sed -n '1120,1182p' src/table.rs
+359	149	build	model	model		2026-11-27T14:38:04Z	10.9	
+359	150	build	tool	shell	bash	2026-11-27T14:38:15Z	0.2	cd ~/bevy_gooey_loop; python3 - <<'PY' p='src/table.rs' s=open(p).read() # 1. cache fields s=s.replace(""" /// Each column's `wrap` as the pool's cells were spa
+359	151	build	model	model		2026-11-27T14:38:15Z	1.0	
+359	152	build	tool	shell	bash	2026-11-27T14:38:16Z	0.0	cd ~/bevy_gooey_loop; sed -n '1218,1300p' src/table.rs
+359	153	build	model	model		2026-11-27T14:38:16Z	1.6	
+359	154	build	tool	shell	bash	2026-11-27T14:38:18Z	0.0	cd ~/bevy_gooey_loop; python3 - <<'PY' p='src/table.rs' s=open(p).read() s=s.replace(""" let now = cache.index_of(old_first_key); if !wraps { y = table_anchor(y
+359	155	build	model	model		2026-11-27T14:38:18Z	1.0	
+359	156	build	tool	shell	bash	2026-11-27T14:38:19Z	0.1	cd ~/bevy_gooey_loop; python3 - <<'PY' p='src/table.rs' s=open(p).read() s=s.replace(""" let pool = if wraps { len } else { (tall.ceil() as usize + 1).min(len) 
+359	157	build	model	model		2026-11-27T14:38:19Z	0.8	
+359	158	build	tool	shell	bash	2026-11-27T14:38:20Z	0.2	cd ~/bevy_gooey_loop; python3 - <<'PY' p='src/table.rs' s=open(p).read() s=s.replace(""" TableStep, column_resize, natural_cmp, repeat_steps, scroll_to_reveal, 
+359	159	build	model	model		2026-11-27T14:38:20Z	2.0	
+359	160	build	tool	shell	bash	2026-11-27T14:38:22Z	0.1	cd ~/bevy_gooey_loop; python3 - <<'PY' p='src/table.rs' s=open(p).read() s=s.replace(""" // The room the rows not drawn would take, above and below the pool. if
+359	161	build	model	model		2026-11-27T14:38:22Z	6.5	
+359	162	build	tool	cargo build	bash	2026-11-27T14:38:29Z	52.4	cd ~/bevy_gooey_loop; python3 - <<'PY' p='src/table.rs' s=open(p).read() s=s.replace(""" if rebuilt || patch.is_some() { cache.seen = table.source.revision(); }
+359	163	build	bg	cargo test	bash	2026-11-27T14:34:21Z	300.3	bg_1 failed: RUSTC_WRAPPER= CARGO_TARGET_DIR=$HOME/.cargo-target-shared/global cargo nextest run --all-features -E 'test(table::me...
+359	164	build	model	model		2026-11-27T14:39:21Z	3.0	
+359	165	build	tool	shell	bash	2026-11-27T14:39:24Z	0.0	cd ~/bevy_gooey_loop; sed -n '1480,1500p' src/table.rs
+359	166	build	model	model		2026-11-27T14:39:24Z	0.8	
+359	167	build	tool	cargo build	bash	2026-11-27T14:39:25Z	13.7	cd ~/bevy_gooey_loop; python3 - <<'PY' p='src/table.rs' s=open(p).read() s=s.replace(""" if column.padding.top != above || column.padding.bottom != below { colu
+359	168	build	model	model		2026-11-27T14:39:39Z	2.8	
+359	169	build	tool	cargo test	bash	2026-11-27T14:39:41Z	60.2	[launched bg_2] cd ~/bevy_gooey_loop; python3 - <<'PY' p='tests/table.rs' s=open(p).read() i=s.index("#[test]\nfn measure_wrapping_pool()") s=s[:i].rstrip()+"\n" open(p,'w').wr
+359	170	build	model	model		2026-11-27T14:40:42Z	6.5	
+359	171	build	tool	shell	bash	2026-11-27T14:40:48Z	0.5	cd ~/bevy_gooey_loop; grep -n 'pool\b' src/list.rs | head -20
+359	172	build	model	model		2026-11-27T14:40:49Z	2.1	
+359	173	build	tool	web	web_search	2026-11-27T14:40:51Z	11.4	"virtualized" list "variable height" rows browser Discord Slack message list how it works engineering blog
+359	174	build	model	model		2026-11-27T14:41:02Z	2.1	
+359	175	build	tool	homestill	bash	2026-11-27T14:41:04Z	13.4	cd ~/bevy_gooey_loop; hs distill search 'user loses place when content shifts anchoring stability of scroll position reading' --output json 2>/dev/null | jq -r 
+359	176	build	model	model		2026-11-27T14:41:18Z	1.1	
+359	177	build	tool	homestill	bash	2026-11-27T14:41:19Z	23.1	cd ~/bevy_gooey_loop; for s in "Good Game Feel" "Removing the HUD" "Players Prefer Integrated" "accessibility in games"; do echo "== $s"; hs distill search "$s"
+359	178	build	model	model		2026-11-27T14:41:42Z	1.3	
+359	179	build	tool	homestill	bash	2026-11-27T14:41:43Z	7.6	cd ~/bevy_gooey_loop; hs distill search 'Nielsen usability heuristics response times ' --output json 2>/dev/null | jq -r '.[]|"\(.title) :: \(.chunk_text[0:500]
+359	180	build	model	model		2026-11-27T14:41:51Z	1.7	
+359	181	build	tool	homestill	bash	2026-11-27T14:41:53Z	7.4	cd ~/bevy_gooey_loop; hs distill search 'Lightbown responsiveness tool performance waiting user' --output json 2>/dev/null | jq -r '.[]|"\(.chunk_text[0:1200]|g
+359	182	build	model	model		2026-11-27T14:42:00Z	2.1	
+359	183	build	tool	homestill	bash	2026-11-27T14:42:02Z	9.0	cd ~/bevy_gooey_loop; hs distill search '0.1 second limit user feels system reacting instantly Lightbown' --output json 2>/dev/null | jq -r '.[]|select(.chunk_t
+359	184	build	model	model		2026-11-27T14:42:11Z	0.8	
+359	185	build	tool	homestill	bash	2026-11-27T14:42:12Z	12.5	cd ~/bevy_gooey_loop; hs distill search 'Lightbown "0.1 second"' --output json 2>/dev/null | jq -r '.[]|"\(.chunk_text[0:800]|gsub("\n";" "))\n==="' | head -20
+359	186	build	model	model		2026-11-27T14:42:25Z	1.1	
+359	187	build	tool	homestill	bash	2026-11-27T14:42:26Z	10.7	cd ~/bevy_gooey_loop; hs distill search 'the limit for the user flow of thought 0.1' --output json 2>/dev/null | jq -r '.[]|select(.chunk_text|test("0.1 second|
+359	188	build	model	model		2026-11-27T14:42:36Z	1.0	
+359	189	build	tool	homestill	bash	2026-11-27T14:42:37Z	9.3	cd ~/bevy_gooey_loop; hs distill search 'Lightbown "0.1" instant reaction direct manipulation' --output json 2>/dev/null | jq -r '.[]|select(.chunk_text|test("0
+359	190	build	model	model		2026-11-27T14:42:47Z	12.8	
+359	191	build	tool	git	bash	2026-11-27T14:43:00Z	0.4	cd ~/bevy_gooey_loop; cat > docs/research/table-variable-height.md <<'MD' # A windowed table of rows that differ in height (#123) Item: the backlog's second ite
+359	192	build	model	model		2026-11-27T14:43:00Z	2.4	
+359	193	build	tool	github	bash	2026-11-27T14:43:02Z	1.7	cd ~/bevy_gooey_loop; gh issue create --repo bevy-coven/bevy_gooey --title "A wrapping table binds every row: it must window on measured heights" --body 'A tabl
+359	194	build	model	model		2026-11-27T14:43:04Z	1.0	
+359	195	build	tool	github	bash	2026-11-27T14:43:05Z	0.6	cd ~/bevy_gooey_loop; gh issue list --repo bevy-coven/bevy_gooey --state open --json number,title --jq '.[]|"#\(.number) \(.title)"' 2>&1
+359	196	build	model	model		2026-11-27T14:43:06Z	2.7	
+359	197	build	tool	cargo test	bash	2026-11-27T14:43:08Z	60.1	[launched bg_3] cd ~/bevy_gooey_loop; CARGO_TARGET_DIR=$HOME/.cargo-target-shared/global RUSTC_WRAPPER= timeout 900 cargo nextest run --all-features -E 'test(table::)' 2>&1 | t
+359	198	build	model	model		2026-11-27T14:44:08Z	1.3	
+359	199	build	tool	shell	bash	2026-11-27T14:44:10Z	0.3	cd ~/bevy_gooey_loop; sed -n '1030,1100p' tests/table.rs
+359	200	build	model	model		2026-11-27T14:44:10Z	5.5	
+359	201	build	tool	shell	bash	2026-11-27T14:44:16Z	0.2	cd ~/bevy_gooey_loop; python3 - <<'PY' p='tests/table.rs' s=open(p).read() s=s.replace(""" let shown = pool(&mut app); assert_eq!(shown.len(), 6, "every row of 
+359	202	build	model	model		2026-11-27T14:44:16Z	0.7	
+359	203	build	tool	wait: other	wait	2026-11-27T14:44:17Z	5.1	{}
+359	204	build	model	model		2026-11-27T14:44:22Z	1.0	
+359	205	build	tool	wait: other	wait	2026-11-27T14:44:23Z	20.3	{}
+359	206	build	model	model		2026-11-27T14:44:43Z	0.7	
+359	207	build	tool	wait: other	wait	2026-11-27T14:44:44Z	4.6	{}
+359	208	build	model	model		2026-11-27T14:44:48Z	0.8	
+359	209	build	tool	cargo test	bash	2026-11-27T14:44:49Z	4.8	cd ~/bevy_gooey_loop; CARGO_TARGET_DIR=$HOME/.cargo-target-shared/global RUSTC_WRAPPER= cargo test --no-run --all-features 2>&1 | grep -E '^(error|warning: unus
+359	210	build	model	model		2026-11-27T14:44:54Z	1.5	
+359	211	build	tool	cargo test	bash	2026-11-27T14:44:55Z	19.1	cd ~/bevy_gooey_loop; python3 - <<'PY' p='tests/table.rs' s=open(p).read() s=s.replace(""" let mut small_app = app(); spawn_wrapping(&mut small_app, 20);""","""
+359	212	build	model	model		2026-11-27T14:45:14Z	0.9	
+359	213	build	tool	cargo test	bash	2026-11-27T14:45:15Z	5.4	cd ~/bevy_gooey_loop; CARGO_TARGET_DIR=$HOME/.cargo-target-shared/global RUSTC_WRAPPER= timeout 600 cargo nextest run --all-features -E 'test(table::)' 2>&1 | t
+359	214	build	model	model		2026-11-27T14:45:21Z	8.3	
+359	215	build	tool	cargo test	bash	2026-11-27T14:45:29Z	2.2	cd ~/bevy_gooey_loop; CARGO_TARGET_DIR=$HOME/.cargo-target-shared/global RUSTC_WRAPPER= timeout 600 cargo nextest run --all-features -E 'test(table::a_wrapping_
+359	216	build	model	model		2026-11-27T14:45:31Z	5.6	
+359	217	build	tool	shell	bash	2026-11-27T14:45:37Z	0.0	cd ~/bevy_gooey_loop; sed -n '1166,1215p' src/table.rs
+359	218	build	model	model		2026-11-27T14:45:37Z	5.7	
+359	219	build	tool	cargo test	bash	2026-11-27T14:45:43Z	60.5	[launched bg_4] cd ~/bevy_gooey_loop; python3 - <<'PY' p='src/table.rs' s=open(p).read() s=s.replace(""" /// The earliest row whose height moved since `tops` was summed, so onl
+359	220	build	model	model		2026-11-27T14:46:43Z	3.1	
+359	221	build	tool	wait: other	wait	2026-11-27T14:46:47Z	5.4	{}
+359	222	build	model	model		2026-11-27T14:46:52Z	0.9	
+359	223	build	tool	wait: other	wait	2026-11-27T14:46:53Z	240.6	{}
+359	224	build	model	model		2026-11-27T14:50:53Z	10.1	
+359	225	build	tool	shell	bash	2026-11-27T14:51:04Z	0.2	cd ~/bevy_gooey_loop; ls /tmp/g115; grep -n 'GOOEY_KEYS\|fn keys_of' examples/table.rs | head -5
+359	226	build	model	model		2026-11-27T14:51:04Z	0.8	
+359	227	build	tool	shell	bash	2026-11-27T14:51:05Z	0.0	cd ~/bevy_gooey_loop; sed -n '200,240p' examples/table.rs
+359	228	build	model	model		2026-11-27T14:51:05Z	1.5	
+359	229	build	tool	shell	bash	2026-11-27T14:51:06Z	0.0	cd ~/bevy_gooey_loop; sed -n '60,200p' examples/table.rs
+359	230	build	model	model		2026-11-27T14:51:06Z	0.9	
+359	231	build	tool	wait: other	wait	2026-11-27T14:51:07Z	110.3	{}
+359	232	build	model	model		2026-11-27T14:52:58Z	3.2	
+359	233	build	tool	cargo test	bash	2026-11-27T14:53:01Z	1.9	cd ~/bevy_gooey_loop; sed -n '1105,1135p' tests/table.rs; CARGO_TARGET_DIR=$HOME/.cargo-target-shared/global RUSTC_WRAPPER= timeout 300 cargo nextest run --all-
+359	234	build	model	model		2026-11-27T14:53:03Z	1.8	
+359	235	build	tool	cargo test	bash	2026-11-27T14:53:04Z	6.2	cd ~/bevy_gooey_loop; python3 - <<'PY' p='tests/table.rs' s=open(p).read() s=s.replace(""" let view = viewport_rect(&mut app); let tall = { let shown = pool(&mu
+359	236	build	model	model		2026-11-27T14:53:11Z	0.9	
+359	237	build	tool	cargo test	bash	2026-11-27T14:53:12Z	3.7	cd ~/bevy_gooey_loop; CARGO_TARGET_DIR=$HOME/.cargo-target-shared/global RUSTC_WRAPPER= timeout 300 cargo nextest run --all-features -E 'test(table::)' --no-fai
+359	238	build	model	model		2026-11-27T14:53:15Z	1.2	
+359	239	build	tool	cargo test	bash	2026-11-27T14:53:16Z	23.6	cd ~/bevy_gooey_loop; python3 - <<'PY' p='tests/table.rs' s=open(p).read() s=s.replace(""" let tall = { let node = app .world() .get::<ComputedNode>(viewport(&m
+359	240	build	model	model		2026-11-27T14:53:40Z	1.4	
+359	241	build	tool	cargo test	bash	2026-11-27T14:53:41Z	60.5	[launched bg_5] cd ~/bevy_gooey_loop; cp src/table.rs /tmp/g115/table.rs.good; python3 - <<'PY' p='src/table.rs' s=open(p).read() s=s.replace(""" let (first, pool) = if wraps {
+359	242	build	model	model		2026-11-27T14:54:42Z	1.3	
+359	243	build	tool	shell	bash	2026-11-27T14:54:43Z	0.0	cd ~/bevy_gooey_loop; head -20 CHANGELOG.md
+359	244	build	model	model		2026-11-27T14:54:43Z	1.4	
+359	245	build	tool	wait: other	wait	2026-11-27T14:54:45Z	5.0	{}
+359	246	build	model	model		2026-11-27T14:54:50Z	1.4	
+359	247	build	tool	shell	bash	2026-11-27T14:54:51Z	0.3	cd ~/bevy_gooey_loop; tail -40 docs/loop-log.md; echo ===; grep -n 'wrap' docs/guide/table.md | head -20; echo ===; grep -n 'wrap\|Table' README.md | head -20
+359	248	build	model	model		2026-11-27T14:54:52Z	1.1	
+359	249	build	tool	shell	bash	2026-11-27T14:54:53Z	0.2	cd ~/bevy_gooey_loop; grep -rn 'wrap()' docs/guide/*.md | head; echo ===; grep -n '^## Iteration' docs/loop-log.md | tail -3; echo ===; grep -n 'wrap' docs/guid
+359	250	build	model	model		2026-11-27T14:54:53Z	0.8	
+359	251	build	tool	shell	bash	2026-11-27T14:54:54Z	0.0	cd ~/bevy_gooey_loop; ls docs/guide/ ; echo ===; grep -rln 'Column::new' docs/guide/
+359	252	build	model	model		2026-11-27T14:54:54Z	0.6	
+359	253	build	tool	shell	bash	2026-11-27T14:54:54Z	0.0	cd ~/bevy_gooey_loop; grep -n 'wrap' docs/guide/tables.md
+359	254	build	model	model		2026-11-27T14:54:54Z	1.3	
+359	255	build	tool	shell	bash	2026-11-27T14:54:56Z	0.0	cd ~/bevy_gooey_loop; sed -n '1,60p' docs/guide/tables.md
+359	256	build	model	model		2026-11-27T14:54:56Z	0.8	
+359	257	build	tool	wait: other	wait	2026-11-27T14:54:57Z	160.7	{}
+359	258	build	model	model		2026-11-27T14:57:37Z	1.5	
+359	259	build	tool	shell	bash	2026-11-27T14:57:39Z	0.0	cd ~/bevy_gooey_loop; git status --short; echo ===; git log --oneline -3; echo ===; git diff --stat
+359	260	build	model	model		2026-11-27T14:57:39Z	1.5	
+359	261	build	tool	shell	bash	2026-11-27T14:57:40Z	0.0	cd ~/bevy_gooey_loop; git diff src/lib.rs src/model.rs
+359	262	build	model	model		2026-11-27T14:57:40Z	0.7	
+359	263	build	tool	shell	bash	2026-11-27T14:57:41Z	0.0	cd ~/bevy_gooey_loop; git diff src/table.rs
+359	264	build	model	model		2026-11-27T14:57:41Z	3.4	
+359	265	build	tool	cargo clippy	bash	2026-11-27T14:57:44Z	56.3	cd ~/bevy_gooey_loop; cargo fmt --all 2>&1 | tail -3; CARGO_TARGET_DIR=$HOME/.cargo-target-shared/global RUSTC_WRAPPER= cargo fmt --check 2>&1 | head -5; echo F
+359	266	build	model	model		2026-11-27T14:58:41Z	1.0	
+359	267	build	tool	cargo test	bash	2026-11-27T14:58:42Z	0.0	[launched bg_6] cd ~/bevy_gooey_loop; CARGO_TARGET_DIR=$HOME/.cargo-target-shared/global RUSTC_WRAPPER= timeout 2400 cargo nextest run --all-features --lib --tests --no-fail-fa
+359	268	build	model	model		2026-11-27T14:58:42Z	0.7	
+359	269	build	tool	shell	bash	2026-11-27T14:58:43Z	0.0	cd ~/bevy_gooey_loop; sed -n '3800,3830p' docs/loop-log.md | head -5; echo ===; sed -n '3950,3975p' docs/loop-log.md
+359	270	build	model	model		2026-11-27T14:58:43Z	2.8	
+359	271	build	tool	shell	bash	2026-11-27T14:58:45Z	0.0	cd ~/bevy_gooey_loop; echo $DISPLAY; ls -d $CARGO_TARGET_DIR 2>/dev/null; ls docs/media | head -30; sed -n '1,40p' docs/research/table-variable-height.md
+359	272	build	model	model		2026-11-27T14:58:45Z	0.9	
+359	273	build	tool	shell	bash	2026-11-27T14:58:46Z	0.0	cd ~/bevy_gooey_loop; sed -n '40,200p' docs/research/table-variable-height.md
+359	274	build	model	model		2026-11-27T14:58:46Z	2.1	
+359	275	build	tool	shell	bash	2026-11-27T14:58:48Z	0.8	cd ~/bevy_gooey_loop; git fetch -q origin loop-stats 2>&1|tail -1; git show origin/loop-stats:steps/bevy_gooey_loop-audit.tsv 2>/dev/null | tail -3; echo ===; g
+359	276	build	model	model		2026-11-27T14:58:49Z	1.8	
+359	277	build	tool	shell	bash	2026-11-27T14:58:51Z	0.0	cd ~/bevy_gooey_loop; grep -n 'Virtualized\|Where it stops\|wrap' docs/guide/tables.md | head; echo ===; sed -n '/^## Virtualized/,+2p' docs/guide/tables.md | h
+359	278	build	model	model		2026-11-27T14:58:51Z	0.8	
+359	279	build	tool	shell	bash	2026-11-27T14:58:52Z	0.0	cd ~/bevy_gooey_loop; sed -n '26,37p' docs/guide/tables.md | cat -n
+359	280	build	model	model		2026-11-27T14:58:52Z	2.0	
+359	281	build	tool	edit files	edit	2026-11-27T14:58:54Z	0.0	docs/guide/tables.md
+359	282	build	model	model		2026-11-27T14:58:54Z	1.1	
+359	283	build	tool	shell	bash	2026-11-27T14:58:55Z	0.0	cd ~/bevy_gooey_loop; grep -n '^version' Cargo.toml; grep -n '0.1 - 0.63' README.md
+359	284	build	model	model		2026-11-27T14:58:55Z	0.9	
+359	285	build	tool	shell	bash	2026-11-27T14:58:56Z	0.0	cd ~/bevy_gooey_loop; grep -n '0\.6[0-9]\.0' README.md | head
+359	286	build	model	model		2026-11-27T14:58:56Z	1.2	
+359	287	build	tool	shell	bash	2026-11-27T14:58:57Z	0.0	cd ~/bevy_gooey_loop; ls /tmp/g115/before 2>/dev/null | head; sed -n '1,5p' CHANGELOG.md
+359	288	build	model	model		2026-11-27T14:58:57Z	1.4	
+359	289	build	tool	shell	bash	2026-11-27T14:58:59Z	0.0	cd ~/bevy_gooey_loop; sed -n '230,270p' examples/table.rs
+359	290	build	model	model		2026-11-27T14:58:59Z	2.5	
+359	291	build	tool	shell	bash	2026-11-27T14:59:01Z	0.1	cd ~/bevy_gooey_loop; python3 - <<'PY' p='CHANGELOG.md' s=open(p).read() new = """# Changelog ## [0.64.0] - 2026-11-27 ### Fixed - **A table with a wrapping col
+359	292	build	model	model		2026-11-27T14:59:01Z	0.8	
+359	293	build	tool	shell	bash	2026-11-27T14:59:02Z	0.0	cd ~/bevy_gooey_loop; grep -n 'table.gif' docs/guide/tables.md | head -2; grep -n 'Table\b.*wrap\|Column::new("Note")' examples/*.rs | head
+359	294	build	model	model		2026-11-27T14:59:02Z	1.2	
+359	295	build	tool	shell	bash	2026-11-27T14:59:04Z	0.0	cd ~/bevy_gooey_loop; sed -n '1,30p' examples/table.rs; grep -n 'NAME_WIDE\|fn setup' -A3 examples/table.rs | head -20
+359	296	build	model	model		2026-11-27T14:59:04Z	1.9	
+359	297	build	tool	shell	bash	2026-11-27T14:59:05Z	0.0	cd ~/bevy_gooey_loop; sed -n '204,235p' examples/table.rs; sed -n '60,66p' examples/table.rs
+359	298	build	model	model		2026-11-27T14:59:05Z	2.4	
+359	299	build	tool	shell	bash	2026-11-27T14:59:08Z	0.0	cd ~/bevy_gooey_loop; sed -n '320,400p' examples/table.rs
+359	300	build	model	model		2026-11-27T14:59:08Z	2.7	
+359	301	build	tool	shell	bash	2026-11-27T14:59:11Z	0.0	cd ~/bevy_gooey_loop; sed -n '400,470p' examples/table.rs
+359	302	build	model	model		2026-11-27T14:59:11Z	2.8	
+359	303	build	tool	shell	bash	2026-11-27T14:59:13Z	0.1	cd ~/bevy_gooey_loop; python3 - <<'PY' p='examples/table.rs' s=open(p).read() s=s.replace("""/// Ten thousand items, the same ones every run. fn inventory() -> 
+359	304	build	model	model		2026-11-27T14:59:13Z	1.2	
+359	305	build	tool	cargo build	bash	2026-11-27T14:59:15Z	60.2	[launched bg_7] cd ~/bevy_gooey_loop; CARGO_TARGET_DIR=$HOME/.cargo-target-shared/global RUSTC_WRAPPER= timeout 900 cargo check --example table 2>&1 | tail -20
+359	306	build	model	model		2026-11-27T15:00:15Z	1.0	
+359	307	build	tool	shell	bash	2026-11-27T15:00:16Z	0.0	cd ~/bevy_gooey_loop; grep -n 'struct Column' -A30 src/table.rs | sed -n '1,40p'
+359	308	build	model	model		2026-11-27T15:00:16Z	1.4	
+359	309	build	tool	shell	bash	2026-11-27T15:00:17Z	0.0	cd ~/bevy_gooey_loop; python3 - <<'PY' p='src/table.rs' s=open(p).read() s=s.replace(""" /// Whether the column's text wraps at the column's edge instead of bei
+359	310	build	model	model		2026-11-27T15:00:17Z	1.2	
+359	311	build	tool	wait: other	wait	2026-11-27T15:00:19Z	5.0	{}
+359	312	build	model	model		2026-11-27T15:00:24Z	0.7	
+359	313	build	tool	wait: other	wait	2026-11-27T15:00:24Z	16.8	{}
+359	314	build	model	model		2026-11-27T15:00:41Z	1.2	
+359	315	build	tool	shell	bash	2026-11-27T15:00:42Z	0.1	cd ~/bevy_gooey_loop; git diff tests/table.rs | head -190
+359	316	build	model	model		2026-11-27T15:00:42Z	0.9	
+359	317	build	tool	shell	bash	2026-11-27T15:00:43Z	0.0	cd ~/bevy_gooey_loop; grep -n 'fn spawn_wrapping' -A28 tests/table.rs
+359	318	build	model	model		2026-11-27T15:00:43Z	0.7	
+359	319	build	tool	shell	bash	2026-11-27T15:00:44Z	0.0	cd ~/bevy_gooey_loop; grep -n 'fn notes' -A12 tests/table.rs
+359	320	build	model	model		2026-11-27T15:00:44Z	1.3	
+359	321	build	tool	wait: other	wait	2026-11-27T15:00:45Z	5.0	{}
+359	322	build	model	model		2026-11-27T15:00:50Z	1.2	
+359	323	build	tool	shell	bash	2026-11-27T15:00:51Z	0.0	cd ~/bevy_gooey_loop; grep -n 'Pending index' docs/research/table-variable-height.md; wc -l docs/loop-log.md
+359	324	build	model	model		2026-11-27T15:00:51Z	1.6	
+359	325	build	tool	shell	bash	2026-11-27T15:00:53Z	18.5	cd ~/bevy_gooey_loop; hs status 2>&1 | head -20
+359	326	build	model	model		2026-11-27T15:01:12Z	1.1	
+359	327	build	tool	shell	bash	2026-11-27T15:01:13Z	0.0	cd ~/bevy_gooey_loop; xdpyinfo -display :93 2>&1 | head -3; df -h /tmp | tail -1
+359	328	build	model	model		2026-11-27T15:01:13Z	0.6	
+359	329	build	tool	wait: other	wait	2026-11-27T15:01:13Z	240.1	{}
+359	330	build	model	model		2026-11-27T15:05:13Z	4.7	
+359	331	log	tool	phase mark	bash	2026-11-27T15:05:18Z	0.5	cd ~/bevy_gooey_loop; cat >> docs/loop-log.md <<'MD' ## Iteration 115 — 2026-11-27 — a wrapping table windows on what its rows measured (#123) **Item.** The bac
+359	332	log	model	model		2026-11-27T15:05:19Z	0.7	
+359	333	log	tool	wait: other	wait	2026-11-27T15:05:19Z	23.0	{}
+359	334	log	model	model		2026-11-27T15:05:42Z	1.1	
+359	335	log	tool	cargo test	bash	2026-11-27T15:05:44Z	60.0	[launched bg_8] cd ~/bevy_gooey_loop; CARGO_TARGET_DIR=$HOME/.cargo-target-shared/global RUSTC_WRAPPER= timeout 300 cargo nextest run --all-features -E 'test(model::row_window_
+359	336	log	model	model		2026-11-27T15:06:44Z	4.4	
+359	337	log	tool	shell	bash	2026-11-27T15:06:48Z	0.0	cd ~/bevy_gooey_loop; grep -n 'pub fn table_window' -A25 src/model.rs
+359	338	log	model	model		2026-11-27T15:06:48Z	8.2	
+359	339	log	tool	shell	bash	2026-11-27T15:06:56Z	0.2	cd ~/bevy_gooey_loop; python3 - <<'PY' p='src/model.rs' s=open(p).read() old_doc = """/// ``` /// use bevy_gooey::rows_in_view; /// // Three rows 40, 60, 40 tal
+359	340	log	model	model		2026-11-27T15:06:56Z	9.6	
+359	341	log	tool	cargo test	bash	2026-11-27T15:07:06Z	60.1	[launched bg_9] cd ~/bevy_gooey_loop; python3 - <<'PY' p='src/model.rs' s=open(p).read() old = """ #[test] fn an_unmeasured_table_is_the_pitch_one() { // Every row unmeasured: 
+359	342	log	model	model		2026-11-27T15:08:06Z	2.5	
+359	343	log	tool	wait: other	wait	2026-11-27T15:08:09Z	5.1	{}
+359	344	log	model	model		2026-11-27T15:08:14Z	1.0	
+359	345	log	tool	wait: other	wait	2026-11-27T15:08:15Z	149.4	{}
+359	346	log	model	model		2026-11-27T15:10:44Z	3.4	
+359	347	log	tool	shell	bash	2026-11-27T15:10:48Z	0.1	cd ~/bevy_gooey_loop; python3 - <<'PY' p='src/model.rs' s=open(p).read() s=s.replace(""" assert_eq!(first, table_window(scroll, pitch, pool, len), "at {scroll}"
+359	348	log	model	model		2026-11-27T15:10:48Z	1.6	
+359	349	log	tool	shell	bash	2026-11-27T15:10:50Z	0.1	cd ~/bevy_gooey_loop; python3 - <<'PY' p='src/model.rs' s=open(p).read() s=s.replace(""" assert_eq!(rows_in_view(99.0, 41.0, &tops), (0, 2)); assert_eq!(rows_in
+359	350	log	model	model		2026-11-27T15:10:50Z	2.0	
+359	351	log	tool	shell	bash	2026-11-27T15:10:52Z	0.0	cd ~/bevy_gooey_loop; python3 - <<'PY' p='src/model.rs' s=open(p).read() s=s.replace(""" // A row that starts exactly at the view's bottom is past it: none of i
+359	352	log	model	model		2026-11-27T15:10:52Z	1.2	
+359	353	log	tool	cargo test	bash	2026-11-27T15:10:53Z	60.0	[launched bg_10] cd ~/bevy_gooey_loop; CARGO_TARGET_DIR=$HOME/.cargo-target-shared/global RUSTC_WRAPPER= timeout 400 cargo nextest run --all-features -E 'test(model::row_window)
+359	354	log	model	model		2026-11-27T15:11:53Z	1.0	
+359	355	log	tool	wait: other	wait	2026-11-27T15:11:54Z	5.0	{}
+359	356	log	model	model		2026-11-27T15:11:59Z	1.1	
+359	357	log	tool	wait: other	wait	2026-11-27T15:12:00Z	107.8	{}
+359	358	log	model	model		2026-11-27T15:13:48Z	1.1	
+359	359	log	tool	wait: other	wait	2026-11-27T15:13:49Z	5.0	{}
+359	360	log	model	model		2026-11-27T15:13:54Z	0.8	
+359	361	log	tool	wait: other	wait	2026-11-27T15:13:55Z	180.8	{}
+359	362	log	model	model		2026-11-27T15:16:55Z	1.6	
+359	363	log	tool	cargo test	bash	2026-11-27T15:16:57Z	8.8	cd ~/bevy_gooey_loop; CARGO_TARGET_DIR=$HOME/.cargo-target-shared/global RUSTC_WRAPPER= timeout 900 cargo nextest run --all-features --lib --tests -E 'test(tabl
+359	364	log	model	model		2026-11-27T15:17:06Z	0.8	
+359	365	log	tool	cargo build	bash	2026-11-27T15:17:07Z	60.0	[launched bg_11] cd ~/bevy_gooey_loop; mkdir -p /tmp/g115/shots /tmp/g115/wrap; CARGO_TARGET_DIR=$HOME/.cargo-target-shared/global RUSTC_WRAPPER= timeout 1200 cargo build --rele
+359	366	log	model	model		2026-11-27T15:18:07Z	0.7	
+359	367	log	tool	wait: other	wait	2026-11-27T15:18:07Z	5.0	{}
+359	368	log	model	model		2026-11-27T15:18:12Z	1.0	
+359	369	log	tool	wait: other	wait	2026-11-27T15:18:13Z	20.2	{}
+359	370	log	model	model		2026-11-27T15:18:34Z	1.0	
+359	371	log	tool	shell	bash	2026-11-27T15:18:35Z	2.7	cd ~/bevy_gooey_loop; G="$CARGO_TARGET_DIR/release/examples/table"; GOOEY_WRAP=1 GOOEY_FRAMES=120 GOOEY_SIZE=1280x720 GOOEY_SHOT=/tmp/g115/shots/wrap.png timeou
+359	372	log	model	model		2026-11-27T15:18:37Z	0.9	
+359	373	log	tool	read files	read	2026-11-27T15:18:38Z	0.0	/tmp/g115/shots/wrap.png
+359	374	log	model	model		2026-11-27T15:18:38Z	1.1	
+359	375	log	tool	shell	bash	2026-11-27T15:18:39Z	0.1	ps aux | grep -i xvfb | grep -v grep | head -3; which xrandr xdpyinfo 2>&1; ls /tmp/.X11-unix/ 2>&1
+359	376	log	model	model		2026-11-27T15:18:39Z	3.0	
+359	377	log	tool	shell	bash	2026-11-27T15:18:42Z	2.5	cd ~/bevy_gooey_loop; G="$CARGO_TARGET_DIR/release/examples/table"; GOOEY_FRAMES=120 GOOEY_SIZE=1280x720 GOOEY_SHOT=/tmp/g115/shots/plain.png timeout 200 "$G" 2
+359	378	log	model	model		2026-11-27T15:18:45Z	1.8	
+359	379	log	tool	shell	bash	2026-11-27T15:18:47Z	0.0	cd ~/bevy_gooey_loop; sed -n '/fn capture(/,/^}/p' examples/table.rs | head -60
+359	380	log	model	model		2026-11-27T15:18:47Z	2.1	
+359	381	log	tool	shell	bash	2026-11-27T15:18:49Z	0.0	cd ~/bevy_gooey_loop; G="$CARGO_TARGET_DIR/release/examples/gallery"; GOOEY_FRAMES=40 GOOEY_SIZE=1280x720 GOOEY_SHOT=/tmp/g115/shots/gallery.png timeout 200 "$G
+359	382	log	model	model		2026-11-27T15:18:49Z	1.1	
+359	383	log	tool	shell	bash	2026-11-27T15:18:50Z	2.5	cd ~/bevy_gooey_loop; G="$CARGO_TARGET_DIR/release/examples/table"; GOOEY_FRAMES=120 GOOEY_SHOT=/tmp/g115/shots/plain2.png timeout 200 "$G" 2>&1 | grep 'gooey:'
+359	384	log	model	model		2026-11-27T15:18:52Z	1.6	
+359	385	log	tool	shell	bash	2026-11-27T15:18:54Z	0.0	cd ~/bevy_gooey_loop; G="$CARGO_TARGET_DIR/release/examples/gallery"; GOOEY_FRAMES=40 GOOEY_SHOT=/tmp/g115/shots/gallery.png timeout 200 "$G" 2>&1 | tail -20
+359	386	log	model	model		2026-11-27T15:18:54Z	2.0	
+359	387	log	tool	shell	bash	2026-11-27T15:18:56Z	0.0	cd ~/bevy_gooey_loop; grep -n 'Xvfb\|WGPU\|LIBGL\|xvfb-run' docs/loop-log.md | tail -20
+359	388	log	model	model		2026-11-27T15:18:56Z	0.8	
+359	389	log	tool	shell	bash	2026-11-27T15:18:57Z	0.0	cd ~/bevy_gooey_loop; sed -n '/Capture note.*examples\/kit/,+20p' docs/loop-log.md; echo ===; sed -n '3570,3600p' docs/loop-log.md
+359	390	log	model	model		2026-11-27T15:18:57Z	0.9	
+359	391	log	tool	shell	bash	2026-11-27T15:18:58Z	0.3	ls /usr/share/vulkan/icd.d/ 2>&1; ls ~/g113* /tmp/g113* -d 2>/dev/null; find /var/lib/flatpak -name 'libvulkan_lvp.so' 2>/dev/null | head -3; ls ~/.local/share/
+359	392	log	model	model		2026-11-27T15:18:58Z	0.7	
+359	393	log	tool	shell	bash	2026-11-27T15:18:59Z	0.0	ls /tmp/g113; cat /tmp/g113/*.json 2>/dev/null | head -20
+359	394	log	model	model		2026-11-27T15:18:59Z	1.7	
+359	395	log	tool	shell	bash	2026-11-27T15:19:01Z	2.6	cd ~/bevy_gooey_loop; cp /tmp/g113/lvp_icd.json /tmp/g115/; export VK_ICD_FILENAMES=/tmp/g115/lvp_icd.json; G="$CARGO_TARGET_DIR/release/examples/table"; env -u
+359	396	log	model	model		2026-11-27T15:19:03Z	0.7	
+359	397	log	tool	read files	read	2026-11-27T15:19:04Z	0.0	/tmp/g115/shots/wrap.png
+359	398	log	model	model		2026-11-27T15:19:04Z	9.2	
+359	399	log	tool	cargo build	bash	2026-11-27T15:19:13Z	60.0	[launched bg_12] cd ~/bevy_gooey_loop; cp src/table.rs /tmp/g115/table.new.rs; python3 - <<'PY' p='src/table.rs' s=open(p).read() s=s.replace(""" let (first, pool) = if wraps { 
+359	400	log	model	model		2026-11-27T15:20:13Z	2.2	
+359	401	log	tool	wait: other	wait	2026-11-27T15:20:15Z	5.0	{}
+359	402	log	model	model		2026-11-27T15:20:20Z	0.7	
+359	403	log	tool	wait: other	wait	2026-11-27T15:20:21Z	20.0	{}
+359	404	log	model	model		2026-11-27T15:20:41Z	1.2	
+359	405	log	tool	shell	bash	2026-11-27T15:20:42Z	2.5	cd ~/bevy_gooey_loop; G="$CARGO_TARGET_DIR/release/examples/table"; env -u WAYLAND_DISPLAY DISPLAY=:93 VK_ICD_FILENAMES=/tmp/g115/lvp_icd.json GOOEY_WRAP=1 GOOE
+359	406	log	model	model		2026-11-27T15:20:45Z	4.3	
+359	407	log	tool	shell	bash	2026-11-27T15:20:49Z	0.0	cd ~/bevy_gooey_loop; G="$CARGO_TARGET_DIR/release/examples/table"; for k in 'pagedown,pagedown,pagedown,pagedown,end' ; do env -u WAYLAND_DISPLAY DISPLAY=:93 V
+359	408	log	model	model		2026-11-27T15:20:49Z	1.1	
+359	409	log	tool	shell	bash	2026-11-27T15:20:50Z	5.4	cd ~/bevy_gooey_loop; G="$CARGO_TARGET_DIR/release/examples/table"; env -u WAYLAND_DISPLAY DISPLAY=:93 VK_ICD_FILENAMES=/tmp/g115/lvp_icd.json GOOEY_WRAP=1 GOOE
+359	410	log	model	model		2026-11-27T15:20:55Z	2.6	
+359	411	log	tool	cargo build	bash	2026-11-27T15:20:58Z	60.0	[launched bg_13] cd ~/bevy_gooey_loop; G="$CARGO_TARGET_DIR/release/examples/table"; cp "$G" /tmp/g115/table-before; cp /tmp/g115/table.new.rs src/table.rs; CARGO_TARGET_DIR=$HO
+359	412	log	model	model		2026-11-27T15:21:58Z	1.0	
+359	413	log	tool	read files	read	2026-11-27T15:21:59Z	0.0	/tmp/g115/shots/before-keys.png
+359	414	log	model	model		2026-11-27T15:21:59Z	2.8	
+359	415	log	tool	wait: other	wait	2026-11-27T15:22:02Z	5.0	{}
+359	416	log	model	model		2026-11-27T15:22:07Z	1.1	
+359	417	log	tool	wait: other	wait	2026-11-27T15:22:08Z	44.7	{}
+359	418	log	model	model		2026-11-27T15:22:52Z	2.6	
+359	419	log	tool	shell	bash	2026-11-27T15:22:55Z	0.9	cd /tmp/g115; md5sum table-before table-after; for b in table-before table-after; do echo "== $b"; env -u WAYLAND_DISPLAY DISPLAY=:93 VK_ICD_FILENAMES=/tmp/g115
+359	420	log	model	model		2026-11-27T15:22:56Z	3.3	
+359	421	log	tool	shell	bash	2026-11-27T15:22:59Z	0.1	cd /tmp/g115; ls -la /usr/bin/time 2>&1; grep -c 'rows_in_view(y, view_h' ~/bevy_gooey_loop/src/table.rs; grep -n '(0, len)' ~/bevy_gooey_loop/src/table.rs | he
+359	422	log	model	model		2026-11-27T15:22:59Z	6.6	
+359	423	log	tool	shell	bash	2026-11-27T15:23:06Z	0.2	cd ~/bevy_gooey_loop; cp src/table.rs /tmp/g115/table.good.rs; python3 - <<'PY' p='src/table.rs' s=open(p).read() old=""" let (first, pool) = if wraps { let (fi
+359	424	log	model	model		2026-11-27T15:23:06Z	1.2	
+359	425	log	tool	shell	bash	2026-11-27T15:23:07Z	0.0	cd ~/bevy_gooey_loop; grep -n 'rows_in_view(y' -A6 src/table.rs
+359	426	log	model	model		2026-11-27T15:23:07Z	2.4	
+359	427	log	tool	cargo build	bash	2026-11-27T15:23:10Z	60.0	[launched bg_14] cd ~/bevy_gooey_loop; python3 - <<'PY' p='src/table.rs' s=open(p).read() old=""" let (first, end) = rows_in_view(y, view_h, &cache.tops); ( first, (end - first 
+359	428	log	model	model		2026-11-27T15:24:10Z	3.0	
+359	429	log	tool	wait: other	wait	2026-11-27T15:24:13Z	5.0	{}
+359	430	log	model	model		2026-11-27T15:24:18Z	0.8	
+359	431	log	tool	wait: other	wait	2026-11-27T15:24:19Z	42.2	{}
+359	432	log	model	model		2026-11-27T15:25:01Z	2.8	
+359	433	log	tool	cargo build	bash	2026-11-27T15:25:04Z	60.0	[launched bg_15] cd ~/bevy_gooey_loop; CARGO_TARGET_DIR=$HOME/.cargo-target-shared/global RUSTC_WRAPPER= timeout 900 cargo build --release --example table 2>&1 | tail -2; cp "$C
+359	434	log	model	model		2026-11-27T15:26:04Z	1.9	
+359	435	log	tool	wait: other	wait	2026-11-27T15:26:06Z	5.0	{}
+359	436	log	model	model		2026-11-27T15:26:11Z	1.1	
+359	437	log	tool	wait: other	wait	2026-11-27T15:26:12Z	157.7	{}
+359	438	log	model	model		2026-11-27T15:28:49Z	2.7	
+359	439	log	tool	shell	bash	2026-11-27T15:28:52Z	33.5	cd /tmp/g115; for b in table-before table-after; do echo "== $b"; s=$(date +%s.%N); env -u WAYLAND_DISPLAY DISPLAY=:93 VK_ICD_FILENAMES=/tmp/g115/lvp_icd.json G
+359	440	log	model	model		2026-11-27T15:29:26Z	1.8	
+359	441	log	tool	shell	bash	2026-11-27T15:29:27Z	60.0	[launched bg_16] cd /tmp/g115; for i in 1 2 3; do for b in table-before table-after; do printf '%s ' "$b"; env -u WAYLAND_DISPLAY DISPLAY=:93 VK_ICD_FILENAMES=/tmp/g115/lvp_icd.
+359	442	log	model	model		2026-11-27T15:30:27Z	0.9	
+359	443	log	tool	wait: other	wait	2026-11-27T15:30:28Z	5.0	{}
+359	444	log	model	model		2026-11-27T15:30:33Z	0.7	
+359	445	log	tool	wait: other	wait	2026-11-27T15:30:34Z	34.4	{}
+359	446	log	model	model		2026-11-27T15:31:08Z	1.2	
+359	447	log	tool	shell	bash	2026-11-27T15:31:09Z	4.5	cd /tmp/g115; mkdir -p frames; rm -f frames/*.png; env -u WAYLAND_DISPLAY DISPLAY=:93 VK_ICD_FILENAMES=/tmp/g115/lvp_icd.json GOOEY_WRAP=1 GOOEY_FIXED_CLOCK=1 G
+359	448	log	model	model		2026-11-27T15:31:14Z	0.9	
+359	449	log	tool	shell	bash	2026-11-27T15:31:15Z	0.1	cd /tmp/g115; ls frames | head -5; python3 -c " from PIL import Image im=Image.open('frames/f_0100.png'); print(im.size) im.crop((120,50,1170,680)).resize((480,
+359	450	log	model	model		2026-11-27T15:31:15Z	0.7	
+359	451	log	tool	read files	read	2026-11-27T15:31:16Z	0.0	/tmp/g115/shots/last.png
+359	452	log	model	model		2026-11-27T15:31:16Z	5.8	
+359	453	log	tool	shell	bash	2026-11-27T15:31:21Z	0.0	cd ~/bevy_gooey_loop; sed -n '1300,1360p' src/table.rs
+359	454	log	model	model		2026-11-27T15:31:21Z	3.5	
+359	455	log	tool	read files	read	2026-11-27T15:31:25Z	0.0	/tmp/g115/frames/f_0101.png
+359	456	log	model	model		2026-11-27T15:31:25Z	1.9	
+359	457	log	tool	shell	bash	2026-11-27T15:31:27Z	0.1	cd /tmp/g115; ls frames | tail -3; python3 -c " from PIL import Image im=Image.open('frames/f_0100.png'); im.crop((150,120,1130,660)).save('shots/full100.png')"
+359	458	log	model	model		2026-11-27T15:31:27Z	0.8	
+359	459	log	tool	read files	read	2026-11-27T15:31:28Z	0.0	/tmp/g115/shots/full100.png
+359	460	log	model	model		2026-11-27T15:31:28Z	8.6	
+359	461	log	tool	shell	bash	2026-11-27T15:31:36Z	1.8	cd /tmp/g115; env -u WAYLAND_DISPLAY DISPLAY=:93 VK_ICD_FILENAMES=/tmp/g115/lvp_icd.json GOOEY_WRAP=1 GOOEY_FRAMES=80 GOOEY_KEY_EVERY=15 GOOEY_KEYS='tab,end' GO
+359	462	log	model	model		2026-11-27T15:31:38Z	1.6	
+359	463	log	tool	read files	read	2026-11-27T15:31:40Z	0.0	/tmp/g115/shots/end-crop.png
+359	464	log	model	model		2026-11-27T15:31:40Z	2.0	
+359	465	log	tool	shell	bash	2026-11-27T15:31:42Z	3.8	cd /tmp/g115; env -u WAYLAND_DISPLAY DISPLAY=:93 VK_ICD_FILENAMES=/tmp/g115/lvp_icd.json GOOEY_WRAP=1 GOOEY_FRAMES=200 GOOEY_KEY_EVERY=15 GOOEY_KEYS='tab,end' G
+359	466	log	model	model		2026-11-27T15:31:46Z	2.1	
+359	467	log	tool	read files	read	2026-11-27T15:31:48Z	0.0	/tmp/g115/shots/end2-crop.png
+359	468	log	model	model		2026-11-27T15:31:48Z	3.0	
+359	469	log	tool	shell	bash	2026-11-27T15:31:51Z	7.2	cd /tmp/g115; env -u WAYLAND_DISPLAY DISPLAY=:93 VK_ICD_FILENAMES=/tmp/g115/lvp_icd.json GOOEY_WRAP=1 GOOEY_FRAMES=400 GOOEY_KEY_EVERY=15 GOOEY_KEYS='tab,end' G
+359	470	log	model	model		2026-11-27T15:31:58Z	0.9	
+359	471	log	tool	read files	read	2026-11-27T15:31:59Z	0.0	/tmp/g115/shots/end3-crop.png
+359	472	log	model	model		2026-11-27T15:31:59Z	4.9	
+359	473	log	tool	shell	bash	2026-11-27T15:32:04Z	0.0	cd ~/bevy_gooey_loop; grep -n 'fn keeps_nav_keys' -A25 src/list.rs; grep -n 'fn scroll_region_ends' -A25 src/list.rs
+359	474	log	model	model		2026-11-27T15:32:04Z	7.4	
+359	475	log	tool	shell	bash	2026-11-27T15:32:11Z	0.0	cd ~/bevy_gooey_loop; grep -n 'fn tap\|fn focus\|fn scroll_to\|fn viewport\b\|fn pool' -A6 tests/table.rs | head -50
+359	476	log	model	model		2026-11-27T15:32:11Z	1.9	
+359	477	log	tool	cargo test	bash	2026-11-27T15:32:13Z	60.0	[launched bg_17] cd ~/bevy_gooey_loop; python3 - <<'PY' p='tests/table.rs' s=open(p).read() anchor = "#[test]\nfn a_wrapping_tables_scroll_does_not_drift_as_its_rows_are_measure
+359	478	log	model	model		2026-11-27T15:33:13Z	1.0	
+359	479	log	tool	wait: other	wait	2026-11-27T15:33:14Z	5.1	{}
+359	480	log	model	model		2026-11-27T15:33:19Z	1.1	
+359	481	log	tool	shell	bash	2026-11-27T15:33:20Z	0.2	cd ~/bevy_gooey_loop; grep -n 'fn table_step' -A30 src/model.rs | head -40
+359	482	log	model	model		2026-11-27T15:33:20Z	2.2	
+359	483	log	tool	wait: other	wait	2026-11-27T15:33:23Z	181.7	{}
+359	484	log	model	model		2026-11-27T15:36:24Z	7.3	
+359	485	log	tool	shell	bash	2026-11-27T15:36:32Z	0.0	cd ~/bevy_gooey_loop; grep -n 'fn settle' -A12 tests/table.rs | head -20
+359	486	log	model	model		2026-11-27T15:36:32Z	4.8	
+359	487	log	tool	shell	bash	2026-11-27T15:36:36Z	14.9	cd /tmp/g115; for k in 'tab' 'tab,end' ; do echo "== $k"; env -u WAYLAND_DISPLAY DISPLAY=:93 VK_ICD_FILENAMES=/tmp/g115/lvp_icd.json GOOEY_WRAP=1 GOOEY_FIXED_CL
+359	488	log	model	model		2026-11-27T15:36:51Z	0.8	
+359	489	log	tool	read files	read	2026-11-27T15:36:52Z	0.0	/tmp/g115/shots/k-crop.png
+359	490	log	model	model		2026-11-27T15:36:52Z	2.4	
+359	491	log	tool	shell	bash	2026-11-27T15:36:54Z	1.8	cd /tmp/g115; env -u WAYLAND_DISPLAY DISPLAY=:93 VK_ICD_FILENAMES=/tmp/g115/lvp_icd.json GOOEY_WRAP=1 GOOEY_FRAMES=80 GOOEY_SHOT=/tmp/g115/shots/none.png ./tabl
+359	492	log	model	model		2026-11-27T15:36:56Z	0.7	
+359	493	log	tool	read files	read	2026-11-27T15:36:57Z	0.0	/tmp/g115/shots/none-crop.png
+359	494	log	model	model		2026-11-27T15:36:57Z	2.1	
+359	495	log	tool	shell	bash	2026-11-27T15:36:59Z	16.4	cd /tmp/g115; for b in table-before table-after; do env -u WAYLAND_DISPLAY DISPLAY=:93 VK_ICD_FILENAMES=/tmp/g115/lvp_icd.json GOOEY_WRAP=1 GOOEY_FRAMES=80 GOOE
+359	496	log	model	model		2026-11-27T15:37:15Z	0.7	
+359	497	log	tool	read files	read	2026-11-27T15:37:16Z	0.0	/tmp/g115/shots/table-after-top.png
+359	498	log	model	model		2026-11-27T15:37:16Z	15.0	
+359	499	log	tool	cargo test	bash	2026-11-27T15:37:31Z	5.1	cd ~/bevy_gooey_loop; cat > /tmp/g115/probe.rs <<'RS' #[test] fn probe_end() { let mut app = app(); let table = spawn_wrapping(&mut app, 10_000); focus(&mut app
+359	500	log	model	model		2026-11-27T15:37:36Z	1.0	
+359	501	log	tool	cargo test	bash	2026-11-27T15:37:37Z	2.5	cd ~/bevy_gooey_loop; CARGO_TARGET_DIR=$HOME/.cargo-target-shared/global RUSTC_WRAPPER= timeout 500 cargo nextest run --all-features -E 'test(table::probe_end)'
+359	502	log	model	model		2026-11-27T15:37:40Z	0.8	
+359	503	log	tool	cargo test	bash	2026-11-27T15:37:41Z	2.4	cd ~/bevy_gooey_loop; CARGO_TARGET_DIR=$HOME/.cargo-target-shared/global RUSTC_WRAPPER= timeout 500 cargo nextest run --all-features -E 'test(table::probe_end)'
+359	504	log	model	model		2026-11-27T15:37:43Z	1.8	
+359	505	log	tool	cargo test	bash	2026-11-27T15:37:45Z	21.7	cd ~/bevy_gooey_loop; python3 - <<'PY' p='tests/table.rs' s=open(p).read() s=s.replace(""" let sp = app.world().get::<ScrollPosition>(viewport(&mut app)).unwrap
+359	506	log	model	model		2026-11-27T15:38:06Z	0.9	
+359	507	log	tool	cargo test	bash	2026-11-27T15:38:07Z	2.1	cd ~/bevy_gooey_loop; CARGO_TARGET_DIR=$HOME/.cargo-target-shared/global RUSTC_WRAPPER= timeout 500 cargo nextest run --all-features -E 'test(table::probe_end)'
+359	508	log	model	model		2026-11-27T15:38:09Z	10.0	
+359	509	log	tool	shell	bash	2026-11-27T15:38:19Z	0.0	cd ~/bevy_gooey_loop; python3 - <<'PY' p='src/table.rs' s=open(p).read() s=s.replace(""" /// The scroll's end as the frame before measured it: a table that was 
+359	510	log	model	model		2026-11-27T15:38:19Z	2.2	
+359	511	log	tool	cargo test	bash	2026-11-27T15:38:22Z	60.2	[launched bg_18] cd ~/bevy_gooey_loop; CARGO_TARGET_DIR=$HOME/.cargo-target-shared/global RUSTC_WRAPPER= timeout 500 cargo nextest run --all-features -E 'test(table::probe_end)'
+359	512	log	model	model		2026-11-27T15:39:22Z	3.7	
+359	513	log	tool	wait: other	wait	2026-11-27T15:39:26Z	5.1	{}
+359	514	log	model	model		2026-11-27T15:39:31Z	0.7	
+359	515	log	tool	wait: other	wait	2026-11-27T15:39:31Z	240.1	{}
+359	516	log	model	model		2026-11-27T15:43:31Z	3.2	
+359	517	log	tool	shell	bash	2026-11-27T15:43:35Z	0.1	cd ~/bevy_gooey_loop; grep -n 'rows_in_view\|row_tops' src/model.rs | head; sed -n '/^pub fn row_tops/,/^}/p' src/model.rs
+359	518	log	model	model		2026-11-27T15:43:35Z	0.8	
+359	519	log	tool	wait: other	wait	2026-11-27T15:43:36Z	5.6	{}
+359	520	log	model	model		2026-11-27T15:43:41Z	3.8	
+359	521	log	tool	shell	bash	2026-11-27T15:43:45Z	0.0	cd ~/bevy_gooey_loop; python3 - <<'PY' p='tests/table.rs' s=open(p).read() i=s.index("#[test]\nfn probe_end()") s=s[:i].rstrip()+"\n" open(p,'w').write(s) PY gr
+359	522	log	model	model		2026-11-27T15:43:45Z	1.4	
+359	523	log	tool	shell	bash	2026-11-27T15:43:46Z	0.0	cd ~/bevy_gooey_loop; python3 - <<'PY' p='src/model.rs' s=open(p).read() s=s.replace(""" heights[3] = -3.0; row_tops(&mut tops, &heights, 3, 40.0); assert_eq!(t
+359	524	log	model	model		2026-11-27T15:43:46Z	2.3	
+359	525	log	tool	cargo test	bash	2026-11-27T15:43:49Z	60.0	[launched bg_19] cd ~/bevy_gooey_loop; python3 - <<'PY' p='tests/table.rs' s=open(p).read() anchor="#[test]\nfn end_on_a_wrapping_table_reaches_the_last_row_of_the_data() {" new
+359	526	log	model	model		2026-11-27T15:44:49Z	3.0	
+359	527	log	tool	wait: other	wait	2026-11-27T15:44:52Z	5.2	{}
+359	528	log	model	model		2026-11-27T15:44:57Z	0.9	
+359	529	log	tool	wait: other	wait	2026-11-27T15:44:58Z	143.0	{}
+359	530	log	model	model		2026-11-27T15:47:21Z	1.0	
+359	531	log	tool	cargo test	bash	2026-11-27T15:47:22Z	1.8	cd ~/bevy_gooey_loop; CARGO_TARGET_DIR=$HOME/.cargo-target-shared/global RUSTC_WRAPPER= timeout 400 cargo nextest run --all-features -E 'test(table::a_wrapping_
+359	532	log	model	model		2026-11-27T15:47:24Z	2.9	
+359	533	log	tool	cargo test	bash	2026-11-27T15:47:27Z	21.6	cd ~/bevy_gooey_loop; python3 - <<'PY' p='tests/table.rs' s=open(p).read() old = """ // Scrolling to a place and back puts the rows where they were: the measure
+359	534	log	model	model		2026-11-27T15:47:48Z	1.0	
+359	535	log	tool	cargo build	bash	2026-11-27T15:47:49Z	60.0	[launched bg_20] cd ~/bevy_gooey_loop; CARGO_TARGET_DIR=$HOME/.cargo-target-shared/global RUSTC_WRAPPER= timeout 900 cargo build --release --example table 2>&1 | tail -2; cp "$C
+359	536	log	model	model		2026-11-27T15:48:49Z	2.4	
+359	537	log	tool	wait: other	wait	2026-11-27T15:48:52Z	5.0	{}
+359	538	log	model	model		2026-11-27T15:48:57Z	2.1	
+359	539	log	tool	shell	bash	2026-11-27T15:48:59Z	0.1	cd ~/bevy_gooey_loop; python3 - <<'PY' p='docs/guide/tables.md' s=open(p).read() s=s.replace(""" A row the layout has not answered for yet counts one pitch, so 
+359	540	log	model	model		2026-11-27T15:48:59Z	0.7	
+359	541	log	tool	wait: other	wait	2026-11-27T15:48:59Z	27.4	{}
+359	542	log	model	model		2026-11-27T15:49:27Z	1.0	
+359	543	log	tool	shell	bash	2026-11-27T15:49:28Z	7.5	cd /tmp/g115; env -u WAYLAND_DISPLAY DISPLAY=:93 VK_ICD_FILENAMES=/tmp/g115/lvp_icd.json GOOEY_WRAP=1 GOOEY_FRAMES=400 GOOEY_KEY_EVERY=15 GOOEY_KEYS='tab,end' G
+359	544	log	model	model		2026-11-27T15:49:35Z	1.2	
+359	545	log	tool	read files	read	2026-11-27T15:49:37Z	0.0	/tmp/g115/shots/end4-crop.png
+359	546	log	model	model		2026-11-27T15:49:37Z	1.5	
+359	547	log	tool	shell	bash	2026-11-27T15:49:38Z	5.6	cd /tmp/g115; rm -rf frames; mkdir frames; env -u WAYLAND_DISPLAY DISPLAY=:93 VK_ICD_FILENAMES=/tmp/g115/lvp_icd.json GOOEY_WRAP=1 GOOEY_FIXED_CLOCK=1 GOOEY_FRA
+359	548	log	model	model		2026-11-27T15:49:44Z	2.3	
+359	549	log	tool	shell	bash	2026-11-27T15:49:46Z	0.3	cd /tmp/g115; python3 - <<'PY' from PIL import Image import glob, os files = sorted(glob.glob('frames/f_*.png')) print(len(files)) # Find the table's rect: crop
+359	550	log	model	model		2026-11-27T15:49:46Z	0.8	
+359	551	log	tool	read files	read	2026-11-27T15:49:47Z	0.0	/tmp/g115/shots/pick0.png
+359	552	log	model	model		2026-11-27T15:49:47Z	0.8	
+359	553	log	tool	read files	read	2026-11-27T15:49:48Z	0.0	/tmp/g115/shots/pick60.png
+359	554	log	model	model		2026-11-27T15:49:48Z	0.8	
+359	555	log	tool	read files	read	2026-11-27T15:49:49Z	0.0	/tmp/g115/shots/pick100.png
+359	556	log	model	model		2026-11-27T15:49:49Z	6.3	
+359	557	log	tool	read files	read	2026-11-27T15:49:55Z	0.0	/tmp/g115/shots/pick20.png
+359	558	log	model	model		2026-11-27T15:49:55Z	1.9	
+359	559	log	tool	shell	bash	2026-11-27T15:49:57Z	0.2	cd /tmp/g115; python3 - <<'PY' from PIL import Image for i in (70, 85, 95, 110, 116): im = Image.open(f'frames/f_{i:04d}.png').convert('RGB') im.crop((150,380,1
+359	560	log	model	model		2026-11-27T15:49:57Z	0.8	
+359	561	log	tool	read files	read	2026-11-27T15:49:58Z	0.0	/tmp/g115/shots/late85.png
+359	562	log	model	model		2026-11-27T15:49:58Z	1.9	
+359	563	log	tool	shell	bash	2026-11-27T15:50:00Z	0.1	cd /tmp/g115; python3 - <<'PY' from PIL import Image for i in (105, 112, 118): im = Image.open(f'frames/f_{i:04d}.png').convert('RGB') im.crop((150,120,1140,660
+359	564	log	model	model		2026-11-27T15:50:00Z	0.7	
+359	565	log	tool	read files	read	2026-11-27T15:50:01Z	0.0	/tmp/g115/shots/L112.png
+359	566	log	model	model		2026-11-27T15:50:01Z	3.9	
+359	567	log	tool	shell	bash	2026-11-27T15:50:05Z	0.2	cd /tmp/g115; python3 - <<'PY' from PIL import Image for i in (37, 42, 46, 50): im = Image.open(f'frames/f_{i:04d}.png').convert('RGB') im.crop((150,120,1140,66
+359	568	log	model	model		2026-11-27T15:50:05Z	0.8	
+359	569	log	tool	read files	read	2026-11-27T15:50:06Z	0.0	/tmp/g115/shots/M42.png
+359	570	log	model	model		2026-11-27T15:50:06Z	2.2	
+359	571	log	tool	shell	bash	2026-11-27T15:50:08Z	0.1	cd ~/bevy_gooey_loop; python3 -c " from PIL import Image im=Image.open('docs/media/table.gif'); print(im.size, im.n_frames)"; grep -n 'table.gif' -A3 docs/media
+359	572	log	model	model		2026-11-27T15:50:08Z	2.5	
+359	573	log	tool	shell	bash	2026-11-27T15:50:10Z	0.1	cd /tmp/g115; python3 - <<'PY' from PIL import Image im = Image.open('frames/f_0001.png').convert('RGB') w,h = im.size px = im.load() bg = px[2,2] print('bg', b
+359	574	log	model	model		2026-11-27T15:50:11Z	1.2	
+359	575	log	tool	shell	bash	2026-11-27T15:50:12Z	4.5	cd /tmp/g115; python3 - <<'PY' from PIL import Image box=(136,70,1143,651) frames=[] import glob for f in sorted(glob.glob('frames/f_*.png')): frames.append(Ima
+359	576	log	model	model		2026-11-27T15:50:16Z	1.1	
+359	577	log	tool	shell	bash	2026-11-27T15:50:17Z	0.1	cd /tmp/g115; python3 - <<'PY' from PIL import Image im=Image.open('shots/table-wrap.gif') im.seek(0); im.convert('RGB').save('shots/gif0.png') im.seek(60); im.
+359	578	log	model	model		2026-11-27T15:50:18Z	0.8	
+359	579	log	tool	shell	bash	2026-11-27T15:50:18Z	0.1	cd /tmp/g115; python3 -c " from PIL import Image im=Image.open('shots/table-wrap.gif'); print(im.n_frames, im.size)"; ls -la shots/table-wrap.gif
+359	580	log	model	model		2026-11-27T15:50:18Z	3.1	
+359	581	log	tool	shell	bash	2026-11-27T15:50:21Z	5.1	cd /tmp/g115; rm -rf frames; mkdir frames; env -u WAYLAND_DISPLAY DISPLAY=:93 VK_ICD_FILENAMES=/tmp/g115/lvp_icd.json GOOEY_WRAP=1 GOOEY_FIXED_CLOCK=1 GOOEY_FRA
+359	582	log	model	model		2026-11-27T15:50:27Z	1.5	
+359	583	log	tool	shell	bash	2026-11-27T15:50:28Z	2.6	cd /tmp/g115; python3 - <<'PY' from PIL import Image import glob, os box=(136,70,1143,651) files=sorted(glob.glob('frames/f_*.png')) frames=[Image.open(f).conve
+359	584	log	model	model		2026-11-27T15:50:31Z	2.1	
+359	585	log	tool	shell	bash	2026-11-27T15:50:33Z	0.0	cd /tmp/g115; md5sum frames/*.png | awk '{print $1}' | sort | uniq -c | sort -rn | head -5; ls frames | wc -l; md5sum frames/*.png | awk '{print $1}' | sort -u 
+359	586	log	model	model		2026-11-27T15:50:33Z	2.6	
+359	587	log	tool	shell	bash	2026-11-27T15:50:35Z	6.9	cd /tmp/g115; rm -rf frames; mkdir frames; env -u WAYLAND_DISPLAY DISPLAY=:93 VK_ICD_FILENAMES=/tmp/g115/lvp_icd.json GOOEY_WRAP=1 GOOEY_FIXED_CLOCK=1 GOOEY_FRA
+359	588	log	model	model		2026-11-27T15:50:42Z	1.7	
+359	589	log	tool	clip record/render	bash	2026-11-27T15:50:44Z	0.0	which magick convert gifsicle ffmpeg 2>&1 | head
+359	590	log	model	model		2026-11-27T15:50:44Z	3.4	
+359	591	log	tool	shell	bash	2026-11-27T15:50:48Z	14.8	cd /tmp/g115; rm -rf frames; mkdir frames; env -u WAYLAND_DISPLAY DISPLAY=:93 VK_ICD_FILENAMES=/tmp/g115/lvp_icd.json GOOEY_WRAP=1 GOOEY_FIXED_CLOCK=1 GOOEY_FRA
+359	592	log	model	model		2026-11-27T15:51:02Z	3.5	
+359	593	log	tool	shell	bash	2026-11-27T15:51:06Z	0.0	cd ~/bevy_gooey_loop; ls -laS docs/media/*.gif | head -6 | awk '{print $5, $9}'
+359	594	log	model	model		2026-11-27T15:51:06Z	1.7	
+359	595	log	tool	clip record/render	bash	2026-11-27T15:51:07Z	6.9	cd /tmp/g115; rm -rf frames; mkdir frames; env -u WAYLAND_DISPLAY DISPLAY=:93 VK_ICD_FILENAMES=/tmp/g115/lvp_icd.json GOOEY_WRAP=1 GOOEY_FIXED_CLOCK=1 GOOEY_FRA
+359	596	log	model	model		2026-11-27T15:51:14Z	1.6	
+359	597	log	tool	shell	bash	2026-11-27T15:51:16Z	0.2	cd /tmp/g115; python3 -c " from PIL import Image im=Image.open('shots/table-wrap.gif') for i in (0,12,24,36,48,60,72,75): im.seek(i); im.convert('RGB').save(f's
+359	598	log	model	model		2026-11-27T15:51:16Z	0.8	
+359	599	log	tool	read files	read	2026-11-27T15:51:17Z	0.0	/tmp/g115/shots/g24.png
+359	600	log	model	model		2026-11-27T15:51:17Z	0.9	
+359	601	log	tool	read files	read	2026-11-27T15:51:18Z	0.0	/tmp/g115/shots/g60.png
+359	602	log	model	model		2026-11-27T15:51:18Z	0.9	
+359	603	log	tool	read files	read	2026-11-27T15:51:19Z	0.0	/tmp/g115/shots/g72.png
+359	604	log	model	model		2026-11-27T15:51:19Z	2.7	
+359	605	log	tool	read files	read	2026-11-27T15:51:21Z	0.0	/tmp/g115/shots/g36.png
+359	606	log	model	model		2026-11-27T15:51:21Z	2.4	
+359	607	log	tool	read files	read	2026-11-27T15:51:24Z	0.0	/tmp/g115/shots/g48.png
+359	608	log	model	model		2026-11-27T15:51:24Z	2.6	
+359	609	log	tool	shell	bash	2026-11-27T15:51:26Z	0.1	cd /tmp/g115; python3 -c " from PIL import Image im=Image.open('shots/table-wrap.gif') for i in (38,41,44): im.seek(i); im.convert('RGB').save(f'shots/h{i}.png'
+359	610	log	model	model		2026-11-27T15:51:27Z	0.8	
+359	611	log	tool	read files	read	2026-11-27T15:51:27Z	0.0	/tmp/g115/shots/h44.png
+359	612	log	model	model		2026-11-27T15:51:27Z	3.2	
+359	613	log	tool	clip record/render	bash	2026-11-27T15:51:31Z	5.2	cd /tmp/g115; rm -rf frames; mkdir frames; env -u WAYLAND_DISPLAY DISPLAY=:93 VK_ICD_FILENAMES=/tmp/g115/lvp_icd.json GOOEY_WRAP=1 GOOEY_FIXED_CLOCK=1 GOOEY_FRA
+359	614	log	model	model		2026-11-27T15:51:36Z	0.9	
+359	615	log	tool	shell	bash	2026-11-27T15:51:37Z	0.2	cd /tmp/g115; python3 -c " from PIL import Image im=Image.open('shots/table-wrap.gif') for i in (0,10,25,36,40,55,66): im.seek(i); im.convert('RGB').save(f'shot
+359	616	log	model	model		2026-11-27T15:51:37Z	0.8	
+359	617	log	tool	read files	read	2026-11-27T15:51:38Z	0.0	/tmp/g115/shots/f25.png
+359	618	log	model	model		2026-11-27T15:51:38Z	1.0	
+359	619	log	tool	read files	read	2026-11-27T15:51:39Z	0.0	/tmp/g115/shots/f36.png
+359	620	log	model	model		2026-11-27T15:51:39Z	6.8	
+359	621	log	tool	shell	bash	2026-11-27T15:51:45Z	2.0	cd /tmp/g115; python3 -c " from PIL import Image im=Image.open('frames/f_0067.png').convert('RGB').crop((136,70,1143,651)) im.save('/home/ladvien/bevy_gooey_loo
+359	622	log	model	model		2026-11-27T15:51:47Z	2.6	
+359	623	log	tool	clip record/render	bash	2026-11-27T15:51:50Z	0.1	cd ~/bevy_gooey_loop; python3 - <<'PY' p='docs/guide/tables.md' s=open(p).read() s=s.replace("""![The table example: an inventory of ten thousand rows; a click 
+359	624	log	model	model		2026-11-27T15:51:50Z	1.1	
+359	625	log	tool	shell	bash	2026-11-27T15:51:51Z	0.0	cd ~/bevy_gooey_loop; sed -n '103p' README.md | cat
+359	626	log	model	model		2026-11-27T15:51:51Z	1.6	
+359	627	log	tool	shell	bash	2026-11-27T15:51:53Z	0.0	cd ~/bevy_gooey_loop; grep -n '\.gif' README.md | head -20
+359	628	log	model	model		2026-11-27T15:51:53Z	1.3	
+359	629	log	tool	shell	bash	2026-11-27T15:51:54Z	0.0	cd ~/bevy_gooey_loop; grep -n 'table' README.md | head -10
+359	630	log	model	model		2026-11-27T15:51:54Z	2.4	
+359	631	log	tool	shell	bash	2026-11-27T15:51:57Z	0.0	cd ~/bevy_gooey_loop; python3 - <<'PY' p='README.md' s=open(p).read() old="A table column can `.wrap()` its text, a split takes a `SplitThickness` and an `led` 
+359	632	log	model	model		2026-11-27T15:51:57Z	3.1	
+359	633	log	tool	shell	bash	2026-11-27T15:52:00Z	0.0	cd ~/bevy_gooey_loop; python3 - <<'PY' p='docs/loop-log.md' s=open(p).read() old="""**Demo.** `examples/table` gained `GOOEY_WRAP=1`: a fifth Note column of one
+359	634	log	model	model		2026-11-27T15:52:00Z	1.9	
+359	635	log	tool	shell	bash	2026-11-27T15:52:02Z	0.0	cd ~/bevy_gooey_loop; python3 - <<'PY' p='docs/loop-log.md' s=open(p).read() s=s.replace("""**Tests.** `table::ten_thousand_wrapping_rows_spawn_a_viewport_of_en
+359	636	log	model	model		2026-11-27T15:52:02Z	1.7	
+359	637	gate	tool	phase mark	bash	2026-11-27T15:52:03Z	0.1	cd ~/bevy_gooey_loop; python3 ~/.local/share/wiggum/steps.py mark gate >/dev/null 2>&1; cat > /tmp/g115/gate.sh <<'SH' set -x cd ~/bevy_gooey_loop export CARGO_
+359	638	gate	model	model		2026-11-27T15:52:03Z	1.0	
+359	639	gate	tool	shell	bash	2026-11-27T15:52:04Z	0.0	cd ~/bevy_gooey_loop; sed -i 's|setsid nohup /tmp/g115/gate.sh /tmp/g115/gate.log > /dev/null 2>&1 \& disown|setsid nohup /tmp/g115/gate.sh > /tmp/g115/gate.log
+359	640	gate	model	model		2026-11-27T15:52:04Z	1.1	
+359	641	gate	tool	shell	bash	2026-11-27T15:52:05Z	20.0	cd ~/bevy_gooey_loop; setsid nohup /tmp/g115/gate.sh > /tmp/g115/gate.log 2>&1 & disown; sleep 20; head -5 /tmp/g115/gate.log
+359	642	gate	model	model		2026-11-27T15:52:25Z	0.9	
+359	643	gate	tool	shell	bash	2026-11-27T15:52:26Z	0.0	cd ~/bevy_gooey_loop; git status --short; git diff --stat
+359	644	gate	model	model		2026-11-27T15:52:26Z	1.1	
+359	645	gate	tool	shell	bash	2026-11-27T15:52:27Z	0.0	cd ~/bevy_gooey_loop; tail -c 400 Cargo.lock 2>/dev/null | head -3; git diff Cargo.toml
+359	646	gate	model	model		2026-11-27T15:52:27Z	1.3	
+359	647	gate	tool	remote wait	bash	2026-11-27T15:52:29Z	60.0	[launched bg_21] sleep 240; cd ~/bevy_gooey_loop; grep -E '^== |GATE |^error|warning:|test result' /tmp/g115/gate.log | tail -25
+359	648	gate	model	model		2026-11-27T15:53:29Z	1.4	
+359	649	gate	tool	shell	bash	2026-11-27T15:53:30Z	0.0	cd ~/bevy_gooey_loop; grep -n 'wrap' docs/guide/tables.md | head; sed -n '1,40p' src/lib.rs | grep -n 'wrap'
+359	650	gate	model	model		2026-11-27T15:53:30Z	0.9	
+359	651	gate	tool	shell	bash	2026-11-27T15:53:31Z	0.0	cd ~/bevy_gooey_loop; sed -n '1,25p' CHANGELOG.md
+359	652	gate	model	model		2026-11-27T15:53:31Z	1.5	
+359	653	gate	tool	shell	bash	2026-11-27T15:53:33Z	0.0	cd ~/bevy_gooey_loop; git log --oneline -3; sed -n '1,12p' docs/research/table-variable-height.md
+359	654	gate	model	model		2026-11-27T15:53:33Z	0.8	
+359	655	gate	tool	wait: other	wait	2026-11-27T15:53:33Z	5.0	{}
+359	656	gate	model	model		2026-11-27T15:53:38Z	0.6	
+359	657	gate	tool	wait: other	wait	2026-11-27T15:53:39Z	169.7	{}
+359	658	gate	model	model		2026-11-27T15:56:29Z	0.9	
+359	659	gate	tool	shell	bash	2026-11-27T15:56:30Z	1.7	cd ~/bevy_gooey_loop; export CARGO_TARGET_DIR=$HOME/.cargo-target-shared/global; cargo fmt --check 2>&1 | head -40
+359	660	gate	model	model		2026-11-27T15:56:31Z	1.0	
+359	661	gate	tool	shell	bash	2026-11-27T15:56:32Z	3.1	cd ~/bevy_gooey_loop; export CARGO_TARGET_DIR=$HOME/.cargo-target-shared/global; cargo fmt; cargo fmt --check && echo FMT OK; setsid nohup /tmp/g115/gate.sh > /
+359	662	gate	model	model		2026-11-27T15:56:35Z	1.8	
+359	663	gate	tool	remote wait	bash	2026-11-27T15:56:37Z	60.1	[launched bg_22] sleep 280; cd ~/bevy_gooey_loop; grep -E '^== |GATE |^error|warning:|test result|Summary' /tmp/g115/gate.log | tail -30
+359	664	gate	model	model		2026-11-27T15:57:37Z	3.2	
+359	665	gate	tool	shell	bash	2026-11-27T15:57:41Z	0.1	cd ~/bevy_gooey_loop; git diff tests/table.rs | grep '^+' | grep -n 'fn ' | head -20
+359	666	gate	model	model		2026-11-27T15:57:41Z	0.8	
+359	667	gate	tool	wait: other	wait	2026-11-27T15:57:41Z	5.0	{}
+359	668	gate	model	model		2026-11-27T15:57:46Z	0.9	
+359	669	gate	tool	wait: other	wait	2026-11-27T15:57:47Z	210.1	{}
+359	670	gate	model	model		2026-11-27T16:01:17Z	1.1	
+359	671	gate	tool	shell	bash	2026-11-27T16:01:18Z	0.0	cd ~/bevy_gooey_loop; tail -30 /tmp/g115/gate.log
+359	672	gate	model	model		2026-11-27T16:01:19Z	0.8	
+359	673	gate	tool	remote wait	bash	2026-11-27T16:01:19Z	60.0	[launched bg_23] sleep 290; cd ~/bevy_gooey_loop; tail -35 /tmp/g115/gate.log
+359	674	gate	model	model		2026-11-27T16:02:19Z	3.1	
+359	675	gate	tool	wait: other	wait	2026-11-27T16:02:22Z	5.0	{}
+359	676	gate	model	model		2026-11-27T16:02:27Z	2.4	
+359	677	gate	tool	wait: other	wait	2026-11-27T16:02:30Z	219.5	{}
+359	678	gate	model	model		2026-11-27T16:06:09Z	1.3	
+359	679	gate	tool	shell	bash	2026-11-27T16:06:11Z	0.0	cd ~/bevy_gooey_loop; grep -nE 'FAIL|failed|SIGSEGV|TIMEOUT|panicked' /tmp/g115/gate.log | head -20
+359	680	gate	model	model		2026-11-27T16:06:11Z	1.1	
+359	681	gate	tool	shell	bash	2026-11-27T16:06:12Z	0.0	cd ~/bevy_gooey_loop; sed -n '25,42p' /tmp/g115/gate.log; grep -n 'a_20000_line_wrapped_pane' -A25 tests/code_editor.rs | head -45
+359	682	gate	model	model		2026-11-27T16:06:12Z	1.2	
+359	683	gate	tool	shell	bash	2026-11-27T16:06:13Z	0.0	cd ~/bevy_gooey_loop; sed -n '1263,1300p' tests/code_editor.rs
+359	684	gate	model	model		2026-11-27T16:06:13Z	1.0	
+359	685	gate	tool	shell	bash	2026-11-27T16:06:14Z	0.0	cd ~/bevy_gooey_loop; grep -n 'a_20000_line_wrapped' -A6 /tmp/g115/gate.log | grep -i -m3 'took\|ms a frame'; sed -n '1,24p' /tmp/g115/gate.log | head -5
+359	686	gate	model	model		2026-11-27T16:06:14Z	0.9	
+359	687	gate	tool	cargo test	bash	2026-11-27T16:06:15Z	3.6	cd ~/bevy_gooey_loop; export CARGO_TARGET_DIR=$HOME/.cargo-target-shared/global; uptime; cargo nextest run --all-features --lib --tests -E 'test(code_editor::a_
+359	688	gate	model	model		2026-11-27T16:06:19Z	2.3	
+359	689	gate	tool	shell	bash	2026-11-27T16:06:21Z	0.1	cd ~/bevy_gooey_loop; python3 - <<'PY' p='docs/loop-log.md' s=open(p).read() old="""**The gate.** `fmt`, `clippy -D warnings`, `nextest --all-features --lib --t
+359	690	gate	model	model		2026-11-27T16:06:21Z	0.7	
+359	691	gate	tool	shell	bash	2026-11-27T16:06:22Z	0.0	cd ~/bevy_gooey_loop; grep -n 'gate\.\|The gate' docs/loop-log.md | tail -8
+359	692	gate	model	model		2026-11-27T16:06:22Z	1.0	
+359	693	gate	tool	shell	bash	2026-11-27T16:06:23Z	0.0	cd ~/bevy_gooey_loop; grep -n '^\*\*The gate\|gate\.\*\*' docs/loop-log.md | tail -4; awk 'NR>4020 && NR<4075' docs/loop-log.md | grep -n 'gate'
+359	694	gate	model	model		2026-11-27T16:06:23Z	0.9	
+359	695	gate	tool	shell	bash	2026-11-27T16:06:24Z	0.0	cd ~/bevy_gooey_loop; grep -n 'Iteration 115' docs/loop-log.md; grep -n '^\*\*' docs/loop-log.md | awk -F: '$1>3960'
+359	696	gate	model	model		2026-11-27T16:06:24Z	1.5	
+359	697	gate	tool	shell	bash	2026-11-27T16:06:25Z	0.0	cd ~/bevy_gooey_loop; python3 - <<'PY' p='docs/loop-log.md' s=open(p).read() anchor="**Measured.** `examples/table` at 1280x720" assert anchor in s add = """**T
+359	698	gate	model	model		2026-11-27T16:06:25Z	1.4	
+359	699	ship	tool	phase mark	bash	2026-11-27T16:06:26Z	0.2	cd ~/bevy_gooey_loop; rm docs/media/table-wrap.png; python3 ~/.local/share/wiggum/steps.py mark ship >/dev/null 2>&1; git add -A; git status --short
+359	700	ship	model	model		2026-11-27T16:06:27Z	2.6	
+359	701	ship	tool	git	bash	2026-11-27T16:06:29Z	0.1	cd ~/bevy_gooey_loop; python3 - <<'PY' p='docs/loop-log.md' s=open(p).read() s=s.replace("Home returns to the first. `docs/media/table-wrap.png` is the first fr
+359	702	ship	model	model		2026-11-27T16:06:29Z	1.0	
+359	703	release	tool	phase mark	bash	2026-11-27T16:06:30Z	2.4	cd ~/bevy_gooey_loop; git push -q origin main && git log --oneline origin/main -1; python3 ~/.local/share/wiggum/steps.py mark release >/dev/null 2>&1; git tag 
+359	704	release	model	model		2026-11-27T16:06:33Z	0.8	
+359	705	release	tool	shell	bash	2026-11-27T16:06:34Z	1.3	cd ~/bevy_gooey_loop; export CARGO_TARGET_DIR=$HOME/.cargo-target-shared/global; timeout 300 cargo semver-checks --baseline-version 0.63.0 2>&1 | tail -12
+359	706	release	model	model		2026-11-27T16:06:35Z	1.3	
+359	707	release	tool	cargo publish	bash	2026-11-27T16:06:36Z	39.2	cd ~/bevy_gooey_loop; export CARGO_TARGET_DIR=$HOME/.cargo-target-shared/global; cargo publish --dry-run 2>&1 | tail -6
+359	708	release	model	model		2026-11-27T16:07:15Z	1.1	
+359	709	release	tool	cargo publish	bash	2026-11-27T16:07:16Z	9.7	cd ~/bevy_gooey_loop; export CARGO_TARGET_DIR=$HOME/.cargo-target-shared/global; cargo publish 2>&1 | tail -8
+359	710	release	model	model		2026-11-27T16:07:26Z	1.2	
+359	711	release	tool	shell	bash	2026-11-27T16:07:27Z	0.7	cd ~/bevy_gooey_loop; git log -1 --format=%H v0.63.0 2>/dev/null; git ls-remote --tags origin 'v0.64.0' 'v0.63.0'; sed -n '3995,4004p' docs/loop-log.md
+359	712	release	model	model		2026-11-27T16:07:28Z	0.9	
+359	713	release	tool	shell	bash	2026-11-27T16:07:29Z	0.0	cd ~/bevy_gooey_loop; grep -n '0.63.0' README.md
+359	714	release	model	model		2026-11-27T16:07:29Z	1.9	
+359	715	release	tool	shell	bash	2026-11-27T16:07:31Z	0.0	cd ~/bevy_gooey_loop; grep -rn '0\.63' README.md docs/guide/*.md | head -5
+359	716	release	model	model		2026-11-27T16:07:31Z	0.9	
+359	717	release	tool	shell	bash	2026-11-27T16:07:32Z	0.0	cd ~/bevy_gooey_loop; grep -n 'compat\|bevy.*0\.20' README.md | head -5
+359	718	release	model	model		2026-11-27T16:07:32Z	0.8	
+359	719	release	tool	shell	bash	2026-11-27T16:07:33Z	0.0	cd ~/bevy_gooey_loop; sed -n '127,135p' README.md
+359	720	release	model	model		2026-11-27T16:07:33Z	2.2	
+359	721	release	tool	cargo publish	bash	2026-11-27T16:07:35Z	0.1	cd ~/bevy_gooey_loop; python3 - <<'PY' p='docs/loop-log.md' s=open(p).read() anchor="**Docs.** The CHANGELOG's 0.64.0 section," assert anchor in s add = """**Re
+359	722	release	model	model		2026-11-27T16:07:35Z	0.8	
+359	723	release	tool	shell	bash	2026-11-27T16:07:36Z	0.0	cd ~/bevy_gooey_loop; tail -20 docs/loop-log.md | head -20; grep -n 'Top 5 backlog' docs/loop-log.md | tail -2
+359	724	release	model	model		2026-11-27T16:07:36Z	0.7	
+359	725	release	tool	shell	bash	2026-11-27T16:07:36Z	0.0	cd ~/bevy_gooey_loop; sed -n '4007,4012p' docs/loop-log.md; echo ---; cat docs/research/table-variable-height.md | sed -n '1,5p'; ls docs/research | tail -3
+359	726	release	model	model		2026-11-27T16:07:36Z	2.1	
+359	727	log	tool	phase mark	bash	2026-11-27T16:07:39Z	1.8	cd ~/bevy_gooey_loop; python3 - <<'PY' p='docs/loop-log.md' s=open(p).read() s += """ **Pending index.** home-still was not queried this pass (the item's source
+359	728	log	model	model		2026-11-27T16:07:40Z	0.9	
+359	729	log	tool	push gate	bash	2026-11-27T16:07:41Z	2.2	cd ~/bevy_gooey_loop; git tag -a v0.64.0 -m 'v0.64.0: a wrapping table windows on what its rows measured' && git push -q origin main v0.64.0 && echo pushed; git
+359	730	log	model	model		2026-11-27T16:07:44Z	1.4	
+359	731	log	tool	shell	bash	2026-11-27T16:07:45Z	0.1	cd ~/bevy_gooey_loop; rm -rf /tmp/g115; git status --short; git log --oneline -4; ls ~/g115_base 2>/dev/null; df -h /home | tail -1
+359	732	log	model	model		2026-11-27T16:07:45Z	1.9	
+359	733	log	model	model		2026-11-27T16:07:47Z	1.6	
