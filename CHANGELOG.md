@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.64.2] - 2026-11-27
+
+### Fixed
+
+- **The find bar's keys are the bar's.** The bar is a child of the editor and Bevy's
+  `FocusedInput<KeyboardInput>` bubbles from the focused field to every ancestor with an observer, so
+  `Enter` in the query stepped to the next match **and inserted a line break over it**: a player
+  could not walk the matches the bar's count describes without editing the file. The editor now
+  answers only a key pressed on itself or a chord (`event.event_target() ==
+  event.original_event_target()`, or Ctrl/Alt/Super held, so Ctrl+F, Ctrl+Z and the bar's own
+  Ctrl+Alt+F still work with focus in the field), and the bar's own observer turns `Escape` into
+  `FindAction::Close`, giving the keyboard back to the editor. Tab still leaves the bar (Bevy's tab
+  navigation), so it is not a keyboard trap (WCAG 2.1.2). Tests:
+  `tests/code_navigation.rs::enter_in_the_find_query_steps_the_match_and_leaves_the_text_alone`,
+  `…::escape_in_the_bar_closes_it_and_hands_the_keyboard_back_to_the_editor`,
+  `…::a_character_typed_in_the_query_never_reaches_the_editor`.
+
 ## [0.64.1] - 2026-11-27
 
 ### Fixed
