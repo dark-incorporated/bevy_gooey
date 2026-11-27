@@ -362,7 +362,8 @@ pub use model::{
     shadow_sigma, shortcut_conflicts, shortcut_label, slider_fraction, slider_text, slot_edge,
     snap_line_width, snap_text_size, snap_to_row, spinner_angle, split_clamp, split_drag,
     split_mins, spring_at_rest, spring_settle_seconds, spring_step, step_value, tab_step,
-    table_anchor, table_step, table_window, target_step, target_toward, toast_alpha, toast_grow,
+    table_anchor, table_rows_at, table_step, table_window, target_step, target_toward, toast_alpha,
+    toast_grow,
     toast_hold, toast_life, tree_ends, tree_heir, tree_indent, tree_parent, tree_visible,
     type_ahead, window_ui_scale,
 };

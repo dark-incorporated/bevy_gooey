@@ -4351,3 +4351,73 @@ mod tests {
         assert_eq!(spring.scaled(f32::NAN), spring);
     }
 }
+
+/// The rows a virtualized table with rows of differing heights draws, from the offset `scroll`
+/// and the heights of the rows below it.
+///
+/// `heights(i)` answers a row's height in logical pixels (a row not measured yet answers the
+/// table's pitch, so the answer is still a place). The answer is `(first, tops)` where `first` is
+/// the display row whose box holds `scroll` — a row half above the top is the first one drawn —
+/// and `tops` holds that row's top and every later row's top within the window the caller asked
+/// for. `span` is how many entries of `tops` to fill: the pool's size plus one, so the caller
+/// knows where the row after its last one begins.
+///
+/// The walk starts at row 0 because a row's height can only be known after it is laid out, so a
+/// height list that does not start at the top would be a guess; a table caches the answer and
+/// walks from the row it drew last. A scroll that is not finite, a negative one, and a `span` of
+/// zero answer with row 0 and its top at 0.
+///
+/// ```
+/// use bevy_gooey::table_rows_at;
+/// let heights = |i: usize| if i % 2 == 0 { 40.0 } else { 60.0 };
+/// // 0..40 is row 0, 40..100 row 1, 100..140 row 2.
+/// assert_eq!(table_rows_at(0.0, 4, heights), (0, vec![0.0, 40.0, 100.0, 140.0]));
+/// assert_eq!(table_rows_at(50.0, 3, heights), (1, vec![40.0, 100.0, 140.0]));
+/// assert_eq!(table_rows_at(100.0, 2, heights), (2, vec![100.0, 140.0]));
+/// // Not a usable scroll: the top.
+/// assert_eq!(table_rows_at(f32::NAN, 2, heights), (0, vec![0.0, 40.0]));
+/// assert_eq!(table_rows_at(-5.0, 2, heights), (0, vec![0.0, 40.0]));
+/// ```
+pub fn table_rows_at(scroll: f32, span: usize, heights: impl Fn(usize) -> f32) -> (usize, Vec<f32>) {
+    let mut first = 0;
+    let mut top = 0.0f32;
+    if scroll.is_finite() && scroll > 0.0 {
+        let mut at = 0.0f32;
+        let mut row = 0usize;
+        loop {
+            let height = usable_height(heights(row));
+            // The row whose box holds the scroll is the first drawn; one exactly at the boundary
+            // belongs to the row below it, so the scroll draws a whole row at its top.
+            if at + height > scroll {
+                first = row;
+                top = at;
+                break;
+            }
+            at += height;
+            row += 1;
+            // Rows that are all zero high (or a run of them) would walk forever.
+            if at >= scroll {
+                first = row;
+                top = at;
+                break;
+            }
+        }
+    }
+    let mut tops = Vec::with_capacity(span);
+    let mut at = top;
+    for i in 0..span {
+        tops.push(at);
+        at += usable_height(heights(first + i));
+    }
+    (first, tops)
+}
+
+/// A row's height as the virtualized walk reads it: a height that is not positive and finite is
+/// the least one a row can be (one pixel), so the walk always moves forward.
+fn usable_height(height: f32) -> f32 {
+    if height.is_finite() && height > 0.0 {
+        height
+    } else {
+        1.0
+    }
+}

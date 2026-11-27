@@ -1152,3 +1152,15 @@ fn the_last_row_of_a_wrapping_table_is_reachable_and_the_cursor_row_stays_in_vie
     let first = rect(&app, top);
     assert!(first.min.y >= view.min.y - 1.0, "Home shows the first row");
 }
+
+#[test]
+fn measure_wrapping_pool() {
+    let mut app = app();
+    let began = std::time::Instant::now();
+    spawn_wrapping(&mut app, 300);
+    let spawned = app.world().entities().count_spawned();
+    println!("MEASURE wrapping 300 rows: {spawned} entities, pool {} in {:?}", pool(&mut app).len(), began.elapsed());
+    let began = std::time::Instant::now();
+    settle(&mut app);
+    println!("MEASURE six frames: {:?}", began.elapsed());
+}
