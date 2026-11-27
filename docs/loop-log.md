@@ -4379,4 +4379,5 @@ was left behind.
 on every keystroke in a prose pane); (4) an incremental fold map; (5) `SplitThickness` under 24 px is
 not reported by `problems()`.
 
-**Release.** 0.65.0 — minor pre-1.0: one new public marker, no signature changed.
+**Release.** 0.65.0 — minor pre-1.0: one new public marker, no signature changed. Merged to `main`
+fast-forward (75ec728, 826a7e5, d8991a3) and pushed.
