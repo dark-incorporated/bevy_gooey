@@ -12,7 +12,7 @@ use bevy::ui::UiTransform;
 
 use crate::elevation::ShadowLayer;
 use crate::motion::MotionSettings;
-use crate::skin::{GooeySkin, LED_TEXT_SIZES, Role, SkinScope, led_text_px, skin_of};
+use crate::skin::{GooeySkin, LED_TEXT_SIZES, LedGlow, Role, SkinScope, led_text_px, skin_of};
 
 /// What an [`led()`](crate::led) says.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash, Reflect)]
@@ -71,16 +71,6 @@ pub struct LedSize(pub usize);
 #[reflect(Component, Debug, Default, PartialEq, Clone)]
 pub struct LedWord;
 
-/// The glow's blur, in dot sizes (CSS's blur radius: how far the halo fades out past the dot's
-/// edge). The whole halo, spread included, stays within one dot of the dot (#91).
-const GLOW_BLUR_DOTS: f32 = 0.6;
-/// How far the glow grows past the dot before it blurs, in dot sizes.
-const GLOW_SPREAD_DOTS: f32 = 0.0;
-/// The glow's alpha for a steady LED: a halo, not a lamp, so the word and the chips beside it keep
-/// their contrast (#91).
-const GLOW_ALPHA: f32 = 0.4;
-/// The glow's alpha range while [`LedState::Busy`] pulses.
-const PULSE_ALPHA: (f32, f32) = (0.12, 0.45);
 /// The pulse's period, seconds: slower than one a second, far under WCAG's flash threshold.
 const PULSE_SECONDS: f64 = 1.2;
 /// A diamond is a square turned this far.
@@ -123,34 +113,38 @@ pub fn update_leds(
             LedState::Off => (Color::NONE, skin.outline, RADIUS_DISC, None, false),
             LedState::Live => {
                 let c = skin.live();
-                (c, c, RADIUS_DISC, Some((c, GLOW_ALPHA)), false)
+                (c, c, RADIUS_DISC, Some((c, skin.led_glow.alpha)), false)
             }
             LedState::Busy => {
                 let c = skin.warning();
+                let (low, high) = (skin.led_glow.alpha * LedGlow::PULSE_MIN, skin.led_glow.alpha * skin.led_glow.pulse_max);
                 let alpha = if steady {
-                    (PULSE_ALPHA.0 + PULSE_ALPHA.1) * 0.5
+                    (low + high) * 0.5
                 } else {
                     let wave = 0.5 - 0.5 * (TAU * phase).cos();
-                    PULSE_ALPHA.0 + (PULSE_ALPHA.1 - PULSE_ALPHA.0) * wave
+                    low + (high - low) * wave
                 };
                 (c, c, RADIUS_SQUARE, Some((c, alpha)), false)
             }
             LedState::Failed => {
                 let c = skin.danger;
-                (c, c, RADIUS_DIAMOND, Some((c, GLOW_ALPHA)), true)
+                (c, c, RADIUS_DIAMOND, Some((c, skin.led_glow.alpha)), true)
             }
         };
         let shadow = match glow {
-            Some((colour, alpha)) => BoxShadow(vec![
+            Some((colour, alpha)) if alpha > 0.0 => BoxShadow(vec![
                 ShadowLayer {
-                    blur: side * GLOW_BLUR_DOTS,
-                    spread: side * GLOW_SPREAD_DOTS,
+                    blur: side * skin.led_glow.blur,
+                    spread: side * skin.led_glow.spread,
                     color: colour.with_alpha(alpha),
                     ..default()
                 }
                 .to_bevy(1.0),
             ]),
             None => BoxShadow(Vec::new()),
+            // A skin that asks for no halo gets no shadow at all, not a shadow of nothing: a layer
+            // with zero alpha still costs a blurred pass over the dot every frame.
+            Some(_) => BoxShadow(Vec::new()),
         };
         let transform = if turn {
             UiTransform {

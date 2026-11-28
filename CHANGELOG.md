@@ -1,5 +1,15 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- **An LED's halo is the skin's to set, and defaults to a whisper (`GooeySkin::led_glow`, #91).** The
+  glow was four constants in `led.rs`, so the owner's "super subtle to near none" took a release that
+  still read too bright. `LedGlow { blur, spread, alpha, pulse_max }` is the control; the default is
+  blur 0.25 dot sides, no spread, alpha 0.12, and `alpha: 0` draws no shadow at all. `LedGlow::QUIET`
+  keeps the previous 0.6 / 0.4. A Busy dot's pulse is a share of the skin's alpha.
+
 ## [0.66.0] - 2026-11-27
 
 ### Added

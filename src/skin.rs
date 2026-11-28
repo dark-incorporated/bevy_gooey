@@ -293,6 +293,50 @@ pub enum Density {
     Compact,
 }
 
+/// **An LED dot's halo** ([`GooeySkin::led_glow`]): how far a glowing dot's light reaches past it.
+///
+/// **The default is a whisper** — a two-to-three pixel breath at the dot's edge — because the halo
+/// is decoration: the dot's fill, frame and silhouette already say which of the four states it is,
+/// and a light bright enough to read as a lamp outshines the words beside it (owner, 2026-11-28:
+/// "the glow should be super subtle to near none").
+///
+/// ```
+/// use bevy_gooey::{GooeySkin, LedGlow};
+/// // A skin with no halo at all: the dot and its ring, nothing beyond them.
+/// let flat = GooeySkin { led_glow: LedGlow { alpha: 0.0, ..GooeySkin::dark().led_glow }, ..GooeySkin::dark() };
+/// assert_eq!(flat.led_glow.blur, GooeySkin::dark().led_glow.blur);
+/// ```
+#[derive(Clone, Copy, Debug, PartialEq, Reflect)]
+#[reflect(Default, Debug, PartialEq, Clone)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+pub struct LedGlow {
+    /// How soft the halo's edge is, in dot sides: the shadow's blur.
+    pub blur: f32,
+    /// How far the halo grows past the dot, in dot sides. Zero starts it at the dot's own edge.
+    pub spread: f32,
+    /// The halo's opacity for a steady state ([`crate::LedState::Live`] and
+    /// [`crate::LedState::Failed`]). [`crate::LedState::Busy`] pulses between this share and
+    /// [`LedGlow::pulse_max`] of it, so a pulse is a change in the halo's strength, never its size.
+    pub alpha: f32,
+    /// The share of [`LedGlow::alpha`] a busy dot's halo reaches at the top of its pulse. Under one,
+    /// so a pulse never outshines the steady state it is a variation of.
+    pub pulse_max: f32,
+}
+
+impl LedGlow {
+    /// The halo this crate drew from its constants before the owner could set it (G-80, #91): blur
+    /// 0.6 dot sides, no spread, alpha 0.4.
+    pub const QUIET: Self = Self { blur: 0.6, spread: 0.0, alpha: 0.4, pulse_max: 0.85 };
+    /// The halo a busy dot pulses down to, as a share of [`LedGlow::alpha`].
+    pub const PULSE_MIN: f32 = 0.25;
+}
+
+impl Default for LedGlow {
+    fn default() -> Self {
+        Self { blur: 0.25, spread: 0.0, alpha: 0.12, pulse_max: 0.85 }
+    }
+}
+
 /// The share of [`GooeySkin::padding`] a [`Density::Compact`] skin draws.
 const COMPACT_PADDING: f32 = 0.5;
 
@@ -364,6 +408,16 @@ pub struct GooeySkin {
     pub padding: f32,
     /// The corner radius of panels, buttons, meters and tooltips, logical px.
     pub radius: f32,
+    /// **An LED dot's glow** (G-80, #91): the halo round the dot, in dot sizes. It was four constants
+    /// in `led.rs` until 2026-11-28, so no host could say how quiet it should be and the owner's
+    /// "super subtle, near none" took two library releases and still read too bright.
+    ///
+    /// The halo is a shadow on the dot: [`LedGlow::blur`] is how soft its edge is and
+    /// [`LedGlow::spread`] how far it grows past the dot, both in dot sides, and [`LedGlow::alpha`]
+    /// how strong it is for a steady state. The dot's fill, frame and silhouette are unchanged, so
+    /// the four states stay distinguishable by shape and ink alone — the halo is decoration on top,
+    /// never the only signal.
+    pub led_glow: LedGlow,
     /// The border width of panels and buttons, logical px. A button's focus ring is drawn in it,
     /// and a meter's track is framed this wide, with its fill this far inside the frame. Drawn as a
     /// whole number of device pixels at any scale, rounded down (at least one), so a line is the
@@ -609,6 +663,7 @@ impl GooeySkin {
             gap: 10.0,
             padding: 14.0,
             radius: 8.0,
+            led_glow: LedGlow::default(),
             border: 3.0,
             meter_height: 24.0,
             min_target: COMFORT_TARGET_PX,

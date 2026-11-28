@@ -167,9 +167,13 @@ fn each_state_has_its_own_silhouette_and_its_word() {
         app.world().get::<BackgroundColor>(dot).map(|b| b.0),
         Some(app.world().resource::<GooeySkin>().live())
     );
+    // **The halo is the skin's to set** (`GooeySkin::led_glow`, G-80, #91): a lit lens glows at
+    // exactly the alpha the skin asks for, so a host that wants it near none gets near none.
+    let wanted = app.world().resource::<GooeySkin>().led_glow.alpha;
     assert!(
-        glow_alpha(&app, dot).is_some_and(|a| a > 0.2),
-        "a lit lens glows"
+        glow_alpha(&app, dot) == Some(wanted),
+        "a lit lens glows at the skin's alpha ({wanted}): {:?}",
+        glow_alpha(&app, dot)
     );
 }
 
@@ -202,8 +206,18 @@ fn a_busy_glow_pulses_and_a_reduced_one_holds_still() {
     let (lo, hi) = alphas
         .iter()
         .fold((f32::MAX, f32::MIN), |(l, h), a| (l.min(*a), h.max(*a)));
-    assert!(hi - lo > 0.2, "it swings over a period: {lo}..{hi}");
-    assert!(lo >= 0.11 && hi <= 0.46, "inside its range: {lo}..{hi}");
+    // The swing is the skin's own range, so it is compared to that range and not to a literal: at a
+    // whisper (alpha 0.12) the whole range is 0.072, and a pulse that reached it is still a pulse.
+    let glow = pulsing.world().resource::<GooeySkin>().led_glow;
+    let (floor, ceiling) = (glow.alpha * LedGlow::PULSE_MIN, glow.alpha * glow.pulse_max);
+    assert!(
+        hi - lo > (ceiling - floor) * 0.9,
+        "it swings over its range {floor}..{ceiling}: {lo}..{hi}"
+    );
+    assert!(
+        lo >= floor - 1e-3 && hi <= ceiling + 1e-3,
+        "inside the skin's range {floor}..{ceiling}: {lo}..{hi}"
+    );
     for settings in [MotionSettings::reduced(), MotionSettings::off()] {
         let mut still = app(settings);
         let (_, dot) = lit(&mut still, LedState::Busy);

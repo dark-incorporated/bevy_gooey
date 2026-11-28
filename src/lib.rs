@@ -424,7 +424,7 @@ pub use selection_indicator::{
 pub use shortcut::{ChordText, Modifiers, Platform, Shortcut, update_chord_texts};
 pub use size_motion::{SectionGlide, SplitGlide, update_section_glides, update_split_glides};
 pub use skin::{
-    Density, GooeyFonts, GooeySkin, PrimaryButton, Role, SkinPreset, SkinProblem, SkinScope,
+    Density, GooeyFonts, GooeySkin, LedGlow, PrimaryButton, Role, SkinPreset, SkinProblem, SkinScope,
     TextFace, apply_skin,
 };
 pub use slots::{
