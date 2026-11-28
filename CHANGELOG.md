@@ -38,6 +38,18 @@
   `…::a_host_edit_that_names_text_that_is_not_there_changes_nothing`, and two in
   `src/code_buffer.rs`.
 
+### Fixed
+
+- **A `RowLayout` on a `list_row` or a `quiet_list_row` is written (#127).** `Role::ListRow` was not
+  among the roles `apply_skin` writes a `RowLayout` on, so `(quiet_list_row(), RowLayout { align:
+  Some(AlignItems::FlexStart), .. })` kept the row's own centring and nothing said so: a name that
+  wraps to three lines beside a one-line count put the count on the name's middle line (a 6 px
+  baseline split measured in a consumer's place list). A list row is a container its host fills with
+  cells, so all five fields are now written on it, `align` top-aligning cells of different heights;
+  a row with no `RowLayout` keeps its centring and its rigidity. Tests:
+  `tests/layout_more.rs::a_row_layout_on_a_list_row_top_aligns_cells_of_different_heights`,
+  `…::a_list_row_takes_every_field_of_a_row_layout`.
+
 ## [0.65.0] - 2026-11-27
 ### Added
 - **A tree's long label wraps: `TreeWrap`.** A tree builds its one column itself and `Table::columns`

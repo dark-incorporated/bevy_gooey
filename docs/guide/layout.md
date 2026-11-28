@@ -199,7 +199,7 @@ Writing `PlacedAt` or `Sizing` every frame makes the skin restyle the node every
 
 ## A panel, a card or a placed cluster that is also a flow
 
-A `RowLayout` is honoured on `Panel`, `Surface`, `Card`, `Tone`, `Menu`, `SectionBody`, `Screen`, a `sized` box and a `placed` node (and on the layout containers and a `button_box`), but not on a `Dock`, a split, a table, a list or a text. Its gap is a `LayoutGap` beside it, which replaces the role's own: `(panel(), LayoutGap(0.5), RowLayout { direction: Some(FlexDirection::Row), ..default() })`.
+A `RowLayout` is honoured on `Panel`, `Surface`, `Card`, `Tone`, `Menu`, `SectionBody`, `Screen`, a `sized` box, a `placed` node and a `list_row` or `quiet_list_row` (and on the layout containers and a `button_box`), but not on a `Dock`, a split, a table, a list or a text. Its gap is a `LayoutGap` beside it, which replaces the role's own: `(panel(), LayoutGap(0.5), RowLayout { direction: Some(FlexDirection::Row), ..default() })`. A list row whose cells differ in height — a name that wraps to three lines beside a one-line count, a picture beside text — top-aligns them with `(quiet_list_row(), RowLayout { align: Some(AlignItems::FlexStart), ..default() })`; without one it centres them (#127).
 
 ## A layer that takes the pointer
 
