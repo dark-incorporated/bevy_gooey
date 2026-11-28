@@ -1167,6 +1167,301 @@ fn a_settled_wrapped_editor_writes_nothing() {
     assert_eq!(node_ticks(&app, editor), before);
 }
 
+// -- #126: a wrapped line's later rows hang under its first word ---------------------------------
+
+/// An editor of `text` with `CodeSoftWrap` and `CodeWrapIndent::Same`, in the usual host column.
+fn hanging_editor_of(app: &mut App, text: &str) -> Entity {
+    let world = app.world_mut();
+    let editor = world
+        .spawn((
+            code_editor("Notes", text),
+            CodeSoftWrap,
+            CodeWrapIndent::Same,
+        ))
+        .id();
+    let host = world
+        .spawn(Node {
+            width: Val::Px(WIDTH),
+            height: Val::Px(HEIGHT),
+            flex_direction: FlexDirection::Column,
+            ..default()
+        })
+        .add_child(editor)
+        .id();
+    world.spawn(screen()).add_child(host);
+    settle(app);
+    app.world_mut()
+        .resource_mut::<InputFocus>()
+        .set(editor, FocusCause::Navigated);
+    settle(app);
+    editor
+}
+
+/// The drawn rows that show text, top to bottom, each with what it shows: the pool's rows past
+/// the end of the text are drawn empty.
+fn text_rows(app: &App, editor: Entity) -> Vec<(Entity, String)> {
+    rows(app, editor)
+        .into_iter()
+        .map(|e| (e, app.world().get::<Text>(e).expect("text").0.clone()))
+        .filter(|(_, text)| !text.is_empty())
+        .collect()
+}
+
+#[test]
+fn a_wrapped_list_item_hangs_its_later_rows_under_its_first_word() {
+    let mut app = app();
+    let text = format!("- {}", prose(60));
+    let editor = hanging_editor_of(&mut app, &text);
+    let shown = text_rows(&app, editor);
+    assert!(
+        shown.len() >= 3,
+        "a 400-character item is many rows: {shown:?}"
+    );
+    let step = advance(&app, editor);
+    // "word0", the item's first word, stands two columns in on the first row, after "- ".
+    let first_word = rect(&app, shown[0].0).min.x + 2.0 * step;
+    for (k, (row, words)) in shown.iter().enumerate().skip(1) {
+        let at = rect(&app, *row).min.x;
+        assert!(
+            (at - first_word).abs() < 0.5,
+            "row {k} starts at {at}, the item's first word at {first_word}"
+        );
+        assert!(
+            words.starts_with("word"),
+            "row {k} starts on a word: {words:?}"
+        );
+    }
+    let area = rect(&app, part(&app, editor, Role::CodeArea)[0]);
+    for (k, (row, words)) in shown.iter().enumerate() {
+        let end = rect(&app, *row).min.x + words.trim_end().chars().count() as f32 * step;
+        assert!(
+            end <= area.max.x + 0.5,
+            "row {k} runs past the edge: {end} > {}",
+            area.max.x
+        );
+    }
+    let joined: String = shown.iter().map(|(_, words)| words.as_str()).collect();
+    assert_eq!(joined, text, "the rows are the line, whole and in order");
+    assert_eq!(
+        text_of(&app, editor),
+        text,
+        "a hang is drawn, never written"
+    );
+}
+
+#[test]
+fn a_quote_and_an_indented_value_hang_at_their_marker_and_their_indent() {
+    let mut app = app();
+    let text = format!("> {}\n    {}", prose(40), prose(40));
+    let editor = hanging_editor_of(&mut app, &text);
+    let shown = text_rows(&app, editor);
+    let step = advance(&app, editor);
+    let edge = rect(&app, shown[0].0).min.x;
+    // The rows of the quote are the ones whose pieces add up to its line.
+    let quote_len = state(&app, editor).buffer().line(0).len();
+    let mut taken = 0;
+    let mut quote_rows = 0;
+    while taken < quote_len {
+        taken += shown[quote_rows].1.len();
+        quote_rows += 1;
+    }
+    assert!(quote_rows >= 2, "the quote wraps");
+    assert!(
+        shown.len() >= quote_rows + 2,
+        "and so does the indented line"
+    );
+    for (k, (row, _)) in shown.iter().enumerate().take(quote_rows).skip(1) {
+        let at = rect(&app, *row).min.x;
+        assert!(
+            (at - (edge + 2.0 * step)).abs() < 0.5,
+            "quote row {k} at {at}"
+        );
+    }
+    assert!(
+        (rect(&app, shown[quote_rows].0).min.x - edge).abs() < 0.5,
+        "the indented line's first row starts at the edge, its blanks its own"
+    );
+    for (k, (row, _)) in shown.iter().enumerate().skip(quote_rows + 1) {
+        let at = rect(&app, *row).min.x;
+        assert!(
+            (at - (edge + 4.0 * step)).abs() < 0.5,
+            "indented row {k} at {at}, under the value at {}",
+            edge + 4.0 * step
+        );
+    }
+}
+
+#[test]
+fn an_unindented_paragraph_is_drawn_as_without_the_hang() {
+    let mut plain = app();
+    let plain_editor = wrapped_editor_of(&mut plain, &prose(60));
+    let mut hung = app();
+    let hung_editor = hanging_editor_of(&mut hung, &prose(60));
+    assert_eq!(
+        row_texts(&plain, plain_editor),
+        row_texts(&hung, hung_editor),
+        "the same rows"
+    );
+    let lefts = |app: &App, editor: Entity| -> Vec<f32> {
+        rows(app, editor)
+            .into_iter()
+            .map(|row| rect(app, row).min.x)
+            .collect()
+    };
+    assert_eq!(lefts(&plain, plain_editor), lefts(&hung, hung_editor));
+}
+
+#[test]
+fn a_click_on_a_hung_row_lands_on_the_glyph_under_the_pointer() {
+    let mut app = app();
+    let editor = hanging_editor_of(&mut app, &format!("- {}", prose(60)));
+    let drawn = row_texts(&app, editor);
+    let step = advance(&app, editor);
+    let at = on_text(&app, editor, 2, 3);
+    click(&mut app, at);
+    settle(&mut app);
+    let start = drawn[0].len() + drawn[1].len();
+    assert_eq!(caret_col(&app, editor), start + 3);
+    let row = rect(&app, rows(&app, editor)[2]);
+    let caret = rect(&app, part(&app, editor, Role::CodeCaret)[0]);
+    assert!(
+        caret.center().y > row.min.y && caret.center().y < row.max.y,
+        "the caret is on the third row"
+    );
+    assert!(
+        (caret.min.x - (row.min.x + 3.0 * step)).abs() < 1.5,
+        "and drawn three columns into the hung text: {} vs {}",
+        caret.min.x,
+        row.min.x + 3.0 * step
+    );
+    // A press in the hang, left of the row's text, lands on the row's first column.
+    let edge = rect(&app, rows(&app, editor)[0]).min.x;
+    click(&mut app, Vec2::new(edge + 0.6 * step, row.center().y));
+    settle(&mut app);
+    assert_eq!(caret_col(&app, editor), start);
+    let caret = rect(&app, part(&app, editor, Role::CodeCaret)[0]);
+    assert!(
+        (caret.min.x - row.min.x).abs() < 1.5,
+        "the caret stands where the row's text starts: {} vs {}",
+        caret.min.x,
+        row.min.x
+    );
+}
+
+#[test]
+fn up_and_down_keep_the_carets_place_across_hung_rows() {
+    let mut app = app();
+    let editor = hanging_editor_of(&mut app, &format!("- {}", prose(60)));
+    let drawn = row_texts(&app, editor);
+    let at = on_text(&app, editor, 1, 0);
+    click(&mut app, at);
+    settle(&mut app);
+    let second = drawn[0].len();
+    assert_eq!(
+        caret_col(&app, editor),
+        second,
+        "the second row's first word"
+    );
+    arrow(&mut app, &[], KeyCode::ArrowUp);
+    assert_eq!(
+        caret_col(&app, editor),
+        2,
+        "straight up is the item's first word, not the marker"
+    );
+    arrow(&mut app, &[], KeyCode::ArrowDown);
+    assert_eq!(caret_col(&app, editor), second);
+    arrow(&mut app, &[], KeyCode::ArrowDown);
+    assert_eq!(caret_col(&app, editor), second + drawn[1].len());
+    // From the marker, left of where the hung rows start, Down lands on the row's first column.
+    app.world_mut()
+        .get_mut::<CodeEditor>(editor)
+        .expect("editor")
+        .select(CodePos::new(0, 0), CodePos::new(0, 0));
+    settle(&mut app);
+    arrow(&mut app, &[], KeyCode::ArrowDown);
+    assert_eq!(caret_col(&app, editor), second);
+}
+
+#[test]
+fn the_selection_and_a_find_match_on_a_hung_row_stand_on_its_text() {
+    let mut app = app();
+    let text = format!("- {}", prose(60));
+    let editor = hanging_editor_of(&mut app, &text);
+    let drawn = row_texts(&app, editor);
+    let rows = rows(&app, editor);
+    let step = advance(&app, editor);
+    let second = rect(&app, rows[1]);
+    let start = drawn[0].len();
+    app.world_mut()
+        .get_mut::<CodeEditor>(editor)
+        .expect("editor")
+        .select(CodePos::new(0, start), CodePos::new(0, start + 5));
+    settle(&mut app);
+    let bands: Vec<_> = part(&app, editor, Role::CodeSelection)
+        .into_iter()
+        .filter(|&e| shown_node(&app, e))
+        .map(|e| rect(&app, e))
+        .collect();
+    assert_eq!(bands.len(), 1);
+    assert!(
+        (bands[0].min.x - second.min.x).abs() < 0.5,
+        "the band starts at the hung row's text: {} vs {}",
+        bands[0].min.x,
+        second.min.x
+    );
+    assert!((bands[0].width() - 5.0 * step).abs() < 0.5);
+    // The third row's first word, found: its band is over the word where it is drawn.
+    let word = drawn[2].split(' ').next().expect("a word").to_owned();
+    {
+        let mut find = app.world_mut().get_mut::<CodeFind>(editor).expect("find");
+        find.open = true;
+        find.query = word.clone();
+    }
+    settle(&mut app);
+    assert_eq!(
+        app.world().get::<CodeFind>(editor).expect("find").count(),
+        1,
+        "{word} is in the text once"
+    );
+    let third = rect(&app, rows[2]);
+    let found: Vec<_> = [Role::CodeFindMatch, Role::CodeFindMatchLit]
+        .into_iter()
+        .flat_map(|role| part(&app, editor, role))
+        .filter(|&e| shown_node(&app, e))
+        .map(|e| rect(&app, e))
+        .collect();
+    assert_eq!(found.len(), 1, "one band for the one match");
+    assert!(
+        (found[0].min.x - third.min.x).abs() < 0.5,
+        "the find band starts where the word is drawn: {} vs {}",
+        found[0].min.x,
+        third.min.x
+    );
+    assert!(found[0].center().y > third.min.y && found[0].center().y < third.max.y);
+}
+
+#[test]
+fn a_settled_hanging_editor_writes_nothing() {
+    let mut app = app();
+    let editor = hanging_editor_of(&mut app, &format!("- {}", prose(60)));
+    let lefts = |app: &App| -> Vec<Val> {
+        rows(app, editor)
+            .into_iter()
+            .map(|e| app.world().get::<Node>(e).expect("a row's node").left)
+            .collect()
+    };
+    let before = (node_ticks(&app, editor), lefts(&app));
+    assert!(
+        before.1.iter().any(|left| *left != Val::Auto),
+        "the hung rows stand in: {:?}",
+        before.1
+    );
+    for _ in 0..10 {
+        app.update();
+    }
+    assert_eq!((node_ticks(&app, editor), lefts(&app)), before);
+}
+
 // -- #122: a keystroke in a wrapped pane costs what the pane draws, not the file --
 
 /// The time of one frame in which one character was typed, median of `rounds`, after two warm-up

@@ -77,7 +77,7 @@ The rows are a pool of a screenful and two entities, re-pointed at other lines a
 ## What it does not do (yet)
 
 - One caret and one selection: no multi-cursor, no column selection.
-- Soft wrap is opt-in (`CodeSoftWrap`, below) and breaks at words only; there is no wrap indent and no hanging line-number column.
+- Soft wrap is opt-in (`CodeSoftWrap`, below) and breaks at words only; a wrapped line's later rows hang under its first word only with `CodeWrapIndent::Same`, and there is no hanging line-number column.
 - Wide (CJK) characters take one column.
 - Assistive technology is told the editor's role (a multi-line text input) and its label, not its text: mirroring a 2 MB file into the accessibility tree on every edit is a cost no player asked for. A host that needs the text reads `CodeEditorValue`.
 
@@ -90,6 +90,14 @@ commands.spawn((code_editor("Notes", text), CodeSoftWrap, CodeMarkdown));
 ```
 
 - **`CodeSoftWrap`** breaks a long line at the editor's edge, at a word where there is one (a word longer than a row is cut at the edge) and with the blank that ended the row left hanging at its end. The text is never changed: a wrap is drawn, not written, so `CodeEditorValue` and the undo history are as without it. There is no horizontal scroll while it is on. Each line keeps one number, on its first row. Up and Down move by row and keep their column, **Home** and **End** go to the row's edge first and the line's on a second press, a click lands on the row it is on, and a selection, a find match and a squiggle that cross a wrap are a piece on each row. An edit re-wraps only the lines it replaced and shifts the rows after them by an integer, so a keystroke in a 20,000-line wrapped pane costs what a keystroke in a 20-line one does even in the debug build the gate runs (66.0 ms to 16.9 ms before, 21.0 to 17.4 after, `PERF_BUDGET`); a width change re-wraps the file once (`docs/research/code-soft-wrap.md`, `docs/research/code-wrap-incremental.md`).
+- **`CodeWrapIndent::Same`** beside `CodeSoftWrap` hangs a wrapped line's later rows under its first word, as VS Code's `wrappingIndent: same` and Obsidian draw a list: past the line's leading blanks and a Markdown quote or list marker (`> `, `- `, `* `, `+ `, `1. `, `1) `, and a task box `[ ] ` after a list marker), so
+
+  ```text
+  - alpha bravo charlie delta echo foxtrot golf
+    hotel india juliet kilo lima mike november
+  ```
+
+  The hang is at most half a row, so a deeply indented line still has room, and the rows it stands in hold that many columns fewer. Everything drawn on a row follows the hung text — the caret, the selection, find matches, squiggles — and a click lands on the glyph under the pointer (a press in the hang's blank margin lands on the row's first column); Up and Down keep the caret's place across the view, so Up from a hung row's first word lands on the first row's first word, not on its marker. A line with no indent and no marker is drawn exactly as without it, and `CodeWrapIndent::None` (or no component) keeps every row at the edge (#126).
 - **`CodeMarkdown`** draws the text as Markdown, from `markdown_highlights(text, revision)`: headings, fenced code (the fence carries over lines), block quotes, list markers, code spans, emphasis (`SyntaxRole::Emphasis`), strong (`SyntaxRole::Strong`) and links, each in an ink of the skin (`GooeySkin::syntax`), at the 7:1 or 4.5:1 the skin already holds them to. The editor keeps the spans current with the text, so a character typed is never drawn in the old colours. A host's own `Highlights` on the same editor are ignored while the marker is there. It is a line scanner, not a CommonMark parser: what it cannot read as Markdown it leaves plain.
 
 ![The prose example: one page of notes in two editors. Left, wrapped at the pane's edge with the heading, bold, code, quote, list marks and links each in their own ink; right, the same text unwrapped on one long line per paragraph](../media/prose.png)

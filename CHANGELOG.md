@@ -1,4 +1,29 @@
 # Changelog
+
+## [Unreleased]
+
+### Added
+
+- **A wrapped line's later rows hang under its first word: `CodeWrapIndent::Same` (#126).** With
+  `CodeSoftWrap` every row after a line's first started at the editor's left edge, so a wrapped
+  Markdown list item, a quote or an indented YAML value continued under its bullet or its indent,
+  where VS Code (`wrappingIndent: same`) and Obsidian continue it under the first word. Put
+  `CodeWrapIndent::Same` beside `CodeSoftWrap` and a wrapped line's rows after the first stand in by
+  its leading blanks plus a Markdown quote or list marker (`> `, `- `, `* `, `+ `, `1. `, `1) `, a
+  task box `[ ] ` after a list marker), at most half a row so a deeply indented line still wraps; those
+  rows hold that many columns fewer. The hang lives in the one wrap map every row is drawn and
+  hit-tested through (`RowMap::origin_x`), so the text, the caret, the selection, find matches and
+  squiggles move together, a click lands on the glyph under the pointer (a press in the blank hang
+  on the row's first column) and Up and Down keep the caret's place across the view. Without the
+  component, or with `CodeWrapIndent::None`, nothing moves. Tests:
+  `tests/code_editor.rs::a_wrapped_list_item_hangs_its_later_rows_under_its_first_word`,
+  `…::a_quote_and_an_indented_value_hang_at_their_marker_and_their_indent`,
+  `…::an_unindented_paragraph_is_drawn_as_without_the_hang`,
+  `…::a_click_on_a_hung_row_lands_on_the_glyph_under_the_pointer`,
+  `…::up_and_down_keep_the_carets_place_across_hung_rows`,
+  `…::the_selection_and_a_find_match_on_a_hung_row_stand_on_its_text`,
+  `…::a_settled_hanging_editor_writes_nothing`, and the wrap map's own in `src/code_wrap.rs`.
+
 ## [0.65.0] - 2026-11-27
 ### Added
 - **A tree's long label wraps: `TreeWrap`.** A tree builds its one column itself and `Table::columns`

@@ -837,11 +837,18 @@ pub(crate) fn update_code_overlays(
             if row >= 0.0 && (row as usize) < view.rows && x >= 0.0 {
                 let line = line_of(row as usize);
                 let text = editor.buffer.line(line);
-                let mut col = (x / view.advance).floor() as usize;
-                if let Some((_, from, _)) = fold.window(row as usize) {
-                    col += from;
-                }
-                if col < display_col(text, text.len(), tab).max(1) {
+                let col = (x / view.advance).floor() as usize;
+                // A wrapped row's text starts at its own column, `hang` columns in; the blank
+                // margin before it is over no character.
+                let col = match fold.window(row as usize) {
+                    Some((_, from, _)) => col
+                        .checked_sub(fold.hang(row as usize))
+                        .map(|col| col + from),
+                    None => Some(col),
+                };
+                if let Some(col) = col
+                    && col < display_col(text, text.len(), tab).max(1)
+                {
                     let pos = CodePos::new(line, byte_at_display(text, col, tab).min(text.len()));
                     let offset = editor.buffer.offset_of(pos);
                     wanted_note = note_at(offset, pos);
