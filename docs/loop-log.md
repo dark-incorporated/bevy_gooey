@@ -4420,6 +4420,7 @@ rows' `Node` ticks moving on a settled pane). A candidate for a pass: `set_if_ne
 the borrow.
 
 **Release.** 0.66.0 — minor pre-1.0: new public `CodeWrapIndent`, `CodeEditor::edit` and
-`CodeBuffer::edit`, no signature changed. The crates.io token on big_mac is refused as big's is (`403`
-from `/api/v1/me`), so 0.66.0 is tagged and not published; 0.51.9 through 0.66.0 wait for the owner's
-new token.
+`CodeBuffer::edit`, no signature changed. **Published to crates.io from big_mac** (`cargo publish`
+from the merge commit 3e7dde0, tagged `v0.66.0`): big_mac's token publishes, though it answers `403`
+on `/api/v1/me` (a scoped token), so the `403` on big is big's token, not the account. 0.51.9 through
+0.65.0 stay unpublished.
