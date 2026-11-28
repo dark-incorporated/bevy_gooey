@@ -37,8 +37,8 @@ use bevy::window::{Ime, PrimaryWindow};
 
 use crate::clicks::ClickCount;
 use crate::code_buffer::{
-    CodeBuffer, CodeIndent, CodeMove, CodePos, byte_at_display, display_col, display_width,
-    expand_slice,
+    CodeBuffer, CodeEdit, CodeEditError, CodeIndent, CodeMove, CodePos, byte_at_display,
+    display_col, display_width, expand_slice,
 };
 use crate::code_decor::{CodeCompletions, CompletionTrigger};
 use crate::code_decor::{Highlights, line_runs};
@@ -100,7 +100,8 @@ const REVEAL_COLUMNS: f32 = 3.0;
 /// host's `CodeEditorValue` see each line whole. Only a line's first row carries its number.
 /// Up and Down move by drawn row, Home and End go to the row's start and end first and to the
 /// line's on a second press, and a click lands on the row it is on. An editor with no
-/// `CodeSoftWrap` is drawn and scrolls exactly as before.
+/// `CodeSoftWrap` is drawn and scrolls exactly as before. [`CodeWrapIndent`] beside it hangs a
+/// wrapped line's later rows under its first word.
 ///
 /// It is a component and not a field of [`CodeEditorSettings`] so a code pane and a prose pane in
 /// one app need not agree.
@@ -115,6 +116,39 @@ const REVEAL_COLUMNS: f32 = 3.0;
 #[derive(Component, Clone, Copy, Debug, Default, Reflect)]
 #[reflect(Component, Default, Debug, Clone)]
 pub struct CodeSoftWrap;
+
+/// Put beside [`CodeSoftWrap`] to choose where a wrapped line's rows after the first start (#126).
+///
+/// [`Same`](Self::Same) hangs them under the line's first word: past its leading blanks and a
+/// Markdown quote or list marker (`> `, `- `, `* `, `+ `, `1. `, `1) `, and a task box `[ ] `
+/// after a list marker), so a wrapped list item, quote or indented value reads as one block, as
+/// VS Code's `wrappingIndent: same` and Obsidian draw it. The hang is at most half a row, so a
+/// deeply indented line still has room to wrap, and the rows it stands in hold that many columns
+/// fewer. The caret, the selection, find matches, squiggles and a click all follow the hung text;
+/// Home and End still go to the row's first and last column. With no `CodeWrapIndent`, or
+/// [`None`](Self::None), every row starts at the editor's left edge.
+///
+/// ```
+/// # use bevy_gooey::{CodeMarkdown, CodeSoftWrap, CodeWrapIndent, code_editor};
+/// # use bevy::prelude::*;
+/// # fn spawn(mut commands: Commands) {
+/// commands.spawn((
+///     code_editor("Notes", "- a list item long enough to wrap onto a second row"),
+///     CodeSoftWrap,
+///     CodeWrapIndent::Same,
+///     CodeMarkdown,
+/// ));
+/// # }
+/// ```
+#[derive(Component, Clone, Copy, Debug, Default, PartialEq, Eq, Reflect)]
+#[reflect(Component, Default, Debug, Clone, PartialEq)]
+pub enum CodeWrapIndent {
+    /// Every row starts at the editor's left edge, as with no `CodeWrapIndent`.
+    #[default]
+    None,
+    /// A wrapped line's later rows start under its first word.
+    Same,
+}
 
 /// Put on a [`code_editor`] to draw its text as Markdown: headings, code, emphasis, links, list
 /// and quote marks each in a colour of the skin (#114).
@@ -398,7 +432,8 @@ pub struct CodeEditor {
     pub(crate) fold: RowMap,
     /// The Markdown spans of a [`CodeMarkdown`] editor, for the revision they name.
     markdown: Option<std::sync::Arc<Highlights>>,
-    /// The offset in its row the caret keeps across wrapped moves, and where the last left it.
+    /// Where the caret stands across wrapped moves (its column from the text's left edge, a hung
+    /// row's hang included), and where the last such move left it.
     row_want: Option<(CodePos, usize)>,
     pub(crate) folded: std::collections::BTreeSet<usize>,
     pub(crate) fold_dirty: bool,
@@ -407,6 +442,12 @@ pub struct CodeEditor {
     pub(crate) starts: (u64, Vec<usize>),
     /// What is drawn over the text and what the host and the player asked of it.
     pub(crate) overlay: Overlay,
+    /// The real time of the editor's last update, what a host's [`CodeEditor::edit`] is stamped
+    /// with in the history.
+    now: f64,
+    /// A host made an edit as the person's own ([`CodeEditor::edit`]) that the next update
+    /// publishes as a keystroke's.
+    host_edit: bool,
 }
 
 impl CodeEditor {
@@ -443,6 +484,8 @@ impl CodeEditor {
             view: View::default(),
             starts: (u64::MAX, Vec::new()),
             overlay: Overlay::default(),
+            now: 0.0,
+            host_edit: false,
         }
     }
 
@@ -460,6 +503,44 @@ impl CodeEditor {
     pub fn select(&mut self, anchor: CodePos, head: CodePos) {
         self.buffer.select(anchor, head);
         self.touched();
+    }
+
+    /// Makes `edits` as the person's own, the way a command they ran does: a comment toggle, a
+    /// format, a rename. They are one undo step that Ctrl or Cmd+Z takes back (the history before
+    /// them is kept), the caret and the selection stay on the text they were on, the caret comes
+    /// into view, and the host hears one [`ValueChange<String>`](ValueChange) as for a keystroke
+    /// from the editor's next update, which also writes [`CodeEditorValue`] (in this frame for a
+    /// host that edits before [`GooeySystems::Style`](crate::GooeySystems::Style)). The ranges are
+    /// byte offsets of the whole text as it stands ([`CodeBuffer::offset_of`]), made together:
+    /// none sees another's change. A [`CodeEditorValue::set`] in the same frame replaces the text
+    /// and wins.
+    ///
+    /// The other ways in are not the person's: [`CodeEditorValue::set`] replaces the text and
+    /// starts the history over, and [`apply_external_edit`](Self::apply_external_edit) is someone
+    /// else's edit, tinted in their colour, with the history dropped and no `ValueChange`.
+    ///
+    /// # Errors
+    ///
+    /// A [`CodeEditError`] when a range is inverted, past the text, inside a character or a line
+    /// break, or overlaps another: nothing changes.
+    ///
+    /// ```
+    /// # use bevy::prelude::*;
+    /// # use bevy_gooey::*;
+    /// fn comment_out_first_line(mut editors: Query<&mut CodeEditor>) {
+    ///     for mut editor in &mut editors {
+    ///         if let Err(why) = editor.edit(&[CodeEdit::new(0..0, "// ")]) {
+    ///             warn!("the edit was refused: {why}");
+    ///         }
+    ///     }
+    /// }
+    /// ```
+    pub fn edit(&mut self, edits: &[CodeEdit]) -> Result<(), CodeEditError> {
+        if self.buffer.edit(edits, self.now)? {
+            self.host_edit = true;
+            self.touched();
+        }
+        Ok(())
     }
 
     /// Moves the view's goal to put `line` at the top, clamped to the text; the view glides there.
@@ -524,9 +605,11 @@ impl CodeEditor {
         }
     }
 
-    /// [`move_rows`](Self::move_rows) in a wrapped editor: the caret keeps its offset in its row
-    /// (`row_want`, good while the caret is where the last such move left it) and a row a line's
-    /// own text is too short to fill puts it at the row's end.
+    /// [`move_rows`](Self::move_rows) in a wrapped editor: the caret keeps where it stands across
+    /// the view (`row_want`, its column from the text's left edge, a hung row's hang included, good
+    /// while the caret is where the last such move left it), a row a line's own text is too short
+    /// to fill puts it at the row's end, and a row hung further in than the caret stood puts it at
+    /// the row's start.
     fn move_wrapped_rows(&mut self, up: bool, n: usize, extend: bool) {
         let rows = self.fold.rows(self.buffer.len_lines());
         let caret = self.buffer.caret();
@@ -535,16 +618,16 @@ impl CodeEditor {
         let row = self.fold.row_at(caret.line, col);
         let want = match self.row_want {
             Some((at, want)) if at == caret => want,
-            _ => col - self.fold.row_start(caret.line, col),
+            _ => col - self.fold.row_start(caret.line, col) + self.fold.hang(row),
         };
         let target = if up {
             row.checked_sub(n)
         } else {
             Some(row + n).filter(|&row| row < rows)
         };
-        match target.and_then(|row| self.fold.window(row)) {
-            Some((line, from, to)) => {
-                let mut at = from + want;
+        match target.and_then(|row| Some((self.fold.window(row)?, self.fold.hang(row)))) {
+            Some(((line, from, to), hang)) => {
+                let mut at = from + want.saturating_sub(hang);
                 if let Some(to) = to {
                     at = at.min(to.saturating_sub(1).max(from));
                 }
@@ -1233,6 +1316,7 @@ pub(crate) fn update_code_editors(
         Option<&Highlights>,
         Has<CodeSoftWrap>,
         Has<CodeMarkdown>,
+        Option<&CodeWrapIndent>,
     )>,
     mut parts: Query<PartItem>,
     scan: Query<(Entity, &CodePart)>,
@@ -1273,16 +1357,23 @@ pub(crate) fn update_code_editors(
         highlights,
         soft_wrap,
         markdown,
+        wrap_indent,
     ) in &mut editors
     {
         let Some(target) = target else {
             continue;
         };
         let editor = &mut *editor_mut;
+        editor.now = now;
         let focused = focus.get() == Some(root);
         let look = skin_of(&skin, root, &scopes, &parents);
         let m = CodeMetrics::of(look, target.scale_factor());
 
+        // An edit the host made as the person's own reaches the host's copy with the one
+        // `ValueChange` a keystroke sends, unless the host also set a whole new text, which wins.
+        if std::mem::take(&mut editor.host_edit) && value.revision == editor.synced {
+            publish(root, editor, &mut value, false, &mut commands);
+        }
         // An edit made from elsewhere reaches the host's copy in this frame, with no event.
         if editor.overlay.external_dirty {
             editor.overlay.external_dirty = false;
@@ -1377,7 +1468,8 @@ pub(crate) fn update_code_editors(
         // wrapped editor has no horizontal scroll, so a row never needs more.
         let wrap_cols = (soft_wrap && size.x > 0.0)
             .then(|| (((size.x - 2.0 * pad) / advance).floor().max(1.0)) as usize);
-        editor.fold.sync(wrap_cols, &editor.buffer);
+        let hanging = wrap_indent.is_some_and(|indent| *indent == CodeWrapIndent::Same);
+        editor.fold.sync(wrap_cols, hanging, &editor.buffer);
         let fold = editor.fold.clone();
         let rows = fold.rows(lines);
 
@@ -1473,9 +1565,10 @@ pub(crate) fn update_code_editors(
             }
             let mut col = (x / advance + 0.5).floor().max(0.0) as usize;
             if let Some((_, from, to)) = fold.window(row) {
-                // A wrapped row starts at its own column, and a press past its end lands before
-                // the break, never on the row after.
-                col += from;
+                // A wrapped row starts at its own column, `hang` columns in: a press in the hang
+                // lands on the row's first column, and one past its end lands before the break,
+                // never on the row after.
+                col = from + col.saturating_sub(fold.hang(row));
                 if let Some(to) = to {
                     col = col.min(to.saturating_sub(1).max(from));
                 }
@@ -1557,7 +1650,7 @@ pub(crate) fn update_code_editors(
             0
         };
         let caret_target = Vec2::new(
-            (caret_col - caret_from) as f32 * advance,
+            (caret_col - caret_from + fold.hang(caret_row)) as f32 * advance,
             caret_row as f32 * m.line_px,
         );
 
@@ -1824,6 +1917,20 @@ pub(crate) fn update_code_editors(
                         Display::None
                     },
                 );
+                // A hung row is drawn its hang in, where `origin_x` puts everything drawn on it.
+                let hang = if slot < needed && row < rows {
+                    fold.hang(row)
+                } else {
+                    0
+                };
+                let left = if hang > 0 {
+                    Val::Px(hang as f32 * advance)
+                } else {
+                    Val::Auto
+                };
+                if node.left != left {
+                    node.left = left;
+                }
                 if let (Some(mut text), Some(mut row_state), Some(mut pool)) =
                     (text, row_state, pool)
                 {

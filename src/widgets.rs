@@ -4517,6 +4517,10 @@ pub fn tag(label: impl Into<String>) -> impl Bundle {
 /// [`fill_text`] at the width it is finally given, and a viewport whose rows overflow it scrolls
 /// rather than squeezing them.
 ///
+/// Its cells are centred across it; a [`RowLayout`](crate::RowLayout) beside it is written like a
+/// row's, so `RowLayout { align: Some(AlignItems::FlexStart), ..default() }` top-aligns a name that
+/// wraps to three lines with a one-line count (#127).
+///
 /// ```
 /// # use bevy::prelude::*;
 /// # use bevy_gooey::*;

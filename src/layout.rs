@@ -52,11 +52,14 @@ pub struct BoxSize(pub Vec2);
 /// [`row_with`](crate::row_with) or [`column_with`](crate::column_with). [`crate::apply_skin`] writes
 /// it **only when the component is there**, on these roles: [`Role::Row`], [`Role::Column`],
 /// [`Role::ButtonRow`], [`Role::FillColumn`], [`Role::FillRegion`], [`Role::Placed`], a
-/// [`button_box`](crate::button_box)'s [`Role::Button`], a [`sized`](crate::sized) box, and the plain
-/// containers a host fills with its own children: [`Role::Panel`], [`Role::Surface`], [`Role::Card`],
-/// [`Role::Tone`], [`Role::Menu`], [`Role::SectionBody`] and [`Role::Screen`]. **Not** on a `Dock`
-/// or a `DockBody` (the dock writes their grid), a `Split` and its panes, a table, a list or a text,
-/// whose layout is their own. The gap between children is a [`LayoutGap`](crate::LayoutGap) beside it
+/// [`button_box`](crate::button_box)'s [`Role::Button`], a [`sized`](crate::sized) box, a
+/// [`list_row`](crate::list_row) or [`quiet_list_row`](crate::quiet_list_row) ([`Role::ListRow`]:
+/// `align: Some(AlignItems::FlexStart)` top-aligns a wrapped name and a one-line count), and the
+/// plain containers a host fills with its own children: [`Role::Panel`], [`Role::Surface`],
+/// [`Role::Card`], [`Role::Tone`], [`Role::Menu`], [`Role::SectionBody`] and [`Role::Screen`].
+/// **Not** on a `Dock` or a `DockBody` (the dock writes their grid), a `Split` and its panes, a
+/// table, a list or a text, whose layout is their own. The gap between children is a
+/// [`LayoutGap`](crate::LayoutGap) beside it
 /// (honoured on every role above, and on a panel, surface, card, placed node... it replaces the role's
 /// own gap), so a row with none keeps
 /// whatever the host patched on its `Node`. Change it and the node follows in the same frame;

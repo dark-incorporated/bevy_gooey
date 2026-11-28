@@ -1164,6 +1164,118 @@ fn a_quiet_list_row_looks_like_a_list_row_and_stays_off_the_activate_bus() {
     assert_eq!(app.world().resource::<Clicks>().0, 1, "a list row does");
 }
 
+/// A `RowLayout` on a list row is written (#127): a name that wraps to three lines beside a one-line
+/// count stand top to top, where the row's own centring put the count on the name's middle line.
+#[test]
+fn a_row_layout_on_a_list_row_top_aligns_cells_of_different_heights() {
+    let cells = |app: &mut App, layout: Option<RowLayout>| {
+        let name = app
+            .world_mut()
+            .spawn(fill_text(
+                "a long name of a place that wraps onto several lines in a narrow list",
+            ))
+            .id();
+        let count = app.world_mut().spawn(count_text("12")).id();
+        let mut row = app.world_mut().spawn(quiet_list_row());
+        if let Some(layout) = layout {
+            row.insert(layout);
+        }
+        let row = row.add_children(&[name, count]).id();
+        (row, name, count)
+    };
+    let mut app = headless();
+    let top = RowLayout {
+        align: Some(AlignItems::FlexStart),
+        ..default()
+    };
+    let (top_row, top_name, top_count) = cells(&mut app, Some(top));
+    let (mid_row, mid_name, mid_count) = cells(&mut app, None);
+    let holder = app
+        .world_mut()
+        .spawn(column(0.0))
+        .add_children(&[top_row, mid_row])
+        .id();
+    room(&mut app, 200.0, holder);
+    settle(&mut app);
+    let (name, count) = (rect(&app, top_name), rect(&app, top_count));
+    assert!(
+        name.height() > 2.5 * count.height(),
+        "the name wraps: {name:?} beside {count:?}"
+    );
+    assert!(
+        (name.min.y - count.min.y).abs() < 0.5,
+        "top-aligned: the name at {}, the count at {}",
+        name.min.y,
+        count.min.y
+    );
+    assert_eq!(
+        app.world()
+            .get::<Node>(top_row)
+            .expect("a node")
+            .align_items,
+        AlignItems::FlexStart
+    );
+    // Without one the row centres its cells, as before.
+    let (name, count) = (rect(&app, mid_name), rect(&app, mid_count));
+    assert!(
+        (name.center().y - count.center().y).abs() < 0.5,
+        "centred: {name:?} beside {count:?}"
+    );
+    assert_eq!(
+        app.world()
+            .get::<Node>(mid_row)
+            .expect("a node")
+            .align_items,
+        AlignItems::Center
+    );
+}
+
+/// Every field of a `RowLayout` is written on a list row and a quiet one alike, a change follows in
+/// the same frame, and a list row with none keeps its own row, centring and rigidity.
+#[test]
+fn a_list_row_takes_every_field_of_a_row_layout() {
+    let mut app = headless();
+    let layout = RowLayout {
+        align: Some(AlignItems::FlexEnd),
+        wrap: Some(FlexWrap::Wrap),
+        justify: Some(JustifyContent::SpaceBetween),
+        direction: Some(FlexDirection::Column),
+        shrink: Some(1.0),
+    };
+    let loud = app.world_mut().spawn((list_row(), layout)).id();
+    let quiet = app.world_mut().spawn((quiet_list_row(), layout)).id();
+    let plain = app.world_mut().spawn(list_row()).id();
+    let holder = app
+        .world_mut()
+        .spawn(column(0.0))
+        .add_children(&[loud, quiet, plain])
+        .id();
+    room(&mut app, 400.0, holder);
+    settle(&mut app);
+    for row in [loud, quiet] {
+        let node = app.world().get::<Node>(row).expect("a node");
+        assert_eq!(node.align_items, AlignItems::FlexEnd);
+        assert_eq!(node.flex_wrap, FlexWrap::Wrap);
+        assert_eq!(node.justify_content, JustifyContent::SpaceBetween);
+        assert_eq!(node.flex_direction, FlexDirection::Column);
+        assert_eq!(node.flex_shrink, 1.0);
+    }
+    let node = app.world().get::<Node>(plain).expect("a node");
+    assert_eq!(node.align_items, AlignItems::Center);
+    assert_eq!(node.flex_direction, FlexDirection::Row);
+    assert_eq!(node.flex_shrink, 0.0, "a list row is rigid");
+    app.world_mut()
+        .get_mut::<RowLayout>(quiet)
+        .expect("a layout")
+        .align = Some(AlignItems::FlexStart);
+    app.update();
+    assert_eq!(
+        app.world().get::<Node>(quiet).expect("a node").align_items,
+        AlignItems::FlexStart,
+        "a changed layout is written in the same frame"
+    );
+}
+
 /// The severity rail is a column with a border on its left in the severity's ink, padding and a
 /// margin below, all from the skin: no hand-built node.
 #[test]

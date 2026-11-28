@@ -1211,6 +1211,78 @@ impl CodeBuffer {
         Ok(true)
     }
 
+    /// Makes `edits` as the person's own, the way a command they ran does (a comment toggle, a
+    /// format, a rename): all of them one undo step, in the text's own offsets (they are made
+    /// together: none sees another's change), with the caret and the selection carried on the text
+    /// they were on, as [`CodeBuffer::apply_external`] carries them. An undo takes them all back
+    /// and puts the selection back where it was; the history before them is kept. Returns whether
+    /// there was anything to do.
+    ///
+    /// # Errors
+    ///
+    /// A [`CodeEditError`] when a range is inverted, past the text, inside a character or a line
+    /// break, or overlaps another; the text, the selection and the history are not touched.
+    ///
+    /// ```
+    /// use bevy_gooey::{CodeBuffer, CodeEdit, CodePos};
+    /// let mut buffer = CodeBuffer::new("alpha\nbravo\n");
+    /// buffer.select(CodePos::new(1, 2), CodePos::new(1, 2));
+    /// buffer.edit(&[CodeEdit::new(0..0, "// "), CodeEdit::new(6..6, "// ")], 0.0).unwrap();
+    /// assert_eq!(buffer.text(), "// alpha\n// bravo\n");
+    /// assert_eq!(buffer.caret(), CodePos::new(1, 5), "the caret stays on its letter");
+    /// buffer.undo();
+    /// assert_eq!(buffer.text(), "alpha\nbravo\n");
+    /// assert_eq!(buffer.caret(), CodePos::new(1, 2));
+    /// ```
+    pub fn edit(&mut self, edits: &[CodeEdit], now: f64) -> Result<bool, CodeEditError> {
+        let placed = self.place(edits)?;
+        if placed.is_empty() {
+            return Ok(false);
+        }
+        let texts: Vec<String> = placed
+            .iter()
+            .map(|&(index, ..)| with_breaks(&edits[index].text, self.newline))
+            .collect();
+        let before = self.selection;
+        let (mut anchor, mut head) = (self.offset_of(before.anchor), self.offset_of(before.head));
+        // Last first: each edit is in the original offsets, and one below an offset moves it.
+        for (&(index, ..), text) in placed.iter().zip(&texts).rev() {
+            let range = &edits[index].range;
+            anchor = Self::shifted(anchor, range, text.len());
+            head = Self::shifted(head, range, text.len());
+        }
+        let mut group = Vec::with_capacity(placed.len());
+        for (&(_, a, b), inserted) in placed.iter().zip(texts).rev() {
+            let removed = self.text_between(a, b);
+            self.splice(a, b, &inserted);
+            group.push(Replace {
+                at: a,
+                removed,
+                inserted,
+            });
+        }
+        let starts = self.line_starts();
+        self.selection = CodeSelection {
+            anchor: self.pos_in(&starts, anchor),
+            head: self.pos_in(&starts, head),
+        };
+        self.revision += 1;
+        self.want = None;
+        self.redo.clear();
+        self.undo.push(Group {
+            edits: group,
+            before,
+            after: self.selection,
+            kind: Kind::Block,
+            time: now,
+        });
+        if self.undo.len() > UNDO_DEPTH {
+            self.undo.remove(0);
+        }
+        self.joins = false;
+        Ok(true)
+    }
+
     /// The place at `offset` given the line starts: an offset inside a line break is the end of
     /// that line's content, past the text its end.
     fn pos_in(&self, starts: &[usize], offset: usize) -> CodePos {
@@ -1307,15 +1379,16 @@ impl CodeBuffer {
         !self.redo.is_empty()
     }
 
-    /// Where byte `offset` of the text moves to when `edit` is made: before it, nowhere; after it,
-    /// by how much it grew; inside what it replaced, to its start. A bare insertion exactly at the
-    /// offset pushes it along, so a caret stays on the character it was on.
-    fn shifted(offset: usize, edit: &CodeEdit) -> usize {
-        let (start, end) = (edit.range.start, edit.range.end);
+    /// Where byte `offset` of the text moves to when `range` is replaced by `inserted` bytes:
+    /// before it, nowhere; after it, by how much it grew; inside what it replaced, to its start. A
+    /// bare insertion exactly at the offset pushes it along, so a caret stays on the character it
+    /// was on.
+    fn shifted(offset: usize, range: &Range<usize>, inserted: usize) -> usize {
+        let (start, end) = (range.start, range.end);
         if offset > end || (offset == end && (start != end || offset > start)) {
-            offset + edit.text.len() - (end - start)
+            offset + inserted - (end - start)
         } else if start == end && offset == start {
-            offset + edit.text.len()
+            offset + inserted
         } else if offset > start {
             start
         } else {
@@ -1347,8 +1420,8 @@ impl CodeBuffer {
         );
         // Last first: each edit is in the original offsets, and one below an offset moves it.
         for edit in edits_sorted.iter().rev() {
-            anchor = Self::shifted(anchor, edit);
-            head = Self::shifted(head, edit);
+            anchor = Self::shifted(anchor, &edit.range, edit.text.len());
+            head = Self::shifted(head, &edit.range, edit.text.len());
         }
         let mut placed: Vec<Range<usize>> = Vec::with_capacity(edits_sorted.len());
         let mut delta = 0isize;
@@ -1681,6 +1754,60 @@ mod tests {
         assert_eq!(buffer.selected_text(), "value");
         buffer.apply_external(&[CodeEdit::new(14..15, "")]).unwrap();
         assert_eq!(buffer.selected_text(), "value");
+    }
+
+    #[test]
+    fn a_persons_edit_is_one_step_that_keeps_the_history_and_carries_the_selection() {
+        let mut buffer = CodeBuffer::new("one\ntwo\nthree");
+        buffer.move_to(CodeMove::DocEnd, false);
+        buffer.insert("!", 0.0);
+        // From the start of "two" to "thr|ee".
+        buffer.select(CodePos::new(1, 0), CodePos::new(2, 3));
+        let before = buffer.selection();
+        let revision = buffer.revision();
+        assert_eq!(
+            buffer.edit(&[CodeEdit::new(8..8, "# "), CodeEdit::new(4..4, "# ")], 2.0),
+            Ok(true)
+        );
+        assert_eq!(buffer.text(), "one\n# two\n# three!");
+        assert!(buffer.revision() > revision);
+        // An insertion at the selection's start pushes it along: it stays on "two".
+        assert_eq!(buffer.selected_text(), "two\n# thr");
+        assert!(buffer.undo(), "one step takes both back");
+        assert_eq!(buffer.text(), "one\ntwo\nthree!");
+        assert_eq!(buffer.selection(), before);
+        assert!(buffer.undo(), "the step before it is kept");
+        assert_eq!(buffer.text(), "one\ntwo\nthree");
+        assert!(buffer.redo() && buffer.redo());
+        assert_eq!(buffer.text(), "one\n# two\n# three!");
+        // Replacing and deleting, with a CRLF text's own line breaks.
+        let mut buffer = CodeBuffer::new("a\r\nb\r\n");
+        assert_eq!(
+            buffer.edit(&[CodeEdit::new(0..1, "x\ny"), CodeEdit::new(3..4, "")], 0.0),
+            Ok(true)
+        );
+        assert_eq!(buffer.text(), "x\r\ny\r\n\r\n");
+        assert_eq!(buffer.edit(&[], 0.0), Ok(false), "nothing to do");
+    }
+
+    #[test]
+    fn a_persons_edit_that_names_text_that_is_not_there_changes_nothing() {
+        let mut buffer = CodeBuffer::new("ab\ncd");
+        buffer.insert("x", 0.0);
+        buffer.select(CodePos::new(1, 1), CodePos::new(1, 2));
+        let revision = buffer.revision();
+        assert_eq!(
+            buffer.edit(&[CodeEdit::new(0..1, "y"), CodeEdit::new(0..2, "z")], 0.0),
+            Err(CodeEditError::Overlap {
+                first: 0,
+                second: 1
+            })
+        );
+        assert_eq!(buffer.text(), "xab\ncd");
+        assert_eq!(buffer.revision(), revision);
+        assert_eq!(buffer.selected_text(), "d");
+        assert!(buffer.undo(), "the history is untouched");
+        assert_eq!(buffer.text(), "ab\ncd");
     }
 
     #[test]

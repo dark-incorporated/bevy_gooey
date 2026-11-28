@@ -270,7 +270,8 @@ pub use code_decor::{
 pub use code_editor::{
     CARET_BLINK_PERIOD_S, CARET_SPRING_FRACTION, CODE_LINE_EM, CODE_MIN_LINES,
     CODE_SELECTION_ALPHA, CodeEditor, CodeEditorSettings, CodeEditorValue, CodeIndentation,
-    CodeMarkdown, CodeSoftWrap, DEFAULT_COMPLETION_TRIGGERS, PERF_BUDGET, code_editor,
+    CodeMarkdown, CodeSoftWrap, CodeWrapIndent, DEFAULT_COMPLETION_TRIGGERS, PERF_BUDGET,
+    code_editor,
 };
 pub use code_find::{
     FIND_LIMIT, FIND_WORK_BASE, FIND_WORK_PER_BYTE, FindError, FindOptions, find_all, replace_edits,
@@ -701,6 +702,7 @@ impl Plugin for GooeyStylePlugin {
             .register_type::<Led>()
             .register_type::<CodeEditorSettings>()
             .register_type::<CodeSoftWrap>()
+            .register_type::<CodeWrapIndent>()
             .register_type::<CodeMarkdown>()
             .register_type::<CodeEditorValue>()
             .register_type::<SyntaxRole>()

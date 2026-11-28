@@ -3272,9 +3272,11 @@ fn on_screen(parent: Option<Entity>, roles: &Query<&Role>, parents: &Query<&Chil
 
 /// The roles a [`RowLayout`] is written on: the layout containers (`Row`, `Column`, `ButtonRow`,
 /// `FillColumn`, `FillRegion`), a placed node, a button (so a [`crate::button_box`] can be a card),
-/// a [`crate::sized`] box, and the plain containers a host fills with its own children: `Panel`,
-/// `Surface`, `Card`, `Tone`, `Menu`, `SectionBody` and `Screen`. **Not** a `Dock` or a `DockBody` (the
-/// dock writes their grid), a `Split` or its panes, a table, a list or a text, whose layout is theirs.
+/// a [`crate::sized`] box, a list row ([`crate::list_row`], [`crate::quiet_list_row`]: a host fills
+/// it with cells of its own, #127), and the plain containers a host fills with its own children:
+/// `Panel`, `Surface`, `Card`, `Tone`, `Menu`, `SectionBody` and `Screen`. **Not** a `Dock` or a
+/// `DockBody` (the dock writes their grid), a `Split` or its panes, a table, a list or a text, whose
+/// layout is theirs.
 fn takes_a_row_layout(role: &Role) -> bool {
     matches!(
         role,
@@ -3286,6 +3288,7 @@ fn takes_a_row_layout(role: &Role) -> bool {
             | Role::Placed
             | Role::Button
             | Role::Sized
+            | Role::ListRow
             | Role::Panel
             | Role::Surface(_)
             | Role::Card

@@ -4385,3 +4385,41 @@ the tarball; the real `cargo publish` was refused **403 Forbidden (authenticatio
 broken token every release since 0.51.9 has hit, so 0.51.9 through 0.65.0 are pending the owner's new
 token. Logged once, not retried; `v0.65.0` is tagged and pushed so the history is right when the token
 lands.
+
+## Outside the loop — 2026-11-27 — #126, #125 and #127 for bevy_dark_factory #612 (0.66.0)
+
+**Not an iteration** (the next one is still 119). The owner's session drained the loop after pass
+395 (`gooey-grimoire-watch.timer` stopped, a drain at the pass boundary, restarted once this was
+tagged) and fixed the three consumer issues bevy_dark_factory's #612 waits on, in a clone of its own,
+one commit each, through one PR. **Read `git log` before taking any of them: they are closed.**
+
+- **#126 `CodeWrapIndent::Same`**: a wrapped line's rows after the first hang under its first word
+  (leading blanks + quote marks + one list marker + a task box, at most half a row). The hang is in
+  the one wrap map (`LineWrap { cuts, hang }`, `RowMap::hang`, `RowMap::origin_x`), so the text, the
+  caret, the selection, find bands, squiggles, a click and the hover hit-test move together.
+- **#125 `CodeEditor::edit` / `CodeBuffer::edit`**: a host's command (a comment toggle) edits as the
+  person: one undo step on top of the history, the selection carried, one `ValueChange<String>`.
+- **#127**: `Role::ListRow` takes a `RowLayout`.
+- #128 needed nothing: pass 393 fixed it (f7a2a0f, 0.64.2).
+
+**Tests** are in `tests/code_editor.rs` (`#126` and `#125` sections), `tests/layout_more.rs`
+(`a_row_layout_on_a_list_row_*`, `a_list_row_takes_every_field_of_a_row_layout`), and
+`src/code_wrap.rs` / `src/code_buffer.rs`; not mutation-run, each asserts what the fix adds (a hung
+row's x, an undo step and its `ValueChange`, a list row's `align_items`). **No demo was recorded**
+(`demo?` for #126): the guide shows the hang as text; a still of `examples/prose.rs` with
+`CodeWrapIndent::Same` on a wrapped list is left for a pass.
+
+**The gate** on big_mac: `fmt --check`, `clippy --all-targets --all-features -D warnings`,
+`nextest --all-features --lib --tests` (**1764 passed**, 255 s), `test --all-features --doc` (365),
+`check --lib`, `check --lib --target wasm32-unknown-unknown`, `doc -D warnings` — all green.
+
+**Found, not fixed.** `update_code_editors` marks every pooled row's `Node` changed every frame: the
+`set_display(&mut node, ..)` and `set_px(&mut node.<field>, ..)` closures take `&mut Node` from a
+`Mut<Node>`, which is a `DerefMut` whether or not a value differs (a hanging editor's test reads the
+rows' `Node` ticks moving on a settled pane). A candidate for a pass: `set_if_neq` or a compare before
+the borrow.
+
+**Release.** 0.66.0 — minor pre-1.0: new public `CodeWrapIndent`, `CodeEditor::edit` and
+`CodeBuffer::edit`, no signature changed. The crates.io token on big_mac is refused as big's is (`403`
+from `/api/v1/me`), so 0.66.0 is tagged and not published; 0.51.9 through 0.66.0 wait for the owner's
+new token.

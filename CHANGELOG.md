@@ -1,4 +1,55 @@
 # Changelog
+
+## [0.66.0] - 2026-11-27
+
+### Added
+
+- **A wrapped line's later rows hang under its first word: `CodeWrapIndent::Same` (#126).** With
+  `CodeSoftWrap` every row after a line's first started at the editor's left edge, so a wrapped
+  Markdown list item, a quote or an indented YAML value continued under its bullet or its indent,
+  where VS Code (`wrappingIndent: same`) and Obsidian continue it under the first word. Put
+  `CodeWrapIndent::Same` beside `CodeSoftWrap` and a wrapped line's rows after the first stand in by
+  its leading blanks plus a Markdown quote or list marker (`> `, `- `, `* `, `+ `, `1. `, `1) `, a
+  task box `[ ] ` after a list marker), at most half a row so a deeply indented line still wraps; those
+  rows hold that many columns fewer. The hang lives in the one wrap map every row is drawn and
+  hit-tested through (`RowMap::origin_x`), so the text, the caret, the selection, find matches and
+  squiggles move together, a click lands on the glyph under the pointer (a press in the blank hang
+  on the row's first column) and Up and Down keep the caret's place across the view. Without the
+  component, or with `CodeWrapIndent::None`, nothing moves. Tests:
+  `tests/code_editor.rs::a_wrapped_list_item_hangs_its_later_rows_under_its_first_word`,
+  `…::a_quote_and_an_indented_value_hang_at_their_marker_and_their_indent`,
+  `…::an_unindented_paragraph_is_drawn_as_without_the_hang`,
+  `…::a_click_on_a_hung_row_lands_on_the_glyph_under_the_pointer`,
+  `…::up_and_down_keep_the_carets_place_across_hung_rows`,
+  `…::the_selection_and_a_find_match_on_a_hung_row_stand_on_its_text`,
+  `…::a_settled_hanging_editor_writes_nothing`, and the wrap map's own in `src/code_wrap.rs`.
+- **A host can make an edit as the person's own: `CodeEditor::edit` and `CodeBuffer::edit` (#125).**
+  A command the host runs for the person — a `Cmd+/` comment toggle, a format, a rename — had two
+  ways in, and neither was the person's: `CodeEditorValue::set` replaced the text and cleared the
+  undo history, and `apply_external_edit` is someone else's edit by contract (history dropped, the
+  lines tinted, no `ValueChange`), so `Cmd+Z` could not take the toggle back and the history before
+  it was gone. `editor.edit(&[CodeEdit::new(range, text)])` makes the edits together as one undo
+  step on top of the person's history, carries the caret and the selection on the text they were on
+  (as an external edit does), brings the caret into view, and publishes one `ValueChange<String>`
+  from the editor's next update, as a keystroke does; a refused range (`CodeEditError`) changes
+  nothing. `CodeBuffer::edit(edits, now)` is the same on a bare buffer. Tests:
+  `tests/code_editor.rs::a_host_edit_as_the_persons_is_one_undo_step_with_a_value_change`,
+  `…::a_host_edit_keeps_the_selection_on_its_text`,
+  `…::a_host_edit_that_names_text_that_is_not_there_changes_nothing`, and two in
+  `src/code_buffer.rs`.
+
+### Fixed
+
+- **A `RowLayout` on a `list_row` or a `quiet_list_row` is written (#127).** `Role::ListRow` was not
+  among the roles `apply_skin` writes a `RowLayout` on, so `(quiet_list_row(), RowLayout { align:
+  Some(AlignItems::FlexStart), .. })` kept the row's own centring and nothing said so: a name that
+  wraps to three lines beside a one-line count put the count on the name's middle line (a 6 px
+  baseline split measured in a consumer's place list). A list row is a container its host fills with
+  cells, so all five fields are now written on it, `align` top-aligning cells of different heights;
+  a row with no `RowLayout` keeps its centring and its rigidity. Tests:
+  `tests/layout_more.rs::a_row_layout_on_a_list_row_top_aligns_cells_of_different_heights`,
+  `…::a_list_row_takes_every_field_of_a_row_layout`.
+
 ## [0.65.0] - 2026-11-27
 ### Added
 - **A tree's long label wraps: `TreeWrap`.** A tree builds its one column itself and `Table::columns`

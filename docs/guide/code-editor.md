@@ -77,7 +77,7 @@ The rows are a pool of a screenful and two entities, re-pointed at other lines a
 ## What it does not do (yet)
 
 - One caret and one selection: no multi-cursor, no column selection.
-- Soft wrap is opt-in (`CodeSoftWrap`, below) and breaks at words only; there is no wrap indent and no hanging line-number column.
+- Soft wrap is opt-in (`CodeSoftWrap`, below) and breaks at words only; a wrapped line's later rows hang under its first word only with `CodeWrapIndent::Same`, and there is no hanging line-number column.
 - Wide (CJK) characters take one column.
 - Assistive technology is told the editor's role (a multi-line text input) and its label, not its text: mirroring a 2 MB file into the accessibility tree on every edit is a cost no player asked for. A host that needs the text reads `CodeEditorValue`.
 
@@ -90,6 +90,14 @@ commands.spawn((code_editor("Notes", text), CodeSoftWrap, CodeMarkdown));
 ```
 
 - **`CodeSoftWrap`** breaks a long line at the editor's edge, at a word where there is one (a word longer than a row is cut at the edge) and with the blank that ended the row left hanging at its end. The text is never changed: a wrap is drawn, not written, so `CodeEditorValue` and the undo history are as without it. There is no horizontal scroll while it is on. Each line keeps one number, on its first row. Up and Down move by row and keep their column, **Home** and **End** go to the row's edge first and the line's on a second press, a click lands on the row it is on, and a selection, a find match and a squiggle that cross a wrap are a piece on each row. An edit re-wraps only the lines it replaced and shifts the rows after them by an integer, so a keystroke in a 20,000-line wrapped pane costs what a keystroke in a 20-line one does even in the debug build the gate runs (66.0 ms to 16.9 ms before, 21.0 to 17.4 after, `PERF_BUDGET`); a width change re-wraps the file once (`docs/research/code-soft-wrap.md`, `docs/research/code-wrap-incremental.md`).
+- **`CodeWrapIndent::Same`** beside `CodeSoftWrap` hangs a wrapped line's later rows under its first word, as VS Code's `wrappingIndent: same` and Obsidian draw a list: past the line's leading blanks and a Markdown quote or list marker (`> `, `- `, `* `, `+ `, `1. `, `1) `, and a task box `[ ] ` after a list marker), so
+
+  ```text
+  - alpha bravo charlie delta echo foxtrot golf
+    hotel india juliet kilo lima mike november
+  ```
+
+  The hang is at most half a row, so a deeply indented line still has room, and the rows it stands in hold that many columns fewer. Everything drawn on a row follows the hung text — the caret, the selection, find matches, squiggles — and a click lands on the glyph under the pointer (a press in the hang's blank margin lands on the row's first column); Up and Down keep the caret's place across the view, so Up from a hung row's first word lands on the first row's first word, not on its marker. A line with no indent and no marker is drawn exactly as without it, and `CodeWrapIndent::None` (or no component) keeps every row at the edge (#126).
 - **`CodeMarkdown`** draws the text as Markdown, from `markdown_highlights(text, revision)`: headings, fenced code (the fence carries over lines), block quotes, list markers, code spans, emphasis (`SyntaxRole::Emphasis`), strong (`SyntaxRole::Strong`) and links, each in an ink of the skin (`GooeySkin::syntax`), at the 7:1 or 4.5:1 the skin already holds them to. The editor keeps the spans current with the text, so a character typed is never drawn in the old colours. A host's own `Highlights` on the same editor are ignored while the marker is there. It is a line scanner, not a CommonMark parser: what it cannot read as Markdown it leaves plain.
 
 ![The prose example: one page of notes in two editors. Left, wrapped at the pane's edge with the heading, bold, code, quote, list marks and links each in their own ink; right, the same text unwrapped on one long line per paragraph](../media/prose.png)
@@ -118,6 +126,22 @@ fn decorate(
 - **Completion**: the editor sends `CodeCompletionRequested { prefix, offset, trigger }` (Ctrl+Space, a letter, digit or underscore typed with no list open, or a character of `CodeEditorSettings::completion_triggers`); answer by inserting `CodeCompletions { anchor, items }` on the editor. The list opens under the caret, narrows by what is typed after `anchor` (the crate's fuzzy matcher), Up and Down move the lit row, **Enter or Tab** chooses (one undo step), Escape closes it. Each `CompletionItem` has a `detail` line and an optional `insert` text.
 - **Hover**: after the pointer rests, the editor shows a diagnostic there, or sends `CodeHoverRequested` and shows your `CodeHover { revision, range, text }`.
 - **Edits from elsewhere**: `editor.apply_external_edit(&[CodeEdit::new(range, text)], CodeAuthor::new("Ada", colour))`. The edit lands without moving the player's caret or selection (both stay on the text they were on, an edit inside a selection included), lines added above the view move the scroll so the text in view stays put, the changed lines glide in tinted in the author's colour, and the tint fades over `EXTERNAL_EDIT_FADE_S`. A range that names text that is not there (inverted, past the end, inside a character or a line break, or overlapping another) is refused with a `CodeEditError` and nothing changes. Folds the player closed follow the text, so lines added above them move them down. The player's undo history is dropped (a person's undo never rewrites someone else's text). `CodeEditorValue` has the new text the same frame, with no `ValueChange`.
+- **An edit made for the player**: `editor.edit(&[CodeEdit::new(range, text)])` is the player's own edit, made by a command of the host's (a comment toggle, a format, a rename): one undo step that Ctrl or Cmd+Z takes back with the history before it kept, the caret and the selection carried on the text they were on, the caret brought into view, and one `ValueChange<String>` from the editor's next update as for a keystroke. `CodeBuffer::edit` is the same on a bare buffer. A refused range changes nothing (`CodeEditError`, as above). Compare `CodeEditorValue::set` (a new text: the history starts over) and `apply_external_edit` (someone else's: tinted, no history, no `ValueChange`) (#125).
+
+  ```rust
+  fn toggle_comment(mut editors: Query<&mut CodeEditor>) {
+      for mut editor in &mut editors {
+          let line = editor.buffer().caret().line;
+          let start = editor.buffer().offset_of(CodePos::new(line, 0));
+          let edit = if editor.buffer().line(line).starts_with("// ") {
+              CodeEdit::new(start..start + 3, "")
+          } else {
+              CodeEdit::new(start..start, "// ")
+          };
+          let _ = editor.edit(&[edit]);
+      }
+  }
+  ```
 
 ## Ink themes
 
