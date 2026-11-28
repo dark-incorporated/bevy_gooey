@@ -1462,6 +1462,118 @@ fn a_settled_hanging_editor_writes_nothing() {
     assert_eq!((node_ticks(&app, editor), lefts(&app)), before);
 }
 
+// -- #125: an edit a host makes as the person's own -----------------------------------------------
+
+fn caret_of(app: &App, editor: Entity) -> CodePos {
+    state(app, editor).buffer().caret()
+}
+
+fn host_edit(app: &mut App, editor: Entity, edits: &[CodeEdit]) -> Result<(), CodeEditError> {
+    app.world_mut()
+        .get_mut::<CodeEditor>(editor)
+        .expect("editor")
+        .edit(edits)
+}
+
+#[test]
+fn a_host_edit_as_the_persons_is_one_undo_step_with_a_value_change() {
+    let mut app = app();
+    let editor = editor_of(&mut app, "alpha\nbravo\n");
+    // The person types first, so there is a history before the host's edit to keep.
+    app.world_mut()
+        .get_mut::<CodeEditor>(editor)
+        .expect("editor")
+        .select(CodePos::new(1, 5), CodePos::new(1, 5));
+    settle(&mut app);
+    type_str(&mut app, "!");
+    assert_eq!(text_of(&app, editor), "alpha\nbravo!\n");
+    app.world_mut()
+        .get_mut::<CodeEditor>(editor)
+        .expect("editor")
+        .select(CodePos::new(1, 2), CodePos::new(1, 2));
+    settle(&mut app);
+    app.world_mut().resource_mut::<Changes>().0.clear();
+    host_edit(
+        &mut app,
+        editor,
+        &[CodeEdit::new(0..0, "// "), CodeEdit::new(6..6, "// ")],
+    )
+    .expect("a good edit");
+    app.update();
+    let after = "// alpha\n// bravo!\n";
+    assert_eq!(text_of(&app, editor), after, "the host's copy has it");
+    assert_eq!(
+        app.world().resource::<Changes>().0,
+        vec![(editor, after.to_owned(), false)],
+        "one ValueChange, as a keystroke sends"
+    );
+    assert_eq!(
+        caret_of(&app, editor),
+        CodePos::new(1, 5),
+        "the caret stays on the letter it was on"
+    );
+    settle(&mut app);
+    assert_eq!(app.world().resource::<Changes>().0.len(), 1, "and only one");
+    // One undo takes both lines' edit back, and puts the caret back.
+    ctrl(&mut app, KeyCode::KeyZ, "z");
+    assert_eq!(text_of(&app, editor), "alpha\nbravo!\n");
+    assert_eq!(caret_of(&app, editor), CodePos::new(1, 2));
+    // The person's own step before it is still there.
+    ctrl(&mut app, KeyCode::KeyZ, "z");
+    assert_eq!(text_of(&app, editor), "alpha\nbravo\n");
+    ctrl(&mut app, KeyCode::KeyY, "y");
+    ctrl(&mut app, KeyCode::KeyY, "y");
+    assert_eq!(text_of(&app, editor), after, "redo puts it back");
+}
+
+#[test]
+fn a_host_edit_keeps_the_selection_on_its_text() {
+    let mut app = app();
+    let editor = editor_of(&mut app, "alpha\nbravo\n");
+    app.world_mut()
+        .get_mut::<CodeEditor>(editor)
+        .expect("editor")
+        .select(CodePos::new(1, 0), CodePos::new(1, 5));
+    settle(&mut app);
+    assert_eq!(selected(&app, editor), "bravo");
+    host_edit(&mut app, editor, &[CodeEdit::new(6..6, "// ")]).expect("a good edit");
+    settle(&mut app);
+    assert_eq!(text_of(&app, editor), "alpha\n// bravo\n");
+    assert_eq!(
+        selected(&app, editor),
+        "bravo",
+        "the selection is on its word"
+    );
+    // Taking the marker away again keeps it there too.
+    host_edit(&mut app, editor, &[CodeEdit::new(6..9, "")]).expect("a good edit");
+    settle(&mut app);
+    assert_eq!(text_of(&app, editor), "alpha\nbravo\n");
+    assert_eq!(selected(&app, editor), "bravo");
+}
+
+#[test]
+fn a_host_edit_that_names_text_that_is_not_there_changes_nothing() {
+    let mut app = app();
+    let editor = editor_of(&mut app, "alpha\n");
+    type_str(&mut app, "x");
+    app.world_mut().resource_mut::<Changes>().0.clear();
+    let before = text_of(&app, editor);
+    assert_eq!(
+        host_edit(&mut app, editor, &[CodeEdit::new(0..99, "")]),
+        Err(CodeEditError::PastTheEnd { index: 0 })
+    );
+    settle(&mut app);
+    assert_eq!(text_of(&app, editor), before);
+    assert!(
+        app.world().resource::<Changes>().0.is_empty(),
+        "no ValueChange for a refused edit"
+    );
+    assert!(
+        state(&app, editor).buffer().can_undo(),
+        "and the history is kept"
+    );
+}
+
 // -- #122: a keystroke in a wrapped pane costs what the pane draws, not the file --
 
 /// The time of one frame in which one character was typed, median of `rounds`, after two warm-up

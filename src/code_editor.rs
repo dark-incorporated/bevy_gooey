@@ -37,8 +37,8 @@ use bevy::window::{Ime, PrimaryWindow};
 
 use crate::clicks::ClickCount;
 use crate::code_buffer::{
-    CodeBuffer, CodeIndent, CodeMove, CodePos, byte_at_display, display_col, display_width,
-    expand_slice,
+    CodeBuffer, CodeEdit, CodeEditError, CodeIndent, CodeMove, CodePos, byte_at_display,
+    display_col, display_width, expand_slice,
 };
 use crate::code_decor::{CodeCompletions, CompletionTrigger};
 use crate::code_decor::{Highlights, line_runs};
@@ -442,6 +442,12 @@ pub struct CodeEditor {
     pub(crate) starts: (u64, Vec<usize>),
     /// What is drawn over the text and what the host and the player asked of it.
     pub(crate) overlay: Overlay,
+    /// The real time of the editor's last update, what a host's [`CodeEditor::edit`] is stamped
+    /// with in the history.
+    now: f64,
+    /// A host made an edit as the person's own ([`CodeEditor::edit`]) that the next update
+    /// publishes as a keystroke's.
+    host_edit: bool,
 }
 
 impl CodeEditor {
@@ -478,6 +484,8 @@ impl CodeEditor {
             view: View::default(),
             starts: (u64::MAX, Vec::new()),
             overlay: Overlay::default(),
+            now: 0.0,
+            host_edit: false,
         }
     }
 
@@ -495,6 +503,44 @@ impl CodeEditor {
     pub fn select(&mut self, anchor: CodePos, head: CodePos) {
         self.buffer.select(anchor, head);
         self.touched();
+    }
+
+    /// Makes `edits` as the person's own, the way a command they ran does: a comment toggle, a
+    /// format, a rename. They are one undo step that Ctrl or Cmd+Z takes back (the history before
+    /// them is kept), the caret and the selection stay on the text they were on, the caret comes
+    /// into view, and the host hears one [`ValueChange<String>`](ValueChange) as for a keystroke
+    /// from the editor's next update, which also writes [`CodeEditorValue`] (in this frame for a
+    /// host that edits before [`GooeySystems::Style`](crate::GooeySystems::Style)). The ranges are
+    /// byte offsets of the whole text as it stands ([`CodeBuffer::offset_of`]), made together:
+    /// none sees another's change. A [`CodeEditorValue::set`] in the same frame replaces the text
+    /// and wins.
+    ///
+    /// The other ways in are not the person's: [`CodeEditorValue::set`] replaces the text and
+    /// starts the history over, and [`apply_external_edit`](Self::apply_external_edit) is someone
+    /// else's edit, tinted in their colour, with the history dropped and no `ValueChange`.
+    ///
+    /// # Errors
+    ///
+    /// A [`CodeEditError`] when a range is inverted, past the text, inside a character or a line
+    /// break, or overlaps another: nothing changes.
+    ///
+    /// ```
+    /// # use bevy::prelude::*;
+    /// # use bevy_gooey::*;
+    /// fn comment_out_first_line(mut editors: Query<&mut CodeEditor>) {
+    ///     for mut editor in &mut editors {
+    ///         if let Err(why) = editor.edit(&[CodeEdit::new(0..0, "// ")]) {
+    ///             warn!("the edit was refused: {why}");
+    ///         }
+    ///     }
+    /// }
+    /// ```
+    pub fn edit(&mut self, edits: &[CodeEdit]) -> Result<(), CodeEditError> {
+        if self.buffer.edit(edits, self.now)? {
+            self.host_edit = true;
+            self.touched();
+        }
+        Ok(())
     }
 
     /// Moves the view's goal to put `line` at the top, clamped to the text; the view glides there.
@@ -1318,10 +1364,16 @@ pub(crate) fn update_code_editors(
             continue;
         };
         let editor = &mut *editor_mut;
+        editor.now = now;
         let focused = focus.get() == Some(root);
         let look = skin_of(&skin, root, &scopes, &parents);
         let m = CodeMetrics::of(look, target.scale_factor());
 
+        // An edit the host made as the person's own reaches the host's copy with the one
+        // `ValueChange` a keystroke sends, unless the host also set a whole new text, which wins.
+        if std::mem::take(&mut editor.host_edit) && value.revision == editor.synced {
+            publish(root, editor, &mut value, false, &mut commands);
+        }
         // An edit made from elsewhere reaches the host's copy in this frame, with no event.
         if editor.overlay.external_dirty {
             editor.overlay.external_dirty = false;

@@ -23,6 +23,20 @@
   `…::up_and_down_keep_the_carets_place_across_hung_rows`,
   `…::the_selection_and_a_find_match_on_a_hung_row_stand_on_its_text`,
   `…::a_settled_hanging_editor_writes_nothing`, and the wrap map's own in `src/code_wrap.rs`.
+- **A host can make an edit as the person's own: `CodeEditor::edit` and `CodeBuffer::edit` (#125).**
+  A command the host runs for the person — a `Cmd+/` comment toggle, a format, a rename — had two
+  ways in, and neither was the person's: `CodeEditorValue::set` replaced the text and cleared the
+  undo history, and `apply_external_edit` is someone else's edit by contract (history dropped, the
+  lines tinted, no `ValueChange`), so `Cmd+Z` could not take the toggle back and the history before
+  it was gone. `editor.edit(&[CodeEdit::new(range, text)])` makes the edits together as one undo
+  step on top of the person's history, carries the caret and the selection on the text they were on
+  (as an external edit does), brings the caret into view, and publishes one `ValueChange<String>`
+  from the editor's next update, as a keystroke does; a refused range (`CodeEditError`) changes
+  nothing. `CodeBuffer::edit(edits, now)` is the same on a bare buffer. Tests:
+  `tests/code_editor.rs::a_host_edit_as_the_persons_is_one_undo_step_with_a_value_change`,
+  `…::a_host_edit_keeps_the_selection_on_its_text`,
+  `…::a_host_edit_that_names_text_that_is_not_there_changes_nothing`, and two in
+  `src/code_buffer.rs`.
 
 ## [0.65.0] - 2026-11-27
 ### Added

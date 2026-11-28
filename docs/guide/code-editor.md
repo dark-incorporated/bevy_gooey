@@ -126,6 +126,22 @@ fn decorate(
 - **Completion**: the editor sends `CodeCompletionRequested { prefix, offset, trigger }` (Ctrl+Space, a letter, digit or underscore typed with no list open, or a character of `CodeEditorSettings::completion_triggers`); answer by inserting `CodeCompletions { anchor, items }` on the editor. The list opens under the caret, narrows by what is typed after `anchor` (the crate's fuzzy matcher), Up and Down move the lit row, **Enter or Tab** chooses (one undo step), Escape closes it. Each `CompletionItem` has a `detail` line and an optional `insert` text.
 - **Hover**: after the pointer rests, the editor shows a diagnostic there, or sends `CodeHoverRequested` and shows your `CodeHover { revision, range, text }`.
 - **Edits from elsewhere**: `editor.apply_external_edit(&[CodeEdit::new(range, text)], CodeAuthor::new("Ada", colour))`. The edit lands without moving the player's caret or selection (both stay on the text they were on, an edit inside a selection included), lines added above the view move the scroll so the text in view stays put, the changed lines glide in tinted in the author's colour, and the tint fades over `EXTERNAL_EDIT_FADE_S`. A range that names text that is not there (inverted, past the end, inside a character or a line break, or overlapping another) is refused with a `CodeEditError` and nothing changes. Folds the player closed follow the text, so lines added above them move them down. The player's undo history is dropped (a person's undo never rewrites someone else's text). `CodeEditorValue` has the new text the same frame, with no `ValueChange`.
+- **An edit made for the player**: `editor.edit(&[CodeEdit::new(range, text)])` is the player's own edit, made by a command of the host's (a comment toggle, a format, a rename): one undo step that Ctrl or Cmd+Z takes back with the history before it kept, the caret and the selection carried on the text they were on, the caret brought into view, and one `ValueChange<String>` from the editor's next update as for a keystroke. `CodeBuffer::edit` is the same on a bare buffer. A refused range changes nothing (`CodeEditError`, as above). Compare `CodeEditorValue::set` (a new text: the history starts over) and `apply_external_edit` (someone else's: tinted, no history, no `ValueChange`) (#125).
+
+  ```rust
+  fn toggle_comment(mut editors: Query<&mut CodeEditor>) {
+      for mut editor in &mut editors {
+          let line = editor.buffer().caret().line;
+          let start = editor.buffer().offset_of(CodePos::new(line, 0));
+          let edit = if editor.buffer().line(line).starts_with("// ") {
+              CodeEdit::new(start..start + 3, "")
+          } else {
+              CodeEdit::new(start..start, "// ")
+          };
+          let _ = editor.edit(&[edit]);
+      }
+  }
+  ```
 
 ## Ink themes
 
